@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     width: "90%",
     color: COLORS.Black1,
     fontFamily: FONTFAMILY.regular,
-    fontSize: FONTSIZE.size_18,
+    fontSize: FONTSIZE.size_14,
   },
   boxIcon: {
     marginRight: SPACING.space_10,

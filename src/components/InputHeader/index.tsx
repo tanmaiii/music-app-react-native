@@ -5,6 +5,9 @@ import styles from "./style";
 import { COLORS, FONTSIZE } from "../../theme/theme";
 
 const InputHeader = (props: any) => {
+  const [keyword, setKeyword] = React.useState<string>("")
+
+
   return (
     <View style={styles.inputBox}>
       <TouchableOpacity style={styles.boxIcon} onPress={() => props.searchFunction()}>
@@ -17,7 +20,7 @@ const InputHeader = (props: any) => {
       </TouchableOpacity>
       <TextInput
         style={styles.textInput}
-        onChangeText={(textInput) => props.setKeyword(textInput)}
+        onChangeText={(textInput) => setKeyword(textInput)}
         value={props.keyword}
         placeholder="Artists, songs, or playlist"
         placeholderTextColor={COLORS.Black1}

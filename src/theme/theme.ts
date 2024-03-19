@@ -87,15 +87,15 @@ interface FontFamily {
 }
 
 export const FONTFAMILY: FontFamily = {
-  black: "Black",
-  bold: "Bold",
-  extrabold: "ExtraBold",
-  extralight: "ExtraLight",
-  light: "Light",
-  medium: "Medium",
-  regular: "Regular",
-  semibold: "SemiBold",
-  thin: "Thin",
+  black: "Roboto-Black",
+  bold: "Roboto-Bold",
+  extrabold: "Roboto-ExtraBold",
+  extralight: "Roboto-ExtraLight",
+  light: "Roboto-Light",
+  medium: "Roboto-Medium",
+  regular: "Roboto-Regular",
+  semibold: "Roboto-SemiBold",
+  thin: "Roboto-Thin",
 };
 
 interface FontSize {

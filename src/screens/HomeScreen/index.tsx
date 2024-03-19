@@ -15,7 +15,7 @@ import { TSong } from "../../types/song.type";
 import CategoryHeader from "../../components/CategoryHeader";
 import { SPACING } from "../../theme/theme";
 import SongCard from "../../components/SongCard";
-import SongSlider from "../../components/SongSlider";
+import Slider from "../../components/Slider";
 import IMAGES from "../../constants/images";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -66,12 +66,13 @@ const HomeScreen = ({ navigation }: any) => {
           <Image source={IMAGES.AVATAR} style={styles.HomeHeaderImage} />
         </TouchableOpacity>
         <TouchableOpacity>
-          <Ionicons name="add-outline" size={24} color="black" style={styles.HomeHeaderIcon}/>
+          <Ionicons name="add-outline" size={24} color="black" style={styles.HomeHeaderIcon} />
         </TouchableOpacity>
       </View>
-      <SongSlider songs={songs} title="Song Popular" navigation={navigation} />
-      <SongSlider songs={songs} title="Song Popular" navigation={navigation} />
-      <SongSlider songs={songs} title="Song Popular" navigation={navigation} />
+      <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
+      <Slider songs={songs} type="artist" title="Artist Popular" navigation={navigation} />
+      <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
+      <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
     </ScrollView>
   );
 };

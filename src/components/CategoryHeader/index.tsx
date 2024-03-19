@@ -15,7 +15,7 @@ export default CategoryHeader;
 const styles = StyleSheet.create({
   text: {
     fontSize: FONTSIZE.size_24,
-    fontFamily: FONTFAMILY.medium,
+    fontFamily: FONTFAMILY.bold,
     color: COLORS.White,
     // paddingHorizontal: SPACING.space_36,
     paddingVertical: SPACING.space_16,

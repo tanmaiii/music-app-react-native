@@ -1,13 +1,12 @@
 import * as React from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { TSong } from "../../types/song.type";
 import IMAGES from "../../constants/images";
 
 import styles from "./style";
 import { SPACING } from "../../theme/theme";
 
 const ArtistCard = (props: any) => {
-  const { song } = props;
+  const { artist } = props;
 
   return (
     <TouchableOpacity onPress={() => props.cardFunction()}>
@@ -20,10 +19,7 @@ const ArtistCard = (props: any) => {
         />
         <View>
           <Text numberOfLines={1} style={styles.textTitle}>
-            {song.title}
-          </Text>
-          <Text numberOfLines={2} style={styles.textDes}>
-            {song.author}
+            {artist.title}
           </Text>
         </View>
       </View>

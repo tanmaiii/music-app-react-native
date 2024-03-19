@@ -10,7 +10,7 @@ import Home from "./src/screens/HomeScreen";
 import Search from "./src/screens/SearchScreen";
 import Library from "./src/screens/LibraryScreen";
 import { useFonts } from "expo-font";
-import { FONTFAMILY } from "./src/theme/theme";
+import { COLORS, FONTFAMILY } from "./src/theme/theme";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -26,12 +26,11 @@ export default function App() {
   });
 
   if (!fontLoaded) {
-    <>Loading....</>;
+   return <>Loading....</>;
   }
 
   return (
     <View style={styles.container}>
-      {/* <Text>Xin chao</Text> */}
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Tab" component={TabNavigator} />
@@ -46,8 +45,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     fontFamily: FONTFAMILY.medium,
-    // backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
+    backgroundColor: COLORS.Black1 ,
   },
 });

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
 
   shadowProp: {
-    backgroundColor: 'red',
+    backgroundColor: COLORS.Black1,
     alignSelf: 'center',
     elevation: 56,
   },
