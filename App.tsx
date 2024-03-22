@@ -9,6 +9,8 @@ import TabNavigator from "./src/navigators/TabNavigator";
 import Home from "./src/screens/HomeScreen";
 import Search from "./src/screens/SearchScreen";
 import Library from "./src/screens/LibraryScreen";
+import ArtistDetail from "./src/screens/ArtistDetail";
+import SongDetail from "./src/screens/SongDetail";
 import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY } from "./src/theme/theme";
 
@@ -26,7 +28,7 @@ export default function App() {
   });
 
   if (!fontLoaded) {
-   return <>Loading....</>;
+    return <Text>Loading....</Text>;
   }
 
   return (
@@ -35,6 +37,8 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Tab" component={TabNavigator} />
           <Stack.Screen name="Library" component={Library} />
+          <Stack.Screen name="SongDetail" component={SongDetail} />
+          <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
@@ -45,6 +49,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     fontFamily: FONTFAMILY.medium,
-    backgroundColor: COLORS.Black1 ,
+    backgroundColor: COLORS.Black1,
   },
 });

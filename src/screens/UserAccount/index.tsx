@@ -1,12 +1,16 @@
-import React, { Component } from "react";
-import { Text, View } from "react-native";
+import * as React from "react";
+import { Text, View, StyleSheet } from "react-native";
+import styles from "./style";
+import IMAGES from "../../constants/images";
 
-export default class index extends Component {
-  render() {
-    return (
-      <View>
-        <Text> UserAccount </Text>
-      </View>
-    );
-  }
-}
+interface UserAccountProps {}
+
+const UserAccount = (props: UserAccountProps) => {
+  return (
+    <View style={styles.container}>
+      <Text>UserAccount</Text>
+    </View>
+  );
+};
+
+export default UserAccount;

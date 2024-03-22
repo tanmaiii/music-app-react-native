@@ -7,10 +7,12 @@ import styles from "./style";
 import { SPACING } from "../../theme/theme";
 
 const ArtistCard = (props: any) => {
-  const { song } = props;
-
+  const { song, navigation } = props;
+  const handleTouch = () => {
+    navigation.push("SongDetail", { id: song.id });
+  };
   return (
-    <TouchableOpacity onPress={() => props.cardFunction()}>
+    <TouchableOpacity onPress={() => handleTouch()}>
       <View
         style={[styles.container, { marginRight: SPACING.space_12 }, { maxWidth: props.cardWidth }]}
       >

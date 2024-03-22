@@ -19,7 +19,9 @@ import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { COLORS, FONTSIZE, SPACING } from "../../theme/theme";
 const { width, height } = Dimensions.get("window");
 
-interface LibraryScreenProps {}
+interface LibraryScreenProps {
+  navigation: any;
+}
 
 const item = {
   title: "Liked Songs",
@@ -27,36 +29,12 @@ const item = {
 };
 
 const DATA = [
-  {
-    title: "Front Left",
-    desc: "Song",
-    type: "Song",
-  },
-  {
-    title: "Les",
-    desc: "Song",
-    type: "Song",
-  },
-  {
-    title: "New jeans",
-    desc: "Artist",
-    type: "Artist",
-  },
-  {
-    title: "New jeans",
-    desc: "Artist",
-    type: "Artist",
-  },
-  {
-    title: "New jeans",
-    desc: "Artist",
-    type: "Artist",
-  },
-  {
-    title: "New jeans",
-    desc: "Playlist",
-    type: "Playlist",
-  },
+  { id: 1, title: "Front Left", desc: "Song", type: "Song" },
+  { id: 2, title: "Les", desc: "Song", type: "Song" },
+  { id: 3, title: "New jeans", desc: "Artist", type: "Artist" },
+  { id: 4, title: "New jeans", desc: "Artist", type: "Artist" },
+  { id: 5, title: "New jeans", desc: "Artist", type: "Artist" },
+  { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
 ];
 
 const LibraryScreen = (props: LibraryScreenProps) => {
@@ -126,10 +104,23 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           </View>
         </View>
 
-        <ItemHorizontal title={"Liked Songs"} desc={"Playlist - 25 songs"} type={"Playlist"} />
+        <ItemHorizontal
+          navigation={props.navigation}
+          id={1}
+          title={"Liked Songs"}
+          desc={"Playlist - 25 songs"}
+          type={"Playlist"}
+        />
         {DATA.map((item, index) => {
           return (
-            <ItemHorizontal key={index} title={item.title} desc={item.desc} type={item.type} />
+            <ItemHorizontal
+              id={item.id}
+              navigation={props.navigation}
+              key={index}
+              title={item.title}
+              desc={item.desc}
+              type={item.type}
+            />
           );
         })}
       </ScrollView>

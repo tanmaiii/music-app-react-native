@@ -4,13 +4,17 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
 import SearchScreen from "../screens/SearchScreen";
 import LibraryScreen from "../screens/LibraryScreen";
+import SongDetail from "../screens/SongDetail";
+import UserAccount from "../screens/UserAccount";
 // import TicketScreen from "../screens/TicketScreen";
 // import UserAccountScreen from "../screens/UserAccountScreen";
 import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING, WIDTH } from "../theme/theme";
-
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { AntDesign } from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Feather } from "@expo/vector-icons";
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 const TabNavigator = () => {
   return (
@@ -70,6 +74,25 @@ const TabNavigator = () => {
               <View style={[styles.activeBackground]}>
                 <Ionicons
                   name="library-outline"
+                  style={[styles.icon, focused ? { color: COLORS.White } : {}]}
+                />
+              </View>
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Account"
+        component={UserAccount}
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ focused, color, size }) => {
+            return (
+              <View style={[styles.activeBackground]}>
+                <AntDesign
+                  name="user"
+                  size={24}
+                  color="black"
                   style={[styles.icon, focused ? { color: COLORS.White } : {}]}
                 />
               </View>

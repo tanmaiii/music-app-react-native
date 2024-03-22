@@ -17,6 +17,8 @@ interface SongCardProps {
 const Slider = (props: SongCardProps) => {
   const { songs, title, navigation, type } = props;
 
+  const widthCard = type === "songs" ? 2.4 : 3;
+
   return (
     <View>
       <CategoryHeader title={title} />
@@ -24,7 +26,7 @@ const Slider = (props: SongCardProps) => {
         data={songs}
         keyExtractor={(item: any) => item.id}
         bounces={false}
-        snapToInterval={width / 2.6 + SPACING.space_12}
+        snapToInterval={width / widthCard + SPACING.space_12}
         horizontal
         showsHorizontalScrollIndicator={false}
         decelerationRate={0}
@@ -32,22 +34,18 @@ const Slider = (props: SongCardProps) => {
         renderItem={({ item, index }) => {
           return type === "songs" ? (
             <SongCard
+              navigation={navigation}
               shoudlMarginatedAtEnd={true}
-              cardFunction={() => {
-                navigation.push("SongDetails", { movieid: item.id });
-              }}
-              cardWidth={width / 2.6}
+              cardWidth={width / widthCard}
               isFirst={index == 0 ? true : false}
               isLast={index == songs?.length - 1 ? true : false}
               song={item}
             />
           ) : (
             <ArtistCard
+            navigation={navigation}
               shoudlMarginatedAtEnd={true}
-              cardFunction={() => {
-                navigation.push("SongDetails", { movieid: item.id });
-              }}
-              cardWidth={width / 2.6}
+              cardWidth={width / widthCard}
               isFirst={index == 0 ? true : false}
               isLast={index == songs?.length - 1 ? true : false}
               artist={item}

@@ -2,14 +2,14 @@ import * as React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import styles from "./style";
 
-interface componentNameProps {}
+interface PlayingCardProps {}
 
-const componentName = (props: componentNameProps) => {
+const PlayingCard = (props: PlayingCardProps) => {
   return (
     <View style={styles.container}>
-      <Text>componentName</Text>
+      <Text>PlayingCard</Text>
     </View>
   );
 };
 
-export default componentName;
+export default PlayingCard;

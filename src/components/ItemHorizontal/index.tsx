@@ -15,20 +15,26 @@ import { COLORS, FONTSIZE } from "../../theme/theme";
 import { AntDesign } from "@expo/vector-icons";
 
 interface ItemHorizontalProps {
+  id: number;
   title: string;
   desc: string;
   image_path?: string;
   type?: string;
+  navigation: any;
 }
 
 const ItemHorizontal = (props: ItemHorizontalProps) => {
-  const { title, desc, image_path, type } = props;
+  const { title, desc, image_path, id, type, navigation } = props;
 
   const border = type === "Artist" ? 50 : 0;
 
+  const handleTouch = () => {
+    navigation.push("ArtistDetail", { id: id });
+  };
+
   return (
     <TouchableHighlight
-      onPress={() => Alert.alert("xIN CHO")}
+      onPress={() => handleTouch()}
       style={{ backgroundColor: COLORS.Black1 }}
       underlayColor={COLORS.Black}
     >
