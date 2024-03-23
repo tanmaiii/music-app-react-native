@@ -13,8 +13,39 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AntDesign } from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Feather } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import ArtistDetail from "../screens/ArtistDetail";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+const StackNavigatorHome = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="SongDetail" component={SongDetail} />
+      <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
+    </Stack.Navigator>
+  );
+};
+
+
+const StackNavigatorLibrary= () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Library" component={LibraryScreen} />
+      <Stack.Screen name="SongDetail" component={SongDetail} />
+      <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
+    </Stack.Navigator>
+  );
+};
 
 const TabNavigator = () => {
   return (
@@ -32,7 +63,7 @@ const TabNavigator = () => {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={StackNavigatorHome}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => {
@@ -66,7 +97,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Library"
-        component={LibraryScreen}
+        component={StackNavigatorLibrary}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => {

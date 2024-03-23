@@ -142,10 +142,16 @@ export const BORDERRADIUS: BorderRadius = {
 
 interface Height {
   navigator: number;
+  playingCard: number;
+  LOWER_HEADER_SEARCH_HEIGHT: number;
+  UPPER_HEADER_SEARCH_HEIGHT: number;
 }
 
 export const HEIGHT: Height = {
   navigator: 70,
+  playingCard: 60,
+  UPPER_HEADER_SEARCH_HEIGHT: 60,
+  LOWER_HEADER_SEARCH_HEIGHT: 70,
 };
 
 interface width {

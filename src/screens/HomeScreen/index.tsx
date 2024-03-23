@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -9,6 +10,8 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
+  SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import styles from "./style";
 import { TSong } from "../../types/song.type";
@@ -59,21 +62,48 @@ const songs: TSong[] = [
 const { width, height } = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }: any) => {
+  const [greeting, setGreeting] = React.useState("");
+
+  useEffect(() => {
+    const date = new Date();
+    const currentHour = date.getHours();
+
+    if (currentHour >= 6 && currentHour < 12) {
+      setGreeting("Good morning");
+    } else if (currentHour >= 12 && currentHour < 18) {
+      setGreeting("Good afternoon");
+    } else {
+      setGreeting("Good evening");
+    }
+  }, []);
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.HomeHeader}>
-        <TouchableOpacity>
-          <Image source={IMAGES.AVATAR} style={styles.HomeHeaderImage} />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons name="add-outline" size={24} color="black" style={styles.HomeHeaderIcon} />
-        </TouchableOpacity>
-      </View>
-      <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
-      <Slider songs={songs} type="artist" title="Artist Popular" navigation={navigation} />
-      <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
-      <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
-    </ScrollView>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+
+      <SafeAreaView style={styles.HomeHeader}>
+        <View style={styles.headerLeft}>
+          <TouchableOpacity>
+            <Image source={IMAGES.AVATAR} style={styles.HomeHeaderImage} />
+          </TouchableOpacity>
+          <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>
+        </View>
+        <View style={styles.headerRight}>
+          <TouchableOpacity>
+            <Ionicons name="add-outline" size={24} color="black" style={styles.HomeHeaderIcon} />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+
+      <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+        <View style={styles.scroll}>
+          <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
+          <Slider songs={songs} type="artist" title="Artist Popular" navigation={navigation} />
+          <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
+          <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

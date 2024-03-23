@@ -10,6 +10,7 @@ import {
   TouchableHighlight,
   Alert,
   Dimensions,
+  StatusBar
 } from "react-native";
 import styles from "./style";
 import { Ionicons } from "@expo/vector-icons";
@@ -42,6 +43,8 @@ const LibraryScreen = (props: LibraryScreenProps) => {
 
   return (
     <View style={[styles.container]}>
+      <StatusBar barStyle="light-content" />
+      
       <View style={{ flex: 0 }}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -83,7 +86,9 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           </TouchableOpacity>
         </ScrollView>
       </View>
+
       <View style={{ height: 10 }}></View>
+      
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

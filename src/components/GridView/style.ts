@@ -6,7 +6,6 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
-    marginBottom: HEIGHT.navigator,
   },
   row: {},
 });

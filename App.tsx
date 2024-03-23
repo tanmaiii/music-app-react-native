@@ -11,8 +11,13 @@ import Search from "./src/screens/SearchScreen";
 import Library from "./src/screens/LibraryScreen";
 import ArtistDetail from "./src/screens/ArtistDetail";
 import SongDetail from "./src/screens/SongDetail";
+import PlayingCard from "./src/components/PlayingCard";
+import ModalPlaying from "./src/components/ModalPlaying";
+
 import { useFonts } from "expo-font";
-import { COLORS, FONTFAMILY } from "./src/theme/theme";
+import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
+import { ModalPortal } from "react-native-modals";
+import { PlayingContextProvider } from "./src/context/playingContext";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -33,14 +38,20 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Tab" component={TabNavigator} />
-          <Stack.Screen name="Library" component={Library} />
-          <Stack.Screen name="SongDetail" component={SongDetail} />
-          <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <PlayingContextProvider>
+        <NavigationContainer>
+          <View style={styles.playingCard}>
+            <PlayingCard />
+            <ModalPlaying />
+          </View>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Tab" component={TabNavigator} />
+            <Stack.Screen name="SongDetail" component={SongDetail} />
+            <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PlayingContextProvider>
+      <ModalPortal />
     </View>
   );
 }
@@ -50,5 +61,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: FONTFAMILY.medium,
     backgroundColor: COLORS.Black1,
+    position: "relative",
+  },
+  playingCard: {
+    position: "absolute",
+    left: 0,
+    bottom: HEIGHT.navigator + SPACING.space_4,
+    zIndex: 100,
   },
 });

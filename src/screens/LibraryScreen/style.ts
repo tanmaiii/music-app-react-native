@@ -4,9 +4,8 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.Black1,
-    // padding: SPACING.space_10,
-    paddingHorizontal: SPACING.space_10,
-    paddingBottom: 120
+    padding: SPACING.space_10,
+    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 40,
   },
   header: {
     display: "flex",
@@ -15,7 +14,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
     paddingVertical: SPACING.space_10,
-    marginTop: SPACING.space_20,
   },
   headerLeft: {
     display: "flex",
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.space_8
+    gap: SPACING.space_8,
   },
 
   headerListRight: {},
@@ -86,7 +84,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.regular,
   },
   scroll: {
-    // flex: 1,
     height: "100%",
   },
 });

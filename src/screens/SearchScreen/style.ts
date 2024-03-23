@@ -1,49 +1,48 @@
 import { StyleSheet } from "react-native";
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING, BORDERRADIUS, HEIGHT } from "../../theme/theme";
+import { WINDOW_HEIGHT } from "../../utils";
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.Black1,
-    padding: 10,
-    marginBottom: HEIGHT.navigator,
-    // paddingHorizontal: SPACING.space_10,
   },
-  title: {
-    paddingVertical: SPACING.space_8,
-    fontSize: FONTSIZE.size_18,
-    color: COLORS.White1,
-    fontFamily: FONTFAMILY.regular,
+  upperHeaderPlaceholder: {
+    height: HEIGHT.LOWER_HEADER_SEARCH_HEIGHT,
   },
   header: {
-    display: "flex",
+    position: "absolute",
+    width: "100%",
+  },
+  upperHeader: {
+    height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+    padding: SPACING.space_10,
     flexDirection: "row",
     alignItems: "center",
-    textAlign: "center",
-    marginTop: SPACING.space_20,
-    gap: SPACING.space_10,
+    gap: SPACING.space_8,
+    // backgroundColor: "#ccc"
   },
+  lowerHeader: {
+    height: HEIGHT.LOWER_HEADER_SEARCH_HEIGHT,
+    padding: SPACING.space_10,
+    // backgroundColor: "pink",
+  },
+  paddingForHeader: {
+    height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+  },
+  scrollViewContent: {
+    // height: WINDOW_HEIGHT * 2,
+    paddingHorizontal: SPACING.space_10,
+    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 50,
+  },
+
+  //
+
   headerImage: { width: 46, height: 46, borderRadius: 40 },
   headerTitle: {
     fontSize: FONTSIZE.size_24,
     color: COLORS.White1,
     fontFamily: FONTFAMILY.bold,
   },
-  genres: {
-    display: "flex",
-    flex: 1,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    backgroundColor: COLORS.Black1,
-    // paddingVertical: -SPACING.space_8,
-  },
-  genreCard: {
-    height: 150,
-    backgroundColor: COLORS.Primary,
-    borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  genreCardWrapper: {},
 });
 
 export default styles;

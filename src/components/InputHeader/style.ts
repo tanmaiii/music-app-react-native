@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
   inputBox: {
     display: "flex",
     padding: SPACING.space_10,
-    borderWidth: 2,
+    borderWidth: 0,
     backgroundColor: COLORS.White1,
     borderRadius: BORDERRADIUS.radius_8,
     flexDirection: "row",
@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     color: COLORS.Black1,
     fontFamily: FONTFAMILY.regular,
     fontSize: FONTSIZE.size_14,
+    borderWidth: 0,
   },
   boxIcon: {
     marginRight: SPACING.space_10,

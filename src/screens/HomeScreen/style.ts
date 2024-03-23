@@ -1,26 +1,42 @@
 import { StyleSheet } from "react-native";
-import { SPACING, FONTSIZE, FONTFAMILY, COLORS } from "../../theme/theme";
+import { SPACING, FONTSIZE, FONTFAMILY, COLORS, HEIGHT } from "../../theme/theme";
 
 const styles = StyleSheet.create({
   container: {
-    height: 1000,
-    padding: SPACING.space_10,
     backgroundColor: COLORS.Black1,
-  },
-  containerGap36: {
-    gap: SPACING.space_36,
   },
   Title: {
     fontSize: FONTSIZE.size_18,
     fontFamily: FONTFAMILY.medium,
   },
+
   HomeHeader: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     textAlign: "center",
-    marginTop: SPACING.space_20,
+    height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+    padding: SPACING.space_10,
+  },
+  headerRight: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    textAlign: "center",
+  },
+  headerLeft: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    textAlign: "center",
+    gap: SPACING.space_8,
+  },
+  titleHello: {
+    fontSize: FONTSIZE.size_18,
+    fontFamily: FONTFAMILY.medium,
+    color: COLORS.White1,
   },
   HomeHeaderImage: {
     width: 46,
@@ -31,6 +47,12 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     fontSize: 38,
     color: COLORS.White2,
+  },
+  scroll: {
+    height: "100%",
+    padding: SPACING.space_10,
+
+    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 40,
   },
 });
 

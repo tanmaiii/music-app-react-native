@@ -1,11 +1,16 @@
 import * as React from "react";
-import { Text, View, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { useRef } from "react";
+import { Text, View, StyleSheet, TouchableOpacity, TextInput,Animated } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import styles from "./style";
 import { COLORS, FONTSIZE } from "../../theme/theme";
 
+const UPPER_HEADER_HEIGHT = 60;
+const UPPER_HEADER_PADDING_TOP = 4;
+const LOWER_HEADER_HEIGHT = 60;
+
 const InputHeader = (props: any) => {
-  const [keyword, setKeyword] = React.useState<string>("")
+  const [keyword, setKeyword] = React.useState<string>("");
 
 
   return (
