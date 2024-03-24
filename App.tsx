@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from "./src/navigators/TabNavigator";
+import { Skeleton } from "moti/skeleton";
 
 import Home from "./src/screens/HomeScreen";
 import Search from "./src/screens/SearchScreen";

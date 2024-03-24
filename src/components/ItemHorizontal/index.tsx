@@ -13,6 +13,16 @@ import styles from "./style";
 import IMAGES from "../../constants/images";
 import { COLORS, FONTSIZE } from "../../theme/theme";
 import { AntDesign } from "@expo/vector-icons";
+import { Skeleton } from "moti/skeleton";
+
+const SkeletonCommonProps = {
+  colorMode: "dark",
+  transition: {
+    type: "timing",
+    duration: 1500,
+  },
+  backgroundColor: COLORS.Black2,
+} as const;
 
 interface ItemHorizontalProps {
   id: number;
@@ -21,10 +31,11 @@ interface ItemHorizontalProps {
   image_path?: string;
   type?: string;
   navigation: any;
+  loading?: boolean;
 }
 
 const ItemHorizontal = (props: ItemHorizontalProps) => {
-  const { title, desc, image_path, id, type, navigation } = props;
+  const { title, desc, image_path, id, type, navigation, loading = false } = props;
 
   const border = type === "Artist" ? 50 : 0;
 
@@ -39,26 +50,42 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
       underlayColor={COLORS.Black}
     >
       <View style={styles.container}>
-        <View style={[styles.boxImage, { borderRadius: border }]}>
+        <View
+          style={[
+            styles.boxImage,
+            { borderRadius: border },
+            title === "Liked Songs" && { backgroundColor: COLORS.Primary },
+          ]}
+        >
           {title === "Liked Songs" ? (
             <AntDesign style={{ color: COLORS.White1 }} name="heart" size={24} color="black" />
           ) : (
-            <Image style={[styles.image]} source={image_path || IMAGES.POSTER} />
+            <Skeleton height={"100%"} width={"100%"} {...SkeletonCommonProps}>
+              {loading ? null : (
+                <Image style={[styles.image]} source={image_path || IMAGES.POSTER} />
+              )}
+            </Skeleton>
           )}
         </View>
         <View style={styles.body}>
-          <Text style={styles.title}>{title}</Text>
-          <View style={styles.desc}>
-            {title === "Liked Songs" && (
-              <AntDesign
-                style={{ color: COLORS.Primary, fontSize: FONTSIZE.size_14 }}
-                name="pushpin"
-                size={24}
-                color="black"
-              />
+          <Skeleton {...SkeletonCommonProps} height={18} width={"60%"}>
+            {loading ? null : <Text style={styles.title}>{title}</Text>}
+          </Skeleton>
+          <Skeleton {...SkeletonCommonProps} height={18} width={"40%"}>
+            {loading ? null : (
+              <View style={styles.desc}>
+                {title === "Liked Songs" && (
+                  <AntDesign
+                    style={{ color: COLORS.Primary, fontSize: FONTSIZE.size_14 }}
+                    name="pushpin"
+                    size={24}
+                    color="black"
+                  />
+                )}
+                <Text style={styles.descText}>{desc}</Text>
+              </View>
             )}
-            <Text style={styles.descText}>{desc}</Text>
-          </View>
+          </Skeleton>
         </View>
       </View>
     </TouchableHighlight>

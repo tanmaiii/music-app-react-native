@@ -15,18 +15,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.Primary,
     overflow: "hidden",
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: 70,
+    height: 70,
     objectFit: "cover",
   },
   body: {
     padding: SPACING.space_12,
     display: "flex",
     justifyContent: "center",
+    gap: SPACING.space_4,
   },
   title: {
     fontSize: FONTSIZE.size_16,

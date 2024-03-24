@@ -11,12 +11,12 @@ const styles = StyleSheet.create({
   },
 
   HomeHeader: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     textAlign: "center",
-    height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+    // height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+    height: 100,
     padding: SPACING.space_10,
   },
   headerRight: {

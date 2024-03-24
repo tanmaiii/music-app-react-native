@@ -1,13 +1,11 @@
 import * as React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
 import SearchScreen from "../screens/SearchScreen";
 import LibraryScreen from "../screens/LibraryScreen";
 import SongDetail from "../screens/SongDetail";
 import UserAccount from "../screens/UserAccount";
-// import TicketScreen from "../screens/TicketScreen";
-// import UserAccountScreen from "../screens/UserAccountScreen";
 import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING, WIDTH } from "../theme/theme";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AntDesign } from "@expo/vector-icons";
@@ -32,8 +30,7 @@ const StackNavigatorHome = () => {
   );
 };
 
-
-const StackNavigatorLibrary= () => {
+const StackNavigatorLibrary = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -56,7 +53,6 @@ const TabNavigator = () => {
         tabBarStyle: {
           backgroundColor: COLORS.Black1,
           borderTopWidth: 0,
-          // padding: SPACING.space_24,
           height: HEIGHT.navigator,
         },
       }}

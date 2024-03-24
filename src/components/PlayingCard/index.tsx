@@ -12,11 +12,11 @@ import {
 import styles from "./style";
 import IMAGES from "../../constants/images";
 const { width, height } = Dimensions.get("window");
-import { BlurView } from "expo-blur";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { COLORS } from "../../theme/theme";
 import { usePlaying } from "../../context/playingContext";
+import { BlurView } from "@react-native-community/blur";
 
 interface PlayingCardProps {}
 const PlayingCard = (props: PlayingCardProps) => {
@@ -29,7 +29,7 @@ const PlayingCard = (props: PlayingCardProps) => {
       style={[styles.container, { width: width }]}
       onPress={() => handleChangeModalVisible(!modalVisible)}
     >
-      <BlurView intensity={30} style={styles.wrapper}>
+      <View style={styles.wrapper}>
         <View style={styles.left}>
           <Image style={styles.image} source={IMAGES.POSTER} />
           <Text style={styles.title}>Thằng điên</Text>
@@ -52,7 +52,7 @@ const PlayingCard = (props: PlayingCardProps) => {
             <FontAwesome name="forward" color="black" style={[styles.iconDisable]} />
           </TouchableOpacity>
         </View>
-      </BlurView>
+      </View>
     </Pressable>
   ) : (
     <></>

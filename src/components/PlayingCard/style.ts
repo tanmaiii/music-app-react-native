@@ -19,6 +19,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  blurView: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   left: {
     display: "flex",
     flexDirection: "row",
@@ -48,7 +57,7 @@ const styles = StyleSheet.create({
   iconDisable: {
     fontSize: FONTSIZE.size_24,
     color: COLORS.White2,
-    opacity: 0.8
+    opacity: 0.8,
   },
   iconPlay: {
     padding: SPACING.space_4,

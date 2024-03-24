@@ -12,6 +12,7 @@ import {
   Image,
   SafeAreaView,
   ActivityIndicator,
+  Animated,
 } from "react-native";
 import styles from "./style";
 import { TSong } from "../../types/song.type";
@@ -63,6 +64,7 @@ const { width, height } = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }: any) => {
   const [greeting, setGreeting] = React.useState("");
+  const animatedValue = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const date = new Date();
@@ -77,25 +79,43 @@ const HomeScreen = ({ navigation }: any) => {
     }
   }, []);
 
+  const headerAnimation = {
+    height: animatedValue.interpolate({
+      inputRange: [0, 50],
+      outputRange: [90, 60],
+      extrapolate: "clamp",
+    }),
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      <SafeAreaView style={styles.HomeHeader}>
-        <View style={styles.headerLeft}>
-          <TouchableOpacity>
-            <Image source={IMAGES.AVATAR} style={styles.HomeHeaderImage} />
-          </TouchableOpacity>
-          <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity>
-            <Ionicons name="add-outline" size={24} color="black" style={styles.HomeHeaderIcon} />
-          </TouchableOpacity>
-        </View>
+      <SafeAreaView>
+        <Animated.View style={[styles.HomeHeader, headerAnimation]}>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity>
+              <Image source={IMAGES.AVATAR} style={styles.HomeHeaderImage} />
+            </TouchableOpacity>
+            <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>
+          </View>
+          <View style={styles.headerRight}>
+            <TouchableOpacity>
+              <Ionicons name="add-outline" size={24} color="black" style={styles.HomeHeaderIcon} />
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
       </SafeAreaView>
 
-      <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        onScroll={(e) => {
+          const offsetY = e.nativeEvent.contentOffset.y;
+          animatedValue.setValue(offsetY);
+        }}
+        scrollEventThrottle={16}
+      >
         <View style={styles.scroll}>
           <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
           <Slider songs={songs} type="artist" title="Artist Popular" navigation={navigation} />

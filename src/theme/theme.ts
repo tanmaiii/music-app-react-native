@@ -38,6 +38,7 @@ interface Color {
   Grey: string;
   DarkGrey: string;
   Yellow: string;
+  Red: string;
   White: string;
   WhiteRGBA75: string;
   WhiteRGBA50: string;
@@ -50,6 +51,8 @@ interface Color {
   White3: string;
   Black1: string;
   Black2: string;
+
+  button: string;
 }
 
 export const COLORS: Color = {
@@ -60,6 +63,7 @@ export const COLORS: Color = {
   Grey: "#151515",
   DarkGrey: "#0b0b0b",
   Yellow: "#E1CD17",
+  Red: "#f53e2d",
   WhiteRGBA75: "rgba(255,255,255,0.75)",
   WhiteRGBA50: "rgba(255,255,255,0.50)",
   WhiteRGBA32: "rgba(255,255,255,0.32)",
@@ -72,6 +76,7 @@ export const COLORS: Color = {
   White3: "#f5f5f5",
   Black1: "#121212",
   Black2: "#282828",
+  button: "rgba(0, 0, 0, .3)",
 };
 
 interface FontFamily {
