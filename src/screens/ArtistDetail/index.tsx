@@ -10,19 +10,54 @@ import {
   StatusBar,
   ScrollView,
   Animated,
+  FlatList,
 } from "react-native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import IMAGES from "../../constants/images";
-import { WINDOW_HEIGHT } from "../../utils";
-import { BlurView } from "expo-blur";
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils";
 import styles from "./style";
 import CategoryHeader from "../../components/CategoryHeader";
-import PlaylistCard from "../../components/PlaylistCard";
+import SongItem from "../../components/SongItem";
+import { TSong } from "../../types";
+import Slider from "../../components/Slider";
+import { Skeleton } from "moti/skeleton";
 
 const HEIGHT_AVATAR = 360;
-const AnimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
+
+const songs: TSong[] = [
+  {
+    id: 1,
+    title: "Despacito, Despacito ,Despacito, Despacito",
+    image_path: "despacito.jpg",
+    author: "Luis Fonsi",
+  },
+  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
+  {
+    id: 3,
+    title: "Uptown Funk",
+    image_path: "uptown_funk.jpg",
+    author: "Mark Ronson ft. Bruno Mars",
+  },
+  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
+  {
+    id: 5,
+    title: "See You Again",
+    image_path: "see_you_again.jpg",
+    author: "Wiz Khalifa ft. Charlie Puth",
+  },
+  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
+  {
+    id: 7,
+    title: "Old Town Road",
+    image_path: "old_town_road.jpg",
+    author: "Lil Nas X ft. Billy Ray Cyrus",
+  },
+  { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
+  { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
+  { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
+];
 
 interface ArtistDetailProps {
   navigation: any;
@@ -33,6 +68,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [random, setRandom] = React.useState(false);
   const [follow, setFollow] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const opacityAnimation = {
     opacity: animatedValue.interpolate({
@@ -71,31 +107,33 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      <SafeAreaView style={{ zIndex: 99 }}>
-        <Animated.View style={[styles.header, backgroundColorAnimation]}>
-          <TouchableHighlight
-            underlayColor={COLORS.Black2}
-            style={styles.buttonHeader}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
-            {/* <FontAwesome name="angle-left" size={24} style={styles.icon} /> */}
-          </TouchableHighlight>
-          <Animated.Text style={[styles.title, opacityHideAnimation]}>Son Tung MTP</Animated.Text>
+        <SafeAreaView style={{ zIndex: 99 }}>
+          <Animated.View style={[styles.header, backgroundColorAnimation]}>
+            <TouchableHighlight
+              underlayColor={COLORS.Black2}
+              style={styles.buttonHeader}
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
+              {/* <FontAwesome name="angle-left" size={24} style={styles.icon} /> */}
+            </TouchableHighlight>
+            <Animated.Text style={[styles.title, opacityHideAnimation]}>Son Tung MTP</Animated.Text>
 
-          <TouchableHighlight
-            underlayColor={COLORS.Black2}
-            style={styles.buttonHeader}
-            onPress={() => navigation.goBack()}
-          >
-            <Feather name="more-horizontal" size={24} style={styles.icon} />
-          </TouchableHighlight>
-        </Animated.View>
-      </SafeAreaView>
+            <TouchableHighlight
+              underlayColor={COLORS.Black2}
+              style={styles.buttonHeader}
+              onPress={() => navigation.goBack()}
+            >
+              <Feather name="more-horizontal" size={24} style={styles.icon} />
+            </TouchableHighlight>
+          </Animated.View>
+        </SafeAreaView>
 
       <View>
         <Animated.View style={[styles.avatar, { height: HEIGHT_AVATAR }, opacityAnimation]}>
-          <Image style={styles.imageAvatar} source={IMAGES.ARTIST} />
+          <Skeleton height={"100%"} width={"100%"} colorMode="dark" backgroundColor={COLORS.Black2}>
+            {loading ? null : <Image style={styles.imageAvatar} source={IMAGES.ARTIST} />}
+          </Skeleton>
         </Animated.View>
 
         <ScrollView
@@ -110,7 +148,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             <Text style={styles.avatarTitle}>Son Tung MTP</Text>
           </View>
 
-          <View style={[styles.body, { height: WINDOW_HEIGHT * 2, zIndex: 200 }]}>
+          <View style={[styles.body]}>
             <View>
               <Text style={styles.countFollow}>1.2 milon following</Text>
             </View>
@@ -202,15 +240,34 @@ const ArtistDetail = (props: ArtistDetailProps) => {
               </View>
             </TouchableHighlight>
 
-            <View>
+            <View style={styles.SlideSong}>
               <CategoryHeader title={"Top Songs"} />
-              <View>
-                <PlaylistCard />
-                <PlaylistCard />
-                <PlaylistCard />
-                <PlaylistCard />
-              </View>
+              <FlatList
+                data={songs}
+                snapToInterval={WINDOW_WIDTH - 20}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                decelerationRate={0}
+                renderItem={({ item }) => (
+                  <View style={{ width: WINDOW_WIDTH - 20 }}>
+                    <SongItem />
+                    <SongItem />
+                    <SongItem />
+                    <SongItem />
+                  </View>
+                )}
+              />
             </View>
+
+            <ScrollView style={{}}>
+              <Slider songs={songs} type="songs" title="Song Popular" />
+              <Slider songs={songs} type="songs" title="Playlist Artist" />
+              <Slider songs={songs} type="songs" title="Song Popular" />
+
+              <View style={styles.bodyBottom}>
+                <Slider songs={songs} type="artist" title="Related artists" />
+              </View>
+            </ScrollView>
           </View>
         </ScrollView>
       </View>

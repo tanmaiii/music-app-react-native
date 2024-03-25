@@ -5,9 +5,9 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flex: 1,
-    backgroundColor: COLORS.Black1,
-    // padding: SPACING.space_10,
     gap: SPACING.space_4,
+    // padding: SPACING.space_10,
+    // backgroundColor: "pink",
   },
   image: {
     // aspectRatio: 3 / 3,

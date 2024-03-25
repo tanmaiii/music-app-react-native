@@ -75,7 +75,7 @@ export const COLORS: Color = {
   White2: "#b3b3b3",
   White3: "#f5f5f5",
   Black1: "#121212",
-  Black2: "#282828",
+  Black2: "#292929",
   button: "rgba(0, 0, 0, .3)",
 };
 

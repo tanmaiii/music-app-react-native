@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 
 const styles = StyleSheet.create({
   container: {
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: COLORS.Black1,
+    // paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
   },
   bodyTop: {
     flexDirection: "row",
@@ -141,6 +142,14 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.space_4,
     paddingHorizontal: SPACING.space_12,
     borderRadius: BORDERRADIUS.radius_25,
+  },
+  SlideSong: {
+    padding: SPACING.space_10,
+  },
+  bodyBottom: {
+    marginTop: SPACING.space_8,
+    backgroundColor: COLORS.Black2,
+    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
   },
 });
 

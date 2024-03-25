@@ -4,6 +4,7 @@ import IMAGES from "../../constants/images";
 import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
 import { Skeleton } from "moti/skeleton";
+import { useLinkTo } from "@react-navigation/native";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -16,26 +17,31 @@ const SkeletonCommonProps = {
 
 const ArtistCard = (props: any) => {
   const { artist, navigation, loading = false } = props;
+  const linkTo = useLinkTo();
+
   const handleTouch = () => {
-    navigation.push("ArtistDetail", { id: artist.id });
+    linkTo("/SongDetail");
   };
 
   return (
     <TouchableOpacity onPress={() => handleTouch()}>
       <View
-        style={[styles.container, { marginRight: SPACING.space_12 }, { maxWidth: props.cardWidth }]}
+        style={[
+          styles.container,
+          { marginRight: SPACING.space_12 },
+          { maxWidth: props.cardWidth || "100%" },
+        ]}
       >
         <Skeleton
+          radius="square"
           height={props.cardWidth}
           width={props.cardWidth}
-          radius={"round"}
           {...SkeletonCommonProps}
         >
           {loading ? null : (
             <Image
-              style={[styles.image, { width: props.cardWidth, height: props.cardWidth }]}
+              style={[styles.image, { width: props.cardWidth || "100%", height: props.cardWidth || "100%" }]}
               source={IMAGES.ARTIST}
-              // blurRadius={10}
             />
           )}
         </Skeleton>

@@ -6,21 +6,22 @@ import ArtistCard from "../ArtistCard";
 import CategoryHeader from "../CategoryHeader";
 const { width, height } = Dimensions.get("window");
 import { SPACING } from "../../theme/theme";
+import { useNavigation } from "@react-navigation/native";
 
 interface SongCardProps {
   songs: TSong[];
   title: string;
-  navigation: any;
   type: string;
 }
 
 const Slider = (props: SongCardProps) => {
-  const { songs, title, navigation, type } = props;
+  const { songs, title, type } = props;
+  const navigation = useNavigation();
 
   const widthCard = type === "songs" ? 2.4 : 3;
 
   return (
-    <View>
+    <View style={{ paddingHorizontal: SPACING.space_10 }}>
       <CategoryHeader title={title} />
       <FlatList
         data={songs}
@@ -35,19 +36,17 @@ const Slider = (props: SongCardProps) => {
           return type === "songs" ? (
             <SongCard
               navigation={navigation}
-              shoudlMarginatedAtEnd={true}
               cardWidth={width / widthCard}
-              isFirst={index == 0 ? true : false}
-              isLast={index == songs?.length - 1 ? true : false}
+              // isFirst={index == 0 ? true : false}
+              // isLast={index == songs?.length - 1 ? true : false}
               song={item}
             />
           ) : (
             <ArtistCard
-            navigation={navigation}
-              shoudlMarginatedAtEnd={true}
+              navigation={navigation}
               cardWidth={width / widthCard}
-              isFirst={index == 0 ? true : false}
-              isLast={index == songs?.length - 1 ? true : false}
+              // isFirst={index == 0 ? true : false}
+              // isLast={index == songs?.length - 1 ? true : false}
               artist={item}
             />
           );

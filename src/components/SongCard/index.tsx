@@ -6,6 +6,7 @@ import { Skeleton } from "moti/skeleton";
 
 import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
+import { useLinkTo, useNavigation } from "@react-navigation/native";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -16,10 +17,19 @@ const SkeletonCommonProps = {
   backgroundColor: COLORS.Black2,
 } as const;
 
-const ArtistCard = (props: any) => {
+interface SongCardProps {
+  loading?: boolean;
+  song: TSong;
+  cardWidth: number;
+  navigation: any
+}
+
+const SongCard = (props: SongCardProps) => {
   const { song, navigation, loading = false } = props;
+
+  const linkTo = useLinkTo();
   const handleTouch = () => {
-    navigation.push("SongDetail", { id: song.id });
+    linkTo("SongDetail");
   };
   return (
     <TouchableOpacity onPress={() => handleTouch()}>
@@ -55,4 +65,4 @@ const ArtistCard = (props: any) => {
   );
 };
 
-export default ArtistCard;
+export default SongCard;

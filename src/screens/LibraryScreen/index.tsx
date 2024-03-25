@@ -10,7 +10,8 @@ import {
   TouchableHighlight,
   Alert,
   Dimensions,
-  StatusBar
+  StatusBar,
+  FlatList,
 } from "react-native";
 import styles from "./style";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +19,9 @@ import IMAGES from "../../constants/images";
 import ItemHorizontal from "../../components/ItemHorizontal";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { COLORS, FONTSIZE, SPACING } from "../../theme/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
+import ArtistCard from "../../components/ArtistCard";
+import { WINDOW_WIDTH } from "../../utils";
 const { width, height } = Dimensions.get("window");
 
 interface LibraryScreenProps {
@@ -36,6 +40,9 @@ const DATA = [
   { id: 4, title: "New jeans", desc: "Artist", type: "Artist" },
   { id: 5, title: "New jeans", desc: "Artist", type: "Artist" },
   { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
 ];
 
 const LibraryScreen = (props: LibraryScreenProps) => {
@@ -44,8 +51,8 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   return (
     <View style={[styles.container]}>
       <StatusBar barStyle="light-content" />
-      
-      <View style={{ flex: 0 }}>
+
+      <SafeAreaView>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <TouchableOpacity>
@@ -85,10 +92,10 @@ const LibraryScreen = (props: LibraryScreenProps) => {
             <Text style={styles.categoryItemText}>Podcasts & shows</Text>
           </TouchableOpacity>
         </ScrollView>
-      </View>
+      </SafeAreaView>
 
       <View style={{ height: 10 }}></View>
-      
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
@@ -109,25 +116,56 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           </View>
         </View>
 
-        <ItemHorizontal
-          navigation={props.navigation}
-          id={1}
-          title={"Liked Songs"}
-          desc={"Playlist - 25 songs"}
-          type={"Playlist"}
-        />
-        {DATA.map((item, index) => {
-          return (
-            <ItemHorizontal
-              id={item.id}
-              navigation={props.navigation}
-              key={index}
-              title={item.title}
-              desc={item.desc}
-              type={item.type}
-            />
-          );
-        })}
+        {/* <View>
+          <ItemHorizontal
+            navigation={props.navigation}
+            id={1}
+            title={"Liked Songs"}
+            desc={"Playlist - 25 songs"}
+            type={"Playlist"}
+          />
+          {DATA.map((item, index) => {
+            return (
+              <ItemHorizontal
+                id={item.id}
+                navigation={props.navigation}
+                key={index}
+                title={item.title}
+                desc={item.desc}
+                type={item.type}
+              />
+            );
+          })}
+        </View> */}
+
+        {active === "Artists" && (
+          // <View style={styles.scrollArtist}>
+          //   {DATA.map((item, index) => (
+          //     <View style={{ width: WINDOW_WIDTH / 2, height: 200 }}>
+          //       <ArtistCard artist={item} />
+          //     </View>
+          //   ))}
+          // </View>
+          <FlatList
+            data={DATA}
+            keyExtractor={(item: any) => item.id}
+            bounces={false}
+            snapToInterval={WINDOW_WIDTH / 2 + SPACING.space_12}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            decelerationRate={0}
+            style={{ gap: SPACING.space_12 }}
+            renderItem={({ item, index }) => (
+              <ArtistCard
+                // navigation={navigation}
+                cardWidth={WINDOW_WIDTH / 2}
+                // isFirst={index == 0 ? true : false}
+                // isLast={index == songs?.length - 1 ? true : false}
+                song={item}
+              />
+            )}
+          />
+        )}
       </ScrollView>
     </View>
   );

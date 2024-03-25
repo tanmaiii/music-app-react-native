@@ -86,6 +86,16 @@ const styles = StyleSheet.create({
   scroll: {
     height: "100%",
   },
+  scrollArtist:{
+    flexDirection: "row", // Chia theo hàng ngang để tạo hai cột
+    justifyContent: "space-between", // Căn các cột ở hai đầu
+    alignItems: "stretch", // Mở rộng các cột để chiếm toàn bộ không gian
+    flex: 1, // Đảm bảo container mở rộng để điều chỉnh các cột
+    flexWrap: "wrap",
+    // marginRight: -SPACING.space_4,
+    // marginLeft: -SPACING.space_4,
+    // paddingHorizontal: SPACING.space_10,
+  }
 });
 
 export default styles;

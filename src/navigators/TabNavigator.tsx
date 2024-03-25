@@ -13,6 +13,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import ArtistDetail from "../screens/ArtistDetail";
+import ICONS from "../constants/icons";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -65,10 +66,15 @@ const TabNavigator = () => {
           tabBarIcon: ({ focused, color, size }) => {
             return (
               <View style={[styles.activeBackground]}>
-                <Feather
+                {focused ? (
+                  <Image source={ICONS.HOME_BOLD} style={{ width: 26, height: 26 }} />
+                ) : (
+                  <Image source={ICONS.HOME_LIGHT} style={{ width: 26, height: 26 }} />
+                )}
+                {/* <Feather
                   name="home"
                   style={[styles.icon, focused ? { color: COLORS.White } : {}]}
-                />
+                /> */}
               </View>
             );
           },
@@ -82,10 +88,15 @@ const TabNavigator = () => {
           tabBarIcon: ({ focused, color, size }) => {
             return (
               <View style={[styles.activeBackground]}>
-                <Ionicons
+                {focused ? (
+                  <Image source={ICONS.SEARCH_BOLD} style={{ width: 26, height: 26 }} />
+                ) : (
+                  <Image source={ICONS.SEARCH_lIGHT} style={{ width: 26, height: 26 }} />
+                )}
+                {/* <Ionicons
                   name="search-outline"
                   style={[styles.icon, focused ? { color: COLORS.White } : {}]}
-                />
+                /> */}
               </View>
             );
           },
@@ -99,10 +110,15 @@ const TabNavigator = () => {
           tabBarIcon: ({ focused, color, size }) => {
             return (
               <View style={[styles.activeBackground]}>
-                <Ionicons
+                {focused ? (
+                  <Image source={ICONS.LIBRARY_BOLD} style={{ width: 30, height: 30 }} />
+                ) : (
+                  <Image source={ICONS.LIBRARY_lIGHT} style={{ width: 30, height: 30 }} />
+                )}
+                {/* <Ionicons
                   name="library-outline"
                   style={[styles.icon, focused ? { color: COLORS.White } : {}]}
-                />
+                /> */}
               </View>
             );
           },
@@ -116,12 +132,17 @@ const TabNavigator = () => {
           tabBarIcon: ({ focused, color, size }) => {
             return (
               <View style={[styles.activeBackground]}>
-                <AntDesign
+                {focused ? (
+                  <Image source={ICONS.USER_BOLD} style={{ width: 26, height: 26 }} />
+                ) : (
+                  <Image source={ICONS.USER_lIGHT} style={{ width: 26, height: 26 }} />
+                )}
+                {/* <AntDesign
                   name="user"
                   size={24}
                   color="black"
                   style={[styles.icon, focused ? { color: COLORS.White } : {}]}
-                />
+                /> */}
               </View>
             );
           },

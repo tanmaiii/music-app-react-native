@@ -15,12 +15,13 @@ import {
   Animated,
 } from "react-native";
 import styles from "./style";
+import IMAGES from "../../constants/images";
 import { TSong } from "../../types/song.type";
-import CategoryHeader from "../../components/CategoryHeader";
 import { SPACING } from "../../theme/theme";
 import SongCard from "../../components/SongCard";
 import Slider from "../../components/Slider";
-import IMAGES from "../../constants/images";
+import CategoryHeader from "../../components/CategoryHeader";
+import HomeTop from "../../components/HomeTop";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -89,7 +90,7 @@ const HomeScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
 
       <SafeAreaView>
         <Animated.View style={[styles.HomeHeader, headerAnimation]}>
@@ -117,10 +118,11 @@ const HomeScreen = ({ navigation }: any) => {
         scrollEventThrottle={16}
       >
         <View style={styles.scroll}>
-          <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
-          <Slider songs={songs} type="artist" title="Artist Popular" navigation={navigation} />
-          <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
-          <Slider songs={songs} type="songs" title="Song Popular" navigation={navigation} />
+          <HomeTop />
+          <Slider songs={songs} type="songs" title="Song Popular" />
+          <Slider songs={songs} type="artist" title="Artist Popular" />
+          <Slider songs={songs} type="songs" title="Song Popular" />
+          <Slider songs={songs} type="songs" title="Song Popular" />
         </View>
       </ScrollView>
     </View>

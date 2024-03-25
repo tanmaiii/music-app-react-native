@@ -15,12 +15,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
     justifyContent: "center",
-    overflow: "hidden",
+    // overflow: "hidden",
   },
   image: {
     width: 70,
     height: 70,
     objectFit: "cover",
+    aspectRatio: 1/1
   },
   body: {
     padding: SPACING.space_12,

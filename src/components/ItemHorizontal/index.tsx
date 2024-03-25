@@ -53,7 +53,7 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
         <View
           style={[
             styles.boxImage,
-            { borderRadius: border },
+            ,
             title === "Liked Songs" && { backgroundColor: COLORS.Primary },
           ]}
         >
@@ -62,7 +62,10 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
           ) : (
             <Skeleton height={"100%"} width={"100%"} {...SkeletonCommonProps}>
               {loading ? null : (
-                <Image style={[styles.image]} source={image_path || IMAGES.POSTER} />
+                <Image
+                  style={[styles.image, { borderRadius: border }]}
+                  source={image_path || IMAGES.POSTER}
+                />
               )}
             </Skeleton>
           )}

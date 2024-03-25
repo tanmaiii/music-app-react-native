@@ -25,7 +25,7 @@ const ModalPlaying = () => {
         <TouchableOpacity onPress={() => handleChangeModalVisible(!modalVisible)}>
           <AntDesign name="down" size={24} color="black" />
         </TouchableOpacity>
-        <Image source={IMAGES.ARTIST} />
+        {/* <Image source={IMAGES.ARTIST} /> */}
       </ModalContent>
     </BottomModal>
   );

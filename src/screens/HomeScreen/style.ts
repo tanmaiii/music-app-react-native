@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     textAlign: "center",
-    // height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
     height: 100,
     padding: SPACING.space_10,
   },
@@ -49,9 +48,6 @@ const styles = StyleSheet.create({
     color: COLORS.White2,
   },
   scroll: {
-    height: "100%",
-    padding: SPACING.space_10,
-
     paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 40,
   },
 });
