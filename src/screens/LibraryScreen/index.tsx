@@ -18,7 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import IMAGES from "../../constants/images";
 import ItemHorizontal from "../../components/ItemHorizontal";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import { COLORS, FONTSIZE, SPACING } from "../../theme/theme";
+import { COLORS, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "../../utils";
@@ -34,15 +34,15 @@ const item = {
 };
 
 const DATA = [
-  { id: 1, title: "Front Left", desc: "Song", type: "Song" },
-  { id: 2, title: "Les", desc: "Song", type: "Song" },
-  { id: 3, title: "New jeans", desc: "Artist", type: "Artist" },
-  { id: 4, title: "New jeans", desc: "Artist", type: "Artist" },
-  { id: 5, title: "New jeans", desc: "Artist", type: "Artist" },
-  { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 1, title: "1 Front Left", desc: "Song", type: "Song" },
+  { id: 2, title: "2 Les", desc: "Song", type: "Song" },
+  { id: 3, title: "3 New jeans", desc: "Artist", type: "Artist" },
+  { id: 4, title: "4 New jeans", desc: "Artist", type: "Artist" },
+  { id: 5, title: "5 New jeans", desc: "Artist", type: "Artist" },
+  { id: 6, title: "6 New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 6, title: "7 New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 6, title: "8 New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 6, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
 ];
 
 const LibraryScreen = (props: LibraryScreenProps) => {
@@ -107,7 +107,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
               name="sort"
               size={24}
               color="black"
-              style={{ fontSize: FONTSIZE.size_14, color: COLORS.White1 }}
+              style={{ fontSize: FONTSIZE.size_14, color: COLORS.White2 }}
             />
             <Text style={styles.headerListText}>Recently played</Text>
           </View>
@@ -116,7 +116,12 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           </View>
         </View>
 
-        {/* <View>
+        <View
+          style={{
+            padding: SPACING.space_10,
+            paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 50,
+          }}
+        >
           <ItemHorizontal
             navigation={props.navigation}
             id={1}
@@ -136,36 +141,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
               />
             );
           })}
-        </View> */}
-
-        {active === "Artists" && (
-          // <View style={styles.scrollArtist}>
-          //   {DATA.map((item, index) => (
-          //     <View style={{ width: WINDOW_WIDTH / 2, height: 200 }}>
-          //       <ArtistCard artist={item} />
-          //     </View>
-          //   ))}
-          // </View>
-          <FlatList
-            data={DATA}
-            keyExtractor={(item: any) => item.id}
-            bounces={false}
-            snapToInterval={WINDOW_WIDTH / 2 + SPACING.space_12}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            decelerationRate={0}
-            style={{ gap: SPACING.space_12 }}
-            renderItem={({ item, index }) => (
-              <ArtistCard
-                // navigation={navigation}
-                cardWidth={WINDOW_WIDTH / 2}
-                // isFirst={index == 0 ? true : false}
-                // isLast={index == songs?.length - 1 ? true : false}
-                song={item}
-              />
-            )}
-          />
-        )}
+        </View>
       </ScrollView>
     </View>
   );

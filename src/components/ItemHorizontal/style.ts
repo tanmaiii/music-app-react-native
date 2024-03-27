@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     objectFit: "cover",
-    aspectRatio: 1/1
+    aspectRatio: 1 / 1,
   },
   body: {
     padding: SPACING.space_12,

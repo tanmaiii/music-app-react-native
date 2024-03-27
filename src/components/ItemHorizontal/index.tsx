@@ -14,6 +14,7 @@ import IMAGES from "../../constants/images";
 import { COLORS, FONTSIZE } from "../../theme/theme";
 import { AntDesign } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
+import TouchableScale from "../TouchableScale";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -37,7 +38,7 @@ interface ItemHorizontalProps {
 const ItemHorizontal = (props: ItemHorizontalProps) => {
   const { title, desc, image_path, id, type, navigation, loading = false } = props;
 
-  const border = type === "Artist" ? 50 : 0;
+  const border = type === "Artist" ? 50 : 8;
 
   const handleTouch = () => {
     navigation.push("ArtistDetail", { id: id });
@@ -94,5 +95,5 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
     </TouchableHighlight>
   );
 };
-
+//
 export default ItemHorizontal;

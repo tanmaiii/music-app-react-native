@@ -1,11 +1,12 @@
 import { StyleSheet } from "react-native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
+import { WINDOW_WIDTH } from "../../utils";
+import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.Black1,
-    padding: SPACING.space_10,
-    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 40,
+    // height: WINDOW_HEIGHT,
   },
   header: {
     display: "flex",
@@ -13,6 +14,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     textAlign: "center",
+    padding: SPACING.space_10,
     paddingVertical: SPACING.space_10,
   },
   headerLeft: {
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.regular,
   },
   headerList: {
-    paddingVertical: SPACING.space_8,
+    padding: SPACING.space_8,
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "row",
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
   headerListRight: {},
   headerListText: {
     fontSize: FONTSIZE.size_14,
-    color: COLORS.White1,
+    color: COLORS.White2,
     fontFamily: FONTFAMILY.regular,
   },
   headerListIcon: {
@@ -86,16 +88,6 @@ const styles = StyleSheet.create({
   scroll: {
     height: "100%",
   },
-  scrollArtist:{
-    flexDirection: "row", // Chia theo hàng ngang để tạo hai cột
-    justifyContent: "space-between", // Căn các cột ở hai đầu
-    alignItems: "stretch", // Mở rộng các cột để chiếm toàn bộ không gian
-    flex: 1, // Đảm bảo container mở rộng để điều chỉnh các cột
-    flexWrap: "wrap",
-    // marginRight: -SPACING.space_4,
-    // marginLeft: -SPACING.space_4,
-    // paddingHorizontal: SPACING.space_10,
-  }
 });
 
 export default styles;

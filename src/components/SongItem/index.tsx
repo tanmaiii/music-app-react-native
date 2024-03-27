@@ -5,6 +5,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import { useNavigation } from "@react-navigation/native";
+import { usePlaying } from "../../context/PlayingContext";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -20,6 +21,7 @@ interface SongItemProps {
 }
 
 const SongItem = (props: SongItemProps) => {
+  const { setOpenBarSong } = usePlaying();
   const { loading = false } = props;
   const [activeMore, setActiveMore] = React.useState(false);
   const navigation = useNavigation();
@@ -27,7 +29,7 @@ const SongItem = (props: SongItemProps) => {
   return (
     <TouchableHighlight
       underlayColor={COLORS.Black2}
-      onPress={() => console.log("click song top")}
+      onPress={() => setOpenBarSong(true)}
       style={styles.container}
     >
       <View style={styles.swapper}>
@@ -50,23 +52,7 @@ const SongItem = (props: SongItemProps) => {
             underlayColor={COLORS.Black2}
             style={styles.buttonMore}
           >
-            <Feather
-              name="more-horizontal"
-              size={24}
-              style={{ color: COLORS.White1 }}
-            />
-            {/* {activeMore && (
-              <View style={styles.buttonMoreBody}>
-                <View style={{flexDirection: 'row', flexWrap: 'nowrap'}}>
-                  <Text >Share</Text>
-                  <Feather name="share" size={24} color="black" />
-                </View>
-                <View style={{flexDirection: 'row', flexWrap: 'nowrap'}}>
-                  <Text>Add to Playlit</Text>
-                  <Feather name="share" size={24} color="black" />
-                </View>
-              </View>
-            )} */}
+            <Feather name="more-horizontal" size={24} style={{ color: COLORS.White1 }} />
           </TouchableHighlight>
         </View>
       </View>

@@ -4,7 +4,7 @@ interface Spacing {
   space_8: number;
   space_10: number;
   space_12: number;
-  space_15: number;
+  space_14: number;
   space_16: number;
   space_18: number;
   space_20: number;
@@ -20,7 +20,7 @@ export const SPACING: Spacing = {
   space_8: 8,
   space_10: 10,
   space_12: 12,
-  space_15: 15,
+  space_14: 14,
   space_16: 16,
   space_18: 18,
   space_20: 20,
@@ -63,7 +63,7 @@ export const COLORS: Color = {
   Grey: "#151515",
   DarkGrey: "#0b0b0b",
   Yellow: "#E1CD17",
-  Red: "#f53e2d",
+  Red: "#eb4d4b",
   WhiteRGBA75: "rgba(255,255,255,0.75)",
   WhiteRGBA50: "rgba(255,255,255,0.50)",
   WhiteRGBA32: "rgba(255,255,255,0.32)",
@@ -131,7 +131,7 @@ interface BorderRadius {
   radius_4: number;
   radius_8: number;
   radius_10: number;
-  radius_15: number;
+  radius_14: number;
   radius_20: number;
   radius_25: number;
 }
@@ -140,7 +140,7 @@ export const BORDERRADIUS: BorderRadius = {
   radius_4: 4,
   radius_8: 8,
   radius_10: 10,
-  radius_15: 15,
+  radius_14: 14,
   radius_20: 20,
   radius_25: 25,
 };

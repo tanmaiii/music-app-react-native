@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
   },
   scrollViewContent: {
-    // height: WINDOW_HEIGHT * 2,
     paddingHorizontal: SPACING.space_10,
     paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 50,
   },

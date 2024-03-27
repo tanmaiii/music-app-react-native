@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: SPACING.space_10,
+    // backgroundColor: 'pink'
   },
   bodyTopRight: {
     flexDirection: "row",
@@ -85,12 +86,11 @@ const styles = StyleSheet.create({
     margin: SPACING.space_18,
   },
   buttonFollow: {
-    paddingVertical: SPACING.space_4,
-    paddingHorizontal: SPACING.space_10,
+    // paddingVertical: 0,
+    paddingHorizontal: SPACING.space_12,
     borderRadius: BORDERRADIUS.radius_25,
     borderWidth: 1.2,
     borderColor: COLORS.White2,
-    height: 40,
     justifyContent: "center",
     alignItems: "center",
   },

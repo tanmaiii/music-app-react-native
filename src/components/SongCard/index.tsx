@@ -29,7 +29,7 @@ const SongCard = (props: SongCardProps) => {
 
   const linkTo = useLinkTo();
   const handleTouch = () => {
-    linkTo("SongDetail");
+    linkTo("/SongDetail");
   };
   return (
     <TouchableOpacity onPress={() => handleTouch()}>

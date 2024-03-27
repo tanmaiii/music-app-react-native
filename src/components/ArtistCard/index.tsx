@@ -20,7 +20,7 @@ const ArtistCard = (props: any) => {
   const linkTo = useLinkTo();
 
   const handleTouch = () => {
-    linkTo("/SongDetail");
+    linkTo("/ArtistDetail");
   };
 
   return (
@@ -40,7 +40,10 @@ const ArtistCard = (props: any) => {
         >
           {loading ? null : (
             <Image
-              style={[styles.image, { width: props.cardWidth || "100%", height: props.cardWidth || "100%" }]}
+              style={[
+                styles.image,
+                { width: props.cardWidth || "100%", height: props.cardWidth || "100%" },
+              ]}
               source={IMAGES.ARTIST}
             />
           )}

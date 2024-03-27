@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type TPlayingContext = {
-  modalVisible: boolean;
-  handleChangeModalVisible: (boolean) => void;
+  openBarSong: boolean;
+  setOpenBarSong: (value: boolean) => void;
+  openModalSong: boolean;
+  setOpenModalSong: (value: boolean) => void;
 };
 
 // Tạo AuthContext với giá trị mặc định là null
@@ -17,18 +19,15 @@ type Props = {
 };
 
 export const PlayingContextProvider = ({ children }: Props) => {
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-
-  const handleChangeModalVisible = (a: boolean) => {
-    console.log("modalVisible", a);
-
-    setModalVisible(a);
-  };
+  const [openBarSong, setOpenBarSong] = useState<boolean>(true);
+  const [openModalSong, setOpenModalSong] = useState<boolean>(false);
 
   // Cập nhật giá trị của PlayingContextProvider
-  const contextValue = {
-    modalVisible,
-    handleChangeModalVisible,
+  const contextValue: TPlayingContext = {
+    openBarSong,
+    setOpenBarSong,
+    openModalSong,
+    setOpenModalSong,
   };
 
   // Sử dụng PlayingContext.Provider để cung cấp giá trị cho các component con

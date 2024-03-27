@@ -24,6 +24,7 @@ import CategoryHeader from "../../components/CategoryHeader";
 import HomeTop from "../../components/HomeTop";
 
 import { Ionicons } from "@expo/vector-icons";
+import { useLinkTo } from "@react-navigation/native";
 
 interface HomeScreenProps {}
 
@@ -66,6 +67,7 @@ const { width, height } = Dimensions.get("window");
 const HomeScreen = ({ navigation }: any) => {
   const [greeting, setGreeting] = React.useState("");
   const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const linkTo = useLinkTo();
 
   useEffect(() => {
     const date = new Date();
@@ -95,7 +97,7 @@ const HomeScreen = ({ navigation }: any) => {
       <SafeAreaView>
         <Animated.View style={[styles.HomeHeader, headerAnimation]}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => linkTo("/Login")}>
               <Image source={IMAGES.AVATAR} style={styles.HomeHeaderImage} />
             </TouchableOpacity>
             <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>

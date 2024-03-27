@@ -6,6 +6,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from "./src/navigators/TabNavigator";
 import { Skeleton } from "moti/skeleton";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import Home from "./src/screens/HomeScreen";
 import Search from "./src/screens/SearchScreen";
@@ -14,11 +16,13 @@ import ArtistDetail from "./src/screens/ArtistDetail";
 import SongDetail from "./src/screens/SongDetail";
 import PlayingCard from "./src/components/PlayingCard";
 import ModalPlaying from "./src/components/ModalPlaying";
+import Login from "./src/screens/AuthScreen/Login";
+import Signup from "./src/screens/AuthScreen/Signup";
 
 import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
-import { ModalPortal } from "react-native-modals";
-import { PlayingContextProvider } from "./src/context/playingContext";
+import { PlayingContextProvider } from "./src/context/PlayingContext";
+import { AuthContextProvider } from "./src/context/AuthContext";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -39,20 +43,25 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <PlayingContextProvider>
-        <NavigationContainer>
-          <View style={styles.playingCard}>
-            <PlayingCard />
-            <ModalPlaying />
-          </View>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Tab" component={TabNavigator} />
-            <Stack.Screen name="SongDetail" component={SongDetail} />
-            <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </PlayingContextProvider>
-      <ModalPortal />
+      <AuthContextProvider>
+        <PlayingContextProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
+              <ModalPlaying />
+              <View style={styles.playingCard}>
+                <PlayingCard />
+              </View>
+              <NavigationContainer>
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="Tab" component={TabNavigator} />
+                  <Stack.Screen name="Login" component={Login} />
+                  <Stack.Screen name="Signup" component={Signup} />
+                </Stack.Navigator>
+              </NavigationContainer>
+            </BottomSheetModalProvider>
+          </GestureHandlerRootView>
+        </PlayingContextProvider>
+      </AuthContextProvider>
     </View>
   );
 }

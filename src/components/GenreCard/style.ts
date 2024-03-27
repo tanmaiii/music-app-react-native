@@ -27,13 +27,13 @@ const styles = StyleSheet.create({
     width: 80,
     borderRadius: BORDERRADIUS.radius_4,
     height: 80,
-    objectFit: 'cover',
-    transform: 'rotate(20deg)',
+    objectFit: "cover",
+    transform: [{ rotate: "20deg" }],
   },
 
   shadowProp: {
     backgroundColor: COLORS.Black1,
-    alignSelf: 'center',
+    alignSelf: "center",
     elevation: 56,
   },
 });
