@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     overflow: "hidden",
-    backgroundColor: 'pink'
+    backgroundColor: COLORS.Black1
   },
 });
 

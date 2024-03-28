@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { usePlaying } from "../../context/PlayingContext";
 import IMAGES from "../../constants/images";
@@ -21,21 +22,49 @@ import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import { useLinkTo } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import styles from "./style";
+import { authApi } from "../../apis";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 
 interface LoginScreenProps {}
 
 const LoginScreen = (props: LoginScreenProps) => {
   const { openBarSong, setOpenBarSong } = usePlaying();
-  const [err, setErr] = React.useState<boolean>(false);
+  const [err, setErr] = React.useState<string | null>("");
   const linkTo = useLinkTo();
   const [isFocusedEmail, setIsFocusedEmail] = React.useState<boolean>(false);
   const [isFocusedPassword, setIsFocusedPassword] = React.useState<boolean>(false);
   const inputEmailRef = React.useRef<TextInput>(null);
   const inputPasswordRef = React.useRef<TextInput>(null);
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const { currentUser, setCurrentUser } = useAuth();
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setOpenBarSong(false);
   }, []);
+
+  const HandlePress = async () => {
+    setErr("");
+    setLoading(true);
+    if (email.trim() !== "" && password.trim() !== "") {
+      try {
+        const res = await authApi.signin(email, password);
+        setCurrentUser(res);
+        setLoading(false);
+        console.log(res);
+      } catch (err: any) {
+        console.log(err.response.data.conflictError);
+        setErr(err.response.data.conflictError);
+      }
+    }
+    setLoading(false);
+  };
+
+  React.useEffect(() => {
+    if (currentUser) return linkTo("/Home");
+  });
 
   return (
     <View style={styles.container}>
@@ -70,10 +99,7 @@ const LoginScreen = (props: LoginScreenProps) => {
           {err && (
             <View style={styles.boxErr}>
               <AntDesign name="exclamationcircleo" size={24} style={{ color: COLORS.White1 }} />
-              <Text style={styles.textErr}>
-                Wrong Email or Password Wrong Email or Password Wrong Email or Password Wrong Email
-                or Password
-              </Text>
+              <Text style={styles.textErr}>{err}</Text>
             </View>
           )}
 
@@ -83,7 +109,9 @@ const LoginScreen = (props: LoginScreenProps) => {
                 ref={inputEmailRef}
                 style={styles.textInput}
                 onFocus={() => setIsFocusedEmail(true)}
-                onBlur={() => setIsFocusedEmail(false)}
+                onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
+                value={email}
+                onChangeText={(text) => setEmail(text)}
               />
               <Text style={[styles.titleBox, isFocusedEmail && { top: -16 }]}>Email</Text>
               <Feather name="mail" size={24} color="black" style={{ color: COLORS.White2 }} />
@@ -96,18 +124,21 @@ const LoginScreen = (props: LoginScreenProps) => {
                 style={styles.textInput}
                 ref={inputPasswordRef}
                 onFocus={() => setIsFocusedPassword(true)}
-                onBlur={() => setIsFocusedPassword(false)}
+                onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
+                onChangeText={(text) => setPassword(text)}
               />
               <Text style={[styles.titleBox, isFocusedPassword && { top: -16 }]}>Password</Text>
               <Feather name="lock" size={24} color="black" style={{ color: COLORS.White2 }} />
             </Pressable>
-            <Text style={styles.descBox}>Password must be least 8 Character</Text>
+            <Text style={styles.descBox}>Password must be least 8 Character </Text>
           </View>
 
-          <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
+          <Pressable onPress={() => linkTo("/Home")}>
+            <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
+          </Pressable>
 
-          <TouchableOpacity style={styles.button} onPress={() => linkTo("/Home")}>
-            <Text style={styles.titleLogin}>Log In</Text>
+          <TouchableOpacity style={styles.button} onPress={HandlePress}>
+            {loading ? <ActivityIndicator /> : <Text style={styles.titleLogin}>Log In</Text>}
           </TouchableOpacity>
           <Text style={styles.titleOr}>Or login with</Text>
 

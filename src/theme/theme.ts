@@ -63,7 +63,7 @@ export const COLORS: Color = {
   Grey: "#151515",
   DarkGrey: "#0b0b0b",
   Yellow: "#E1CD17",
-  Red: "#eb4d4b",
+  Red: "rgba(235, 77, 75,1.0)",
   WhiteRGBA75: "rgba(255,255,255,0.75)",
   WhiteRGBA50: "rgba(255,255,255,0.50)",
   WhiteRGBA32: "rgba(255,255,255,0.32)",

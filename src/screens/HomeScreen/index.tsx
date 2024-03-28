@@ -25,6 +25,8 @@ import HomeTop from "../../components/HomeTop";
 
 import { Ionicons } from "@expo/vector-icons";
 import { useLinkTo } from "@react-navigation/native";
+import { useAuth } from "../../context/AuthContext";
+import apiConfig from "../../apis/apiConfig";
 
 interface HomeScreenProps {}
 
@@ -68,6 +70,7 @@ const HomeScreen = ({ navigation }: any) => {
   const [greeting, setGreeting] = React.useState("");
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const linkTo = useLinkTo();
+  const { currentUser, setCurrentUser, logout } = useAuth();
 
   useEffect(() => {
     const date = new Date();
@@ -90,6 +93,17 @@ const HomeScreen = ({ navigation }: any) => {
     }),
   };
 
+  const handlePressUser = () => {
+    console.log(currentUser);
+
+    logout();
+    linkTo("/Login");
+  };
+
+  useEffect(() => {
+    if (!currentUser) return linkTo("/Login");
+  });
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -97,8 +111,15 @@ const HomeScreen = ({ navigation }: any) => {
       <SafeAreaView>
         <Animated.View style={[styles.HomeHeader, headerAnimation]}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={() => linkTo("/Login")}>
-              <Image source={IMAGES.AVATAR} style={styles.HomeHeaderImage} />
+            <TouchableOpacity onPress={handlePressUser}>
+              <Image
+                source={
+                  currentUser?.image_path
+                    ? { uri: apiConfig.imageURL(currentUser.image_path) }
+                    : IMAGES.POSTER
+                }
+                style={styles.HomeHeaderImage}
+              />
             </TouchableOpacity>
             <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>
           </View>

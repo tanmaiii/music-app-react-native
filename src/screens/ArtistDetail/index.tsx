@@ -105,29 +105,29 @@ const ArtistDetail = (props: ArtistDetailProps) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
 
-        <SafeAreaView style={{ zIndex: 99 }}>
-          <Animated.View style={[styles.header, backgroundColorAnimation]}>
-            <TouchableHighlight
-              underlayColor={COLORS.Black2}
-              style={styles.buttonHeader}
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
-              {/* <FontAwesome name="angle-left" size={24} style={styles.icon} /> */}
-            </TouchableHighlight>
-            <Animated.Text style={[styles.title, opacityHideAnimation]}>Son Tung MTP</Animated.Text>
+      <SafeAreaView style={{ zIndex: 99 }}>
+        <Animated.View style={[styles.header, backgroundColorAnimation]}>
+          <TouchableHighlight
+            underlayColor={COLORS.Black2}
+            style={styles.buttonHeader}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
+            {/* <FontAwesome name="angle-left" size={24} style={styles.icon} /> */}
+          </TouchableHighlight>
+          <Animated.Text style={[styles.title, opacityHideAnimation]}>Son Tung MTP</Animated.Text>
 
-            <TouchableHighlight
-              underlayColor={COLORS.Black2}
-              style={styles.buttonHeader}
-              onPress={() => navigation.goBack()}
-            >
-              <Feather name="more-horizontal" size={24} style={styles.icon} />
-            </TouchableHighlight>
-          </Animated.View>
-        </SafeAreaView>
+          <TouchableHighlight
+            underlayColor={COLORS.Black2}
+            style={styles.buttonHeader}
+            onPress={() => navigation.goBack()}
+          >
+            <Feather name="more-horizontal" size={24} style={styles.icon} />
+          </TouchableHighlight>
+        </Animated.View>
+      </SafeAreaView>
 
       <View>
         <Animated.View style={[styles.avatar, { height: HEIGHT_AVATAR }, opacityAnimation]}>

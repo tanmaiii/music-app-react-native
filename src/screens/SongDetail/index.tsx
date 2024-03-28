@@ -1,5 +1,13 @@
 import * as React from "react";
-import { Text, View, StyleSheet, Image, ImageBackground, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  ImageBackground,
+  TouchableOpacity,
+  StatusBar,
+} from "react-native";
 import IMAGES from "../../constants/images";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
@@ -9,6 +17,7 @@ interface SongDetailProps {}
 const SongDetail = (props: SongDetailProps) => {
   return (
     <ImageBackground source={IMAGES.POSTER} style={styles.container} blurRadius={80}>
+      <StatusBar barStyle="light-content" />
       <View style={styles.wrapper}>
         <View
           style={{
@@ -37,7 +46,7 @@ const SongDetail = (props: SongDetailProps) => {
           </View>
         </View>
       </View>
-{/* 
+      {/* 
       <View style={{backgroundColor: 'pink', height: 80}}>
         
       </View>

@@ -35,6 +35,9 @@ const SignupScreen = (props: SignupScreenProps) => {
   const inputNameRef = React.useRef<TextInput>(null);
   const inputEmailRef = React.useRef<TextInput>(null);
   const inputPasswordRef = React.useRef<TextInput>(null);
+  const [name, setName] = React.useState<string>("");
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
 
   React.useEffect(() => {
     setOpenBarSong(false);
@@ -86,7 +89,8 @@ const SignupScreen = (props: SignupScreenProps) => {
                 ref={inputNameRef}
                 style={styles.textInput}
                 onFocus={() => setIsFocusedName(true)}
-                onBlur={() => setIsFocusedName(false)}
+                onBlur={() => name.trim() === "" && setIsFocusedName(false)}
+                onChangeText={(text) => setName(text)}
               />
               <Text style={[styles.titleBox, isFocusedName && { top: -16 }]}>Name</Text>
               <FontAwesome6 name="circle-user" size={24} style={{ color: COLORS.White2 }} />
@@ -99,7 +103,8 @@ const SignupScreen = (props: SignupScreenProps) => {
                 ref={inputEmailRef}
                 style={styles.textInput}
                 onFocus={() => setIsFocusedEmail(true)}
-                onBlur={() => setIsFocusedEmail(false)}
+                onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
+                onChangeText={(text) => setEmail(text)}
               />
               <Text style={[styles.titleBox, isFocusedEmail && { top: -16 }]}>Email</Text>
               <Feather name="mail" size={24} color="black" style={{ color: COLORS.White2 }} />
@@ -113,7 +118,8 @@ const SignupScreen = (props: SignupScreenProps) => {
                 passwordRules="*"
                 style={styles.textInput}
                 onFocus={() => setIsFocusedPassword(true)}
-                onBlur={() => setIsFocusedPassword(false)}
+                onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
+                onChangeText={(text) => setPassword(text)}
               />
               <Text style={[styles.titleBox, isFocusedPassword && { top: -16 }]}>Password</Text>
               <Feather name="lock" size={24} color="black" style={{ color: COLORS.White2 }} />

@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useLinkTo } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -22,12 +22,14 @@ import Signup from "./src/screens/AuthScreen/Signup";
 import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
 import { PlayingContextProvider } from "./src/context/PlayingContext";
-import { AuthContextProvider } from "./src/context/AuthContext";
+import { AuthContextProvider, useAuth } from "./src/context/AuthContext";
+import React from "react";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const linkTo = useLinkTo();
   let [fontLoaded] = useFonts({
     "Roboto-Black": require("./src/assets/fonts/Roboto-Black.ttf"),
     "Roboto-Bold": require("./src/assets/fonts/Roboto-Bold.ttf"),

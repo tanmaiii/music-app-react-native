@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 // import { authApi, useApi } from "../apis";
 import { TUser } from "../types/index";
+import { authApi } from "../apis";
+import userApi from "../apis/user/userApi";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Khai báo kiểu dữ liệu cho AuthContext
 interface IAuthContext {
@@ -25,14 +28,14 @@ export const AuthContextProvider = ({ children }: Props) => {
 
   const logout = async () => {
     setCurrentUser(null);
-    // await authApi.signout();
+    await authApi.signout();
   };
 
   useEffect(() => {
     const getInfo = async () => {
       try {
-        // const res = await useApi.getMe();
-        // setCurrentUser(res);
+        const res = await userApi.getMe();
+        setCurrentUser(res);
       } catch (error) {
         setCurrentUser(null);
       }
@@ -41,7 +44,23 @@ export const AuthContextProvider = ({ children }: Props) => {
   }, []);
 
   useEffect(() => {
-    // localStorage.setItem("user", JSON.stringify(currentUser));
+    const getUserFromStorage = async () => {
+      try {
+        const userString = await AsyncStorage.getItem("user");
+        userString ? setCurrentUser(JSON.parse(userString)) : setCurrentUser(null);
+
+        // console.log("AsyncStorage", currentUser);
+        
+      } catch (error) {
+        console.error("Error getting user from AsyncStorage:", error);
+        return null;
+      }
+    };
+    getUserFromStorage();
+  }, []);
+
+  useEffect(() => {
+    AsyncStorage.setItem("user", JSON.stringify(currentUser));
   }, [currentUser]);
 
   // Cập nhật giá trị của AuthContextProvider
