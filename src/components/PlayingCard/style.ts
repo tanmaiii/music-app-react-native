@@ -9,9 +9,9 @@ const styles = StyleSheet.create({
     borderRadius: BORDERRADIUS.radius_8,
   },
   wrapper: {
-    // backgroundColor: COLORS.Primary,
     // opacity: 0.9,
     // blur: '10',
+    // backgroundColor: COLORS.Black1,
     overflow: "hidden",
     padding: SPACING.space_8,
     display: "flex",

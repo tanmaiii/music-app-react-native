@@ -50,7 +50,6 @@ const LibraryScreen = (props: LibraryScreenProps) => {
 
   return (
     <View style={[styles.container]}>
-      <StatusBar barStyle="light-content" />
 
       <SafeAreaView>
         <View style={styles.header}>

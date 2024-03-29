@@ -16,9 +16,9 @@ const songApi = {
       },
     });
   },
-  getDetail(songId: number): Promise<TSong> {
+  getDetail(songId: number, token: string): Promise<TSong> {
     const url = "song/detail/";
-    return axiosClient.get(url + songId);
+    return axiosClient.post(url + songId, { token });
   },
   getAllByUserId(userId: number, page: number, limit: number): Promise<ListResponse<TSong>> {
     const url = "song/user/";
@@ -45,7 +45,7 @@ const songApi = {
       },
     });
   },
-  getAllArtistInSong(songId: number): Promise<TUser[]> {
+  getAllArtistInSong(songId: number, token: string): Promise<TUser[]> {
     const url = "userSong/";
     return axiosClient.get(url + songId);
   },

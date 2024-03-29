@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: COLORS.Black1,
-    // paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
   },
   bodyTop: {
     flexDirection: "row",

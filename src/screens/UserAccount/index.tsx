@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useCallback, useRef, useMemo } from "react";
 import { Text, View, StyleSheet, Image, ScrollView, Button } from "react-native";
-import CustomBottomSheet from "../../components/CustomBottomSheet";
 
 interface UserAccountProps {}
 

@@ -6,13 +6,13 @@ const userApi = {
     const url = "user";
     return axiosClient.get(url);
   },
-  getMe(): Promise<TUser> {
+  getMe(token: string): Promise<TUser> {
     const url = "user/me";
     return axiosClient.get(url);
   },
   findByEmail: (email: string) => {
     const url = "user/email";
-    return axiosClient.post(url, {email});
+    return axiosClient.post(url, { email });
   },
 };
 

@@ -53,13 +53,7 @@ export default function App() {
               <View style={styles.playingCard}>
                 <PlayingCard />
               </View>
-              <NavigationContainer>
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="Tab" component={TabNavigator} />
-                  <Stack.Screen name="Login" component={Login} />
-                  <Stack.Screen name="Signup" component={Signup} />
-                </Stack.Navigator>
-              </NavigationContainer>
+              <Layout />
             </BottomSheetModalProvider>
           </GestureHandlerRootView>
         </PlayingContextProvider>
@@ -67,6 +61,29 @@ export default function App() {
     </View>
   );
 }
+
+export const AuthScreen = () => {
+  return <Stack.Screen name="Login" component={Login} />;
+};
+
+export const Layout = () => {
+  const { currentUser } = useAuth();
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {currentUser ? (
+          <Stack.Screen name="Tab" component={TabNavigator} />
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Signup" component={Signup} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

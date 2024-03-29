@@ -38,7 +38,7 @@ const LoginScreen = (props: LoginScreenProps) => {
   const inputPasswordRef = React.useRef<TextInput>(null);
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser, setCurrentUser, login } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -50,14 +50,13 @@ const LoginScreen = (props: LoginScreenProps) => {
     setLoading(true);
     if (email.trim() !== "" && password.trim() !== "") {
       try {
-        const res = await authApi.signin(email, password);
-        setCurrentUser(res);
-        setLoading(false);
-        console.log(res);
+        await login(email, password);
       } catch (err: any) {
-        console.log(err.response.data.conflictError);
+        console.log(err);
         setErr(err.response.data.conflictError);
       }
+    } else {
+      inputEmailRef.current.focus();
     }
     setLoading(false);
   };
@@ -68,7 +67,6 @@ const LoginScreen = (props: LoginScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
 
       <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
         <View style={styles.logo}>
@@ -130,7 +128,7 @@ const LoginScreen = (props: LoginScreenProps) => {
               <Text style={[styles.titleBox, isFocusedPassword && { top: -16 }]}>Password</Text>
               <Feather name="lock" size={24} color="black" style={{ color: COLORS.White2 }} />
             </Pressable>
-            <Text style={styles.descBox}>Password must be least 8 Character </Text>
+            <Text style={styles.descBox}>Password must be least 6 Character </Text>
           </View>
 
           <Pressable onPress={() => linkTo("/Home")}>

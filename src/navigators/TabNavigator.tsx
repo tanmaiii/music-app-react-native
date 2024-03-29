@@ -5,6 +5,7 @@ import HomeScreen from "../screens/HomeScreen";
 import SearchScreen from "../screens/SearchScreen";
 import LibraryScreen from "../screens/LibraryScreen";
 import SongDetail from "../screens/SongDetail";
+import PlaylistDetail from "../screens/PlaylistDetail";
 import UserAccount from "../screens/UserAccount";
 import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING, WIDTH } from "../theme/theme";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -27,6 +28,7 @@ const StackNavigatorHome = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="SongDetail" component={SongDetail} />
       <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
+      <Stack.Screen name="PlaylistDetail" component={PlaylistDetail} />
     </Stack.Navigator>
   );
 };
@@ -41,6 +43,7 @@ const StackNavigatorLibrary = () => {
       <Stack.Screen name="Library" component={LibraryScreen} />
       <Stack.Screen name="SongDetail" component={SongDetail} />
       <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
+      <Stack.Screen name="PlaylistDetail" component={PlaylistDetail} />
     </Stack.Navigator>
   );
 };

@@ -1,21 +1,15 @@
-import { TUser } from "./../../types";
+import { TUser, ResLoginApi } from "./../../types";
 import axiosClient from "../axiosClient";
 
 //: Promise<ResLoginApi>
 const authApi = {
-  signin(email: string, password: string): Promise<TUser> {
+  signin(email: string, password: string): Promise<ResLoginApi> {
     const url = "auth/signin";
     return axiosClient.post(url, { email, password });
   },
-  signup(
-    email: string,
-    password: string,
-    name: string,
-    brithday: string,
-    gender: string
-  ): Promise<TUser> {
+  signup(name: string, email: string, password: string): Promise<TUser> {
     const url = "auth/signup";
-    return axiosClient.post(url, { email, password, name, brithday, gender });
+    return axiosClient.post(url, { name, email, password });
   },
   sendVerificationEmail(email: string) {
     const url = "auth/send-verification-email";

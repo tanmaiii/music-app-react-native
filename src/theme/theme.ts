@@ -46,6 +46,7 @@ interface Color {
   WhiteRGBA15: string;
 
   Primary: string;
+  Primary2: string;
   White1: string;
   White2: string;
   White3: string;
@@ -71,6 +72,7 @@ export const COLORS: Color = {
   White: "#FFFFFF",
 
   Primary: "#7c74ee",
+  Primary2: "#a29bfe",
   White1: "#FFFFFF",
   White2: "#b3b3b3",
   White3: "#f5f5f5",

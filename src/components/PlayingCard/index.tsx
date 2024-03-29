@@ -21,7 +21,7 @@ import { BlurView } from "@react-native-community/blur";
 
 interface PlayingCardProps {}
 const PlayingCard = (props: PlayingCardProps) => {
-  const { openBarSong, setOpenBarSong, setOpenModalSong } = usePlaying();
+  const { openBarSong, setOpenBarSong, setOpenModalSong, songPlaying } = usePlaying();
 
   const [play, setPlay] = React.useState(false);
 
@@ -45,7 +45,7 @@ const PlayingCard = (props: PlayingCardProps) => {
         <View style={styles.wrapper}>
           <View style={styles.left}>
             <Image style={styles.image} source={IMAGES.POSTER} />
-            <Text style={styles.title}>Thằng điên</Text>
+            <Text style={styles.title}>Thằng điên {songPlaying}</Text>
           </View>
           <View style={styles.right}>
             <TouchableOpacity onPress={() => setPlay((play) => !play)} style={styles.iconPlay}>

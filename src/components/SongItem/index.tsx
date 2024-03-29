@@ -77,15 +77,15 @@ const styles = StyleSheet.create({
     color: COLORS.White2,
   },
   swapper: {
-    height: 68,
+    height: 60,
     width: "100%",
     flexDirection: "row",
     alignContent: "center",
     alignItems: "center",
   },
   swapperImage: {
-    height: 60,
-    width: 60,
+    height: 50,
+    width: 50,
     overflow: "hidden",
     borderRadius: BORDERRADIUS.radius_8,
     alignItems: "center",

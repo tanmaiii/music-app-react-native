@@ -23,7 +23,21 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.regular,
     color: COLORS.White2,
   },
- 
+  buttonPlay: {
+    position: "absolute",
+    bottom: 8,
+    right: 8,
+    width: 40,
+    height: 40,
+    backgroundColor: COLORS.Primary,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+  },
+  iconButtonPlay: {
+    color: COLORS.White1,
+  },
 });
 
 export default styles;

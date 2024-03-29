@@ -10,6 +10,8 @@ interface IAuthContext {
   currentUser: TUser | null;
   setCurrentUser: (user: TUser) => void;
   logout: () => void;
+  login: (email: string, password: string) => void;
+  token: string;
 }
 
 // Tạo AuthContext với giá trị mặc định là null
@@ -25,32 +27,45 @@ type Props = {
 
 export const AuthContextProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<TUser | null>(null);
+  const [token, setToken] = useState<string | undefined>(undefined);
 
   const logout = async () => {
     setCurrentUser(null);
     await authApi.signout();
   };
 
+  const login = async (email: string, password: string) => {
+    const res = await authApi.signin(email, password);
+    setCurrentUser(res.data);
+    setToken(res.token);
+  };
+
+  const signup = async (name: string, email: string, password: string) => {
+    const res = await authApi.signup(name, email, password);
+  };
+
   useEffect(() => {
     const getInfo = async () => {
       try {
-        const res = await userApi.getMe();
+        const res = await userApi.getMe(token);
         setCurrentUser(res);
+        console.log("Get Me", res);
       } catch (error) {
+        console.log("Get Me", error);
         setCurrentUser(null);
       }
     };
-    currentUser && getInfo();
+    token && getInfo();
   }, []);
 
   useEffect(() => {
     const getUserFromStorage = async () => {
       try {
-        const userString = await AsyncStorage.getItem("user");
-        userString ? setCurrentUser(JSON.parse(userString)) : setCurrentUser(null);
+        const userStorage = await AsyncStorage.getItem("user");
+        userStorage ? setCurrentUser(JSON.parse(userStorage)) : setCurrentUser(null);
 
-        // console.log("AsyncStorage", currentUser);
-        
+        const tokenStorage = await AsyncStorage.getItem("token");
+        tokenStorage ? setToken(JSON.parse(tokenStorage)) : setToken(null);
       } catch (error) {
         console.error("Error getting user from AsyncStorage:", error);
         return null;
@@ -61,13 +76,16 @@ export const AuthContextProvider = ({ children }: Props) => {
 
   useEffect(() => {
     AsyncStorage.setItem("user", JSON.stringify(currentUser));
-  }, [currentUser]);
+    AsyncStorage.setItem("token", JSON.stringify(token));
+  }, [currentUser, token]);
 
   // Cập nhật giá trị của AuthContextProvider
   const contextValue: IAuthContext = {
     currentUser,
     setCurrentUser,
+    token,
     logout,
+    login,
   };
 
   // Sử dụng AuthContext.Provider để cung cấp giá trị cho các component con

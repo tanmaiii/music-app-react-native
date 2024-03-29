@@ -21,8 +21,9 @@ import styles from "./style";
 import CategoryHeader from "../../components/CategoryHeader";
 import SongItem from "../../components/SongItem";
 import { TSong } from "../../types";
-import Slider from "../../components/Slider";
 import { Skeleton } from "moti/skeleton";
+import ArtistCard from "../../components/ArtistCard";
+import PlaylistCard from "../../components/PlaylistCard";
 
 const HEIGHT_AVATAR = 360;
 
@@ -105,8 +106,6 @@ const ArtistDetail = (props: ArtistDetailProps) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-
       <SafeAreaView style={{ zIndex: 99 }}>
         <Animated.View style={[styles.header, backgroundColorAnimation]}>
           <TouchableHighlight
@@ -115,8 +114,8 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
-            {/* <FontAwesome name="angle-left" size={24} style={styles.icon} /> */}
           </TouchableHighlight>
+
           <Animated.Text style={[styles.title, opacityHideAnimation]}>Son Tung MTP</Animated.Text>
 
           <TouchableHighlight
@@ -260,12 +259,52 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             </View>
 
             <ScrollView style={{}}>
-              <Slider songs={songs} type="songs" title="Song Popular" />
+              {/* <Slider songs={songs} type="songs" title="Song Popular" />
               <Slider songs={songs} type="songs" title="Playlist Artist" />
-              <Slider songs={songs} type="songs" title="Song Popular" />
+              <Slider songs={songs} type="songs" title="Song Popular" /> */}
+
+              <View style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}>
+                <CategoryHeader title={"Playlist popular"} />
+                <FlatList
+                  data={songs}
+                  keyExtractor={(item: any) => item.id}
+                  bounces={false}
+                  snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  decelerationRate={0}
+                  style={{ gap: SPACING.space_12 }}
+                  renderItem={({ item, index }) => (
+                    <PlaylistCard
+                      navigation={navigation}
+                      cardWidth={WINDOW_WIDTH / 2.4}
+                      playlist={item}
+                    />
+                  )}
+                />
+              </View>
 
               <View style={styles.bodyBottom}>
-                <Slider songs={songs} type="artist" title="Related artists" />
+                <View style={{ paddingHorizontal: SPACING.space_10 }}>
+                  <CategoryHeader title={"Related artists"} />
+                  <FlatList
+                    data={songs}
+                    keyExtractor={(item: any) => item.id}
+                    bounces={false}
+                    snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    decelerationRate={0}
+                    style={{ gap: SPACING.space_12 }}
+                    renderItem={({ item, index }) => (
+                      <ArtistCard
+                        navigation={navigation}
+                        cardWidth={WINDOW_WIDTH / 3}
+                        artist={item}
+                      />
+                    )}
+                  />
+                </View>
               </View>
             </ScrollView>
           </View>

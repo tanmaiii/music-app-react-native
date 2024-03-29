@@ -114,7 +114,6 @@ const SearchScreen = (props: SearchScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
 
       <SafeAreaView>
         <View style={styles.upperHeaderPlaceholder} />
