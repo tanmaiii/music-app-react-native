@@ -67,7 +67,6 @@ const LoginScreen = (props: LoginScreenProps) => {
 
   return (
     <View style={styles.container}>
-
       <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
         <View style={styles.logo}>
           <Image style={styles.image} source={IMAGES.LOGO} />
@@ -120,6 +119,7 @@ const LoginScreen = (props: LoginScreenProps) => {
             <Pressable onPress={() => inputPasswordRef.current?.focus()} style={styles.boxInput}>
               <TextInput
                 style={styles.textInput}
+                secureTextEntry={true} // Hiển thị dưới dạng mật khẩu
                 ref={inputPasswordRef}
                 onFocus={() => setIsFocusedPassword(true)}
                 onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}

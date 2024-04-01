@@ -15,6 +15,7 @@ import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import ArtistDetail from "../screens/ArtistDetail";
 import ICONS from "../constants/icons";
+import Account from "../screens/UserAccount/Account";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,19 @@ const StackNavigatorLibrary = () => {
       <Stack.Screen name="SongDetail" component={SongDetail} />
       <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
       <Stack.Screen name="PlaylistDetail" component={PlaylistDetail} />
+    </Stack.Navigator>
+  );
+};
+
+const StackNavigatorUserAccount = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="UserAccount" component={UserAccount} />
+      <Stack.Screen name="EditAccount" component={Account} />
     </Stack.Navigator>
   );
 };
@@ -129,7 +143,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Account"
-        component={UserAccount}
+        component={StackNavigatorUserAccount}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => {

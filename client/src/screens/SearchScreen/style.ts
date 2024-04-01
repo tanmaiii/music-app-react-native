@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.space_8,
-    // backgroundColor: "#ccc"
   },
   lowerHeader: {
     height: HEIGHT.LOWER_HEADER_SEARCH_HEIGHT,
@@ -33,10 +32,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.space_10,
     paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 50,
   },
-
-  //
-
-  headerImage: { width: 46, height: 46, borderRadius: 40 },
+  headerImage: { width: 40, height: 40 },
   headerTitle: {
     fontSize: FONTSIZE.size_24,
     color: COLORS.White1,

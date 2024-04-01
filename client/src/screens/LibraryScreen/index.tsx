@@ -50,12 +50,11 @@ const LibraryScreen = (props: LibraryScreenProps) => {
 
   return (
     <View style={[styles.container]}>
-
       <SafeAreaView>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <TouchableOpacity>
-              <Image source={IMAGES.AVATAR} style={styles.headerImage} />
+              <Image source={IMAGES.LOGO} style={styles.headerImage} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Library</Text>
           </View>
@@ -142,6 +141,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           })}
         </View>
       </ScrollView>
+      
     </View>
   );
 };

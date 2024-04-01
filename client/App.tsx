@@ -23,11 +23,11 @@ import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
 import { PlayingContextProvider } from "./src/context/PlayingContext";
 import { AuthContextProvider, useAuth } from "./src/context/AuthContext";
-import React from "react";
+import React, { useEffect } from "react";
+import LottieView from "lottie-react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
 
 export default function App() {
   const linkTo = useLinkTo();
@@ -41,7 +41,23 @@ export default function App() {
   });
 
   if (!fontLoaded) {
-    return <Text>Loading....</Text>;
+    return (
+      <View
+        style={{
+          backgroundColor: COLORS.Black1,
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <LottieView
+          source={require("./src/assets/images/Animation.json")}
+          style={{ width: "60%", height: "60%" }}
+          autoPlay
+          loop
+        />
+      </View>
+    );
   }
 
   return (

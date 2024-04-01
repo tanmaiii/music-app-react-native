@@ -68,6 +68,8 @@ const SongDetail = (props: SongDetailProps) => {
 
   return (
     <ImageBackground source={IMAGES.AI} style={styles.container} blurRadius={80}>
+      <StatusBar barStyle="light-content" />
+
       <View style={styles.wrapper}>
         <View
           style={{
@@ -80,8 +82,11 @@ const SongDetail = (props: SongDetailProps) => {
             marginBottom: SPACING.space_36,
           }}
         ></View>
-        <View style={[styles.wrapperImage]}>
-          <Image style={styles.image} source={IMAGES.AI} />
+
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <View style={styles.wrapperImage}>
+            <Image style={styles.image} source={IMAGES.AI} />
+          </View>
         </View>
 
         <View style={styles.playerControlsTop}>
@@ -95,15 +100,6 @@ const SongDetail = (props: SongDetailProps) => {
 
         <View style={styles.playerControlsBar}>
           <View style={styles.scrollBar}>
-            {/* <Slider
-              style={styles.slider}
-              value={10}
-              minimumValue={0}
-              maximumValue={100}
-              thumbTintColor={COLORS.Primary}
-              minimumTrackTintColor={COLORS.Primary}
-              maximumTrackTintColor={COLORS.WhiteRGBA50}
-            /> */}
             <View style={styles.slider}>
               <View
                 style={{
@@ -214,23 +210,25 @@ const styles = StyleSheet.create({
     color: COLORS.White2,
   },
   wrapper: {
-    // padding: SPACING.space_18,
-    // paddingVertical: SPACING.space_8,
-    paddingTop: SPACING.space_8,
-    // paddingHorizontal: SPACING.space_18,
+    paddingTop: SPACING.space_18,
     alignItems: "center",
     justifyContent: "space-between",
     flexDirection: "column",
     height: "100%",
   },
   wrapperImage: {
-    aspectRatio: 1, // Đảm bảo chiều cao và chiều rộng bằng nhau
+    // aspectRatio: 1, // Đảm bảo chiều cao và chiều rộng bằng nhau
+    width: 340,
+    height: 340,
+    // borderRadius: imageSize / 2,
+    borderRadius: BORDERRADIUS.radius_8,
+    overflow: "hidden",
   },
   image: {
-    width: imageSize,
-    height: imageSize,
-    resizeMode: "cover",
-    borderRadius: BORDERRADIUS.radius_8,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    // transform: [{rotate: '100deg'}]
   },
   playerControlsTop: {
     flexDirection: "column",
@@ -251,7 +249,7 @@ const styles = StyleSheet.create({
   playerControlsBar: {
     paddingHorizontal: SPACING.space_18,
     width: "100%",
-    gap: SPACING.space_18,
+    gap: SPACING.space_8,
   },
   scrollBar: {
     width: "100%",
@@ -259,9 +257,6 @@ const styles = StyleSheet.create({
   },
   slider: {
     width: "100%",
-    // height: 6,
-    // borderRadius: BORDERRADIUS.radius_14,
-    // backgroundColor: COLORS.WhiteRGBA15,
   },
   action: {
     flexDirection: "row",
@@ -270,7 +265,6 @@ const styles = StyleSheet.create({
     gap: SPACING.space_32,
   },
   actionButton: {
-    // backgroundColor: COLORS.WhiteRGBA15,
     width: 50,
     height: 50,
     justifyContent: "center",
@@ -287,11 +281,10 @@ const styles = StyleSheet.create({
   },
 
   playerControlsBottom: {
-    marginTop: "auto",
+    marginTop: SPACING.space_32,
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: SPACING.space_18,
-    // paddingBottom: SPACING.space_14,
     alignItems: "center",
     width: "100%",
     borderTopColor: COLORS.WhiteRGBA15,

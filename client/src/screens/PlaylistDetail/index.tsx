@@ -7,10 +7,12 @@ import {
   ScrollView,
   TouchableHighlight,
   TouchableOpacity,
+  StatusBar,
+  Animated,
 } from "react-native";
 import IMAGES from "../../constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
@@ -21,6 +23,7 @@ import SongItem from "../../components/SongItem";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
+  faChevronLeft,
   faHeart as faHeartSolid,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
@@ -63,27 +66,80 @@ interface PlaylistDetailProps {}
 
 const PlaylistDetail = (props: PlaylistDetailProps) => {
   const navigation = useNavigation();
+  const animatedValue = React.useRef(new Animated.Value(0)).current;
+
+  const headerAnimation = {
+    opacity: animatedValue.interpolate({
+      inputRange: [0, 200],
+      outputRange: [0, 1],
+      extrapolate: "clamp",
+    }),
+  };
+
+  const backgroundColorAnimation = {
+    backgroundColor: animatedValue.interpolate({
+      inputRange: [0, 50],
+      outputRange: ["transparent", COLORS.Black2],
+      extrapolate: "clamp",
+    }),
+  };
+
+  const imageAnimation = {
+    transform: [
+      {
+        scale: animatedValue.interpolate({
+          inputRange: [0, 400],
+          outputRange: [1, 0],
+          extrapolate: "clamp",
+        }),
+      },
+    ],
+    opacity: animatedValue.interpolate({
+      inputRange: [0, 200],
+      outputRange: [1, 0],
+      extrapolate: "clamp",
+    }),
+  };
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
+
       <SafeAreaView style={{ zIndex: 999 }}>
-        <View style={styles.header}>
+        <Animated.View style={[styles.header, backgroundColorAnimation]}>
           <TouchableHighlight
             underlayColor={COLORS.Black2}
             style={styles.buttonHeader}
             onPress={() => navigation.goBack()}
           >
-            <Ionicons name="chevron-back" size={24} color="black" style={styles.iconButtonHeader} />
+            <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
           </TouchableHighlight>
-        </View>
+          <Animated.Text style={[styles.titleHeader, headerAnimation]}>AI Music</Animated.Text>
+          <TouchableHighlight
+            underlayColor={COLORS.Black2}
+            style={[styles.buttonHeader, { opacity: 0 }]}
+            onPress={() => navigation.goBack()}
+          >
+            <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
+          </TouchableHighlight>
+        </Animated.View>
       </SafeAreaView>
-      <ScrollView>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        onScroll={(e) => {
+          const offsetY = e.nativeEvent.contentOffset.y;
+          animatedValue.setValue(offsetY);
+        }}
+        scrollEventThrottle={16}
+      >
         <View style={styles.wrapper}>
           <View style={[styles.wrapperImage]}>
-            <Image style={styles.image} source={IMAGES.AI} />
+            <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.AI} />
           </View>
 
-          <Text style={styles.textMain}>AI Music</Text>
+          <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>AI Music</Text>
 
           <Text
             style={{
@@ -119,7 +175,6 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             <TouchableOpacity style={styles.button}>
               <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
 
-              {/* <Ionicons name="play" size={28} style={{ color: COLORS.White1 }} /> */}
               <Text style={styles.textButton}>Play</Text>
             </TouchableOpacity>
 
@@ -162,7 +217,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Black1,
   },
   textMain: {
-    fontSize: FONTSIZE.size_24,
+    fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
     textAlign: "center",
     color: COLORS.White1,
@@ -177,11 +232,15 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     width: "100%",
-    // backgroundColor: "pink",
-    padding: SPACING.space_4,
+    paddingHorizontal: SPACING.space_8,
+    paddingVertical: SPACING.space_8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "none",
   },
   buttonHeader: {
-    backgroundColor: COLORS.button,
+    backgroundColor: COLORS.Black2,
     justifyContent: "center",
     alignItems: "center",
     width: 34,
@@ -192,13 +251,18 @@ const styles = StyleSheet.create({
     color: COLORS.White1,
     fontSize: FONTSIZE.size_24,
   },
+  titleHeader: {
+    fontSize: FONTSIZE.size_16,
+    fontFamily: FONTFAMILY.medium,
+    textAlign: "center",
+    color: COLORS.White1,
+  },
   wrapper: {
     alignItems: "center",
     justifyContent: "center",
-    // backgroundColor: "pink",
-    paddingVertical: SPACING.space_36,
-    // paddingHorizontal: SPACING.space_12,
+    paddingVertical: SPACING.space_12,
     gap: SPACING.space_8,
+    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
   },
   wrapperImage: {
     aspectRatio: 1,
@@ -207,13 +271,13 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     borderRadius: BORDERRADIUS.radius_8,
+    transformOrigin: "bottom",
   },
   groupButton: {
     width: "100%",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "pink",
     gap: SPACING.space_24,
   },
   button: {

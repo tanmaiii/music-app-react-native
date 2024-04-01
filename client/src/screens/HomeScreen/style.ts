@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     color: COLORS.White1,
   },
   HomeHeaderImage: {
-    width: 46,
-    height: 46,
+    width: 40,
+    height: 40,
     // borderRadius: 40,
   },
   HomeHeaderIcon: {

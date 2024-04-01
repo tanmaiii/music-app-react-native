@@ -11,7 +11,7 @@ interface IAuthContext {
   setCurrentUser: (user: TUser) => void;
   logout: () => void;
   login: (email: string, password: string) => void;
-  token: string;
+  token: string | null;
 }
 
 // Tạo AuthContext với giá trị mặc định là null
@@ -27,10 +27,11 @@ type Props = {
 
 export const AuthContextProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<TUser | null>(null);
-  const [token, setToken] = useState<string | undefined>(undefined);
+  const [token, setToken] = useState<string | null>(null);
 
   const logout = async () => {
     setCurrentUser(null);
+    setToken(null);
     await authApi.signout();
   };
 

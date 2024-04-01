@@ -17,7 +17,7 @@ import {
 import styles from "./style";
 import IMAGES from "../../constants/images";
 import { TSong } from "../../types/song.type";
-import { SPACING } from "../../theme/theme";
+import { COLORS, SPACING } from "../../theme/theme";
 import SongCard from "../../components/SongCard";
 import CategoryHeader from "../../components/CategoryHeader";
 import HomeTop from "../../components/HomeTop";
@@ -94,31 +94,18 @@ const HomeScreen = ({ navigation }: any) => {
     }),
   };
 
-  const handlePressUser = () => {
-    console.log(currentUser);
-
-    logout();
-  };
-
   useEffect(() => {
     if (!currentUser) return linkTo("/Login");
   });
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.Black1} />
+
       <SafeAreaView>
         <Animated.View style={[styles.HomeHeader, headerAnimation]}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={handlePressUser}>
-              {/* <Image
-                source={
-                  currentUser?.image_path
-                    ? { uri: apiConfig.imageURL(currentUser.image_path) }
-                    : IMAGES.POSTER
-                }
-                style={styles.HomeHeaderImage}
-              /> */}
+            <TouchableOpacity>
               <Image source={IMAGES.LOGO} style={styles.HomeHeaderImage} />
             </TouchableOpacity>
             <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>

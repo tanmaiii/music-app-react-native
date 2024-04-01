@@ -114,7 +114,6 @@ const SearchScreen = (props: SearchScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
 
       <SafeAreaView>
         <View style={styles.upperHeaderPlaceholder} />
@@ -123,7 +122,7 @@ const SearchScreen = (props: SearchScreenProps) => {
       <AnimatedSafeAreaView style={[styles.header, headerAnimation]}>
         <Animated.View style={[styles.upperHeader, opacityAnimation]}>
           <TouchableOpacity>
-            <Image source={IMAGES.AVATAR} style={styles.headerImage} />
+            <Image source={IMAGES.LOGO} style={styles.headerImage} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Search </Text>
         </Animated.View>

@@ -6,7 +6,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Black1,
-    padding: SPACING.space_16,
+    paddingHorizontal: SPACING.space_16,
+    paddingVertical: SPACING.space_32,
     overflow: "hidden",
     gap: SPACING.space_16,
     height: WINDOW_HEIGHT,

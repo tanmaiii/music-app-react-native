@@ -114,6 +114,7 @@ const SignupScreen = (props: SignupScreenProps) => {
           <View style={styles.box}>
             <Pressable onPress={() => inputPasswordRef.current?.focus()} style={styles.boxInput}>
               <TextInput
+                secureTextEntry={true} // Hiển thị dưới dạng mật khẩu
                 ref={inputPasswordRef}
                 passwordRules="*"
                 style={styles.textInput}

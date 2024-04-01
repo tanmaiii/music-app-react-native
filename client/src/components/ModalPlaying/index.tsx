@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useCallback, useEffect } from "react";
-import { StyleSheet, View, ImageBackground } from "react-native";
+import { StyleSheet, View, ImageBackground, StatusBar } from "react-native";
 import { usePlaying } from "../../context/PlayingContext";
 import IMAGES from "../../constants/images";
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils";
@@ -12,7 +12,7 @@ import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
 const ModalPlaying = () => {
   const { openBarSong, setOpenBarSong, setOpenModalSong, openModalSong } = usePlaying();
   const bottomSheetRef = React.useRef<BottomSheet>(null);
-  const snapPoints = React.useMemo(() => [160, WINDOW_HEIGHT + 160], []);
+  const snapPoints = React.useMemo(() => ["100%"], []);
 
   // callbacks
   const handleSheetChanges = React.useCallback((index: number) => {
@@ -36,13 +36,10 @@ const ModalPlaying = () => {
     openModalSong && handleOpenPress();
   }, [openModalSong]);
 
-  // useEffect(() => {
-  //   handleOpenPress();
-  // }, [openModalSong]);
-
   return (
     <View style={[styles.container, !openModalSong && { display: "none" }]}>
       {/* <View style={[styles.container]}> */}
+
       <BottomSheet
         snapPoints={snapPoints}
         ref={bottomSheetRef}
@@ -56,16 +53,6 @@ const ModalPlaying = () => {
         }}
       >
         <BottomSheetView style={styles.contentContainer}>
-          {/* <View
-              style={{
-                width: 48,
-                height: 6,
-                backgroundColor: COLORS.WhiteRGBA50,
-                borderRadius: BORDERRADIUS.radius_14,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            ></View> */}
           <SongDetail />
         </BottomSheetView>
       </BottomSheet>

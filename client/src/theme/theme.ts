@@ -33,6 +33,7 @@ export const SPACING: Spacing = {
 interface Color {
   Black: string;
   BlackRGB10: string;
+  BlackRGB06: string;
   Orange: string;
   OrangeRGBA0: string;
   Grey: string;
@@ -52,6 +53,7 @@ interface Color {
   White3: string;
   Black1: string;
   Black2: string;
+  Black3: string;
 
   button: string;
 }
@@ -59,6 +61,7 @@ interface Color {
 export const COLORS: Color = {
   Black: "#000000",
   BlackRGB10: "rgba(0,0,0,0.1)",
+  BlackRGB06: "rgba(0,0,0,0.06)",
   Orange: "#FF5524",
   OrangeRGBA0: "rgba(255,85,36,0)",
   Grey: "#151515",
@@ -77,7 +80,8 @@ export const COLORS: Color = {
   White2: "#b3b3b3",
   White3: "#f5f5f5",
   Black1: "#121212",
-  Black2: "#292929",
+  Black2: "#1a1a1a",
+  Black3: "#292929",
   button: "rgba(0, 0, 0, .3)",
 };
 
