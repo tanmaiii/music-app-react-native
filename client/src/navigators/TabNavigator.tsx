@@ -49,6 +49,21 @@ const StackNavigatorLibrary = () => {
   );
 };
 
+const StackNavigatorSearch = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name="SongDetail" component={SongDetail} />
+      <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
+      <Stack.Screen name="PlaylistDetail" component={PlaylistDetail} />
+    </Stack.Navigator>
+  );
+};
+
 const StackNavigatorUserAccount = () => {
   return (
     <Stack.Navigator
@@ -99,7 +114,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Search"
-        component={SearchScreen}
+        component={StackNavigatorSearch}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => {

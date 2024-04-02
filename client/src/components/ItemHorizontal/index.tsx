@@ -15,6 +15,7 @@ import { COLORS, FONTSIZE } from "../../theme/theme";
 import { AntDesign } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import TouchableScale from "../TouchableScale";
+import { useLinkTo, useNavigation } from "@react-navigation/native";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -31,17 +32,19 @@ interface ItemHorizontalProps {
   desc: string;
   image_path?: string;
   type?: string;
-  navigation: any;
   loading?: boolean;
 }
 
 const ItemHorizontal = (props: ItemHorizontalProps) => {
-  const { title, desc, image_path, id, type, navigation, loading = false } = props;
+  const { title, desc, image_path, id, type, loading = false } = props;
+
+  const navigation = useNavigation();
+  const linkTo = useLinkTo();
 
   const border = type === "Artist" ? 50 : 8;
 
   const handleTouch = () => {
-    navigation.push("ArtistDetail", { id: id });
+    linkTo("/ArtistDetail");
   };
 
   return (

@@ -121,7 +121,6 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           }}
         >
           <ItemHorizontal
-            navigation={props.navigation}
             id={1}
             title={"Liked Songs"}
             desc={"Playlist - 25 songs"}
@@ -131,7 +130,6 @@ const LibraryScreen = (props: LibraryScreenProps) => {
             return (
               <ItemHorizontal
                 id={item.id}
-                navigation={props.navigation}
                 key={index}
                 title={item.title}
                 desc={item.desc}
@@ -141,7 +139,6 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           })}
         </View>
       </ScrollView>
-      
     </View>
   );
 };

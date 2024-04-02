@@ -15,12 +15,14 @@ import {
   Animated,
 } from "react-native";
 import styles from "./style";
-import InputHeader from "../../components/InputHeader";
-import CategoryHeader from "../../components/CategoryHeader";
 import GenreCard from "../../components/GenreCard";
 import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import IMAGES from "../../constants/images";
 import GridView from "../../components/GridView";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faMagnifyingGlass, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useLinkTo } from "@react-navigation/native";
+import ModalSearch from "../../components/ModalSearch";
 const { width, height } = Dimensions.get("window");
 
 const DATA = [
@@ -91,6 +93,8 @@ interface SearchScreenProps {}
 
 const SearchScreen = (props: SearchScreenProps) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
+  const linkTo = useLinkTo();
+  const [openModal, setOpenModal] = React.useState(false);
 
   const headerAnimation = {
     transform: [
@@ -114,7 +118,6 @@ const SearchScreen = (props: SearchScreenProps) => {
 
   return (
     <View style={styles.container}>
-
       <SafeAreaView>
         <View style={styles.upperHeaderPlaceholder} />
       </SafeAreaView>
@@ -127,7 +130,18 @@ const SearchScreen = (props: SearchScreenProps) => {
           <Text style={styles.headerTitle}>Search </Text>
         </Animated.View>
         <View style={styles.lowerHeader}>
-          <InputHeader />
+          <TouchableOpacity style={styles.inputBox} onPress={() => setOpenModal(true)}>
+            <View style={styles.boxIcon}>
+              <FontAwesomeIcon
+                icon={faMagnifyingGlass}
+                size={FONTSIZE.size_20}
+                color={COLORS.Black1}
+              />
+            </View>
+            <View style={styles.textInput}>
+              <Text style={styles.text}>Artists, songs, or playlist</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </AnimatedSafeAreaView>
 
@@ -148,6 +162,8 @@ const SearchScreen = (props: SearchScreenProps) => {
           />
         </View>
       </ScrollView>
+
+      <ModalSearch isOpen={openModal} setIsOpen={setOpenModal} />
     </View>
   );
 };

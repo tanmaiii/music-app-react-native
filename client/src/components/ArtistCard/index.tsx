@@ -19,12 +19,8 @@ const ArtistCard = (props: any) => {
   const { artist, navigation, loading = false } = props;
   const linkTo = useLinkTo();
 
-  const handleTouch = () => {
-    linkTo("/ArtistDetail");
-  };
-
   return (
-    <TouchableOpacity onPress={() => handleTouch()}>
+    <TouchableOpacity onPress={() => linkTo("/ArtistDetail")}>
       <View
         style={[
           styles.container,
