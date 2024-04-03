@@ -59,7 +59,7 @@ const UserAccount = (props: UserAccountProps) => {
             <Image
               style={styles.accountAvatar}
               source={
-                currentUser.image_path
+                currentUser?.image_path
                   ? { uri: apiConfig.imageURL(currentUser.image_path) }
                   : IMAGES.AVATAR
               }

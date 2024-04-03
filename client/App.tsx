@@ -4,7 +4,7 @@ import { NavigationContainer, useLinkTo } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import TabNavigator from "./src/navigators/TabNavigator";
+import TabNavigator from "./src/navigation";
 import { Skeleton } from "moti/skeleton";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -78,10 +78,6 @@ export default function App() {
     </View>
   );
 }
-
-export const AuthScreen = () => {
-  return <Stack.Screen name="Login" component={Login} />;
-};
 
 export const Layout = () => {
   const { currentUser } = useAuth();
