@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Pressable,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
 import { usePlaying } from "../../context/PlayingContext";
 import IMAGES from "../../constants/images";
@@ -41,6 +42,8 @@ const LoginScreen = (props: LoginScreenProps) => {
   const { currentUser, setCurrentUser, login } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   React.useEffect(() => {
     setOpenBarSong(false);
   }, []);
@@ -66,8 +69,12 @@ const LoginScreen = (props: LoginScreenProps) => {
   });
 
   return (
-    <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+    <View style={styles.container} onTouchStart={Keyboard.dismiss}>
+      <View
+        // showsVerticalScrollIndicator={false}
+        // showsHorizontalScrollIndicator={false}
+        style={{ justifyContent: "center" }}
+      >
         <View style={styles.logo}>
           <Image style={styles.image} source={IMAGES.LOGO} />
         </View>
@@ -100,35 +107,38 @@ const LoginScreen = (props: LoginScreenProps) => {
             </View>
           )}
 
-          <View style={styles.box}>
-            <Pressable onPress={() => inputEmailRef.current?.focus()} style={styles.boxInput}>
-              <TextInput
-                ref={inputEmailRef}
-                style={styles.textInput}
-                onFocus={() => setIsFocusedEmail(true)}
-                onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
-                value={email}
-                onChangeText={(text) => setEmail(text)}
-              />
-              <Text style={[styles.titleBox, isFocusedEmail && { top: -16 }]}>Email</Text>
-              <Feather name="mail" size={24} color="black" style={{ color: COLORS.White2 }} />
-            </Pressable>
-          </View>
+          <View style={styles.boxs}>
+            <View style={styles.box}>
+              <Pressable onPress={() => inputEmailRef.current?.focus()} style={styles.boxInput}>
+                <TextInput
+                  ref={inputEmailRef}
+                  style={styles.textInput}
+                  onFocus={() => setIsFocusedEmail(true)}
+                  onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
+                />
+                <Text style={[styles.titleBox, isFocusedEmail && { top: -12 }]}>Email</Text>
+                <Feather name="mail" size={24} color="black" style={{ color: COLORS.White2 }} />
+              </Pressable>
+              <Text style={styles.descErr}></Text>
+            </View>
 
-          <View style={styles.box}>
-            <Pressable onPress={() => inputPasswordRef.current?.focus()} style={styles.boxInput}>
-              <TextInput
-                style={styles.textInput}
-                secureTextEntry={true} // Hiển thị dưới dạng mật khẩu
-                ref={inputPasswordRef}
-                onFocus={() => setIsFocusedPassword(true)}
-                onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
-                onChangeText={(text) => setPassword(text)}
-              />
-              <Text style={[styles.titleBox, isFocusedPassword && { top: -16 }]}>Password</Text>
-              <Feather name="lock" size={24} color="black" style={{ color: COLORS.White2 }} />
-            </Pressable>
-            <Text style={styles.descBox}>Password must be least 6 Character </Text>
+            <View style={styles.box}>
+              <Pressable onPress={() => inputPasswordRef.current?.focus()} style={styles.boxInput}>
+                <TextInput
+                  style={styles.textInput}
+                  secureTextEntry={true} // Hiển thị dưới dạng mật khẩu
+                  ref={inputPasswordRef}
+                  onFocus={() => setIsFocusedPassword(true)}
+                  onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
+                  onChangeText={(text) => setPassword(text)}
+                />
+                <Text style={[styles.titleBox, isFocusedPassword && { top: -12 }]}>Password</Text>
+                <Feather name="lock" size={24} color="black" style={{ color: COLORS.White2 }} />
+              </Pressable>
+              <Text style={styles.descErr}></Text>
+            </View>
           </View>
 
           <Pressable onPress={() => linkTo("/Home")}>
@@ -168,7 +178,7 @@ const LoginScreen = (props: LoginScreenProps) => {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };

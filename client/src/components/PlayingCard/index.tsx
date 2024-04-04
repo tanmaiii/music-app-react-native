@@ -14,10 +14,12 @@ import styles from "./style";
 import IMAGES from "../../constants/images";
 const { width, height } = Dimensions.get("window");
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
+// import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
 import { usePlaying } from "../../context/PlayingContext";
 import { BlurView } from "@react-native-community/blur";
+import { faForwardStep, faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 
 interface PlayingCardProps {}
 const PlayingCard = (props: PlayingCardProps) => {
@@ -33,7 +35,7 @@ const PlayingCard = (props: PlayingCardProps) => {
   return openBarSong ? (
     <Pressable style={[styles.container, { width: width }]} onPress={handleTouch}>
       <ImageBackground
-        source={IMAGES.POSTER}
+        source={IMAGES.AI}
         style={{
           width: "100%",
           height: "100%",
@@ -44,15 +46,18 @@ const PlayingCard = (props: PlayingCardProps) => {
       >
         <View style={styles.wrapper}>
           <View style={styles.left}>
-            <Image style={styles.image} source={IMAGES.POSTER} />
-            <Text style={styles.title}>Thằng điên {songPlaying}</Text>
+            <Image style={styles.image} source={IMAGES.AI} />
+            <View>
+              <Text style={styles.title}>Thằng điên</Text>
+              <Text style={styles.artist}>Phương Ly</Text>
+            </View>
           </View>
           <View style={styles.right}>
             <TouchableOpacity onPress={() => setPlay((play) => !play)} style={styles.iconPlay}>
               {play ? (
-                <FontAwesome5 name="play" style={[styles.icon]} />
+                <FontAwesomeIcon icon={faPlay} size={26} color={COLORS.White1} />
               ) : (
-                <FontAwesome name="stop" style={[styles.icon]} />
+                <FontAwesomeIcon icon={faPause} size={26} color={COLORS.White1} />
               )}
             </TouchableOpacity>
             <TouchableOpacity
@@ -62,7 +67,7 @@ const PlayingCard = (props: PlayingCardProps) => {
                 console.log("pressed");
               }}
             >
-              <FontAwesome name="forward" color="black" style={[styles.iconDisable]} />
+              <FontAwesomeIcon icon={faForwardStep} size={26} color={COLORS.White1} />
             </TouchableOpacity>
           </View>
         </View>

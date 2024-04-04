@@ -12,8 +12,8 @@ export default class authValidation {
         // )
         .required(),
       name: Joi.string().empty().max(50).required(),
-      gender: Joi.string().empty().max(45).required(),
-      brithday: Joi.string().empty().max(50).required(),
+      gender: Joi.string().empty().max(45),
+      brithday: Joi.string().empty().max(50),
     }),
   };
   static signin = {

@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   wrapper: {
     // opacity: 0.9,
     // blur: '10',
-    // backgroundColor: COLORS.Black1,
+    backgroundColor: COLORS.Black1,
     overflow: "hidden",
     padding: SPACING.space_8,
     display: "flex",
@@ -46,6 +46,11 @@ const styles = StyleSheet.create({
     fontSize: FONTSIZE.size_16,
     color: COLORS.White1,
     fontFamily: FONTFAMILY.medium,
+  },
+  artist: {
+    fontSize: FONTSIZE.size_14,
+    color: COLORS.White2,
+    fontFamily: FONTFAMILY.regular,
   },
   icon: {
     fontSize: FONTSIZE.size_24,
