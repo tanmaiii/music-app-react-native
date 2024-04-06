@@ -18,7 +18,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
 import { usePlaying } from "../../context/PlayingContext";
-import { BlurView } from "@react-native-community/blur";
+// import { BlurView } from "@react-native-community/blur";
+import { BlurView } from "expo-blur";
 import { faForwardStep, faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 
 interface PlayingCardProps {}
@@ -42,11 +43,13 @@ const PlayingCard = (props: PlayingCardProps) => {
           borderRadius: BORDERRADIUS.radius_8,
           overflow: "hidden",
         }}
-        blurRadius={90}
+        blurRadius={60}
       >
         <View style={styles.wrapper}>
           <View style={styles.left}>
-            <Image style={styles.image} source={IMAGES.AI} />
+            <View style={[styles.boxImage, styles.shadowProp]}>
+              <Image style={styles.image} source={IMAGES.AI} />
+            </View>
             <View>
               <Text style={styles.title}>Thằng điên</Text>
               <Text style={styles.artist}>Phương Ly</Text>

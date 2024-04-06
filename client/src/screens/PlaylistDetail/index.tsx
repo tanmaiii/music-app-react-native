@@ -14,7 +14,7 @@ import IMAGES from "../../constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import PlaylistCard from "../../components/PlaylistCard";
 import { FlatList } from "react-native-gesture-handler";
@@ -66,7 +66,10 @@ interface PlaylistDetailProps {}
 
 const PlaylistDetail = (props: PlaylistDetailProps) => {
   const navigation = useNavigation();
+  const route = useRoute();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
+
+  console.log(route);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -139,7 +142,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.AI} />
           </View>
 
-          <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>AI Music</Text>
+          <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>AI Music </Text>
 
           <Text
             style={{
@@ -200,7 +203,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
 
           <View style={{ width: "100%" }}>
             {songs.map((item) => (
-              <SongItem />
+              <SongItem song={item} />
             ))}
           </View>
         </View>

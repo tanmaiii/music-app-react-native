@@ -8,6 +8,8 @@ import { AntDesign } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 import SongDetail from "../../screens/SongDetail";
 import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { BlurView } from "expo-blur";
 
 const ModalPlaying = () => {
   const { openBarSong, setOpenBarSong, setOpenModalSong, openModalSong } = usePlaying();
@@ -16,8 +18,8 @@ const ModalPlaying = () => {
 
   // callbacks
   const handleSheetChanges = React.useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-    if (index === -1) {
+    // console.log("handleSheetChanges", index);
+    if (index !== 0) {
       setOpenModalSong(false);
       setOpenBarSong(true);
     }
@@ -31,15 +33,15 @@ const ModalPlaying = () => {
     (props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
     []
   );
-
   useEffect(() => {
+    console.log("openModalSong", openModalSong);
+
     openModalSong && handleOpenPress();
+    !openModalSong && handleClosePress();
   }, [openModalSong]);
 
   return (
     <View style={[styles.container, !openModalSong && { display: "none" }]}>
-      {/* <View style={[styles.container]}> */}
-
       <BottomSheet
         snapPoints={snapPoints}
         ref={bottomSheetRef}
@@ -47,10 +49,12 @@ const ModalPlaying = () => {
         backdropComponent={renderBackdrop}
         enablePanDownToClose={true}
         handleComponent={() => null}
-        backgroundStyle={{
-          backgroundColor: "none",
-          borderRadius: 12,
-        }}
+        backgroundStyle={[
+          {
+            backgroundColor: "none",
+            borderRadius: 12,
+          },
+        ]}
       >
         <BottomSheetView style={styles.contentContainer}>
           <SongDetail />
@@ -69,6 +73,7 @@ const styles = StyleSheet.create({
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,
     zIndex: 100,
+    // backgroundColor: "pink",
   },
   contentContainer: {
     flex: 1,

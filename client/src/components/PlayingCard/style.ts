@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   wrapper: {
     // opacity: 0.9,
     // blur: '10',
-    backgroundColor: COLORS.Black1,
+    backgroundColor: COLORS.Black3,
     overflow: "hidden",
     padding: SPACING.space_8,
     display: "flex",
@@ -35,11 +35,22 @@ const styles = StyleSheet.create({
     gap: SPACING.space_4,
   },
   right: { display: "flex", flexDirection: "row", alignItems: "center", gap: SPACING.space_8 },
+  shadowProp: {
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 10,
+  },
+  boxImage: {
+    height: 44,
+    width: 44,
+  },
   image: {
     // display: "none",
-    height: 44,
     borderRadius: BORDERRADIUS.radius_4,
-    width: 44,
+    width: "100%",
+    height: "100%",
     objectFit: "cover",
   },
   title: {

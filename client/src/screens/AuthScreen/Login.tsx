@@ -20,16 +20,24 @@ import { WINDOW_WIDTH } from "../../utils";
 import { Feather } from "@expo/vector-icons";
 import TouchableScale from "../../components/TouchableScale";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
-import { useLinkTo } from "@react-navigation/native";
-import { AntDesign } from "@expo/vector-icons";
+import { useLinkTo, useNavigation } from "@react-navigation/native";
 import styles from "./style";
 import { authApi } from "../../apis";
-import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+  faLock,
+  faEnvelope,
+  faCircleExclamation,
+  faEyeSlash,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
+import { NavigationProp } from "../../navigation/TStack";
 
 interface LoginScreenProps {}
 
 const LoginScreen = (props: LoginScreenProps) => {
+  const navigation = useNavigation<NavigationProp>();
   const { openBarSong, setOpenBarSong } = usePlaying();
   const [err, setErr] = React.useState<string | null>("");
   const linkTo = useLinkTo();
@@ -41,8 +49,7 @@ const LoginScreen = (props: LoginScreenProps) => {
   const [password, setPassword] = React.useState<string>("");
   const { currentUser, setCurrentUser, login } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const [viewPassword, setViewPassword] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setOpenBarSong(false);
@@ -65,8 +72,10 @@ const LoginScreen = (props: LoginScreenProps) => {
   };
 
   React.useEffect(() => {
-    if (currentUser) return linkTo("/Home");
-  });
+    if (currentUser) {
+      navigation.navigate("Login");
+    }
+  }, [currentUser]);
 
   return (
     <View style={styles.container} onTouchStart={Keyboard.dismiss}>
@@ -102,7 +111,8 @@ const LoginScreen = (props: LoginScreenProps) => {
 
           {err && (
             <View style={styles.boxErr}>
-              <AntDesign name="exclamationcircleo" size={24} style={{ color: COLORS.White1 }} />
+              <FontAwesomeIcon icon={faCircleExclamation} size={24} color={COLORS.White1} />
+
               <Text style={styles.textErr}>{err}</Text>
             </View>
           )}
@@ -110,45 +120,54 @@ const LoginScreen = (props: LoginScreenProps) => {
           <View style={styles.boxs}>
             <View style={styles.box}>
               <Pressable onPress={() => inputEmailRef.current?.focus()} style={styles.boxInput}>
+                <FontAwesomeIcon icon={faEnvelope} size={20} color={COLORS.White2} />
                 <TextInput
                   ref={inputEmailRef}
                   style={styles.textInput}
                   onFocus={() => setIsFocusedEmail(true)}
                   onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
                   value={email}
-                  onChangeText={(text) => setEmail(text)}
+                  onChangeText={(text) => setEmail(text.trim())}
                 />
-                <Text style={[styles.titleBox, isFocusedEmail && { top: -12 }]}>Email</Text>
-                <Feather name="mail" size={24} color="black" style={{ color: COLORS.White2 }} />
+                <Text style={[styles.titleBox, isFocusedEmail && styles.titleBoxMove]}>Email</Text>
               </Pressable>
               <Text style={styles.descErr}></Text>
             </View>
 
             <View style={styles.box}>
               <Pressable onPress={() => inputPasswordRef.current?.focus()} style={styles.boxInput}>
+                <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
+
                 <TextInput
                   style={styles.textInput}
-                  secureTextEntry={true} // Hiển thị dưới dạng mật khẩu
+                  secureTextEntry={viewPassword ? false : true} // Hiển thị dưới dạng mật khẩu
                   ref={inputPasswordRef}
                   onFocus={() => setIsFocusedPassword(true)}
                   onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
-                  onChangeText={(text) => setPassword(text)}
+                  onChangeText={(text) => setPassword(text.trim())}
                 />
-                <Text style={[styles.titleBox, isFocusedPassword && { top: -12 }]}>Password</Text>
-                <Feather name="lock" size={24} color="black" style={{ color: COLORS.White2 }} />
+                <TouchableOpacity onPress={() => setViewPassword(!viewPassword)}>
+                  {viewPassword ? (
+                    <FontAwesomeIcon icon={faEyeSlash} size={20} style={{ color: COLORS.White2 }} />
+                  ) : (
+                    <FontAwesomeIcon icon={faEye} size={20} style={{ color: COLORS.White2 }} />
+                  )}
+                </TouchableOpacity>
+                <Text style={[styles.titleBox, isFocusedPassword && styles.titleBoxMove]}>
+                  Password
+                </Text>
               </Pressable>
               <Text style={styles.descErr}></Text>
             </View>
           </View>
 
-          <Pressable onPress={() => linkTo("/Home")}>
+          <Pressable>
             <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
           </Pressable>
 
           <TouchableOpacity style={styles.button} onPress={HandlePress}>
             {loading ? <ActivityIndicator /> : <Text style={styles.titleLogin}>Log In</Text>}
           </TouchableOpacity>
-          <Text style={styles.titleOr}>Or login with</Text>
 
           <TouchableOpacity style={styles.buttonGoogle}>
             <Image source={IMAGES.GOOGLE} style={{ width: 30, height: 30 }} />
@@ -165,7 +184,7 @@ const LoginScreen = (props: LoginScreenProps) => {
             >
               Don't have an account?{" "}
             </Text>
-            <TouchableOpacity onPress={() => linkTo("/Signup")}>
+            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
               <Text
                 style={{
                   fontSize: FONTSIZE.size_16,

@@ -11,6 +11,7 @@ import {
   ScrollView,
   Animated,
   FlatList,
+  Platform,
 } from "react-native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -24,6 +25,10 @@ import { TSong } from "../../types";
 import { Skeleton } from "moti/skeleton";
 import ArtistCard from "../../components/ArtistCard";
 import PlaylistCard from "../../components/PlaylistCard";
+import { NavigationProp } from "../../navigation/TStack";
+import { StackNavigationProp } from "@react-navigation/stack";
+import Constants from 'expo-constants';
+const statusBarHeight = Constants.statusBarHeight;
 
 const HEIGHT_AVATAR = 360;
 
@@ -60,12 +65,10 @@ const songs: TSong[] = [
   { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
 ];
 
-interface ArtistDetailProps {
-  navigation: any;
-}
+interface ArtistDetailProps {}
 
 const ArtistDetail = (props: ArtistDetailProps) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [random, setRandom] = React.useState(false);
   const [follow, setFollow] = React.useState(false);
@@ -99,15 +102,22 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const backgroundColorAnimation = {
     backgroundColor: animatedValue.interpolate({
       inputRange: [0, 100], // Phạm vi scroll
-      outputRange: ["rgba(0,0,0,0)", "rgba(0,0,0,.7)"], // Màu nền tương ứng
+      outputRange: ["rgba(0,0,0,0)", COLORS.Black2], // Màu nền tương ứng
       extrapolate: "clamp", // Giữ giá trị nằm trong phạm vi inputRange
     }),
   };
 
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ zIndex: 99 }}>
-        <Animated.View style={[styles.header, backgroundColorAnimation]}>
+        <Animated.View
+          style={[
+            styles.header,
+            backgroundColorAnimation,
+            Platform.OS === "ios" && { paddingTop: statusBarHeight },
+          ]}
+        >
           <TouchableHighlight
             underlayColor={COLORS.Black2}
             style={styles.buttonHeader}
@@ -240,31 +250,33 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             </TouchableHighlight>
 
             <View style={styles.SlideSong}>
-              <CategoryHeader title={"Top Songs"} />
+              <CategoryHeader
+                title={"Songs"}
+                PropFunction={() => navigation.navigate("ListSong", { id: 1 })}
+              />
               <FlatList
                 data={songs}
                 snapToInterval={WINDOW_WIDTH - 20}
-                horizontal 
+                horizontal
                 showsHorizontalScrollIndicator={false}
                 decelerationRate={0}
                 renderItem={({ item }) => (
                   <View style={{ width: WINDOW_WIDTH - 20 }}>
-                    <SongItem />
-                    <SongItem />
-                    <SongItem />
-                    <SongItem />
+                    <SongItem song={item} />
+                    <SongItem song={item} />
+                    <SongItem song={item} />
+                    <SongItem song={item} />
                   </View>
                 )}
               />
             </View>
 
             <ScrollView style={{}}>
-              {/* <Slider songs={songs} type="songs" title="Song Popular" />
-              <Slider songs={songs} type="songs" title="Playlist Artist" />
-              <Slider songs={songs} type="songs" title="Song Popular" /> */}
-
               <View style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}>
-                <CategoryHeader title={"Playlist popular"} />
+                <CategoryHeader
+                  title={"Playlist popular"}
+                  PropFunction={() => navigation.navigate("ListPlaylist", { id: 1 })}
+                />
                 <FlatList
                   data={songs}
                   keyExtractor={(item: any) => item.id}
@@ -275,11 +287,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                   decelerationRate={0}
                   style={{ gap: SPACING.space_12 }}
                   renderItem={({ item, index }) => (
-                    <PlaylistCard
-                      navigation={navigation}
-                      cardWidth={WINDOW_WIDTH / 2.4}
-                      playlist={item}
-                    />
+                    <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
                   )}
                 />
               </View>

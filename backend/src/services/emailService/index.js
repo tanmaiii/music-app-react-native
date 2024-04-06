@@ -21,10 +21,10 @@ export const sendResetPasswordEmail = async (to, token) => {
   await sendEmail(to, subject, html);
 };
 
-export const sendVerificationEmail = async (email, token) => {
+export const sendVerificationEmail = async (email, code) => {
   const subject = "Email Verification";
-  const verificationEmailUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}&email=${email}`;
-  const html = template.verifyEmail(verificationEmailUrl, process.env.APP_NAME);
+  // const verificationEmailUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}&email=${email}`;
+  const html = template.verifyEmail(code, process.env.APP_NAME);
   await sendEmail(email, subject, html);
 };
 

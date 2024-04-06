@@ -160,7 +160,6 @@ const HomeScreen = ({ navigation }: any) => {
               style={{ gap: SPACING.space_12 }}
               renderItem={({ item, index }) => (
                 <PlaylistCard
-                  navigation={navigation}
                   cardWidth={WINDOW_WIDTH / 2.4}
                   playlist={item}
                 />
@@ -180,7 +179,7 @@ const HomeScreen = ({ navigation }: any) => {
               decelerationRate={0}
               style={{ gap: SPACING.space_12 }}
               renderItem={({ item, index }) => (
-                <ArtistCard navigation={navigation} cardWidth={WINDOW_WIDTH / 3} artist={item} />
+                <ArtistCard cardWidth={WINDOW_WIDTH / 3} artist={item} />
               )}
             />
           </View>

@@ -16,6 +16,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import TouchableScale from "../TouchableScale";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
+import {NavigationProp} from '../../navigation/TStack'
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -37,14 +38,14 @@ interface ItemHorizontalProps {
 
 const ItemHorizontal = (props: ItemHorizontalProps) => {
   const { title, desc, image_path, id, type, loading = false } = props;
+  const navigation = useNavigation<NavigationProp>();
 
-  const navigation = useNavigation();
   const linkTo = useLinkTo();
 
   const border = type === "Artist" ? 50 : 8;
 
   const handleTouch = () => {
-    linkTo("/ArtistDetail");
+    navigation.navigate('Artist', {id: 123})
   };
 
   return (

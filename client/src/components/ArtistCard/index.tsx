@@ -4,7 +4,9 @@ import IMAGES from "../../constants/images";
 import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
 import { Skeleton } from "moti/skeleton";
-import { useLinkTo } from "@react-navigation/native";
+import { useLinkTo, useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../navigation/TStack";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -16,11 +18,16 @@ const SkeletonCommonProps = {
 } as const;
 
 const ArtistCard = (props: any) => {
-  const { artist, navigation, loading = false } = props;
+  const { artist, loading = false } = props;
   const linkTo = useLinkTo();
+  const navigation = useNavigation<NavigationProp>();
+
+  const handlePress = () => {
+    navigation.navigate("Artist", { id: artist.id });
+  };
 
   return (
-    <TouchableOpacity onPress={() => linkTo("/ArtistDetail")}>
+    <TouchableOpacity onPress={() => handlePress()}>
       <View
         style={[
           styles.container,

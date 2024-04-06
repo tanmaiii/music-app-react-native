@@ -4,6 +4,7 @@ import { SPACING, FONTSIZE, COLORS, FONTFAMILY } from "../../theme/theme";
 const styles = StyleSheet.create({
   container: {
     paddingVertical: SPACING.space_8,
+    paddingHorizontal: SPACING.space_12,
     display: "flex",
     flexDirection: "row",
     backgroundColor: COLORS.Black1,

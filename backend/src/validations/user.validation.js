@@ -1,6 +1,12 @@
 import { query } from "express";
 import Joi from "joi";
 
+const bodyToken = {
+  body: Joi.object().keys({
+    token: Joi.string().required(),
+  }),
+};
+
 const bodySchema = {
   body: Joi.object().keys({
     email: Joi.string().email().max(255),
@@ -21,11 +27,11 @@ const querySchema = {
   }),
 };
 
-const cookieSchema = {
-  cookies: Joi.object().keys({
-    accessToken: Joi.string().required(),
-  }),
-};
+// const cookieSchema = {
+//   cookies: Joi.object().keys({
+//     accessToken: Joi.string().required(),
+//   }),
+// };
 export default class userValidation {
   static getUser = {
     params: Joi.object().keys({
@@ -33,11 +39,11 @@ export default class userValidation {
     }),
   };
   static getMe = {
-    ...cookieSchema,
+    ...bodyToken,
   };
   static updateUser = {
     ...bodySchema,
-    ...cookieSchema,
+    ...bodyToken,
   };
   static getAllUser = {
     ...querySchema,

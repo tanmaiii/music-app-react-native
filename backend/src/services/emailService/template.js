@@ -1,4 +1,4 @@
-export const verifyEmail = (url, appName) => {
+export const verifyEmail = (code, appName) => {
   return `
 <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -223,9 +223,9 @@ export const verifyEmail = (url, appName) => {
                                             <tr>
                                                 <td align="center">
                                                     <div>
-                                                        <a href="${url}" class="button button--blue">Verify
-                                                            Email</a>
-                                                    </div>
+                                                        <p>Your code is: </p> 
+                                                        <h2>${code && code}</h2>
+                                                      </div>
                                                 </td>
                                             </tr>
                                         </table>
@@ -237,7 +237,6 @@ export const verifyEmail = (url, appName) => {
                                                     <p class="sub">If you’re having trouble clicking the button, copy
                                                         and paste the URL below into your web browser.
                                                     </p>
-                                                    <p class="sub"><a href="${url}">${url}</a></p>
                                                 </td>
                                             </tr>
                                         </table>

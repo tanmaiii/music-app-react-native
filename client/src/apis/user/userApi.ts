@@ -8,7 +8,7 @@ const userApi = {
   },
   getMe(token: string): Promise<TUser> {
     const url = "user/me";
-    return axiosClient.get(url);
+    return axiosClient.post(url, {token});
   },
   findByEmail: (email: string) => {
     const url = "user/email";

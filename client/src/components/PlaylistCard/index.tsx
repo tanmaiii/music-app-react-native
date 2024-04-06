@@ -1,13 +1,16 @@
 import * as React from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Image, Animated } from "react-native";
 import { TSong } from "../../types/song.type";
 import IMAGES from "../../constants/images";
 import { Skeleton } from "moti/skeleton";
 
 import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
-import { useLinkTo, useNavigation } from "@react-navigation/native";
+import { useNavigation, useLinkTo } from "@react-navigation/native";
 import { usePlaying } from "../../context/PlayingContext";
+import { PATH } from "../../constants/path";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../navigation/TStack";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -17,6 +20,7 @@ const SkeletonCommonProps = {
   },
   backgroundColor: COLORS.Black2,
 } as const;
+
 type TPlaylist = {
   id: number;
   title: string;
@@ -26,19 +30,25 @@ type TPlaylist = {
 interface PlaylistCardProps {
   loading?: boolean;
   playlist: TPlaylist;
-  cardWidth: number;
-  navigation: any;
+  cardWidth?: number;
 }
 
+import { NavigationProp } from "../../navigation/TStack";
+
 const PlaylistCard = (props: PlaylistCardProps) => {
-  const { playlist, navigation, loading = false } = props;
+  const { playlist, loading = false, cardWidth = "100%" } = props;
+
   const { setOpenBarSong, setSongPlaying } = usePlaying();
   const linkTo = useLinkTo();
+  const navigation = useNavigation<NavigationProp>();
+
+  const goToScreen = () => {};
 
   const handlePress = () => {
     // setOpenBarSong(true);
     // setSongPlaying(playlist.id);
-    linkTo("/PlaylistDetail");
+    // linkTo(`/${PATH.PLAYLIST}/${playlist.id}`);
+    navigation.navigate("Playlist", { id: 123 });
   };
 
   return (

@@ -11,6 +11,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import { usePlaying } from "../../context/PlayingContext";
 import IMAGES from "../../constants/images";
@@ -20,19 +21,35 @@ import { Feather, FontAwesome6 } from "@expo/vector-icons";
 import TouchableScale from "../../components/TouchableScale";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
-import { useLinkTo } from "@react-navigation/native";
+import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import styles from "./style";
 import { useAuth } from "../../context/AuthContext";
 import { authApi } from "../../apis";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+  faCircleCheck,
+  faCircleExclamation,
+  faEnvelope,
+  faEye,
+  faEyeSlash,
+  faLock,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { text } from "@fortawesome/fontawesome-svg-core";
+import { NavigationProp } from "../../navigation/TStack";
 
 interface SignupScreenProps {}
 
 const SignupScreen = (props: SignupScreenProps) => {
+  const navigation = useNavigation<NavigationProp>();
   const { openBarSong, setOpenBarSong } = usePlaying();
   const [err, setErr] = React.useState<string>("");
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [success, setSuccess] = React.useState<string>("");
   const [errName, setErrName] = React.useState<string>("");
   const [errEmail, setErrEmail] = React.useState<string>("");
+  const [viewPassword, setViewPassword] = React.useState<boolean>(false);
   const [errPassword, setErrPassword] = React.useState<string>("");
   const linkTo = useLinkTo();
   const [isFocusedEmail, setIsFocusedEmail] = React.useState<boolean>(false);
@@ -54,19 +71,24 @@ const SignupScreen = (props: SignupScreenProps) => {
   }, []);
 
   const handlePress = () => {
+    setSuccess("");
+    setErr("");
+    setLoading(true);
     if (name.trim().length === 0 || errName) return inputNameRef.current.focus();
     if (email.trim().length === 0 || errEmail) return inputEmailRef.current.focus();
     if (password.trim().length === 0 || errPassword) return inputPasswordRef.current.focus();
-    if (errName && errEmail && errPassword) return console.log("Co loi");
 
     const post = async () => {
       try {
         const res = await authApi.signup(name, email, password);
-        console.log(res);
+        res && setSuccess("Account registration successful ");
+        setLoading(false);
       } catch (err: any) {
         console.log("err", err.response.data.conflictError);
+        setErr(err.response.data.conflictError);
       }
     };
+    setLoading(false);
     post();
   };
 
@@ -82,7 +104,7 @@ const SignupScreen = (props: SignupScreenProps) => {
 
   const handleChangeTextEmail = (text) => {
     let typingTimer;
-    setEmail(text);
+    setEmail(text.trim());
     setErrEmail("");
     clearTimeout(typingTimer);
 
@@ -99,7 +121,7 @@ const SignupScreen = (props: SignupScreenProps) => {
 
   const handleChangeTextPassword = (text) => {
     let typingTimer;
-    setPassword(text);
+    setPassword(text.trim());
     setErrPassword("");
 
     clearTimeout(typingTimer);
@@ -155,18 +177,26 @@ const SignupScreen = (props: SignupScreenProps) => {
             </Text>
           </View>
 
-          {/* {err && (
+          {success && (
+            <View style={styles.boxSucc}>
+              <FontAwesomeIcon icon={faCircleCheck} size={24} color={COLORS.White1} />
+              <Text style={styles.textSucc}>{success}</Text>
+            </View>
+          )}
+          {err && (
             <View style={styles.boxErr}>
-              <AntDesign name="exclamationcircleo" size={24} style={{ color: COLORS.White1 }} />
+              <FontAwesomeIcon icon={faCircleExclamation} size={24} color={COLORS.White1} />
               <Text style={styles.textErr}>{err}</Text>
             </View>
-          )} */}
+          )}
           <View style={styles.boxs}>
             <View style={styles.box}>
               <Pressable
                 onPress={() => inputNameRef.current?.focus()}
                 style={[styles.boxInput, errName && styles.boxInputErr]}
               >
+                <FontAwesomeIcon icon={faUser} size={20} color={COLORS.White2} />
+
                 <TextInput
                   ref={inputNameRef}
                   style={styles.textInput}
@@ -174,8 +204,7 @@ const SignupScreen = (props: SignupScreenProps) => {
                   onBlur={() => name.trim() === "" && setIsFocusedName(false)}
                   onChangeText={(text) => handleChangeTextName(text)}
                 />
-                <Text style={[styles.titleBox, isFocusedName && { top: -12 }]}>Name</Text>
-                <FontAwesome6 name="circle-user" size={24} style={{ color: COLORS.White2 }} />
+                <Text style={[styles.titleBox, isFocusedName && styles.titleBoxMove]}>Name</Text>
               </Pressable>
               <Text numberOfLines={1} style={styles.descErr}>
                 {errName && errName}
@@ -187,6 +216,7 @@ const SignupScreen = (props: SignupScreenProps) => {
                 onPress={() => inputEmailRef.current?.focus()}
                 style={[styles.boxInput, errEmail && styles.boxInputErr]}
               >
+                <FontAwesomeIcon icon={faEnvelope} size={20} color={COLORS.White2} />
                 <TextInput
                   ref={inputEmailRef}
                   style={styles.textInput}
@@ -194,8 +224,7 @@ const SignupScreen = (props: SignupScreenProps) => {
                   onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
                   onChangeText={(text) => handleChangeTextEmail(text)}
                 />
-                <Text style={[styles.titleBox, isFocusedEmail && { top: -12 }]}>Email</Text>
-                <Feather name="mail" size={24} color="black" style={{ color: COLORS.White2 }} />
+                <Text style={[styles.titleBox, isFocusedEmail && styles.titleBoxMove]}>Email</Text>
               </Pressable>
               <Text numberOfLines={1} style={styles.descErr}>
                 {errEmail && errEmail}
@@ -207,8 +236,10 @@ const SignupScreen = (props: SignupScreenProps) => {
                 onPress={() => inputPasswordRef.current?.focus()}
                 style={[styles.boxInput, errPassword && styles.boxInputErr]}
               >
+                <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
+
                 <TextInput
-                  secureTextEntry={true} // Hiển thị dưới dạng mật khẩu
+                  secureTextEntry={viewPassword ? false : true} // Hiển thị dưới dạng mật khẩu
                   ref={inputPasswordRef}
                   passwordRules="*"
                   style={styles.textInput}
@@ -217,8 +248,16 @@ const SignupScreen = (props: SignupScreenProps) => {
                   onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
                   onChangeText={(text) => handleChangeTextPassword(text)}
                 />
-                <Text style={[styles.titleBox, isFocusedPassword && { top: -12 }]}>Password</Text>
-                <Feather name="lock" size={24} color="black" style={{ color: COLORS.White2 }} />
+                <Text style={[styles.titleBox, isFocusedPassword && styles.titleBoxMove]}>
+                  Password
+                </Text>
+                <TouchableOpacity onPress={() => setViewPassword(!viewPassword)}>
+                  {viewPassword ? (
+                    <FontAwesomeIcon icon={faEyeSlash} size={20} style={{ color: COLORS.White2 }} />
+                  ) : (
+                    <FontAwesomeIcon icon={faEye} size={20} style={{ color: COLORS.White2 }} />
+                  )}
+                </TouchableOpacity>
               </Pressable>
               <Text numberOfLines={2} style={styles.descErr}>
                 {errPassword && errPassword}
@@ -228,10 +267,9 @@ const SignupScreen = (props: SignupScreenProps) => {
 
           <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
 
-          <TouchableOpacity style={styles.button} onPress={() => handlePress()}>
-            <Text style={styles.titleLogin}>Sign Up</Text>
+          <TouchableOpacity disabled={loading} style={styles.button} onPress={() => handlePress()}>
+            {loading ? <ActivityIndicator /> : <Text style={styles.titleLogin}>Sign Up</Text>}
           </TouchableOpacity>
-          <Text style={styles.titleOr}>Or signup with</Text>
 
           <TouchableOpacity style={styles.buttonGoogle}>
             <Image source={IMAGES.GOOGLE} style={{ width: 30, height: 30 }} />
@@ -248,7 +286,7 @@ const SignupScreen = (props: SignupScreenProps) => {
             >
               Already have an account?{" "}
             </Text>
-            <TouchableOpacity onPress={() => linkTo("/Login")}>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
               <Text
                 style={{
                   fontSize: FONTSIZE.size_16,

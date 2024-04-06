@@ -6,6 +6,7 @@ import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import { useNavigation } from "@react-navigation/native";
 import { usePlaying } from "../../context/PlayingContext";
+import { TSong } from "../../types";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -18,11 +19,12 @@ const SkeletonCommonProps = {
 
 interface SongItemProps {
   loading?: boolean;
+  song: TSong;
 }
 
 const SongItem = (props: SongItemProps) => {
   const { setOpenBarSong } = usePlaying();
-  const { loading = false } = props;
+  const { song, loading = false } = props;
   const [activeMore, setActiveMore] = React.useState(false);
   const navigation = useNavigation();
 
@@ -41,7 +43,7 @@ const SongItem = (props: SongItemProps) => {
         <View style={styles.body}>
           <View style={{ gap: SPACING.space_4 }}>
             <Skeleton radius={4} width={180} height={18} {...SkeletonCommonProps}>
-              {loading ? null : <Text style={styles.textMain}>Chắc ai đó sẽ về</Text>}
+              {loading ? null : <Text style={styles.textMain}>Chắc ai đó sẽ về {song.id}</Text>}
             </Skeleton>
             <Skeleton radius={4} width={100} height={18} {...SkeletonCommonProps}>
               {loading ? null : <Text style={styles.textEtra}>12.343.000 - 2017</Text>}
@@ -98,7 +100,7 @@ const styles = StyleSheet.create({
   },
   body: {
     marginLeft: SPACING.space_8,
-    borderTopWidth: 0.6,
+    borderBottomWidth: 0.6,
     borderColor: COLORS.WhiteRGBA15,
     flex: 1,
     flexDirection: "row",

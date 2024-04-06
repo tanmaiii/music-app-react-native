@@ -31,7 +31,8 @@ import {
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import IMAGES from "../../constants/images";
 import Modal from "../../components/Modal";
-import { useLinkTo } from "@react-navigation/native";
+import { useLinkTo, useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../navigation/TStack";
 
 interface UserAccountProps {}
 
@@ -39,6 +40,7 @@ const UserAccount = (props: UserAccountProps) => {
   const [openModal, setOpenModal] = React.useState(false);
   const { logout } = useAuth();
   const linkTo = useLinkTo();
+  const navigation = useNavigation<NavigationProp>();
   const { currentUser } = useAuth();
 
   return (
@@ -88,7 +90,10 @@ const UserAccount = (props: UserAccountProps) => {
 
       <View style={styles.line} />
 
-      <TouchableHighlight underlayColor={COLORS.Black} onPress={() => linkTo("/EditAccount")}>
+      <TouchableHighlight
+        underlayColor={COLORS.Black}
+        onPress={() => navigation.navigate("UserEditAccount")}
+      >
         <View style={styles.box}>
           <View style={styles.boxLeft}>
             <View style={styles.boxIcon}>

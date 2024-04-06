@@ -13,6 +13,19 @@ const styles = StyleSheet.create({
     height: WINDOW_HEIGHT,
     justifyContent: "center",
   },
+  boxSucc: {
+    backgroundColor: COLORS.Green,
+    paddingHorizontal: SPACING.space_14,
+    paddingVertical: SPACING.space_10,
+    borderRadius: BORDERRADIUS.radius_8,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.space_8,
+  },
+  textSucc: {
+    fontSize: FONTSIZE.size_16,
+    color: COLORS.White1,
+  },
   boxErr: {
     backgroundColor: COLORS.Red,
     paddingHorizontal: SPACING.space_14,
@@ -41,7 +54,7 @@ const styles = StyleSheet.create({
   },
   body: {
     flexDirection: "column",
-    gap: SPACING.space_12,
+    gap: SPACING.space_14,
   },
   bodyTop: {
     justifyContent: "center",
@@ -49,11 +62,12 @@ const styles = StyleSheet.create({
     gap: SPACING.space_12,
     marginBottom: SPACING.space_4,
   },
-  boxs: {},
+  boxs: {
+    gap: SPACING.space_8,
+  },
   box: {
     flexDirection: "column",
-    gap: SPACING.space_4,
-    marginBottom: SPACING.space_8,
+    gap: SPACING.space_2,
   },
   boxInput: {
     borderColor: COLORS.White2,
@@ -72,6 +86,7 @@ const styles = StyleSheet.create({
   descErr: {
     fontSize: FONTSIZE.size_14,
     color: COLORS.Red,
+    height: 20,
   },
   titleBox: {
     fontSize: FONTSIZE.size_16,
@@ -81,7 +96,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.space_4,
     borderRadius: BORDERRADIUS.radius_4,
     position: "absolute",
-    left: 14,
+    left: 36,
+  },
+  titleBoxMove: {
+    top: -10,
+    fontSize: 14,
   },
   textInput: {
     fontSize: FONTSIZE.size_16,

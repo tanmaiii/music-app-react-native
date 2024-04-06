@@ -12,6 +12,7 @@ interface IAuthContext {
   logout: () => void;
   login: (email: string, password: string) => void;
   token: string | null;
+  loadingAuth: boolean;
 }
 
 // Tạo AuthContext với giá trị mặc định là null
@@ -28,6 +29,7 @@ type Props = {
 export const AuthContextProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<TUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [loadingAuth, setLoadingAuth] = useState<boolean>(false);
 
   const logout = async () => {
     setCurrentUser(null);
@@ -36,9 +38,12 @@ export const AuthContextProvider = ({ children }: Props) => {
   };
 
   const login = async (email: string, password: string) => {
+    setLoadingAuth(true);
     const res = await authApi.signin(email, password);
     setCurrentUser(res.data);
     setToken(res.token);
+    console.log("currentUser", currentUser);
+    setLoadingAuth(false);
   };
 
   const signup = async (name: string, email: string, password: string) => {
@@ -76,6 +81,9 @@ export const AuthContextProvider = ({ children }: Props) => {
   }, []);
 
   useEffect(() => {
+    console.log("token", token);
+    console.log("currentUser", currentUser);
+
     AsyncStorage.setItem("user", JSON.stringify(currentUser));
     AsyncStorage.setItem("token", JSON.stringify(token));
   }, [currentUser, token]);
@@ -87,6 +95,7 @@ export const AuthContextProvider = ({ children }: Props) => {
     token,
     logout,
     login,
+    loadingAuth,
   };
 
   // Sử dụng AuthContext.Provider để cung cấp giá trị cho các component con

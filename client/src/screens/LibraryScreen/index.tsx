@@ -116,7 +116,6 @@ const LibraryScreen = (props: LibraryScreenProps) => {
 
         <View
           style={{
-            padding: SPACING.space_10,
             paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 50,
           }}
         >

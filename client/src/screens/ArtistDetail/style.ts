@@ -23,12 +23,15 @@ const styles = StyleSheet.create({
     color: COLORS.White1,
     fontSize: FONTSIZE.size_24,
   },
+  // header
   header: {
     padding: SPACING.space_12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     position: "absolute",
+    top: 0,
+    left: 0,
     width: "100%",
     zIndex: 100,
   },
@@ -45,6 +48,7 @@ const styles = StyleSheet.create({
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
   },
+  // 
   avatar: {
     position: "absolute",
     width: "100%",

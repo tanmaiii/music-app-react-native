@@ -6,7 +6,6 @@ import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.Black1,
-    // height: WINDOW_HEIGHT,
   },
   header: {
     display: "flex",

@@ -25,12 +25,14 @@ import { PlayingContextProvider } from "./src/context/PlayingContext";
 import { AuthContextProvider, useAuth } from "./src/context/AuthContext";
 import React, { useEffect } from "react";
 import LottieView from "lottie-react-native";
+import { RootStackParamList } from "./src/navigation/TStack";
 
-const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   const linkTo = useLinkTo();
+
   let [fontLoaded] = useFonts({
     "Roboto-Black": require("./src/assets/fonts/Roboto-Black.ttf"),
     "Roboto-Bold": require("./src/assets/fonts/Roboto-Bold.ttf"),
@@ -86,11 +88,11 @@ export const Layout = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {currentUser ? (
-          <Stack.Screen name="Tab" component={TabNavigator} />
+          <Stack.Screen name="Home" component={TabNavigator} />
         ) : (
           <>
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Signup" component={Signup} />
+            <Stack.Screen name={"Login"} component={Login} />
+            <Stack.Screen name={"Signup"} component={Signup} />
           </>
         )}
       </Stack.Navigator>

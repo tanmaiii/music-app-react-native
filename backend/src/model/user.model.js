@@ -10,6 +10,7 @@ const User = function (user) {
   this.image_path = user.image_path;
   this.verified = user.verified;
   this.is_admin = user.is_admin;
+  this.email_verified_at = user.email_verified_at;
 };
 
 User.create = (newUser, result) => {

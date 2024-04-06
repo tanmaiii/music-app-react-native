@@ -1,10 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/HomeScreen";
-import SearchScreen from "../screens/SearchScreen";
-import LibraryScreen from "../screens/LibraryScreen";
-import UserAccount from "../screens/UserAccount";
+
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faHouse,
@@ -14,13 +11,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../theme/theme";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import SongDetail from "../screens/SongDetail";
 import ArtistDetail from "../screens/ArtistDetail";
 import PlaylistDetail from "../screens/PlaylistDetail";
+import HomeScreen from "../screens/HomeScreen";
+import SearchScreen from "../screens/SearchScreen";
+import LibraryScreen from "../screens/LibraryScreen";
+import UserAccount from "../screens/UserAccount";
 import Account from "../screens/UserAccount/Account";
+import ListSongScreen from "../screens/ListSongScreen";
+import ListPlaylistScreen from "../screens/ListPlaylistScreen";
+import { RootStackParamList } from "./TStack";
 
-const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackNavigatorHome = () => {
   return (
@@ -29,10 +34,12 @@ const StackNavigatorHome = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="SongDetail" component={SongDetail} />
-      <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
-      <Stack.Screen name="PlaylistDetail" component={PlaylistDetail} />
+      <Stack.Screen name={"Home"} component={HomeScreen} />
+      <Stack.Screen name={"Song"} component={SongDetail} />
+      <Stack.Screen name={"Artist"} component={ArtistDetail} />
+      <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
+      <Stack.Screen name={"ListSong"} component={ListSongScreen} />
+      <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
     </Stack.Navigator>
   );
 };
@@ -44,10 +51,12 @@ const StackNavigatorLibrary = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Library" component={LibraryScreen} />
-      <Stack.Screen name="SongDetail" component={SongDetail} />
-      <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
-      <Stack.Screen name="PlaylistDetail" component={PlaylistDetail} />
+      <Stack.Screen name={"Library"} component={LibraryScreen} />
+      <Stack.Screen name={"Song"} component={SongDetail} />
+      <Stack.Screen name={"Artist"} component={ArtistDetail} />
+      <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
+      <Stack.Screen name={"ListSong"} component={ListSongScreen} />
+      <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
     </Stack.Navigator>
   );
 };
@@ -59,10 +68,12 @@ const StackNavigatorSearch = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Search" component={SearchScreen} />
-      <Stack.Screen name="SongDetail" component={SongDetail} />
-      <Stack.Screen name="ArtistDetail" component={ArtistDetail} />
-      <Stack.Screen name="PlaylistDetail" component={PlaylistDetail} />
+      <Stack.Screen name={"Search"} component={SearchScreen} />
+      <Stack.Screen name={"Song"} component={SongDetail} />
+      <Stack.Screen name={"Artist"} component={ArtistDetail} />
+      <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
+      <Stack.Screen name={"ListSong"} component={ListSongScreen} />
+      <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
     </Stack.Navigator>
   );
 };
@@ -74,8 +85,8 @@ const StackNavigatorUserAccount = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="UserAccount" component={UserAccount} />
-      <Stack.Screen name="EditAccount" component={Account} />
+      <Stack.Screen name="User" component={UserAccount} />
+      <Stack.Screen name="UserEditAccount" component={Account} />
     </Stack.Navigator>
   );
 };
@@ -94,7 +105,7 @@ const TabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="Home"
+        name={"Home"}
         component={StackNavigatorHome}
         options={{
           tabBarShowLabel: false,
@@ -118,7 +129,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Search"
+        name={"Search"}
         component={StackNavigatorSearch}
         options={{
           tabBarShowLabel: false,
@@ -142,7 +153,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Library"
+        name={"Library"}
         component={StackNavigatorLibrary}
         options={{
           tabBarShowLabel: false,
@@ -166,7 +177,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Account"
+        name={"User"}
         component={StackNavigatorUserAccount}
         options={{
           tabBarShowLabel: false,
