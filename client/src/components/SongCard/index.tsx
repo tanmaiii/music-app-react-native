@@ -9,6 +9,7 @@ import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { usePlaying } from "../../context/PlayingContext";
+import { NavigationProp } from "../../navigation/TStack";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -23,17 +24,17 @@ interface SongCardProps {
   loading?: boolean;
   song: TSong;
   cardWidth: number;
-  navigation: any;
 }
 
 const SongCard = (props: SongCardProps) => {
-  const { song, navigation, loading = false } = props;
-  const { setOpenBarSong, setSongPlaying } = usePlaying();
+  const { song, loading = false } = props;
+  const { setOpenBarSong, setSongPlaying, setOpenModalSong } = usePlaying();
   const linkTo = useLinkTo();
+  const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {
-    setOpenBarSong(true);
-    setSongPlaying(song.id);
+    // setOpenBarSong(true);
+    navigation.navigate("Song", { id: 123 });
   };
 
   return (

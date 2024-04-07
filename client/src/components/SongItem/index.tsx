@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     overflow: "hidden",
-    borderRadius: BORDERRADIUS.radius_8,
+    borderRadius: BORDERRADIUS.radius_4,
     alignItems: "center",
   },
   image: {

@@ -22,6 +22,7 @@ import UserAccount from "../screens/UserAccount";
 import Account from "../screens/UserAccount/Account";
 import ListSongScreen from "../screens/ListSongScreen";
 import ListPlaylistScreen from "../screens/ListPlaylistScreen";
+import ListSongLikeScreen from "../screens/ListSongLikeScreen";
 import { RootStackParamList } from "./TStack";
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -57,6 +58,7 @@ const StackNavigatorLibrary = () => {
       <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
       <Stack.Screen name={"ListSong"} component={ListSongScreen} />
       <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
+      <Stack.Screen name={"ListSongLike"} component={ListSongLikeScreen} />
     </Stack.Navigator>
   );
 };

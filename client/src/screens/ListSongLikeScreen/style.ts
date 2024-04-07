@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 
 const styles = StyleSheet.create({
   container: {
@@ -28,6 +29,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "none",
+    height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
   },
   buttonHeader: {
     // backgroundColor: COLORS.Black2,
@@ -49,38 +51,34 @@ const styles = StyleSheet.create({
     transform: [{ translateY: 20 }],
   },
   wrapper: {
+    // paddingVertical: SPACING.space_12,
+    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
+    gap: SPACING.space_18,
+    marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+  },
+  wrapperTop: {
+    gap: SPACING.space_12,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: SPACING.space_12,
-    gap: SPACING.space_8,
-    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
-    marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
   },
   wrapperImage: {
     aspectRatio: 1,
   },
   image: {
-    width: 280,
-    height: 280,
+    width: 300,
+    height: 300,
     borderRadius: BORDERRADIUS.radius_8,
     transformOrigin: "bottom",
   },
-  groupButton: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: SPACING.space_24,
-  },
+
   button: {
     width: 160,
-    // flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: COLORS.Primary,
     paddingHorizontal: SPACING.space_14,
-    paddingVertical: SPACING.space_8,
+    paddingVertical: 10,
     borderRadius: 25,
     gap: SPACING.space_8,
   },
@@ -94,17 +92,44 @@ const styles = StyleSheet.create({
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
   },
-  // textDesc: {
-  //   fontSize: FONTSIZE.size_14,
-  //   fontFamily: FONTFAMILY.regular,
-  //   paddingHorizontal: SPACING.space_12,
-  //   color: COLORS.White2,
-  //   width: "100%",
-  //   marginBottom: SPACING.space_12,
-  // },
-  info:{
-    
-  }
+  textDesc: {
+    fontSize: FONTSIZE.size_14,
+    fontFamily: FONTFAMILY.regular,
+    paddingHorizontal: SPACING.space_12,
+    color: COLORS.White2,
+    width: "100%",
+    marginBottom: SPACING.space_12,
+  },
+
+  //Modal search
+
+  modalSearch: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    backgroundColor: COLORS.Black1,
+    flex: 1,
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
+    zIndex: 99,
+    display: "none",
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: COLORS.Black1,
+  },
+  scroll: {
+    height: "100%",
+    paddingHorizontal: SPACING.space_12,
+  },
+  titleHeaderScroll: {
+    fontSize: FONTSIZE.size_16,
+    color: COLORS.White1,
+    fontFamily: FONTFAMILY.medium,
+  },
+  scrollViewContent: {
+    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 20,
+  },
 });
 
 export default styles;

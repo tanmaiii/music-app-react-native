@@ -29,6 +29,7 @@ import apiConfig from "../../apis/apiConfig";
 import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface HomeScreenProps {}
 
@@ -71,7 +72,7 @@ const HomeScreen = ({ navigation }: any) => {
   const [greeting, setGreeting] = React.useState("");
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const linkTo = useLinkTo();
-  const { currentUser, setCurrentUser, logout } = useAuth();
+  const { currentUser, setCurrentUser, logout, token } = useAuth();
 
   useEffect(() => {
     const date = new Date();
@@ -94,6 +95,11 @@ const HomeScreen = ({ navigation }: any) => {
     }),
   };
 
+  const handleGetToken = async () => {
+    // console.log(AsyncStorage.getItem("token"));
+    console.log("token", token);
+  };
+
   useEffect(() => {
     if (!currentUser) return linkTo("/Login");
   });
@@ -105,7 +111,7 @@ const HomeScreen = ({ navigation }: any) => {
       <SafeAreaView>
         <Animated.View style={[styles.HomeHeader, headerAnimation]}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleGetToken()}>
               <Image source={IMAGES.LOGO} style={styles.HomeHeaderImage} />
             </TouchableOpacity>
             <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>
@@ -159,10 +165,7 @@ const HomeScreen = ({ navigation }: any) => {
               decelerationRate={0}
               style={{ gap: SPACING.space_12 }}
               renderItem={({ item, index }) => (
-                <PlaylistCard
-                  cardWidth={WINDOW_WIDTH / 2.4}
-                  playlist={item}
-                />
+                <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
               )}
             />
           </View>

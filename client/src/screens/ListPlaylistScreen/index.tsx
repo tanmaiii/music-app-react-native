@@ -124,6 +124,7 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
           <View style={styles.buttonBack}></View>
         </Animated.View>
       </SafeAreaView>
+      
       <View style={styles.scroll}>
         <FlatList
           onScroll={(e) => {

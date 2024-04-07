@@ -115,20 +115,20 @@ export const sendVerificationEmail = (req, res) => {
         charset: "numeric",
       });
 
+      await emailService.sendVerificationEmail(email, code);
+
       VerifyCodes.create(user.id, code, async (err, result) => {
         if (err) {
           return res.status(401).json({ conflictError: err });
         }
       });
 
-      await emailService.sendVerificationEmail(email, code);
-
       console.log("✉️ Send verification email : " + email + " - code : " + code);
 
       return res.json({
         success: true,
         data: "Email verification sent successfully !",
-        code: code,
+        // code: code,
       });
     });
   } catch (error) {
@@ -142,26 +142,36 @@ export const verifyEmail = async (req, res) => {
     const { code, email } = req.body;
 
     User.findByEmail(email, (err, user) => {
+      if (err || !user) return res.status(500).json({ error: "User not found" });
       if (user.email_verified_at !== null) {
         console.log(" Account has been verified! ");
-        return res.json("Verified !");
+        return res.json({
+          success: true,
+          data: "Account has been verified! ",
+        });
       } else {
         VerifyCodes.find(user.id, (err, verify) => {
           if (err || !verify) {
             return res.status(500).json({ conflictError: "Error during request processing" });
           }
 
-          if (parseInt(verify.code) === parseInt(code)) {
+          const codeSql = parseInt(verify.code);
+
+          if (codeSql === code) {
+            // return res.json({ codeSql, code });
             User.verify(email, (err, result) => {
-              if (!err) {
-                return res.json("Email authentication successful!");
-              } else {
+              if (err || !result) {
                 return res.status(401).json(err);
+              } else {
+                return res.json({
+                  success: true,
+                  data: "Email authentication successful!",
+                });
               }
             });
+          } else {
+            return res.status(500).json({ conflictError: "123 Code code does not match" });
           }
-
-          return res.status(500).json({ conflictError: "Code code does not match" });
         });
       }
     });

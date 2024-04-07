@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     padding: SPACING.space_4,
   },
   wrapper: {
-    backgroundColor: COLORS.Black2,
+    backgroundColor: COLORS.Black3,
     borderRadius: BORDERRADIUS.radius_4,
     overflow: "hidden",
     flexDirection: "row",

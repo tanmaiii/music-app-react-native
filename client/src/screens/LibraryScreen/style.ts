@@ -87,6 +87,52 @@ const styles = StyleSheet.create({
   scroll: {
     height: "100%",
   },
+
+  likeSong: {
+    paddingVertical: SPACING.space_8,
+    paddingHorizontal: SPACING.space_12,
+    display: "flex",
+    flexDirection: "row",
+    backgroundColor: COLORS.Black1,
+  },
+  boxImage: {
+    width: 70,
+    height: 70,
+    display: "flex",
+    alignItems: "center",
+    textAlign: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.Primary,
+    borderRadius: BORDERRADIUS.radius_8,
+  },
+  image: {
+    width: 70,
+    height: 70,
+    objectFit: "cover",
+    aspectRatio: 1 / 1,
+  },
+  body: {
+    padding: SPACING.space_12,
+    display: "flex",
+    justifyContent: "center",
+    gap: SPACING.space_4,
+  },
+  title: {
+    fontSize: FONTSIZE.size_16,
+    fontFamily: FONTFAMILY.medium,
+    color: COLORS.White1,
+  },
+  desc: {
+    display: "flex",
+    flexDirection: "row",
+    gap: SPACING.space_4,
+    alignItems: "center",
+  },
+  descText: {
+    fontSize: FONTSIZE.size_14,
+    fontFamily: FONTFAMILY.regular,
+    color: COLORS.White2,
+  },
 });
 
 export default styles;

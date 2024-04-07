@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -10,11 +11,13 @@ import {
   StatusBar,
   Animated,
   Platform,
+  FlatList,
+  Keyboard,
 } from "react-native";
 import IMAGES from "../../constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { TSong } from "../../types";
 import SongItem from "../../components/SongItem";
@@ -23,12 +26,16 @@ import {
   faArrowUpFromBracket,
   faChevronLeft,
   faHeart as faHeartSolid,
+  faMagnifyingGlass,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
+interface ListSongLikeScreenProps {}
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+import ModalSearchSong from "../../components/ModalSearchSong";
 
 const songs: TSong[] = [
   {
@@ -61,16 +68,43 @@ const songs: TSong[] = [
   { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
   { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
   { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
+  {
+    id: 11,
+    title: "Despacito, Despacito ,Despacito, Despacito",
+    image_path: "despacito.jpg",
+    author: "Luis Fonsi",
+  },
+  { id: 12, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
+  {
+    id: 13,
+    title: "Uptown Funk",
+    image_path: "uptown_funk.jpg",
+    author: "Mark Ronson ft. Bruno Mars",
+  },
+  { id: 14, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
+  {
+    id: 15,
+    title: "See You Again",
+    image_path: "see_you_again.jpg",
+    author: "Wiz Khalifa ft. Charlie Puth",
+  },
+  { id: 16, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
+  {
+    id: 17,
+    title: "Old Town Road",
+    image_path: "old_town_road.jpg",
+    author: "Lil Nas X ft. Billy Ray Cyrus",
+  },
+  { id: 18, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
+  { id: 19, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
+  { id: 20, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
 ];
 
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
-
-interface PlaylistDetailProps {}
-
-const PlaylistDetail = (props: PlaylistDetailProps) => {
+const ListSongLikeScreen = (props: ListSongLikeScreenProps) => {
   const navigation = useNavigation();
   const route = useRoute();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -97,27 +131,10 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     }),
   };
 
-  const imageAnimation = {
-    transform: [
-      {
-        scale: animatedValue.interpolate({
-          inputRange: [0, 400],
-          outputRange: [1, 0],
-          extrapolate: "clamp",
-        }),
-      },
-    ],
-    opacity: animatedValue.interpolate({
-      inputRange: [0, 200],
-      outputRange: [1, 0],
-      extrapolate: "clamp",
-    }),
-  };
-
   const heightAnimation = {
     height: animatedValue.interpolate({
       inputRange: [0, 200],
-      outputRange: [400, 0],
+      outputRange: [200, 0],
       extrapolate: "clamp",
     }),
     opacity: animatedValue.interpolate({
@@ -136,23 +153,20 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
 
       <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
 
-      <SafeAreaView style={{ zIndex: 999 }}>
+      <SafeAreaView style={{ zIndex: 99 }}>
         <Animated.View
           style={[
             styles.header,
             backgroundColorAnimation,
-            Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
+            Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_12 },
           ]}
         >
           <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
             <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
           </TouchableOpacity>
-          <Animated.Text style={[styles.titleHeader, headerAnimation]}>AI Music 123</Animated.Text>
-          <TouchableOpacity
-            style={[styles.buttonHeader, { opacity: 0 }]}
-            onPress={() => navigation.goBack()}
-          >
-            <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
+          <Animated.Text style={[styles.titleHeader, headerAnimation]}>Favorite song</Animated.Text>
+          <TouchableOpacity style={[styles.buttonHeader]} onPress={() => setIsOpenModal(true)}>
+            <FontAwesomeIcon icon={faMagnifyingGlass} size={20} style={{ color: COLORS.White1 }} />
           </TouchableOpacity>
         </Animated.View>
       </SafeAreaView>
@@ -167,81 +181,35 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         scrollEventThrottle={16}
       >
         <View style={styles.wrapper}>
-          <View style={[styles.wrapperImage]}>
-            <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.AI} />
-          </View>
+          <View style={styles.wrapperTop}>
+            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>Favorite song</Text>
 
-          <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>AI Music </Text>
-
-          <Text
-            style={{
-              fontSize: FONTSIZE.size_16,
-              color: COLORS.Primary,
-              fontFamily: FONTFAMILY.regular,
-            }}
-          >
-            Sound Hub
-          </Text>
-
-          <Text style={styles.textExtra}>12 Songs</Text>
-
-          <View style={styles.groupButton}>
-            <TouchableOpacity style={styles.buttonExtra}>
-              <FontAwesomeIcon
-                icon={faArrowUpFromBracket}
-                size={18}
-                style={{ color: COLORS.White2 }}
-              />
-
-              <Text
-                style={{
-                  fontSize: FONTSIZE.size_12,
-                  color: COLORS.White2,
-                  fontFamily: FONTFAMILY.regular,
-                }}
-              >
-                Share
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.textExtra}>12 Songs</Text>
 
             <TouchableOpacity style={styles.button}>
               <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
-
               <Text style={styles.textButton}>Play</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.buttonExtra}>
-              <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
-              <Text
-                style={{
-                  fontSize: FONTSIZE.size_12,
-                  color: COLORS.White2,
-                  fontFamily: FONTFAMILY.regular,
-                }}
-              >
-                Like
-              </Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.textDesc}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, vitae obcaecati
-            accusamus labore eius aperiam soluta dolores nihil velit eveniet aliquid facere
-            reprehenderit. Iusto maiores sit saepe modi non? Hic?
-          </Text>
-
-          <View style={{ width: "100%" }}>
-            {songs.map((item) => (
-              <SongItem song={item} />
-            ))}
+          <View style={[styles.scroll]} onTouchStart={Keyboard.dismiss}>
+            <FlatList
+              data={songs}
+              contentContainerStyle={{
+                paddingBottom: HEIGHT.navigator + 20,
+              }}
+              renderItem={({ item, index }) => <SongItem song={item} />}
+            />
           </View>
         </View>
       </ScrollView>
+
+      <ModalSearchSong isOpen={isOpenModal} setIsOpen={setIsOpenModal} />
     </View>
   );
 };
 
-export default PlaylistDetail;
+export default ListSongLikeScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -264,8 +232,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     width: "100%",
-    paddingHorizontal: SPACING.space_8,
-    paddingVertical: SPACING.space_8,
+    padding: SPACING.space_12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -291,12 +258,13 @@ const styles = StyleSheet.create({
     transform: [{ translateY: 20 }],
   },
   wrapper: {
+    gap: SPACING.space_18,
+    marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+  },
+  wrapperTop: {
+    gap: SPACING.space_12,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: SPACING.space_12,
-    gap: SPACING.space_8,
-    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
-    marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
   },
   wrapperImage: {
     aspectRatio: 1,
@@ -307,22 +275,15 @@ const styles = StyleSheet.create({
     borderRadius: BORDERRADIUS.radius_8,
     transformOrigin: "bottom",
   },
-  groupButton: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: SPACING.space_24,
-  },
+
   button: {
     width: 160,
-    // flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: COLORS.Primary,
     paddingHorizontal: SPACING.space_14,
-    paddingVertical: SPACING.space_8,
+    paddingVertical: 10,
     borderRadius: 25,
     gap: SPACING.space_8,
   },
@@ -344,4 +305,5 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: SPACING.space_12,
   },
+  scroll: {},
 });

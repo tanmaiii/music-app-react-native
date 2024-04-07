@@ -5,7 +5,7 @@ const User = function (user) {
   this.email = user.email;
   this.password = user.password;
   this.name = user.name;
-  this.brithday= user.brithday;
+  this.brithday = user.brithday;
   this.gender = user.gender;
   this.image_path = user.image_path;
   this.verified = user.verified;
@@ -44,7 +44,7 @@ User.update = (userId, newUser, result) => {
 };
 
 User.findByEmail = (email, result) => {
-  db.query(`SELECT * from users WHERE email = '${email}'`, (err, res) => {
+  db.query(`SELECT * from users WHERE email = ?`, email, (err, res) => {
     if (err) {
       result(err, null);
       return;

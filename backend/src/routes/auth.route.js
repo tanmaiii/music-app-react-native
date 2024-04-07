@@ -20,10 +20,10 @@ router.post(
 
 router.post(
   "/send-verification-email",
-  validate(authController.sendVerificationEmail),
+  validate(authValidation.sendVerificationEmail),
   authController.sendVerificationEmail
 );
-router.post("/verify-email", validate(authController.verifyEmail), authController.verifyEmail);
+router.post("/verify-email", validate(authValidation.verifyEmail), authController.verifyEmail);
 router.post(
   "/change-password",
   validate(authValidation.changePassword),

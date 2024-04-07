@@ -42,7 +42,6 @@ export const AuthContextProvider = ({ children }: Props) => {
     const res = await authApi.signin(email, password);
     setCurrentUser(res.data);
     setToken(res.token);
-    console.log("currentUser", currentUser);
     setLoadingAuth(false);
   };
 
@@ -52,24 +51,34 @@ export const AuthContextProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const getInfo = async () => {
+      setLoadingAuth(true);
       try {
         const res = await userApi.getMe(token);
         setCurrentUser(res);
         console.log("Get Me", res);
+        setLoadingAuth(false);
       } catch (error) {
         console.log("Get Me", error);
         setCurrentUser(null);
       }
+      setLoadingAuth(false);
     };
     token && getInfo();
   }, []);
 
   useEffect(() => {
-    const getUserFromStorage = async () => {
+    const getUserStorage = async () => {
       try {
         const userStorage = await AsyncStorage.getItem("user");
         userStorage ? setCurrentUser(JSON.parse(userStorage)) : setCurrentUser(null);
+      } catch (error) {
+        console.error("Error getting user from AsyncStorage:", error);
+        return null;
+      }
+    };
 
+    const getTokenStorage = async () => {
+      try {
         const tokenStorage = await AsyncStorage.getItem("token");
         tokenStorage ? setToken(JSON.parse(tokenStorage)) : setToken(null);
       } catch (error) {
@@ -77,15 +86,19 @@ export const AuthContextProvider = ({ children }: Props) => {
         return null;
       }
     };
-    getUserFromStorage();
+
+    getUserStorage();
+    getTokenStorage();
   }, []);
 
   useEffect(() => {
-    console.log("token", token);
-    console.log("currentUser", currentUser);
+    // Chuyển đổi object thành chuỗi JSON
+    const currentUserJSON = JSON.stringify(currentUser);
+    const tokenJSON = JSON.stringify(token);
 
-    AsyncStorage.setItem("user", JSON.stringify(currentUser));
-    AsyncStorage.setItem("token", JSON.stringify(token));
+    // Lưu vào AsyncStorage với các key tương ứng
+    AsyncStorage.setItem("token", tokenJSON);
+    AsyncStorage.setItem("user", currentUserJSON);
   }, [currentUser, token]);
 
   // Cập nhật giá trị của AuthContextProvider

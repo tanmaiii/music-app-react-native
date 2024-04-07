@@ -22,6 +22,10 @@ import { COLORS, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "../../utils";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faHeart, faThumbTack } from "@fortawesome/free-solid-svg-icons";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../navigation/TStack";
 const { width, height } = Dimensions.get("window");
 
 interface LibraryScreenProps {
@@ -34,8 +38,7 @@ const item = {
 };
 
 const DATA = [
-  { id: 1, title: "1 Front Left", desc: "Song", type: "Song" },
-  { id: 2, title: "2 Les", desc: "Song", type: "Song" },
+  { id: 2, title: "2 Les", desc: "Playlist", type: "Playlist" },
   { id: 3, title: "3 New jeans", desc: "Artist", type: "Artist" },
   { id: 4, title: "4 New jeans", desc: "Artist", type: "Artist" },
   { id: 5, title: "5 New jeans", desc: "Artist", type: "Artist" },
@@ -47,6 +50,7 @@ const DATA = [
 
 const LibraryScreen = (props: LibraryScreenProps) => {
   const [active, setActive] = useState("Playlists");
+  const navigation = useNavigation<NavigationProp>();
 
   return (
     <View style={[styles.container]}>
@@ -119,12 +123,30 @@ const LibraryScreen = (props: LibraryScreenProps) => {
             paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 50,
           }}
         >
-          <ItemHorizontal
+          {/* <ItemHorizontal
             id={1}
             title={"Liked Songs"}
             desc={"Playlist - 25 songs"}
             type={"Playlist"}
-          />
+          /> */}
+          <TouchableHighlight
+            underlayColor={COLORS.Black}
+            onPress={() => navigation.navigate("ListSongLike", { id: 123 })}
+          >
+            <View style={styles.likeSong}>
+              <View style={styles.boxImage}>
+                <FontAwesomeIcon icon={faHeart} size={24} color={COLORS.White1} />
+              </View>
+              <View style={styles.body}>
+                <Text style={styles.title}>Like Song</Text>
+                <View style={styles.desc}>
+                  <FontAwesomeIcon icon={faThumbTack} size={14} color={COLORS.Primary} />
+                  <Text style={styles.descText}>Playlist - 26 songs</Text>
+                </View>
+              </View>
+            </View>
+          </TouchableHighlight>
+
           {DATA.map((item, index) => {
             return (
               <ItemHorizontal

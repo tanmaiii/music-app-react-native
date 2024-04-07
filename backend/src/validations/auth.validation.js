@@ -60,8 +60,9 @@ export default class authValidation {
     }),
   };
   static verifyEmail = {
-    query: Joi.object().keys({
-      token: Joi.string().required(),
+    body: Joi.object().keys({
+      email: Joi.string().email().max(255).empty().required(),
+      code: Joi.number().required()
     }),
   };
   static changePassword = {

@@ -1,5 +1,5 @@
 const logo = require("../assets/images/logo.png");
-const poster = require("../assets/images/poster.png");
+const poster = require("../assets/images/poster3.png");
 const background = require("../assets/images/bg.jpg");
 const avatar = require("../assets/images/avatar.jpg");
 const artist = require("../assets/images/artist.png");

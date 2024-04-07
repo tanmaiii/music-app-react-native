@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   right: { display: "flex", flexDirection: "row", alignItems: "center", gap: SPACING.space_8 },
   shadowProp: {
-    shadowColor: "#171717",
+    shadowColor: COLORS.Black,
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 3,

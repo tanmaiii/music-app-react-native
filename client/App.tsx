@@ -15,7 +15,7 @@ import Library from "./src/screens/LibraryScreen";
 import ArtistDetail from "./src/screens/ArtistDetail";
 import SongDetail from "./src/screens/SongDetail";
 import PlayingCard from "./src/components/PlayingCard";
-import ModalPlaying from "./src/components/ModalPlaying";
+import CustomBottomSheet from "./src/components/CustomBottomSheet";
 import Login from "./src/screens/AuthScreen/Login";
 import Signup from "./src/screens/AuthScreen/Signup";
 
@@ -68,7 +68,7 @@ export default function App() {
         <PlayingContextProvider>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <BottomSheetModalProvider>
-              <ModalPlaying />
+              <CustomBottomSheet />
               <View style={styles.playingCard}>
                 <PlayingCard />
               </View>
@@ -82,8 +82,27 @@ export default function App() {
 }
 
 export const Layout = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, loadingAuth } = useAuth();
 
+  if (loadingAuth === true) {
+    return (
+      <View
+        style={{
+          backgroundColor: COLORS.Black1,
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <LottieView
+          source={require("./src/assets/images/Animation.json")}
+          style={{ width: "60%", height: "60%" }}
+          autoPlay
+          loop
+        />
+      </View>
+    );
+  }
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

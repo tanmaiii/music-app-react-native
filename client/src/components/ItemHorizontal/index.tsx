@@ -16,7 +16,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import TouchableScale from "../TouchableScale";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
-import {NavigationProp} from '../../navigation/TStack'
+import { NavigationProp } from "../../navigation/TStack";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -45,7 +45,11 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
   const border = type === "Artist" ? 50 : 8;
 
   const handleTouch = () => {
-    navigation.navigate('Artist', {id: 123})
+    if (type === "Artist") {
+      navigation.navigate("Artist", { id: 123 });
+    } else if (type === "Playlist") {
+      navigation.navigate("Playlist", { id: 123 });
+    }
   };
 
   return (

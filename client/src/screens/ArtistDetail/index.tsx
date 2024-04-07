@@ -27,7 +27,7 @@ import ArtistCard from "../../components/ArtistCard";
 import PlaylistCard from "../../components/PlaylistCard";
 import { NavigationProp } from "../../navigation/TStack";
 import { StackNavigationProp } from "@react-navigation/stack";
-import Constants from 'expo-constants';
+import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
 
 const HEIGHT_AVATAR = 360;
@@ -107,7 +107,6 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     }),
   };
 
-
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ zIndex: 99 }}>
@@ -115,7 +114,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           style={[
             styles.header,
             backgroundColorAnimation,
-            Platform.OS === "ios" && { paddingTop: statusBarHeight },
+            Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
           ]}
         >
           <TouchableHighlight

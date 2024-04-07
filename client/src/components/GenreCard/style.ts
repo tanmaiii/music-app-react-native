@@ -4,8 +4,6 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 const styles = StyleSheet.create({
   container: {
     height: 120,
-    // marginRight: SPACING.space_8,
-    // padding: SPACING.space_8,
   },
   wrapper: {
     position: "relative",
@@ -32,9 +30,11 @@ const styles = StyleSheet.create({
   },
 
   shadowProp: {
-    backgroundColor: COLORS.Black1,
-    alignSelf: "center",
-    elevation: 56,
+    shadowColor: COLORS.Black,
+    shadowOffset: { width: 10, height: 10 },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 10,
   },
 });
 
