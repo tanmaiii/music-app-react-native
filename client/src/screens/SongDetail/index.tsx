@@ -11,6 +11,7 @@ import {
   Animated,
   Platform,
   ImageBackground,
+  Modal,
 } from "react-native";
 import IMAGES from "../../constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,6 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
   faChevronLeft,
+  faEllipsis,
   faHeart as faHeartSolid,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
@@ -30,6 +32,10 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
+import CustomBottomSheet from "../../components/CustomBottomSheet";
+
+import { ModalSong } from "../../components/ModalSong";
 
 const songs: TSong[] = [
   {
@@ -65,6 +71,7 @@ const songs: TSong[] = [
 ];
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 
 interface SongDetailProps {}
 
@@ -72,6 +79,7 @@ const SongDetail = (props: SongDetailProps) => {
   const navigation = useNavigation();
   const route = useRoute();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -115,12 +123,7 @@ const SongDetail = (props: SongDetailProps) => {
     }),
   };
 
-  const heightAnimation = {
-    height: animatedValue.interpolate({
-      inputRange: [0, 200],
-      outputRange: [400, 0],
-      extrapolate: "clamp",
-    }),
+  const opacityAnimation = {
     opacity: animatedValue.interpolate({
       inputRange: [0, 200],
       outputRange: [1, 0],
@@ -129,120 +132,149 @@ const SongDetail = (props: SongDetailProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={IMAGES.POSTER} blurRadius={90}>
-        <LinearGradient
-          colors={["transparent", COLORS.Black1]}
-          style={[{ position: "absolute", left: 0, right: 0, top: 0, height: "100%" }]}
-        ></LinearGradient>
-
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
-
-        <SafeAreaView style={{ zIndex: 999 }}>
-          <Animated.View
-            style={[
-              styles.header,
-              backgroundColorAnimation,
-              Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
-            ]}
-          >
-            <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
-              <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
-            </TouchableOpacity>
-            <Animated.Text style={[styles.titleHeader, headerAnimation]}>
-              Thiên lý ơi (Single)
-            </Animated.Text>
-            <TouchableOpacity
-              style={[styles.buttonHeader, { opacity: 0 }]}
-              onPress={() => navigation.goBack()}
-            >
-              <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
-            </TouchableOpacity>
-          </Animated.View>
-        </SafeAreaView>
-
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          onScroll={(e) => {
-            const offsetY = e.nativeEvent.contentOffset.y;
-            animatedValue.setValue(offsetY);
-          }}
-          scrollEventThrottle={16}
+    <>
+      <View style={styles.container}>
+        <ImageBackground
+          source={IMAGES.POSTER}
+          blurRadius={90}
+          style={[{ backgroundColor: COLORS.Black1 }]}
         >
-          <View style={styles.wrapper}>
-            <View style={[styles.wrapperImage]}>
-              <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.POSTER} />
-            </View>
+          <AnimatedLinearGradient
+            colors={["transparent", COLORS.Black1]}
+            style={[{ position: "absolute", left: 0, right: 0, top: 0, height: WINDOW_HEIGHT }]}
+          ></AnimatedLinearGradient>
 
-            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
-              Thiên lý ơi(Single)
-            </Text>
+          <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
 
-            <Text
-              style={{
-                fontSize: FONTSIZE.size_16,
-                color: COLORS.Primary,
-                fontFamily: FONTFAMILY.regular,
-              }}
+          <SafeAreaView style={{ zIndex: 1 }}>
+            <Animated.View
+              style={[
+                styles.header,
+                backgroundColorAnimation,
+                Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
+              ]}
             >
-              Sound Hub
-            </Text>
+              <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
+                <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
+              </TouchableOpacity>
+              <Animated.Text style={[styles.titleHeader, headerAnimation]}>
+                Thiên lý ơi (Single)
+              </Animated.Text>
+              <TouchableOpacity style={styles.buttonHeader} onPress={() => setIsOpenModal(true)}>
+                <FontAwesomeIcon icon={faEllipsis} size={24} style={{ color: COLORS.White1 }} />
+              </TouchableOpacity>
+            </Animated.View>
+          </SafeAreaView>
 
-            <View style={styles.groupButton}>
-              <TouchableOpacity style={styles.buttonExtra}>
-                <FontAwesomeIcon
-                  icon={faArrowUpFromBracket}
-                  size={18}
-                  style={{ color: COLORS.White2 }}
-                />
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            onScroll={(e) => {
+              const offsetY = e.nativeEvent.contentOffset.y;
+              animatedValue.setValue(offsetY);
+            }}
+            scrollEventThrottle={16}
+          >
+            <View style={styles.wrapper}>
+              <View style={[styles.wrapperImage]}>
+                <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.POSTER} />
+              </View>
 
-                <Text
-                  style={{
-                    fontSize: FONTSIZE.size_12,
-                    color: COLORS.White2,
-                    fontFamily: FONTFAMILY.regular,
-                  }}
-                >
-                  Share
+              <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
+                Thiên lý ơi(Single)
+              </Text>
+
+              <Text style={[styles.textMain, { color: COLORS.Primary }]}>Sound Hub</Text>
+
+              <View style={styles.groupButton}>
+                <TouchableOpacity style={styles.buttonExtra}>
+                  <FontAwesomeIcon
+                    icon={faArrowUpFromBracket}
+                    size={18}
+                    style={{ color: COLORS.White2 }}
+                  />
+
+                  <Text
+                    style={{
+                      fontSize: FONTSIZE.size_12,
+                      color: COLORS.White2,
+                      fontFamily: FONTFAMILY.regular,
+                    }}
+                  >
+                    Share
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button}>
+                  <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+
+                  <Text style={styles.textButton}>Play</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.buttonExtra}>
+                  <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
+                  <Text
+                    style={{
+                      fontSize: FONTSIZE.size_12,
+                      color: COLORS.White2,
+                      fontFamily: FONTFAMILY.regular,
+                    }}
+                  >
+                    Like
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.info}>
+                <Text style={styles.textExtra}>Released: 2019</Text>
+                <Text style={styles.textExtra}>Duration: 4 minutes</Text>
+              </View>
+
+              <ScrollView style={styles.listArtist}>
+                <Text style={[styles.textMain, { marginBottom: SPACING.space_12 }]}>
+                  About artist
                 </Text>
-              </TouchableOpacity>
 
-              <TouchableOpacity style={styles.button}>
-                <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+                <TouchableOpacity style={styles.boxArtist}>
+                  <View style={styles.leftBox}>
+                    <Image source={IMAGES.ARTIST} style={styles.boxImage} />
+                    <View style={styles.boxDesc}>
+                      <Text style={styles.textMain}>Nguyễn Văn A</Text>
+                      <Text style={styles.textExtra}>11M follower</Text>
+                    </View>
+                  </View>
+                  <View style={styles.rightBox}>
+                    <TouchableOpacity style={styles.btnFollow}>
+                      <Text style={styles.textExtra}>Follow</Text>
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
 
-                <Text style={styles.textButton}>Play</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.buttonExtra}>
-                <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
-                <Text
-                  style={{
-                    fontSize: FONTSIZE.size_12,
-                    color: COLORS.White2,
-                    fontFamily: FONTFAMILY.regular,
-                  }}
-                >
-                  Like
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity style={styles.boxArtist}>
+                  <View style={styles.leftBox}>
+                    <Image source={IMAGES.ARTIST} style={styles.boxImage} />
+                    <View style={styles.boxDesc}>
+                      <Text style={styles.textMain}>Nguyễn Văn A</Text>
+                      <Text style={styles.textExtra}>11M follower</Text>
+                    </View>
+                  </View>
+                  <View style={styles.rightBox}>
+                    <TouchableOpacity style={styles.btnFollow}>
+                      <Text style={styles.textExtra}>Follow</Text>
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
+              </ScrollView>
             </View>
-
-            <View style={styles.info}></View>
-            <Text style={styles.textExtra}>Released: 2019</Text>
-            <Text style={styles.textExtra}>Duration: 4 minutes</Text>
-
-            {/* <Text style={styles.textDesc}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, vitae obcaecati
-            accusamus labore eius aperiam soluta dolores nihil velit eveniet aliquid facere
-            reprehenderit. Iusto maiores sit saepe modi non? Hic?
-          </Text> */}
-
-            
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+          </ScrollView>
+        </ImageBackground>
+        {isOpenModal && (
+          <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={240}>
+            <ModalSong />
+          </CustomBottomSheet>
+        )}
+      </View>
+    </>
   );
 };
 

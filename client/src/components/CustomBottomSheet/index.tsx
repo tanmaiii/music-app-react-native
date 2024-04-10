@@ -1,86 +1,82 @@
-import React from "react";
-import { useState, useCallback, useEffect } from "react";
-import { StyleSheet, View, Text } from "react-native";
-import { usePlaying } from "../../context/PlayingContext";
-import IMAGES from "../../constants/images";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils";
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
-import SongDetail from "../../screens/SongDetail";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import ModalPlaying from "../ModalPlaying";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal as BottomSheetModalGorhom,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import * as React from "react";
+import { Text, View, StyleSheet } from "react-native";
+import { COLORS } from "../../theme/theme";
 
-const CustomBottomSheet = () => {
-  const { openBarSong, setOpenBarSong, setOpenModalSong, openModalSong } = usePlaying();
-  const bottomSheetRef = React.useRef<BottomSheet>(null);
-  const snapPoints = React.useMemo(() => ["100%"], []);
+interface CustomBottomSheetProps {
+  isOpen: boolean;
+  closeModal: () => void;
+  height1?: number | string;
+  height2?: number | string;
+  children: React.ReactNode;
+}
 
-  // callbacks
+const CustomBottomSheet = (props: CustomBottomSheetProps) => {
+  const { isOpen, closeModal, height1 = 240, height2, children } = props;
+
+  const snapPoints = React.useMemo(() => {
+    const points = [];
+    if (height1) points.push(height1);
+    if (height2) points.push(height2);
+    return points;
+  }, [height1, height2]);
+
+  const bottomSheetRef = React.useRef<BottomSheetModalGorhom>(null);
+
   const handleSheetChanges = React.useCallback((index: number) => {
-    // console.log("handleSheetChanges", index);
-    if (index !== 0) {
-      setOpenModalSong(false);
-      setOpenBarSong(true);
+    if (index < 0) {
+      closeModal();
     }
   }, []);
 
-  const handleOpenPress = () => bottomSheetRef.current.expand();
+  const handleOpenPress = React.useCallback(() => {
+    bottomSheetRef.current?.present();
+  }, []);
+
   const handleClosePress = () => bottomSheetRef.current.close();
 
-  // renders
-  const renderBackdrop = useCallback(
+  const renderBackdrop = React.useCallback(
     (props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
     []
   );
-  useEffect(() => {
-    console.log("openModalSong", openModalSong);
 
-    openModalSong && handleOpenPress();
-    !openModalSong && handleClosePress();
-  }, [openModalSong]);
+  React.useEffect(() => {
+    if (isOpen) {
+      handleOpenPress();
+    }
+  }, [isOpen]);
 
   return (
-    <View style={[styles.container, !openModalSong && { display: "none" }]}>
-      <BottomSheet
-        snapPoints={snapPoints}
-        ref={bottomSheetRef}
-        onChange={handleSheetChanges}
-        backdropComponent={renderBackdrop}
-        enablePanDownToClose={true}
-        handleComponent={() => null}
-        backgroundStyle={[
-          {
-            backgroundColor: "none",
-            borderRadius: 12,
-          },
-        ]}
+    <BottomSheetModalGorhom
+      snapPoints={snapPoints}
+      ref={bottomSheetRef}
+      backdropComponent={renderBackdrop}
+      onChange={handleSheetChanges}
+      enablePanDownToClose={true}
+      handleComponent={() => null}
+    >
+      <BottomSheetView
+        style={{
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          overflow: "hidden",
+        }}
       >
-        <BottomSheetView style={styles.contentContainer}>
-          <ModalPlaying />
-        </BottomSheetView>
-      </BottomSheet>
-    </View>
+        <View
+          style={{
+            backgroundColor: COLORS.Black2,
+            height: "100%",
+          }}
+        >
+          {children}
+        </View>
+      </BottomSheetView>
+    </BottomSheetModalGorhom>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    top: 0,
-    left: 0,
-    position: "absolute",
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-    zIndex: 100,
-    // backgroundColor: "pink",
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: "center",
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    overflow: "hidden",
-    backgroundColor: COLORS.Black1,
-  },
-});
 
 export default CustomBottomSheet;

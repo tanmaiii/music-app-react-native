@@ -2,7 +2,7 @@ import * as React from "react";
 import { Text, View, StyleSheet, Animated, TouchableOpacity, TouchableOpacityProps } from "react-native";
 
 interface TouchableScaleProps extends TouchableOpacityProps {
-  children: React.ReactNode; // Đúng chính tả của children
+  children: React.ReactNode; 
 }
 
 const TouchableScale = (props: TouchableScaleProps) => {

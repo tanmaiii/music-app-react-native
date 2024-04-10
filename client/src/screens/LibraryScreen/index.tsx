@@ -123,15 +123,9 @@ const LibraryScreen = (props: LibraryScreenProps) => {
             paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 50,
           }}
         >
-          {/* <ItemHorizontal
-            id={1}
-            title={"Liked Songs"}
-            desc={"Playlist - 25 songs"}
-            type={"Playlist"}
-          /> */}
           <TouchableHighlight
             underlayColor={COLORS.Black}
-            onPress={() => navigation.navigate("ListSongLike", { id: 123 })}
+            onPress={() => navigation.navigate("ListSong", { id: 123 })}
           >
             <View style={styles.likeSong}>
               <View style={styles.boxImage}>

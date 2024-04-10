@@ -4,15 +4,24 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING, HEIGHT } from "../
 const styles = StyleSheet.create({
   container: {
     height: HEIGHT.playingCard,
-    paddingHorizontal: SPACING.space_10,
-    overflow: "hidden",
-    borderRadius: BORDERRADIUS.radius_8,
+    // paddingHorizontal: SPACING.space_10,
+    // overflow: "hidden",
+    // borderRadius: BORDERRADIUS.radius_8,
+    width: "100%",
+
+    position: "absolute",
+    left: 0,
+    bottom: HEIGHT.navigator,
+    // bottom: 0,
+    zIndex: 1,
+
+    borderBottomWidth: 0.8,
+    borderBottomColor: COLORS.Black1,
   },
   wrapper: {
     // opacity: 0.9,
     // blur: '10',
-    backgroundColor: COLORS.Black3,
-    overflow: "hidden",
+    backgroundColor: COLORS.Black2,
     padding: SPACING.space_8,
     display: "flex",
     flexDirection: "row",
@@ -32,7 +41,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.space_4,
+    gap: SPACING.space_12,
   },
   right: { display: "flex", flexDirection: "row", alignItems: "center", gap: SPACING.space_8 },
   shadowProp: {
@@ -43,18 +52,17 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   boxImage: {
-    height: 44,
-    width: 44,
+    aspectRatio: 1 / 1,
+    height: "100%",
   },
   image: {
-    // display: "none",
     borderRadius: BORDERRADIUS.radius_4,
     width: "100%",
     height: "100%",
     objectFit: "cover",
   },
   title: {
-    fontSize: FONTSIZE.size_16,
+    fontSize: FONTSIZE.size_14,
     color: COLORS.White1,
     fontFamily: FONTFAMILY.medium,
   },

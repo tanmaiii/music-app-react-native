@@ -5,6 +5,7 @@ import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import TouchableScale from "../TouchableScale";
 import { Skeleton } from "moti/skeleton";
+import { NavigationProp } from "../../navigation/TStack";
 
 interface HomeTopProps {
   loading?: boolean;
@@ -45,6 +46,7 @@ const SkeletonCommonProps = {
 const HomeTop = (props: HomeTopProps) => {
   const { loading = false } = props;
   const linkTo = useLinkTo();
+  const navigation = useNavigation<NavigationProp>();
 
   if (loading)
     return (
@@ -75,7 +77,10 @@ const HomeTop = (props: HomeTopProps) => {
   return (
     <View style={styles.container}>
       {data.map((item) => (
-        <TouchableScale style={styles.card} onPress={() => linkTo("/ArtistDetail")}>
+        <TouchableScale
+          style={styles.card}
+          onPress={() => navigation.navigate("Playlist", { id: 123 })}
+        >
           <View style={[styles.wrapper]}>
             <Image style={styles.cardImage} source={IMAGES.POSTER} />
             <View style={styles.cardBody}>

@@ -7,6 +7,7 @@ import {
   StatusBar,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
@@ -19,6 +20,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../context/AuthContext";
+import Constants from "expo-constants";
+const statusBarHeight = Constants.statusBarHeight;
 
 interface AccountProps {}
 
@@ -30,7 +33,7 @@ const Account = (props: AccountProps) => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
       <SafeAreaView style={{ zIndex: 99 }}>
-        <View style={[styles.header, { paddingTop: StatusBar.currentHeight }]}>
+        <View style={[styles.header, Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_12 }]}>
           <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
             <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
           </TouchableOpacity>
@@ -45,7 +48,7 @@ const Account = (props: AccountProps) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-      <ScrollView style={{}}>
+      <ScrollView style={{marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT}}>
         <TouchableOpacity onPress={() => console.log("press")}>
           <View style={styles.box}>
             <View style={styles.boxLeft}>
@@ -113,11 +116,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     textAlign: "center",
-    paddingVertical: SPACING.space_12,
-    paddingHorizontal: SPACING.space_10,
-    // borderBottomColor: COLORS.WhiteRGBA15,
-    // borderBottomWidth: 0.6,
+    padding: SPACING.space_12,
     backgroundColor: COLORS.Black2,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
   },
   textMain: {
     fontSize: FONTSIZE.size_16,

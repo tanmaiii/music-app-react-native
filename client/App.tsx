@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from "./src/navigation";
 import { Skeleton } from "moti/skeleton";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { BottomSheetModalProvider, WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 
 import Home from "./src/screens/HomeScreen";
 import Search from "./src/screens/SearchScreen";
@@ -15,9 +15,10 @@ import Library from "./src/screens/LibraryScreen";
 import ArtistDetail from "./src/screens/ArtistDetail";
 import SongDetail from "./src/screens/SongDetail";
 import PlayingCard from "./src/components/PlayingCard";
-import CustomBottomSheet from "./src/components/CustomBottomSheet";
 import Login from "./src/screens/AuthScreen/Login";
 import Signup from "./src/screens/AuthScreen/Signup";
+// import BottomSheetSong from "./src/components/BottomSheetSong";
+import { BottomSheetSong } from "./src/components/SongPlaying";
 
 import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
@@ -63,28 +64,26 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <AuthContextProvider>
-        <PlayingContextProvider>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <BottomSheetModalProvider>
-              <CustomBottomSheet />
-              <View style={styles.playingCard}>
-                <PlayingCard />
-              </View>
+    <AuthContextProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <View style={styles.container}>
+            <PlayingContextProvider>
+              {/* <BottomSheetSong /> */}
+              <PlayingCard />
               <Layout />
-            </BottomSheetModalProvider>
-          </GestureHandlerRootView>
-        </PlayingContextProvider>
-      </AuthContextProvider>
-    </View>
+            </PlayingContextProvider>
+          </View>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
+    </AuthContextProvider>
   );
 }
 
 export const Layout = () => {
   const { currentUser, loadingAuth } = useAuth();
 
-  if (loadingAuth === true) {
+  if (loadingAuth) {
     return (
       <View
         style={{
@@ -103,6 +102,7 @@ export const Layout = () => {
       </View>
     );
   }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -125,11 +125,13 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.medium,
     backgroundColor: COLORS.Black1,
     position: "relative",
+    height: WINDOW_HEIGHT,
+    width: WINDOW_WIDTH,
   },
   playingCard: {
     position: "absolute",
     left: 0,
     bottom: HEIGHT.navigator + SPACING.space_4,
-    zIndex: 100,
+    zIndex: 1,
   },
 });

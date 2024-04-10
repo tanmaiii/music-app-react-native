@@ -22,7 +22,7 @@ import UserAccount from "../screens/UserAccount";
 import Account from "../screens/UserAccount/Account";
 import ListSongScreen from "../screens/ListSongScreen";
 import ListPlaylistScreen from "../screens/ListPlaylistScreen";
-import ListSongLikeScreen from "../screens/ListSongLikeScreen";
+// import ListSongLikeScreen from "../screens/ListSongScreen";
 import { RootStackParamList } from "./TStack";
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -58,7 +58,6 @@ const StackNavigatorLibrary = () => {
       <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
       <Stack.Screen name={"ListSong"} component={ListSongScreen} />
       <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
-      <Stack.Screen name={"ListSongLike"} component={ListSongLikeScreen} />
     </Stack.Navigator>
   );
 };
@@ -89,6 +88,10 @@ const StackNavigatorUserAccount = () => {
     >
       <Stack.Screen name="User" component={UserAccount} />
       <Stack.Screen name="UserEditAccount" component={Account} />
+      <Stack.Screen name={"Artist"} component={ArtistDetail} />
+      <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
+      <Stack.Screen name={"ListSong"} component={ListSongScreen} />
+      <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
     </Stack.Navigator>
   );
 };
@@ -100,9 +103,13 @@ const TabNavigator = () => {
         tabBarHideOnKeyboard: true,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: COLORS.Black1,
-          borderTopWidth: 0,
+          backgroundColor: COLORS.Black2,
           height: HEIGHT.navigator,
+          borderTopWidth: 0,
+          borderTopColor: COLORS.Black1,
+          // position: "absolute",
+          zIndex: 9999,
+          // transform: [{translateY: HEIGHT.navigator}]
         },
       }}
     >
@@ -213,7 +220,7 @@ const styles = StyleSheet.create({
     gap: SPACING.space_4,
   },
   title: {
-    fontSize: FONTSIZE.size_12,
+    fontSize: 11,
     fontFamily: FONTFAMILY.regular,
   },
 });

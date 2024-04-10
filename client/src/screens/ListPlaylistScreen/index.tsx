@@ -124,7 +124,7 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
           <View style={styles.buttonBack}></View>
         </Animated.View>
       </SafeAreaView>
-      
+
       <View style={styles.scroll}>
         <FlatList
           onScroll={(e) => {
@@ -146,13 +146,13 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
               onPress={() => navigation.navigate("Playlist", { id: 123 })}
             >
               <View style={styles.imageCard}>
-                <Image style={styles.image} source={IMAGES.AI} />
+                <Image style={styles.image} source={IMAGES.POSTER} />
               </View>
               <View style={styles.descCard}>
                 <Text numberOfLines={1} style={styles.textTitle}>
                   Xin chao
                 </Text>
-                <Text numberOfLines={1} style={styles.textDes}>
+                <Text numberOfLines={1} style={styles.textExtra}>
                   2019
                 </Text>
               </View>
@@ -202,9 +202,7 @@ const styles = StyleSheet.create({
   scroll: {
     // paddingBottom: HEIGHT.playingCard + 10,
   },
-  flatlist: {
-    
-  },
+  flatlist: {},
   card: {
     display: "flex",
     justifyContent: "center",
@@ -228,8 +226,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.medium,
     color: COLORS.White1,
   },
-  textDes: {
-    fontSize: FONTSIZE.size_14,
+  textExtra: {
+    fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.regular,
     color: COLORS.White2,
   },

@@ -24,8 +24,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
   faBars,
-  faEllipsis,
-  faForwardFast,
   faForwardStep,
   faHeart,
   faPause,
@@ -37,15 +35,14 @@ import {
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { BlurView } from "expo-blur";
 
-interface ModalPlayingProps {}
+interface SongPlaying {}
 
-const ModalPlaying = (props: ModalPlayingProps) => {
+const ModalPlaying = (props: SongPlaying) => {
+  const { token } = useAuth();
   const [play, setPlay] = useState(false);
   const [like, setLike] = useState(false);
   const [songs, setSongs] = useState<TSong | null>(null);
-  const { token } = useAuth();
   const [sound, setSound] = useState(null);
   const [durationMillis, setDurationMillis] = useState(null);
 
@@ -77,7 +74,7 @@ const ModalPlaying = (props: ModalPlayingProps) => {
   return (
     <ImageBackground source={IMAGES.POSTER} style={styles.container} blurRadius={80}>
       <LinearGradient
-        colors={["transparent" , COLORS.Black1, COLORS.Black1 ]}
+        colors={["transparent", COLORS.Black2]}
         style={[{ position: "absolute", left: 0, right: 0, top: 0, height: WINDOW_HEIGHT }]}
       ></LinearGradient>
 

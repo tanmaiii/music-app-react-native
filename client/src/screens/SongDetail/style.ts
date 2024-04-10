@@ -9,7 +9,6 @@ const styles = StyleSheet.create({
   textMain: {
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
-    textAlign: "center",
     color: COLORS.White1,
   },
   textExtra: {
@@ -102,8 +101,50 @@ const styles = StyleSheet.create({
   //   width: "100%",
   //   marginBottom: SPACING.space_12,
   // },
-  info:{
-    
+  info: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    paddingHorizontal: SPACING.space_8,
+  },
+  listArtist: {
+    width: "100%",
+    paddingHorizontal: SPACING.space_12,
+    display: "flex",
+    flexDirection: 'column',
+    gap: SPACING.space_14
+  },
+  boxArtist: {
+    width: "100%",
+    paddingHorizontal: SPACING.space_12,
+    paddingVertical: SPACING.space_12,
+    backgroundColor: COLORS.Black2,
+    borderRadius: BORDERRADIUS.radius_14,
+    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: SPACING.space_12
+  },
+  leftBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.space_12,
+  },
+  boxImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  boxDesc:{
+    gap: SPACING.space_4
+  },
+  rightBox: {},
+  btnFollow:{
+    borderRadius: BORDERRADIUS.radius_20,
+    borderColor: COLORS.WhiteRGBA15,
+    borderWidth: 0.6,
+    paddingHorizontal: SPACING.space_16,
+    paddingVertical: SPACING.space_8
   }
 });
 

@@ -163,8 +163,8 @@ interface Height {
 }
 
 export const HEIGHT: Height = {
-  navigator: 66,
-  playingCard: 60,
+  navigator: 54,
+  playingCard: 54,
   UPPER_HEADER_SEARCH_HEIGHT: 60,
   LOWER_HEADER_SEARCH_HEIGHT: 70,
 };

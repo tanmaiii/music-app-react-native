@@ -148,7 +148,7 @@ const HomeScreen = ({ navigation }: any) => {
               decelerationRate={0}
               style={{ gap: SPACING.space_12 }}
               renderItem={({ item, index }) => (
-                <SongCard navigation={navigation} cardWidth={WINDOW_WIDTH / 2.4} song={item} />
+                <SongCard cardWidth={WINDOW_WIDTH / 2.4} song={item} />
               )}
             />
           </View>
@@ -188,6 +188,7 @@ const HomeScreen = ({ navigation }: any) => {
           </View>
         </View>
       </ScrollView>
+
     </View>
   );
 };

@@ -55,7 +55,10 @@ const UserAccount = (props: UserAccountProps) => {
         </View>
       </SafeAreaView>
 
-      <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
+      <TouchableHighlight
+        underlayColor={COLORS.Black}
+        onPress={() => navigation.navigate("Artist", { id: 123 })}
+      >
         <View style={styles.account}>
           <View style={styles.accountLeft}>
             <Image
