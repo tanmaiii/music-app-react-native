@@ -12,6 +12,7 @@ import {
   Platform,
   ImageBackground,
   Modal,
+  Share,
 } from "react-native";
 import IMAGES from "../../constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,7 +29,8 @@ import {
   faHeart as faHeartSolid,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart } from "@fortawesome/free-regular-svg-icons";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
@@ -80,6 +82,7 @@ const SongDetail = (props: SongDetailProps) => {
   const route = useRoute();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const [isLike, setIsLike] = React.useState<boolean>(false);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -123,12 +126,14 @@ const SongDetail = (props: SongDetailProps) => {
     }),
   };
 
-  const opacityAnimation = {
-    opacity: animatedValue.interpolate({
-      inputRange: [0, 200],
-      outputRange: [1, 0],
-      extrapolate: "clamp",
-    }),
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: "React Native | A framework for building native apps using React",
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -187,7 +192,7 @@ const SongDetail = (props: SongDetailProps) => {
               <Text style={[styles.textMain, { color: COLORS.Primary }]}>Sound Hub</Text>
 
               <View style={styles.groupButton}>
-                <TouchableOpacity style={styles.buttonExtra}>
+                <TouchableOpacity style={styles.buttonExtra} onPress={() => handleShare()}>
                   <FontAwesomeIcon
                     icon={faArrowUpFromBracket}
                     size={18}
@@ -211,8 +216,16 @@ const SongDetail = (props: SongDetailProps) => {
                   <Text style={styles.textButton}>Play</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.buttonExtra}>
-                  <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
+                <TouchableOpacity style={styles.buttonExtra} onPress={() => setIsLike(!isLike)}>
+                  {isLike ? (
+                    <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.Red }} />
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faHeartRegular}
+                      size={18}
+                      style={{ color: COLORS.White2 }}
+                    />
+                  )}
                   <Text
                     style={{
                       fontSize: FONTSIZE.size_12,

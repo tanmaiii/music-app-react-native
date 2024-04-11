@@ -7,6 +7,8 @@ import { Skeleton } from "moti/skeleton";
 import { useNavigation } from "@react-navigation/native";
 import { usePlaying } from "../../context/PlayingContext";
 import { TSong } from "../../types";
+import { ModalSong } from "../ModalSong";
+import CustomBottomSheet from "../CustomBottomSheet";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -25,40 +27,48 @@ interface SongItemProps {
 const SongItem = (props: SongItemProps) => {
   const { setOpenBarSong } = usePlaying();
   const { song, loading = false } = props;
+  const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [activeMore, setActiveMore] = React.useState(false);
   const navigation = useNavigation();
 
   return (
-    <TouchableHighlight
-      underlayColor={COLORS.Black2}
-      onPress={() => setOpenBarSong(true)}
-      style={styles.container}
-    >
-      <View style={styles.swapper}>
-        <View style={styles.swapperImage}>
-          <Skeleton radius={4} width={"100%"} height={"100%"} {...SkeletonCommonProps}>
-            {loading ? null : <Image style={styles.image} source={IMAGES.POSTER} />}
-          </Skeleton>
-        </View>
-        <View style={styles.body}>
-          <View style={{ gap: SPACING.space_4 }}>
-            <Skeleton radius={4} width={180} height={18} {...SkeletonCommonProps}>
-              {loading ? null : <Text style={styles.textMain}>Chắc ai đó sẽ về {song.id}</Text>}
-            </Skeleton>
-            <Skeleton radius={4} width={100} height={18} {...SkeletonCommonProps}>
-              {loading ? null : <Text style={styles.textEtra}>12.343.000 - 2017</Text>}
+    <>
+      <TouchableHighlight
+        underlayColor={COLORS.Black2}
+        onPress={() => setOpenBarSong(true)}
+        style={styles.container}
+      >
+        <View style={styles.swapper}>
+          <View style={styles.swapperImage}>
+            <Skeleton radius={4} width={"100%"} height={"100%"} {...SkeletonCommonProps}>
+              {loading ? null : <Image style={styles.image} source={IMAGES.POSTER} />}
             </Skeleton>
           </View>
-          <TouchableHighlight
-            onPress={() => console.log("click")}
-            underlayColor={COLORS.Black2}
-            style={styles.buttonMore}
-          >
-            <Feather name="more-horizontal" size={24} style={{ color: COLORS.White1 }} />
-          </TouchableHighlight>
+          <View style={styles.body}>
+            <View style={{ gap: SPACING.space_4 }}>
+              <Skeleton radius={4} width={180} height={18} {...SkeletonCommonProps}>
+                {loading ? null : <Text style={styles.textMain}>Chắc ai đó sẽ về {song.id}</Text>}
+              </Skeleton>
+              <Skeleton radius={4} width={100} height={18} {...SkeletonCommonProps}>
+                {loading ? null : <Text style={styles.textEtra}>12.343.000 - 2017</Text>}
+              </Skeleton>
+            </View>
+            <TouchableHighlight
+              onPress={() => setIsOpenModal(true)}
+              underlayColor={COLORS.Black2}
+              style={styles.buttonMore}
+            >
+              <Feather name="more-horizontal" size={24} style={{ color: COLORS.White1 }} />
+            </TouchableHighlight>
+          </View>
         </View>
-      </View>
-    </TouchableHighlight>
+      </TouchableHighlight>
+      {isOpenModal && (
+        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={240}>
+          <ModalSong id={song.id} />
+        </CustomBottomSheet>
+      )}
+    </>
   );
 };
 

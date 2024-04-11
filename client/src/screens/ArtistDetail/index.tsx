@@ -12,6 +12,7 @@ import {
   Animated,
   FlatList,
   Platform,
+  Share,
 } from "react-native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -106,6 +107,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
       extrapolate: "clamp", // Giữ giá trị nằm trong phạm vi inputRange
     }),
   };
+
 
   return (
     <View style={styles.container}>

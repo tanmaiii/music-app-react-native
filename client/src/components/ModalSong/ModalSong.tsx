@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, Share } from "react-native";
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart, faMusic, faShare } from "@fortawesome/free-solid-svg-icons";
@@ -11,12 +11,25 @@ import {
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import CustomBottomSheet from "../CustomBottomSheet";
-import ModalAddPlaylist from "./ModalAddPlaylist";
+import ModalAddSongToPlaylist from "./ModalAddSongToPlaylist";
 
-interface ModalSongProps {}
+interface ModalSongProps {
+  id?: number;
+}
 
 const ModalSong = (props: ModalSongProps) => {
+  const { id } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: "React Native | A framework for building native apps using React",
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -34,12 +47,12 @@ const ModalSong = (props: ModalSongProps) => {
             }}
           />
           <View style={styles.headerDesc}>
-            <Text style={styles.textMain}>Thiên Lý ơi</Text>
+            <Text style={styles.textMain}>Thiên Lý ơi {id && id}</Text>
             <Text style={styles.textEtra}>Jack 5 củ</Text>
           </View>
         </View>
 
-        <TouchableOpacity style={styles.btnShare}>
+        <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
           <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
         </TouchableOpacity>
       </View>
@@ -61,6 +74,7 @@ const ModalSong = (props: ModalSongProps) => {
             <Text style={styles.itemText}>Add to favorites</Text>
           </View>
         </TouchableHighlight>
+
         <TouchableHighlight
           underlayColor={COLORS.Black3}
           style={{ borderRadius: BORDERRADIUS.radius_8 }}
@@ -84,8 +98,8 @@ const ModalSong = (props: ModalSongProps) => {
       </View>
 
       {isOpenModal && (
-        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={240}>
-          <ModalAddPlaylist />
+        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400}>
+          <ModalAddSongToPlaylist />
         </CustomBottomSheet>
       )}
     </View>
