@@ -7,11 +7,12 @@ import {
   faFlag,
   faHeart as faHeartRegular,
   faPlusSquare,
+  faUser,
 } from "@fortawesome/free-regular-svg-icons";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { TouchableHighlight } from "react-native-gesture-handler";
+import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import CustomBottomSheet from "../CustomBottomSheet";
-import ModalAddSongToPlaylist from "./ModalAddSongToPlaylist";
+import AddSongToPlaylist from "./AddSongToPlaylist";
 
 interface ModalSongProps {
   id?: number;
@@ -33,73 +34,87 @@ const ModalSong = (props: ModalSongProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image
-            source={IMAGES.POSTER}
-            style={{
-              height: 50,
-              width: 50,
-              aspectRatio: 1,
-              objectFit: "cover",
-              overflow: "hidden",
-              borderRadius: BORDERRADIUS.radius_4,
-            }}
-          />
-          <View style={styles.headerDesc}>
-            <Text style={styles.textMain}>Thiên Lý ơi {id && id}</Text>
-            <Text style={styles.textEtra}>Jack 5 củ</Text>
+      <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Image
+              source={IMAGES.POSTER}
+              style={{
+                height: 50,
+                width: 50,
+                aspectRatio: 1,
+                objectFit: "cover",
+                overflow: "hidden",
+                borderRadius: BORDERRADIUS.radius_4,
+              }}
+            />
+            <View style={styles.headerDesc}>
+              <Text style={styles.textMain}>Thiên Lý ơi {id && id}</Text>
+              <Text style={styles.textEtra}>Jack 5 củ</Text>
+            </View>
           </View>
+
+          <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
+            <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
+          </TouchableOpacity>
         </View>
+        <View
+          style={{
+            width: "100%",
+            height: 0.6,
+            backgroundColor: COLORS.WhiteRGBA15,
+          }}
+        />
+        <View style={styles.body}>
+          <TouchableHighlight
+            underlayColor={COLORS.Black3}
+            style={{ borderRadius: BORDERRADIUS.radius_8 }}
+            onPress={() => console.log("PRESS")}
+          >
+            <View style={styles.item}>
+              <FontAwesomeIcon icon={faHeartRegular} size={18} color={COLORS.White1} />
+              <Text style={styles.itemText}>Add to favorites</Text>
+            </View>
+          </TouchableHighlight>
 
-        <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
-          <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          width: "100%",
-          height: 0.6,
-          backgroundColor: COLORS.WhiteRGBA15,
-        }}
-      />
-      <View style={styles.body}>
-        <TouchableHighlight
-          underlayColor={COLORS.Black3}
-          style={{ borderRadius: BORDERRADIUS.radius_8 }}
-          onPress={() => console.log("PRESS")}
-        >
-          <View style={styles.item}>
-            <FontAwesomeIcon icon={faHeartRegular} size={18} color={COLORS.White1} />
-            <Text style={styles.itemText}>Add to favorites</Text>
-          </View>
-        </TouchableHighlight>
+          <TouchableHighlight
+            underlayColor={COLORS.Black3}
+            style={{ borderRadius: BORDERRADIUS.radius_8 }}
+            onPress={() => setIsOpenModal(true)}
+          >
+            <View style={styles.item}>
+              <FontAwesomeIcon icon={faPlusSquare} size={18} color={COLORS.White1} />
+              <Text style={styles.itemText}>Add to playlist</Text>
+            </View>
+          </TouchableHighlight>
 
-        <TouchableHighlight
-          underlayColor={COLORS.Black3}
-          style={{ borderRadius: BORDERRADIUS.radius_8 }}
-          onPress={() => setIsOpenModal(true)}
-        >
-          <View style={styles.item}>
-            <FontAwesomeIcon icon={faPlusSquare} size={18} color={COLORS.White1} />
-            <Text style={styles.itemText}>Add to playlist</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          underlayColor={COLORS.Black3}
-          style={{ borderRadius: BORDERRADIUS.radius_8 }}
-          onPress={() => console.log("PRESS")}
-        >
-          <View style={styles.item}>
-            <FontAwesomeIcon icon={faFlag} size={18} color={COLORS.White1} />
-            <Text style={styles.itemText}>Repport</Text>
-          </View>
-        </TouchableHighlight>
-      </View>
+          <TouchableHighlight
+            underlayColor={COLORS.Black3}
+            style={{ borderRadius: BORDERRADIUS.radius_8 }}
+            onPress={() => setIsOpenModal(true)}
+          >
+            <View style={styles.item}>
+              <FontAwesomeIcon icon={faUser} size={18} color={COLORS.White1} />
+              <Text style={styles.itemText}>View artist</Text>
+            </View>
+          </TouchableHighlight>
+
+          <TouchableHighlight
+            underlayColor={COLORS.Black3}
+            style={{ borderRadius: BORDERRADIUS.radius_8 }}
+            onPress={() => console.log("PRESS")}
+          >
+            <View style={styles.item}>
+              <FontAwesomeIcon icon={faFlag} size={18} color={COLORS.White1} />
+              <Text style={styles.itemText}>Repport</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+      </ScrollView>
 
       {isOpenModal && (
         <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400}>
-          <ModalAddSongToPlaylist />
+          <AddSongToPlaylist />
         </CustomBottomSheet>
       )}
     </View>

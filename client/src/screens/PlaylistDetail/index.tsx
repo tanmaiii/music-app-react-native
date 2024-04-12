@@ -22,12 +22,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
   faChevronLeft,
+  faEllipsis,
   faHeart as faHeartSolid,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
+import CustomBottomSheet from "../../components/CustomBottomSheet";
+import { ModalPlaylist } from "../../components/ModalPlaylist";
 const statusBarHeight = Constants.statusBarHeight;
 
 const songs: TSong[] = [
@@ -71,6 +74,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const navigation = useNavigation();
   const route = useRoute();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -128,116 +132,123 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <AnimatedLinearGradient
-        colors={[COLORS.Primary, "transparent"]}
-        style={[{ position: "absolute", left: 0, right: 0, top: 0 }, heightAnimation]}
-      ></AnimatedLinearGradient>
+    <>
+      <View style={styles.container}>
+        <AnimatedLinearGradient
+          colors={[COLORS.Primary, "transparent"]}
+          style={[{ position: "absolute", left: 0, right: 0, top: 0 }, heightAnimation]}
+        ></AnimatedLinearGradient>
 
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
 
-      <SafeAreaView style={{ zIndex: 999 }}>
-        <Animated.View
-          style={[
-            styles.header,
-            backgroundColorAnimation,
-            Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
-          ]}
+        <SafeAreaView style={{ zIndex: 999 }}>
+          <Animated.View
+            style={[
+              styles.header,
+              backgroundColorAnimation,
+              Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
+            ]}
+          >
+            <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
+              <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
+            </TouchableOpacity>
+            <Animated.Text style={[styles.titleHeader, headerAnimation]}>
+              AI Music 123
+            </Animated.Text>
+            <TouchableOpacity style={[styles.buttonHeader]} onPress={() => setIsOpenModal(true)}>
+              <FontAwesomeIcon icon={faEllipsis} size={24} style={{ color: COLORS.White1 }} />
+            </TouchableOpacity>
+          </Animated.View>
+        </SafeAreaView>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          onScroll={(e) => {
+            const offsetY = e.nativeEvent.contentOffset.y;
+            animatedValue.setValue(offsetY);
+          }}
+          scrollEventThrottle={16}
         >
-          <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
-            <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
-          </TouchableOpacity>
-          <Animated.Text style={[styles.titleHeader, headerAnimation]}>AI Music 123</Animated.Text>
-          <TouchableOpacity
-            style={[styles.buttonHeader, { opacity: 0 }]}
-            onPress={() => navigation.goBack()}
-          >
-            <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
-          </TouchableOpacity>
-        </Animated.View>
-      </SafeAreaView>
+          <View style={styles.wrapper}>
+            <View style={[styles.wrapperImage]}>
+              <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.AI} />
+            </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        onScroll={(e) => {
-          const offsetY = e.nativeEvent.contentOffset.y;
-          animatedValue.setValue(offsetY);
-        }}
-        scrollEventThrottle={16}
-      >
-        <View style={styles.wrapper}>
-          <View style={[styles.wrapperImage]}>
-            <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.AI} />
+            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>AI Music </Text>
+
+            <Text
+              style={{
+                fontSize: FONTSIZE.size_16,
+                color: COLORS.Primary,
+                fontFamily: FONTFAMILY.regular,
+              }}
+            >
+              Sound Hub
+            </Text>
+
+            <Text style={styles.textExtra}>12 Songs</Text>
+
+            <View style={styles.groupButton}>
+              <TouchableOpacity style={styles.buttonExtra}>
+                <FontAwesomeIcon
+                  icon={faArrowUpFromBracket}
+                  size={18}
+                  style={{ color: COLORS.White2 }}
+                />
+
+                <Text
+                  style={{
+                    fontSize: FONTSIZE.size_12,
+                    color: COLORS.White2,
+                    fontFamily: FONTFAMILY.regular,
+                  }}
+                >
+                  Share
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.button}>
+                <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+
+                <Text style={styles.textButton}>Play</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.buttonExtra}>
+                <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
+                <Text
+                  style={{
+                    fontSize: FONTSIZE.size_12,
+                    color: COLORS.White2,
+                    fontFamily: FONTFAMILY.regular,
+                  }}
+                >
+                  Like
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.textDesc}>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, vitae obcaecati
+              accusamus labore eius aperiam soluta dolores nihil velit eveniet aliquid facere
+              reprehenderit. Iusto maiores sit saepe modi non? Hic?
+            </Text>
+
+            <View style={{ width: "100%" }}>
+              {songs.map((item) => (
+                <SongItem song={item} />
+              ))}
+            </View>
           </View>
+        </ScrollView>
+      </View>
 
-          <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>AI Music </Text>
-
-          <Text
-            style={{
-              fontSize: FONTSIZE.size_16,
-              color: COLORS.Primary,
-              fontFamily: FONTFAMILY.regular,
-            }}
-          >
-            Sound Hub
-          </Text>
-
-          <Text style={styles.textExtra}>12 Songs</Text>
-
-          <View style={styles.groupButton}>
-            <TouchableOpacity style={styles.buttonExtra}>
-              <FontAwesomeIcon
-                icon={faArrowUpFromBracket}
-                size={18}
-                style={{ color: COLORS.White2 }}
-              />
-
-              <Text
-                style={{
-                  fontSize: FONTSIZE.size_12,
-                  color: COLORS.White2,
-                  fontFamily: FONTFAMILY.regular,
-                }}
-              >
-                Share
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button}>
-              <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
-
-              <Text style={styles.textButton}>Play</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.buttonExtra}>
-              <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
-              <Text
-                style={{
-                  fontSize: FONTSIZE.size_12,
-                  color: COLORS.White2,
-                  fontFamily: FONTFAMILY.regular,
-                }}
-              >
-                Like
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text style={styles.textDesc}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, vitae obcaecati
-            accusamus labore eius aperiam soluta dolores nihil velit eveniet aliquid facere
-            reprehenderit. Iusto maiores sit saepe modi non? Hic?
-          </Text>
-
-          <View style={{ width: "100%" }}>
-            {songs.map((item) => (
-              <SongItem song={item} />
-            ))}
-          </View>
-        </View>
-      </ScrollView>
-    </View>
+      {isOpenModal && (
+        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={"70%"}>
+          <ModalPlaylist id={123} />
+        </CustomBottomSheet>
+      )}
+    </>
   );
 };
 

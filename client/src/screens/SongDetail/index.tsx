@@ -282,7 +282,7 @@ const SongDetail = (props: SongDetailProps) => {
           </ScrollView>
         </ImageBackground>
         {isOpenModal && (
-          <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={240}>
+          <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={300}>
             <ModalSong />
           </CustomBottomSheet>
         )}

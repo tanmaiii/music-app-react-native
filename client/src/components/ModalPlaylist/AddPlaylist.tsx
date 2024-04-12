@@ -20,17 +20,23 @@ import Constants from "expo-constants";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 const statusBarHeight = Constants.statusBarHeight;
 
-interface ModalAddPlaylistProps {
+interface AddPlaylistProps {
   closeModal: () => void;
 }
 
-const ModalAddPlaylist = (props: ModalAddPlaylistProps) => {
-  const { closeModal } = props;
-
+const AddPlaylist = ({closeModal}: AddPlaylistProps) => {
+  const [name, setName] = React.useState<string>("");
   const textInputRef = React.useRef<TextInput>();
+
+  const handleFunc = () => {
+    closeModal()
+    console.log("Dong");
+  }
+
   React.useEffect(() => {
     textInputRef.current.focus();
   }, []);
+
   return (
     <View style={styles.container}>
       <View
@@ -39,42 +45,55 @@ const ModalAddPlaylist = (props: ModalAddPlaylistProps) => {
           Platform.OS === "ios" && { paddingTop: SPACING.space_12 + statusBarHeight },
         ]}
       >
-        <TouchableOpacity onPress={() => closeModal()}>
-          <FontAwesomeIcon icon={faXmark} size={24} color={COLORS.White1} />
+        <TouchableOpacity onPress={() => handleFunc()}>
+          <FontAwesomeIcon icon={faXmark} size={24} color={COLORS.White2} />
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.body} keyboardShouldPersistTaps="always">
+      <ScrollView keyboardShouldPersistTaps="always" style={styles.body}>
         <View style={styles.inputBox}>
           <Text style={styles.textEtra}>Name playlist</Text>
-          <BottomSheetTextInput ref={textInputRef} style={styles.textInput} />
+          <BottomSheetTextInput
+            ref={textInputRef}
+            value={name}
+            style={styles.textInput}
+            onChangeText={(text) => setName(text)}
+          />
         </View>
 
         <View
-          style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
           <View style={{ flex: 1 }}>
             <Text style={styles.textMain}>Private</Text>
           </View>
           <ButtonSwitch />
         </View>
-
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Add Playlist</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+      <View style={{ position: "absolute", bottom: 20, width: "100%", alignItems: "center" }}>
+        <TouchableOpacity
+          style={[styles.button, name.length <= 0 && { opacity: 0.8 }]}
+          disabled={name.length <= 0 && true}
+        >
+          <Text style={styles.buttonText}>Add Playlist</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
-export default ModalAddPlaylist;
+export default AddPlaylist;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: SPACING.space_8,
+    flex: 1,
+    height: "100%",
+    // backgroundColor: "pink",
   },
   textMain: {
     fontSize: FONTSIZE.size_16,
@@ -97,6 +116,8 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.space_12,
     paddingHorizontal: SPACING.space_12,
     gap: SPACING.space_12,
+    flex: 1,
+    height: "100%",
   },
   inputBox: {
     width: "100%",

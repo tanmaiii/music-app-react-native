@@ -29,7 +29,7 @@ import { FlatList, TextInput, TouchableHighlight } from "react-native-gesture-ha
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { TSong } from "../../types";
 import CustomBottomSheet from "../CustomBottomSheet";
-import { ModalAddPlaylist } from "../ModalPlaylist";
+import { AddPlaylist } from "../ModalPlaylist";
 import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -63,9 +63,9 @@ const songs: TSong[] = [
   },
 ];
 
-interface ModalAddSongToPlaylistProps {}
+interface AddSongToPlaylistProps {}
 
-const ModalAddSongToPlaylist = (props: ModalAddSongToPlaylistProps) => {
+const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
   return (
@@ -118,8 +118,13 @@ const ModalAddSongToPlaylist = (props: ModalAddSongToPlaylistProps) => {
         />
       </View>
       {isOpenModal && (
-        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={"100%"}>
-          <ModalAddPlaylist  closeModal={() => setIsOpenModal(false)}/>
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModal(false)}
+          height1={"100%"}
+          enableClose={false}
+        >
+          <AddPlaylist closeModal={() => setIsOpenModal(false)} />
         </CustomBottomSheet>
       )}
     </>
@@ -145,7 +150,7 @@ const Item = () => {
   );
 };
 
-export default ModalAddSongToPlaylist;
+export default AddSongToPlaylist;
 
 const styles = StyleSheet.create({
   container: {

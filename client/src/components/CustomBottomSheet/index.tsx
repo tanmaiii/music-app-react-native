@@ -10,13 +10,14 @@ import { COLORS } from "../../theme/theme";
 interface CustomBottomSheetProps {
   isOpen: boolean;
   closeModal: () => void;
+  enableClose?: boolean;
   height1?: number | string;
   height2?: number | string;
   children: React.ReactNode;
 }
 
 const CustomBottomSheet = (props: CustomBottomSheetProps) => {
-  const { isOpen, closeModal, height1 = 240, height2, children } = props;
+  const { isOpen, closeModal, height1 = 240, height2, children, enableClose = true } = props;
 
   const snapPoints = React.useMemo(() => {
     const points = [];
@@ -44,7 +45,7 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
     []
   );
 
-  React.useEffect(() => {
+  React.useEffect(() => {    
     if (isOpen) {
       handleOpenPress();
     }
@@ -56,7 +57,7 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
       ref={bottomSheetRef}
       backdropComponent={renderBackdrop}
       onChange={handleSheetChanges}
-      enablePanDownToClose={true}
+      enablePanDownToClose={enableClose}
       handleComponent={() => null}
     >
       <BottomSheetView

@@ -1,2 +1,2 @@
 export { default as ModalSong } from "./ModalSong";
-export { default as ModalAddPlaylist } from "./ModalAddSongToPlaylist";
+export { default as AddSongToPlaylist } from "./AddSongToPlaylist";
