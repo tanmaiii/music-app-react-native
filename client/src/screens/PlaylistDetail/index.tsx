@@ -30,7 +30,8 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
-import { ModalPlaylist } from "../../components/ModalPlaylist";
+import { AddPlaylist, AddSong, ModalPlaylist } from "../../components/ModalPlaylist";
+import { AddSongToPlaylist, ModalSong } from "../../components/ModalSong";
 const statusBarHeight = Constants.statusBarHeight;
 
 const songs: TSong[] = [
@@ -131,9 +132,13 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     }),
   };
 
+  React.useEffect(() => {
+    console.log("Mo ne", isOpenModal);
+  }, [isOpenModal]);
+
   return (
-    <>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <View>
         <AnimatedLinearGradient
           colors={[COLORS.Primary, "transparent"]}
           style={[{ position: "absolute", left: 0, right: 0, top: 0 }, heightAnimation]}
@@ -155,7 +160,10 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             <Animated.Text style={[styles.titleHeader, headerAnimation]}>
               AI Music 123
             </Animated.Text>
-            <TouchableOpacity style={[styles.buttonHeader]} onPress={() => setIsOpenModal(true)}>
+            <TouchableOpacity
+              style={[styles.buttonHeader]}
+              onPress={() => setIsOpenModal(!isOpenModal)}
+            >
               <FontAwesomeIcon icon={faEllipsis} size={24} style={{ color: COLORS.White1 }} />
             </TouchableOpacity>
           </Animated.View>
@@ -244,15 +252,17 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
       </View>
 
       {isOpenModal && (
-        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={"70%"}>
-          <ModalPlaylist id={123} />
+        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400}>
+          <ModalPlaylist />
         </CustomBottomSheet>
       )}
-    </>
+    </View>
   );
 };
 
 export default PlaylistDetail;
+
+
 
 const styles = StyleSheet.create({
   container: {

@@ -24,14 +24,15 @@ interface AddPlaylistProps {
   closeModal: () => void;
 }
 
-const AddPlaylist = ({closeModal}: AddPlaylistProps) => {
+const AddPlaylist = ({ closeModal }: AddPlaylistProps) => {
   const [name, setName] = React.useState<string>("");
   const textInputRef = React.useRef<TextInput>();
+  const [isPrivate, setIsPrivate] = React.useState<boolean>(false);
 
   const handleFunc = () => {
-    closeModal()
+    closeModal();
     console.log("Dong");
-  }
+  };
 
   React.useEffect(() => {
     textInputRef.current.focus();
@@ -71,7 +72,7 @@ const AddPlaylist = ({closeModal}: AddPlaylistProps) => {
           <View style={{ flex: 1 }}>
             <Text style={styles.textMain}>Private</Text>
           </View>
-          <ButtonSwitch />
+          <ButtonSwitch isOn={isPrivate} setIsOn={setIsPrivate} />
         </View>
       </ScrollView>
       <View style={{ position: "absolute", bottom: 20, width: "100%", alignItems: "center" }}>

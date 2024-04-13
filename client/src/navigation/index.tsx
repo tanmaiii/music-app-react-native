@@ -123,12 +123,12 @@ const TabNavigator = () => {
               <FontAwesomeIcon
                 icon={faHouse}
                 size={20}
-                color={focused ? COLORS.White1 : COLORS.White2}
+                color={focused ? COLORS.Primary : COLORS.White2}
               />
               <Text
                 style={[
                   styles.title,
-                  focused ? { color: COLORS.White1 } : { color: COLORS.White2 },
+                  focused ? { color: COLORS.Primary } : { color: COLORS.White2 },
                 ]}
               >
                 Home
@@ -147,12 +147,12 @@ const TabNavigator = () => {
               <FontAwesomeIcon
                 icon={faMagnifyingGlass}
                 size={20}
-                color={focused ? COLORS.White1 : COLORS.White2}
+                color={focused ? COLORS.Primary : COLORS.White2}
               />
               <Text
                 style={[
                   styles.title,
-                  focused ? { color: COLORS.White1 } : { color: COLORS.White2 },
+                  focused ? { color: COLORS.Primary } : { color: COLORS.White2 },
                 ]}
               >
                 Search
@@ -171,12 +171,12 @@ const TabNavigator = () => {
               <FontAwesomeIcon
                 icon={faRecordVinyl}
                 size={20}
-                color={focused ? COLORS.White1 : COLORS.White2}
+                color={focused ? COLORS.Primary : COLORS.White2}
               />
               <Text
                 style={[
                   styles.title,
-                  focused ? { color: COLORS.White1 } : { color: COLORS.White2 },
+                  focused ? { color: COLORS.Primary } : { color: COLORS.White2 },
                 ]}
               >
                 Library
@@ -195,12 +195,12 @@ const TabNavigator = () => {
               <FontAwesomeIcon
                 icon={faUser}
                 size={20}
-                color={focused ? COLORS.White1 : COLORS.White2}
+                color={focused ? COLORS.Primary : COLORS.White2}
               />
               <Text
                 style={[
                   styles.title,
-                  focused ? { color: COLORS.White1 } : { color: COLORS.White2 },
+                  focused ? { color: COLORS.Primary } : { color: COLORS.White2 },
                 ]}
               >
                 User

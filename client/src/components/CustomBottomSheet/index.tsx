@@ -1,7 +1,8 @@
-import {
+import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetModal as BottomSheetModalGorhom,
   BottomSheetView,
+  useBottomSheetDynamicSnapPoints,
 } from "@gorhom/bottom-sheet";
 import * as React from "react";
 import { Text, View, StyleSheet } from "react-native";
@@ -14,10 +15,19 @@ interface CustomBottomSheetProps {
   height1?: number | string;
   height2?: number | string;
   children: React.ReactNode;
+  border?: boolean;
 }
 
 const CustomBottomSheet = (props: CustomBottomSheetProps) => {
-  const { isOpen, closeModal, height1 = 240, height2, children, enableClose = true } = props;
+  const {
+    isOpen,
+    closeModal,
+    height1 = 240,
+    height2,
+    children,
+    enableClose = true,
+    border = true,
+  } = props;
 
   const snapPoints = React.useMemo(() => {
     const points = [];
@@ -45,7 +55,7 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
     []
   );
 
-  React.useEffect(() => {    
+  React.useEffect(() => {
     if (isOpen) {
       handleOpenPress();
     }
@@ -61,11 +71,13 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
       handleComponent={() => null}
     >
       <BottomSheetView
-        style={{
-          borderTopLeftRadius: 12,
-          borderTopRightRadius: 12,
-          overflow: "hidden",
-        }}
+        style={[
+          border && {
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+            overflow: "hidden",
+          },
+        ]}
       >
         <View
           style={{

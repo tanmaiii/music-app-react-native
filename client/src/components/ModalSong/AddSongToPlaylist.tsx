@@ -29,8 +29,9 @@ import { FlatList, TextInput, TouchableHighlight } from "react-native-gesture-ha
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { TSong } from "../../types";
 import CustomBottomSheet from "../CustomBottomSheet";
-import { AddPlaylist } from "../ModalPlaylist";
+import { AddPlaylist, AddSong } from "../ModalPlaylist";
 import Constants from "expo-constants";
+import EditPlaylist from "../ModalPlaylist/EditPlaylist";
 const statusBarHeight = Constants.statusBarHeight;
 
 const songs: TSong[] = [
@@ -124,6 +125,7 @@ const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
           height1={"100%"}
           enableClose={false}
         >
+          {/* <EditPlaylist closeModal={() => setIsOpenModal(false)} />  */}
           <AddPlaylist closeModal={() => setIsOpenModal(false)} />
         </CustomBottomSheet>
       )}

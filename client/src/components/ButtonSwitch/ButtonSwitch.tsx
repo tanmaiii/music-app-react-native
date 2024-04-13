@@ -3,10 +3,13 @@ import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { COLORS } from "../../theme/theme";
 
-interface ButtonSwitchProps {}
+interface ButtonSwitchProps {
+  isOn: boolean;
+  setIsOn: (value: boolean) => void;
+}
 
-const ButtonSwitch = (props: ButtonSwitchProps) => {
-  const [isOn, setIsOn] = React.useState(false);
+const ButtonSwitch = ({ isOn, setIsOn }: ButtonSwitchProps) => {
+  // const [isOn, setIsOn] = React.useState(false);
 
   return (
     <View style={styles.container}>
@@ -25,7 +28,7 @@ const ButtonSwitch = (props: ButtonSwitchProps) => {
               },
         ]}
         activeOpacity={1}
-        onPress={() => setIsOn((isOn) => !isOn)}
+        onPress={() => setIsOn(!isOn)}
       >
         <View style={styles.inner}></View>
       </TouchableOpacity>

@@ -17,8 +17,6 @@ import SongDetail from "./src/screens/SongDetail";
 import PlayingCard from "./src/components/PlayingCard";
 import Login from "./src/screens/AuthScreen/Login";
 import Signup from "./src/screens/AuthScreen/Signup";
-// import BottomSheetSong from "./src/components/BottomSheetSong";
-import { BottomSheetSong } from "./src/components/SongPlaying";
 
 import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";

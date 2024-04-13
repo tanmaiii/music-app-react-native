@@ -1,12 +1,13 @@
 import * as React from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity, Share } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, Share, Modal } from "react-native";
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faHeart, faMusic, faShare } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faMusic, faPenToSquare, faShare } from "@fortawesome/free-solid-svg-icons";
 import {
   faFlag,
   faHeart as faHeartRegular,
   faPlusSquare,
+  faTrashCan,
   faUser,
 } from "@fortawesome/free-regular-svg-icons";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
@@ -14,6 +15,9 @@ import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import CustomBottomSheet from "../CustomBottomSheet";
 import { AddSongToPlaylist } from "../../components/ModalSong";
 import AddSong from "./AddSong";
+import { AddPlaylist, ModalPlaylist } from ".";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import EditPlaylist from "./EditPlaylist";
 
 interface ModalSongProps {
   id?: number;
@@ -22,6 +26,7 @@ interface ModalSongProps {
 const ModalSong = (props: ModalSongProps) => {
   const { id } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const [isOpenModalEdit, setIsOpenModalEdit] = React.useState<boolean>(false);
 
   const handleShare = async () => {
     try {
@@ -34,8 +39,8 @@ const ModalSong = (props: ModalSongProps) => {
   };
 
   React.useEffect(() => {
-    console.log(isOpenModal);
-  }, [isOpenModal]);
+    console.log(isOpenModalEdit);
+  }, [isOpenModalEdit]);
 
   return (
     <>
@@ -72,57 +77,45 @@ const ModalSong = (props: ModalSongProps) => {
             }}
           />
           <View style={styles.body}>
-            <TouchableHighlight
-              underlayColor={COLORS.Black3}
-              style={{ borderRadius: BORDERRADIUS.radius_8 }}
-              onPress={() => console.log("PRESS")}
-            >
-              <View style={styles.item}>
-                <FontAwesomeIcon icon={faHeartRegular} size={18} color={COLORS.White1} />
-                <Text style={styles.itemText}>Add to favorites</Text>
-              </View>
-            </TouchableHighlight>
-
-            <TouchableHighlight
-              underlayColor={COLORS.Black3}
-              style={{ borderRadius: BORDERRADIUS.radius_8 }}
-              onPress={() => setIsOpenModal(true)}
-            >
-              <View style={styles.item}>
-                <FontAwesomeIcon icon={faPlusSquare} size={18} color={COLORS.White1} />
-                <Text style={styles.itemText}>Add to playlist</Text>
-              </View>
-            </TouchableHighlight>
-
-            <TouchableHighlight
-              underlayColor={COLORS.Black3}
-              style={{ borderRadius: BORDERRADIUS.radius_8 }}
-              onPress={() => console.log("PRESS")}
-            >
-              <View style={styles.item}>
-                <FontAwesomeIcon icon={faUser} size={18} color={COLORS.White1} />
-                <Text style={styles.itemText}>View artist</Text>
-              </View>
-            </TouchableHighlight>
-
-            <TouchableHighlight
-              underlayColor={COLORS.Black3}
-              style={{ borderRadius: BORDERRADIUS.radius_8 }}
-              onPress={() => console.log("PRESS")}
-            >
-              <View style={styles.item}>
-                <FontAwesomeIcon icon={faFlag} size={18} color={COLORS.White1} />
-                <Text style={styles.itemText}>Repport</Text>
-              </View>
-            </TouchableHighlight>
+            <Item
+              icon={faHeartRegular}
+              title="Add to favorites"
+              itemFunc={() => console.log("PRESS")}
+            />
+            <Item icon={faPlusSquare} title="Add song" itemFunc={() => setIsOpenModal(true)} />
+            <Item
+              icon={faPenToSquare}
+              title="Edit playlist"
+              itemFunc={() => setIsOpenModalEdit(true)}
+            />
+            <Item icon={faTrashCan} title="Delete playlist" itemFunc={() => console.log("PRESS")} />
+            <Item icon={faUser} title="View artist" itemFunc={() => console.log("PRESS")} />
+            <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
           </View>
         </ScrollView>
       </View>
       {isOpenModal && (
-        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400}>
-          <View>
-            <Text>Xin chao 123</Text>
-          </View>
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModal(false)}
+          height1={"100%"}
+          border={false}
+        >
+          <AddSong closeModal={() => setIsOpenModal(false)} />
+        </CustomBottomSheet>
+      )}
+      {isOpenModalEdit && (
+        // <Modal visible={isOpenModalEdit}>
+        //   <EditPlaylist closeModal={() => setIsOpenModalEdit(false)} />
+        // </Modal>
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModal(false)}
+          height1={"100%"}
+          border={false}
+        >
+          {/* <AddSongToPlaylist /> */}
+          <EditPlaylist closeModal={() => setIsOpenModalEdit(false)} />
         </CustomBottomSheet>
       )}
     </>
@@ -130,6 +123,27 @@ const ModalSong = (props: ModalSongProps) => {
 };
 
 export default ModalSong;
+
+type TItem = {
+  icon: IconProp;
+  title: string;
+  itemFunc: () => void;
+};
+
+const Item = ({ icon, title, itemFunc }: TItem) => {
+  return (
+    <TouchableHighlight
+      underlayColor={COLORS.Black3}
+      style={{ borderRadius: BORDERRADIUS.radius_8 }}
+      onPress={() => itemFunc()}
+    >
+      <View style={styles.item}>
+        <FontAwesomeIcon icon={icon} size={18} color={COLORS.White1} />
+        <Text style={styles.itemText}>{title}</Text>
+      </View>
+    </TouchableHighlight>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -182,24 +196,3 @@ const styles = StyleSheet.create({
     color: COLORS.White1,
   },
 });
-
-// type TItem = {
-//   icon: IconProp;
-//   title: string;
-//   itemFunc: () => void;
-// };
-
-// const Item = ({ icon, title, itemFunc }: TItem) => {
-//   return (
-//     <TouchableHighlight
-//       underlayColor={COLORS.Black3}
-//       style={{ borderRadius: BORDERRADIUS.radius_8 }}
-//       onPress={() => itemFunc()}
-//     >
-//       <View style={styles.item}>
-//         <FontAwesomeIcon icon={icon} size={18} color={COLORS.White1} />
-//         <Text style={styles.itemText}>{title}</Text>
-//       </View>
-//     </TouchableHighlight>
-//   );
-// };

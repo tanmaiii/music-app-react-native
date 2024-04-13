@@ -30,6 +30,8 @@ import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomBottomSheet from "../../components/CustomBottomSheet";
+import { ModalPlaylist } from "../../components/ModalPlaylist";
 
 interface HomeScreenProps {}
 
@@ -73,6 +75,7 @@ const HomeScreen = ({ navigation }: any) => {
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const linkTo = useLinkTo();
   const { currentUser, setCurrentUser, logout, token } = useAuth();
+  const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
   useEffect(() => {
     const date = new Date();
@@ -105,91 +108,98 @@ const HomeScreen = ({ navigation }: any) => {
   });
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.Black1} />
+    <>
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.Black1} />
 
-      <SafeAreaView>
-        <Animated.View style={[styles.HomeHeader, headerAnimation]}>
-          <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={() => handleGetToken()}>
-              <Image source={IMAGES.LOGO} style={styles.HomeHeaderImage} />
-            </TouchableOpacity>
-            <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>
+        <SafeAreaView>
+          <Animated.View style={[styles.HomeHeader, headerAnimation]}>
+            <View style={styles.headerLeft}>
+              <TouchableOpacity onPress={() => handleGetToken()}>
+                <Image source={IMAGES.LOGO} style={styles.HomeHeaderImage} />
+              </TouchableOpacity>
+              <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>
+            </View>
+            <View style={styles.headerRight}>
+              <TouchableOpacity>
+                <Ionicons
+                  name="add-outline"
+                  size={24}
+                  color="black"
+                  style={styles.HomeHeaderIcon}
+                />
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </SafeAreaView>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          onScroll={(e) => {
+            const offsetY = e.nativeEvent.contentOffset.y;
+            animatedValue.setValue(offsetY);
+          }}
+          scrollEventThrottle={16}
+        >
+          <View style={styles.scroll}>
+            <HomeTop />
+
+            <View style={{ paddingHorizontal: SPACING.space_10 }}>
+              <CategoryHeader title={"Song popular"} />
+              <FlatList
+                data={songs}
+                keyExtractor={(item: any) => item.id}
+                bounces={false}
+                snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                decelerationRate={0}
+                style={{ gap: SPACING.space_12 }}
+                renderItem={({ item, index }) => (
+                  <SongCard cardWidth={WINDOW_WIDTH / 2.4} song={item} />
+                )}
+              />
+            </View>
+
+            <View style={{ paddingHorizontal: SPACING.space_10 }}>
+              <CategoryHeader title={"Playlist popular"} />
+              <FlatList
+                data={songs}
+                keyExtractor={(item: any) => item.id}
+                bounces={false}
+                snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                decelerationRate={0}
+                style={{ gap: SPACING.space_12 }}
+                renderItem={({ item, index }) => (
+                  <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
+                )}
+              />
+            </View>
+
+            <View style={{ paddingHorizontal: SPACING.space_10 }}>
+              <CategoryHeader title={"Artist song"} />
+              <FlatList
+                data={songs}
+                keyExtractor={(item: any) => item.id}
+                bounces={false}
+                snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                decelerationRate={0}
+                style={{ gap: SPACING.space_12 }}
+                renderItem={({ item, index }) => (
+                  <ArtistCard cardWidth={WINDOW_WIDTH / 3} artist={item} />
+                )}
+              />
+            </View>
           </View>
-          <View style={styles.headerRight}>
-            <TouchableOpacity>
-              <Ionicons name="add-outline" size={24} color="black" style={styles.HomeHeaderIcon} />
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-      </SafeAreaView>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        onScroll={(e) => {
-          const offsetY = e.nativeEvent.contentOffset.y;
-          animatedValue.setValue(offsetY);
-        }}
-        scrollEventThrottle={16}
-      >
-        <View style={styles.scroll}>
-          <HomeTop />
-
-          <View style={{ paddingHorizontal: SPACING.space_10 }}>
-            <CategoryHeader title={"Song popular"} />
-            <FlatList
-              data={songs}
-              keyExtractor={(item: any) => item.id}
-              bounces={false}
-              snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              decelerationRate={0}
-              style={{ gap: SPACING.space_12 }}
-              renderItem={({ item, index }) => (
-                <SongCard cardWidth={WINDOW_WIDTH / 2.4} song={item} />
-              )}
-            />
-          </View>
-
-          <View style={{ paddingHorizontal: SPACING.space_10 }}>
-            <CategoryHeader title={"Playlist popular"} />
-            <FlatList
-              data={songs}
-              keyExtractor={(item: any) => item.id}
-              bounces={false}
-              snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              decelerationRate={0}
-              style={{ gap: SPACING.space_12 }}
-              renderItem={({ item, index }) => (
-                <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
-              )}
-            />
-          </View>
-
-          <View style={{ paddingHorizontal: SPACING.space_10 }}>
-            <CategoryHeader title={"Artist song"} />
-            <FlatList
-              data={songs}
-              keyExtractor={(item: any) => item.id}
-              bounces={false}
-              snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              decelerationRate={0}
-              style={{ gap: SPACING.space_12 }}
-              renderItem={({ item, index }) => (
-                <ArtistCard cardWidth={WINDOW_WIDTH / 3} artist={item} />
-              )}
-            />
-          </View>
-        </View>
-      </ScrollView>
-
-    </View>
+        </ScrollView>
+      </View>
+     
+    </>
   );
 };
 

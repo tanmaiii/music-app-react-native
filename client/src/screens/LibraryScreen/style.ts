@@ -7,6 +7,16 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.Black1,
   },
+  textMain: {
+    fontSize: FONTSIZE.size_16,
+    fontFamily: FONTFAMILY.medium,
+    color: COLORS.White1,
+  },
+  textExtra: {
+    fontSize: FONTSIZE.size_14,
+    fontFamily: FONTFAMILY.regular,
+    color: COLORS.White2,
+  },
   header: {
     display: "flex",
     flexDirection: "row",
@@ -72,7 +82,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: SPACING.space_8,
   },
-
   headerListRight: {},
   headerListText: {
     fontSize: FONTSIZE.size_14,
@@ -133,6 +142,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.regular,
     color: COLORS.White2,
   },
+
 });
 
 export default styles;
