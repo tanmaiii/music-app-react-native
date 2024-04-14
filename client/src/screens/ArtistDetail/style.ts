@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
   },
-  // 
+  //
   avatar: {
     position: "absolute",
     width: "100%",
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: SPACING.space_10,
-    // backgroundColor: 'pink'
+    alignItems: "center",
   },
   bodyTopRight: {
     flexDirection: "row",
@@ -89,13 +89,13 @@ const styles = StyleSheet.create({
     margin: SPACING.space_18,
   },
   buttonFollow: {
-    // paddingVertical: 0,
     paddingHorizontal: SPACING.space_12,
     borderRadius: BORDERRADIUS.radius_25,
     borderWidth: 1.2,
     borderColor: COLORS.White2,
     justifyContent: "center",
     alignItems: "center",
+    height: 40,
   },
   buttonPlay: {
     width: 45,

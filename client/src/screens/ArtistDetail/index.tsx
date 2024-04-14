@@ -29,6 +29,10 @@ import PlaylistCard from "../../components/PlaylistCard";
 import { NavigationProp } from "../../navigation/TStack";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Constants from "expo-constants";
+import CustomBottomSheet from "../../components/CustomBottomSheet";
+import { ModalArtist } from "../../components/ItemModal";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faPlay, faRandom } from "@fortawesome/free-solid-svg-icons";
 const statusBarHeight = Constants.statusBarHeight;
 
 const HEIGHT_AVATAR = 360;
@@ -74,6 +78,8 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const [random, setRandom] = React.useState(false);
   const [follow, setFollow] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [isOpenModal, setIsOpenMoal] = React.useState<boolean>(false);
+  const [heightModal, setHeightModal] = React.useState<number>(100);
 
   const opacityAnimation = {
     opacity: animatedValue.interpolate({
@@ -108,218 +114,231 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     }),
   };
 
-
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={{ zIndex: 99 }}>
-        <Animated.View
-          style={[
-            styles.header,
-            backgroundColorAnimation,
-            Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
-          ]}
-        >
-          <TouchableHighlight
-            underlayColor={COLORS.Black2}
-            style={styles.buttonHeader}
-            onPress={() => navigation.goBack()}
+    <>
+      <View style={styles.container}>
+        <SafeAreaView style={{ zIndex: 99 }}>
+          <Animated.View
+            style={[
+              styles.header,
+              backgroundColorAnimation,
+              Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
+            ]}
           >
-            <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
-          </TouchableHighlight>
+            <TouchableHighlight
+              underlayColor={COLORS.Black2}
+              style={styles.buttonHeader}
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
+            </TouchableHighlight>
 
-          <Animated.Text style={[styles.title, opacityHideAnimation]}>Son Tung MTP</Animated.Text>
-
-          <TouchableHighlight
-            underlayColor={COLORS.Black2}
-            style={styles.buttonHeader}
-            onPress={() => navigation.goBack()}
-          >
-            <Feather name="more-horizontal" size={24} style={styles.icon} />
-          </TouchableHighlight>
-        </Animated.View>
-      </SafeAreaView>
-
-      <View>
-        <Animated.View style={[styles.avatar, { height: HEIGHT_AVATAR }, opacityAnimation]}>
-          <Skeleton height={"100%"} width={"100%"} colorMode="dark" backgroundColor={COLORS.Black2}>
-            {loading ? null : <Image style={styles.imageAvatar} source={IMAGES.ARTIST} />}
-          </Skeleton>
-        </Animated.View>
-
-        <ScrollView
-          onScroll={(e) => {
-            const offsetY = e.nativeEvent.contentOffset.y;
-            animatedValue.setValue(offsetY);
-          }}
-          scrollEventThrottle={16}
-          style={{}}
-        >
-          <View style={[{ height: HEIGHT_AVATAR }]}>
-            <Text style={styles.avatarTitle}>Son Tung MTP</Text>
-          </View>
-
-          <View style={[styles.body]}>
-            <View>
-              <Text style={styles.countFollow}>1.2 milon following</Text>
-            </View>
-
-            <View style={styles.bodyTop}>
-              <TouchableOpacity
-                style={styles.buttonFollow}
-                onPress={() => setFollow((follow) => !follow)}
-              >
-                <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
-                  {follow ? "Follow" : "Following"}
-                </Text>
-              </TouchableOpacity>
-
-              <View style={styles.bodyTopRight}>
-                <TouchableOpacity
-                  style={styles.buttonSort}
-                  onPress={() => setRandom((random) => !random)}
-                >
-                  <FontAwesome
-                    name="random"
-                    size={24}
-                    style={[{ color: COLORS.White1 }, random && { color: COLORS.Primary }]}
-                  />
-                  {random && (
-                    <View
-                      style={[
-                        {
-                          position: "absolute",
-                          bottom: 8,
-                          width: 4,
-                          height: 4,
-                          borderRadius: 50,
-                          backgroundColor: COLORS.Primary,
-                        },
-                      ]}
-                    ></View>
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.buttonPlay]}>
-                  <FontAwesome
-                    name="play"
-                    size={24}
-                    style={{
-                      color: COLORS.White1,
-                    }}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <Animated.Text style={[styles.title, opacityHideAnimation]}>Son Tung MTP</Animated.Text>
 
             <TouchableHighlight
               underlayColor={COLORS.Black2}
-              onPress={() => console.log("click song top")}
+              style={styles.buttonHeader}
+              onPress={() => setIsOpenMoal(true)}
             >
-              <View style={styles.SongTop}>
-                <View style={styles.SongTopLeft}>
-                  <Image style={styles.SongTopImage} source={IMAGES.POSTER} />
-                </View>
-                <View style={styles.SongTopRight}>
-                  <View>
-                    <Text style={styles.textExtra}>4 otc 1, 2024</Text>
-                    <Text style={styles.textMain}>Chúng ta của tuơng lai</Text>
-                    <Text style={styles.textExtra}>Son Tung ..</Text>
-                  </View>
-                  <View>
-                    <TouchableOpacity style={styles.songTopLike}>
-                      <FontAwesome
-                        name="heart-o"
-                        size={18}
-                        color="black"
-                        style={{ color: COLORS.Red }}
-                      />
-                      {/* <FontAwesome name="heart" size={24} color="black" /> */}
-                      <Text
-                        style={[
-                          {
-                            color: COLORS.Red,
-                            fontSize: FONTSIZE.size_18,
-                            fontFamily: FONTFAMILY.regular,
-                          },
-                        ]}
-                      >
-                        Like
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
+              <Feather name="more-horizontal" size={24} style={styles.icon} />
             </TouchableHighlight>
+          </Animated.View>
+        </SafeAreaView>
 
-            <View style={styles.SlideSong}>
-              <CategoryHeader
-                title={"Songs"}
-                PropFunction={() => navigation.navigate("ListSong", { id: 1 })}
-              />
-              <FlatList
-                data={songs}
-                snapToInterval={WINDOW_WIDTH - 20}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                decelerationRate={0}
-                renderItem={({ item }) => (
-                  <View style={{ width: WINDOW_WIDTH - 20 }}>
-                    <SongItem song={item} />
-                    <SongItem song={item} />
-                    <SongItem song={item} />
-                    <SongItem song={item} />
-                  </View>
-                )}
-              />
+        <View>
+          <Animated.View style={[styles.avatar, { height: HEIGHT_AVATAR }, opacityAnimation]}>
+            <Skeleton
+              height={"100%"}
+              width={"100%"}
+              colorMode="dark"
+              backgroundColor={COLORS.Black2}
+            >
+              {loading ? null : <Image style={styles.imageAvatar} source={IMAGES.ARTIST} />}
+            </Skeleton>
+          </Animated.View>
+
+          <ScrollView
+            onScroll={(e) => {
+              const offsetY = e.nativeEvent.contentOffset.y;
+              animatedValue.setValue(offsetY);
+            }}
+            scrollEventThrottle={16}
+            style={{}}
+          >
+            <View style={[{ height: HEIGHT_AVATAR }]}>
+              <Text style={styles.avatarTitle}>Son Tung MTP</Text>
             </View>
 
-            <ScrollView style={{}}>
-              <View style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}>
+            <View style={[styles.body]}>
+              <View>
+                <Text style={styles.countFollow}>1.2 milon following</Text>
+              </View>
+
+              <View style={styles.bodyTop}>
+                <TouchableOpacity
+                  style={styles.buttonFollow}
+                  onPress={() => setFollow((follow) => !follow)}
+                >
+                  <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
+                    {follow ? "Follow" : "Following"}
+                  </Text>
+                </TouchableOpacity>
+
+                <View style={styles.bodyTopRight}>
+                  <TouchableOpacity
+                    style={styles.buttonSort}
+                    onPress={() => setRandom((random) => !random)}
+                  >
+                    <FontAwesomeIcon
+                      icon={faRandom}
+                      size={24}
+                      color={random ? COLORS.Primary : COLORS.White1}
+                    />
+                    {random && (
+                      <View
+                        style={[
+                          {
+                            position: "absolute",
+                            bottom: 8,
+                            width: 4,
+                            height: 4,
+                            borderRadius: 50,
+                            backgroundColor: COLORS.Primary,
+                          },
+                        ]}
+                      ></View>
+                    )}
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.buttonPlay]}>
+                    <FontAwesomeIcon icon={faPlay} size={24} color={COLORS.White1} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <TouchableHighlight
+                underlayColor={COLORS.Black2}
+                onPress={() => console.log("click song top")}
+              >
+                <View style={styles.SongTop}>
+                  <View style={styles.SongTopLeft}>
+                    <Image style={styles.SongTopImage} source={IMAGES.POSTER} />
+                  </View>
+                  <View style={styles.SongTopRight}>
+                    <View>
+                      <Text style={styles.textExtra}>4 otc 1, 2024</Text>
+                      <Text style={styles.textMain}>Chúng ta của tuơng lai</Text>
+                      <Text style={styles.textExtra}>Son Tung ..</Text>
+                    </View>
+                    <View>
+                      <TouchableOpacity style={styles.songTopLike}>
+                        <FontAwesome
+                          name="heart-o"
+                          size={18}
+                          color="black"
+                          style={{ color: COLORS.Red }}
+                        />
+                        {/* <FontAwesome name="heart" size={24} color="black" /> */}
+                        <Text
+                          style={[
+                            {
+                              color: COLORS.Red,
+                              fontSize: FONTSIZE.size_18,
+                              fontFamily: FONTFAMILY.regular,
+                            },
+                          ]}
+                        >
+                          Like
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </TouchableHighlight>
+
+              <View style={styles.SlideSong}>
                 <CategoryHeader
-                  title={"Playlist popular"}
-                  PropFunction={() => navigation.navigate("ListPlaylist", { id: 1 })}
+                  title={"Songs"}
+                  PropFunction={() => navigation.navigate("ListSong", { id: 1 })}
                 />
                 <FlatList
                   data={songs}
-                  keyExtractor={(item: any) => item.id}
-                  bounces={false}
-                  snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
+                  snapToInterval={WINDOW_WIDTH - 20}
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   decelerationRate={0}
-                  style={{ gap: SPACING.space_12 }}
-                  renderItem={({ item, index }) => (
-                    <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
+                  renderItem={({ item }) => (
+                    <View style={{ width: WINDOW_WIDTH - 20 }}>
+                      <SongItem song={item} />
+                      <SongItem song={item} />
+                      <SongItem song={item} />
+                      <SongItem song={item} />
+                    </View>
                   )}
                 />
               </View>
 
-              <View style={styles.bodyBottom}>
-                <View style={{ paddingHorizontal: SPACING.space_10 }}>
-                  <CategoryHeader title={"Related artists"} />
+              <ScrollView style={{}}>
+                <View
+                  style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}
+                >
+                  <CategoryHeader
+                    title={"Playlist popular"}
+                    PropFunction={() => navigation.navigate("ListPlaylist", { id: 1 })}
+                  />
                   <FlatList
                     data={songs}
                     keyExtractor={(item: any) => item.id}
                     bounces={false}
-                    snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
+                    snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     decelerationRate={0}
                     style={{ gap: SPACING.space_12 }}
                     renderItem={({ item, index }) => (
-                      <ArtistCard
-                        navigation={navigation}
-                        cardWidth={WINDOW_WIDTH / 3}
-                        artist={item}
-                      />
+                      <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
                     )}
                   />
                 </View>
-              </View>
-            </ScrollView>
-          </View>
-        </ScrollView>
+
+                <View style={styles.bodyBottom}>
+                  <View style={{ paddingHorizontal: SPACING.space_10 }}>
+                    <CategoryHeader title={"Related artists"} />
+                    <FlatList
+                      data={songs}
+                      keyExtractor={(item: any) => item.id}
+                      bounces={false}
+                      snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      decelerationRate={0}
+                      style={{ gap: SPACING.space_12 }}
+                      renderItem={({ item, index }) => (
+                        <ArtistCard
+                          navigation={navigation}
+                          cardWidth={WINDOW_WIDTH / 3}
+                          artist={item}
+                        />
+                      )}
+                    />
+                  </View>
+                </View>
+              </ScrollView>
+            </View>
+          </ScrollView>
+        </View>
       </View>
-    </View>
+      {isOpenModal && (
+        <CustomBottomSheet
+          isOpen={isOpenModal}
+          closeModal={() => setIsOpenMoal(false)}
+          height1={heightModal}
+        >
+          <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
+            <ModalArtist />
+          </View>
+        </CustomBottomSheet>
+      )}
+    </>
   );
 };
 

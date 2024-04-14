@@ -22,7 +22,7 @@ type TModalProps = ModalProps & {
   modalFunction: () => void;
 };
 
-const Modal = ({
+const CustomModal = ({
   isOpen,
   setIsOpen,
   withInput,
@@ -77,7 +77,7 @@ const Modal = ({
   );
 };
 
-export default Modal;
+export default CustomModal;
 
 const styles = StyleSheet.create({
   container: {

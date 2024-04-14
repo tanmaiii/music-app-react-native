@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { faCompactDisc, faMusic } from "@fortawesome/free-solid-svg-icons";
 import CustomBottomSheet from "../CustomBottomSheet";
-import { AddPlaylist } from "../ModalPlaylist";
+import AddPlaylist from "./AddPlaylist";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 interface AddSongPlaylistProps {

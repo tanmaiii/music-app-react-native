@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   image: {
     aspectRatio: 3 / 3,
     borderRadius: BORDERRADIUS.radius_8,
+    backgroundColor: COLORS.Black2
   },
   textTitle: {
     fontSize: FONTSIZE.size_16,

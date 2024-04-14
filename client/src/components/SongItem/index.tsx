@@ -7,7 +7,7 @@ import { Skeleton } from "moti/skeleton";
 import { useNavigation } from "@react-navigation/native";
 import { usePlaying } from "../../context/PlayingContext";
 import { TSong } from "../../types";
-import { ModalSong } from "../ModalSong";
+import { ModalSong } from "../ItemModal";
 import CustomBottomSheet from "../CustomBottomSheet";
 
 const SkeletonCommonProps = {
@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: BORDERRADIUS.radius_4,
     alignItems: "center",
+    backgroundColor: COLORS.Black2,
   },
   image: {
     height: "100%",

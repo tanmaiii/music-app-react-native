@@ -19,17 +19,12 @@ import {
   faPlus,
   faShare,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  faFlag,
-  faHeart as faHeartRegular,
-  faPlusSquare,
-} from "@fortawesome/free-regular-svg-icons";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { FlatList, TextInput, TouchableHighlight } from "react-native-gesture-handler";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { TSong } from "../../types";
 import CustomBottomSheet from "../CustomBottomSheet";
-import { AddPlaylist, AddSong } from "../ModalPlaylist";
+import AddPlaylist from "./AddPlaylist";
 import Constants from "expo-constants";
 import EditPlaylist from "../ModalPlaylist/EditPlaylist";
 const statusBarHeight = Constants.statusBarHeight;
@@ -124,6 +119,7 @@ const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
           closeModal={() => setIsOpenModal(false)}
           height1={"100%"}
           enableClose={false}
+          border={false}
         >
           <AddPlaylist setAddPlaylist={setIsOpenModal} />
         </CustomBottomSheet>

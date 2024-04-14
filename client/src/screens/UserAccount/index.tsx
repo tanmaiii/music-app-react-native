@@ -30,7 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import IMAGES from "../../constants/images";
-import Modal from "../../components/Modal";
+import CustomModal from "../../components/CustomModal";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
 
@@ -170,7 +170,7 @@ const UserAccount = (props: UserAccountProps) => {
           </TouchableOpacity>
         </View>
       </TouchableHighlight>
-      <Modal
+      <CustomModal
         withInput={true}
         isOpen={openModal}
         setIsOpen={setOpenModal}
@@ -181,7 +181,7 @@ const UserAccount = (props: UserAccountProps) => {
           Are you sure you want to sign out?
         </Text>
         <TextInput />
-      </Modal>
+      </CustomModal>
     </View>
   );
 };

@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: "row",
+    alignItems: "center",
     paddingVertical: SPACING.space_14,
     paddingHorizontal: SPACING.space_12,
     gap: SPACING.space_12,

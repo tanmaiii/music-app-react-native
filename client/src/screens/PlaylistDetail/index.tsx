@@ -30,8 +30,7 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
-import { AddPlaylist, AddSong, ModalPlaylist } from "../../components/ModalPlaylist";
-import { AddSongToPlaylist, ModalSong } from "../../components/ModalSong";
+import { AddPlaylist, AddSong, ModalPlaylist, EditPlaylist } from "../../components/ItemModal";
 const statusBarHeight = Constants.statusBarHeight;
 
 const songs: TSong[] = [
@@ -75,7 +74,10 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const navigation = useNavigation();
   const route = useRoute();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const [isLike, setIsLike] = React.useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
+  const [isOpenModalEdit, setIsOpenModalEdit] = React.useState<boolean>(false);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -222,17 +224,34 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                 <Text style={styles.textButton}>Play</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.buttonExtra}>
-                <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
-                <Text
-                  style={{
-                    fontSize: FONTSIZE.size_12,
-                    color: COLORS.White2,
-                    fontFamily: FONTFAMILY.regular,
-                  }}
-                >
-                  Like
-                </Text>
+              <TouchableOpacity style={styles.buttonExtra} onPress={() => setIsLike(!isLike)}>
+                {isLike ? (
+                  <>
+                    <FontAwesomeIcon icon={faHeartSolid} size={18} style={{ color: COLORS.Red }} />
+                    <Text
+                      style={{
+                        fontSize: FONTSIZE.size_12,
+                        color: COLORS.White2,
+                        fontFamily: FONTFAMILY.regular,
+                      }}
+                    >
+                      Unlike
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
+                    <Text
+                      style={{
+                        fontSize: FONTSIZE.size_12,
+                        color: COLORS.White2,
+                        fontFamily: FONTFAMILY.regular,
+                      }}
+                    >
+                      Like
+                    </Text>
+                  </>
+                )}
               </TouchableOpacity>
             </View>
 
@@ -253,7 +272,34 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
 
       {isOpenModal && (
         <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400}>
-          <ModalPlaylist />
+          <ModalPlaylist
+            setIsOpenAddSong={setIsOpenModalAddSong}
+            setIsOpenEdit={setIsOpenModalEdit}
+          />
+        </CustomBottomSheet>
+      )}
+
+      {isOpenModalAddSong && (
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModalAddSong(false)}
+          height1={"100%"}
+          border={false}
+          enableClose={false}
+        >
+          <AddSong setIsOpen={setIsOpenModalAddSong} />
+        </CustomBottomSheet>
+      )}
+
+      {isOpenModalEdit && (
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModalEdit(false)}
+          height1={"100%"}
+          border={false}
+          enableClose={false}
+        >
+          <EditPlaylist setIsOpen={setIsOpenModalEdit} />
         </CustomBottomSheet>
       )}
     </View>
@@ -261,8 +307,6 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
 };
 
 export default PlaylistDetail;
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -351,6 +395,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 2,
+    width: 40,
   },
   textButton: {
     color: COLORS.White1,

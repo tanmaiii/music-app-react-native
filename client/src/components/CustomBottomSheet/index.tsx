@@ -5,8 +5,11 @@ import BottomSheet, {
   useBottomSheetDynamicSnapPoints,
 } from "@gorhom/bottom-sheet";
 import * as React from "react";
-import { Text, View, StyleSheet } from "react-native";
-import { COLORS } from "../../theme/theme";
+import { Text, View, StyleSheet, Platform } from "react-native";
+import { COLORS, SPACING } from "../../theme/theme";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 interface CustomBottomSheetProps {
   isOpen: boolean;
@@ -40,6 +43,8 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
 
   const handleSheetChanges = React.useCallback((index: number) => {
     if (index < 0) {
+      console.log("Nho hon 0");
+
       closeModal();
     }
   }, []);
@@ -48,7 +53,7 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
     bottomSheetRef.current?.present();
   }, []);
 
-  const handleClosePress = () => bottomSheetRef.current.close();
+  const handleClosePress = () => bottomSheetRef.current?.close();
 
   const renderBackdrop = React.useCallback(
     (props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
@@ -69,6 +74,10 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
       onChange={handleSheetChanges}
       enablePanDownToClose={enableClose}
       handleComponent={() => null}
+      keyboardBehavior= {Platform.OS !== "ios" ? 'interactive' : 'extend'}
+      // //@ts-ignore
+      keyboardBlurBehavior= {Platform.OS !== "ios" ? 'restore' : 'none'}
+      android_keyboardInputMode= {Platform.OS !== "ios" ? 'adjustResize' : 'adjustPan'}
     >
       <BottomSheetView
         style={[

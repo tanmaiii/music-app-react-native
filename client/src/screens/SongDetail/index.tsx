@@ -37,9 +37,7 @@ const statusBarHeight = Constants.statusBarHeight;
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
 
-import { ModalSong } from "../../components/ModalSong";
-import { AddSong, ModalPlaylist } from "../../components/ModalPlaylist";
-import EditPlaylist from "../../components/ModalPlaylist/EditPlaylist";
+import { AddSongToPlaylist, ModalSong } from "../../components/ItemModal";
 
 const songs: TSong[] = [
   {
@@ -83,9 +81,9 @@ const SongDetail = (props: SongDetailProps) => {
   const navigation = useNavigation();
   const route = useRoute();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
-  const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [isLike, setIsLike] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(50);
+  const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -140,165 +138,164 @@ const SongDetail = (props: SongDetailProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={IMAGES.POSTER}
-        blurRadius={90}
-        style={[{ backgroundColor: COLORS.Black1 }]}
-      >
-        <AnimatedLinearGradient
-          colors={["transparent", COLORS.Black1]}
-          style={[{ position: "absolute", left: 0, right: 0, top: 0, height: WINDOW_HEIGHT }]}
-        ></AnimatedLinearGradient>
-
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
-
-        <SafeAreaView style={{ zIndex: 1 }}>
-          <Animated.View
-            style={[
-              styles.header,
-              backgroundColorAnimation,
-              Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
-            ]}
-          >
-            <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
-              <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
-            </TouchableOpacity>
-            <Animated.Text style={[styles.titleHeader, headerAnimation]}>
-              Thiên lý ơi (Single)
-            </Animated.Text>
-            <TouchableOpacity
-              style={styles.buttonHeader}
-              onPress={() => setIsOpenModal(!isOpenModal)}
-            >
-              <FontAwesomeIcon icon={faEllipsis} size={24} style={{ color: COLORS.White1 }} />
-            </TouchableOpacity>
-          </Animated.View>
-        </SafeAreaView>
-
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          onScroll={(e) => {
-            const offsetY = e.nativeEvent.contentOffset.y;
-            animatedValue.setValue(offsetY);
-          }}
-          scrollEventThrottle={16}
+    <>
+      <View style={styles.container}>
+        <ImageBackground
+          source={IMAGES.POSTER}
+          blurRadius={90}
+          style={[{ backgroundColor: COLORS.Black1 }]}
         >
-          <View style={styles.wrapper}>
-            <View style={[styles.wrapperImage]}>
-              <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.POSTER} />
-            </View>
+          <AnimatedLinearGradient
+            colors={["transparent", COLORS.Black1]}
+            style={[{ position: "absolute", left: 0, right: 0, top: 0, height: WINDOW_HEIGHT }]}
+          ></AnimatedLinearGradient>
 
-            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
-              Thiên lý ơi(Single)
-            </Text>
+          <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
 
-            <Text style={[styles.textMain, { color: COLORS.Primary }]}>Sound Hub</Text>
-
-            <View style={styles.groupButton}>
-              <TouchableOpacity style={styles.buttonExtra} onPress={() => handleShare()}>
-                <FontAwesomeIcon
-                  icon={faArrowUpFromBracket}
-                  size={18}
-                  style={{ color: COLORS.White2 }}
-                />
-
-                <Text
-                  style={{
-                    fontSize: FONTSIZE.size_12,
-                    color: COLORS.White2,
-                    fontFamily: FONTFAMILY.regular,
-                  }}
-                >
-                  Share
-                </Text>
+          <SafeAreaView style={{ zIndex: 1 }}>
+            <Animated.View
+              style={[
+                styles.header,
+                backgroundColorAnimation,
+                Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
+              ]}
+            >
+              <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
+                <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
               </TouchableOpacity>
-
-              <TouchableOpacity style={styles.button}>
-                <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
-
-                <Text style={styles.textButton}>Play</Text>
+              <Animated.Text style={[styles.titleHeader, headerAnimation]}>
+                Thiên lý ơi (Single)
+              </Animated.Text>
+              <TouchableOpacity
+                style={styles.buttonHeader}
+                onPress={() => setIsOpenModal(!isOpenModal)}
+              >
+                <FontAwesomeIcon icon={faEllipsis} size={24} style={{ color: COLORS.White1 }} />
               </TouchableOpacity>
+            </Animated.View>
+          </SafeAreaView>
 
-              <TouchableOpacity style={styles.buttonExtra} onPress={() => setIsLike(!isLike)}>
-                {isLike ? (
-                  <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.Red }} />
-                ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            onScroll={(e) => {
+              const offsetY = e.nativeEvent.contentOffset.y;
+              animatedValue.setValue(offsetY);
+            }}
+            scrollEventThrottle={16}
+          >
+            <View style={styles.wrapper}>
+              <View style={[styles.wrapperImage]}>
+                <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.POSTER} />
+              </View>
+
+              <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
+                Thiên lý ơi(Single)
+              </Text>
+
+              <Text style={[styles.textMain, { color: COLORS.Primary }]}>Sound Hub</Text>
+
+              <View style={styles.groupButton}>
+                <TouchableOpacity style={styles.buttonExtra} onPress={() => handleShare()}>
                   <FontAwesomeIcon
-                    icon={faHeartRegular}
+                    icon={faArrowUpFromBracket}
                     size={18}
                     style={{ color: COLORS.White2 }}
                   />
-                )}
-                <Text
-                  style={{
-                    fontSize: FONTSIZE.size_12,
-                    color: COLORS.White2,
-                    fontFamily: FONTFAMILY.regular,
-                  }}
-                >
-                  Like
+
+                  <Text
+                    style={{
+                      fontSize: FONTSIZE.size_12,
+                      color: COLORS.White2,
+                      fontFamily: FONTFAMILY.regular,
+                    }}
+                  >
+                    Share
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button}>
+                  <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+
+                  <Text style={styles.textButton}>Play</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.buttonExtra} onPress={() => setIsLike(!isLike)}>
+                  {isLike ? (
+                    <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.Red }} />
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faHeartRegular}
+                      size={18}
+                      style={{ color: COLORS.White2 }}
+                    />
+                  )}
+                  <Text
+                    style={{
+                      fontSize: FONTSIZE.size_12,
+                      color: COLORS.White2,
+                      fontFamily: FONTFAMILY.regular,
+                    }}
+                  >
+                    Like
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.info}>
+                <Text style={styles.textExtra}>Released: 2019</Text>
+                <Text style={styles.textExtra}>Duration: 4 minutes</Text>
+              </View>
+
+              <ScrollView style={styles.listArtist}>
+                <Text style={[styles.textMain, { marginBottom: SPACING.space_12 }]}>
+                  About artist
                 </Text>
-              </TouchableOpacity>
-            </View>
 
-            <View style={styles.info}>
-              <Text style={styles.textExtra}>Released: 2019</Text>
-              <Text style={styles.textExtra}>Duration: 4 minutes</Text>
-            </View>
-
-            <ScrollView style={styles.listArtist}>
-              <Text style={[styles.textMain, { marginBottom: SPACING.space_12 }]}>
-                About artist
-              </Text>
-
-              <TouchableOpacity style={styles.boxArtist}>
-                <View style={styles.leftBox}>
-                  <Image source={IMAGES.ARTIST} style={styles.boxImage} />
-                  <View style={styles.boxDesc}>
-                    <Text style={styles.textMain}>Nguyễn Văn A</Text>
-                    <Text style={styles.textExtra}>11M follower</Text>
+                <TouchableOpacity style={styles.boxArtist}>
+                  <View style={styles.leftBox}>
+                    <Image source={IMAGES.ARTIST} style={styles.boxImage} />
+                    <View style={styles.boxDesc}>
+                      <Text style={styles.textMain}>Nguyễn Văn A</Text>
+                      <Text style={styles.textExtra}>11M follower</Text>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.rightBox}>
-                  <TouchableOpacity style={styles.btnFollow}>
-                    <Text style={styles.textExtra}>Follow</Text>
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.boxArtist}>
-                <View style={styles.leftBox}>
-                  <Image source={IMAGES.ARTIST} style={styles.boxImage} />
-                  <View style={styles.boxDesc}>
-                    <Text style={styles.textMain}>Nguyễn Văn A</Text>
-                    <Text style={styles.textExtra}>11M follower</Text>
+                  <View style={styles.rightBox}>
+                    <TouchableOpacity style={styles.btnFollow}>
+                      <Text style={styles.textExtra}>Follow</Text>
+                    </TouchableOpacity>
                   </View>
-                </View>
-                <View style={styles.rightBox}>
-                  <TouchableOpacity style={styles.btnFollow}>
-                    <Text style={styles.textExtra}>Follow</Text>
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-        </ScrollView>
-      </ImageBackground>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.boxArtist}>
+                  <View style={styles.leftBox}>
+                    <Image source={IMAGES.ARTIST} style={styles.boxImage} />
+                    <View style={styles.boxDesc}>
+                      <Text style={styles.textMain}>Nguyễn Văn A</Text>
+                      <Text style={styles.textExtra}>11M follower</Text>
+                    </View>
+                  </View>
+                  <View style={styles.rightBox}>
+                    <TouchableOpacity style={styles.btnFollow}>
+                      <Text style={styles.textExtra}>Follow</Text>
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          </ScrollView>
+        </ImageBackground>
+      </View>
 
       {isOpenModal && (
-        <CustomBottomSheet
-          isOpen={true}
-          closeModal={() => setIsOpenModal(false)}
-          height1={heightModal}
-        >
+        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={heightModal}>
           <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
             <ModalSong />
           </View>
         </CustomBottomSheet>
       )}
-    </View>
+      
+    </>
   );
 };
 

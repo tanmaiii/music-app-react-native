@@ -27,7 +27,7 @@ import { faHeart, faMusic, faPlus, faThumbTack } from "@fortawesome/free-solid-s
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
-import AddSongPlaylist from "../../components/AddSongPlaylist/AddSongPlaylist";
+import { AddSongPlaylist, AddPlaylist } from "../../components/ItemModal";
 const { width, height } = Dimensions.get("window");
 
 interface LibraryScreenProps {
@@ -53,8 +53,9 @@ const DATA = [
 const LibraryScreen = (props: LibraryScreenProps) => {
   const [active, setActive] = useState("Playlists");
   const navigation = useNavigation<NavigationProp>();
-  const [openModal, setOpenModal] = useState<boolean>(false);
   const [heightModal, setHeightModal] = useState<number>(50);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [isOpenModalAddPlaylist, setIsOpenModalAddPlaylist] = React.useState<boolean>(false);
 
   return (
     <>
@@ -172,8 +173,20 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           height1={heightModal}
         >
           <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
-            <AddSongPlaylist />
+            <AddSongPlaylist setAddPlaylist={setIsOpenModalAddPlaylist} />
           </View>
+        </CustomBottomSheet>
+      )}
+
+      {isOpenModalAddPlaylist && (
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModalAddPlaylist(false)}
+          height1={"100%"}
+          enableClose={false}
+          border={false}
+        >
+          <AddPlaylist setAddPlaylist={setIsOpenModalAddPlaylist} />
         </CustomBottomSheet>
       )}
     </>

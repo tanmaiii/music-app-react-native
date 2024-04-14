@@ -13,7 +13,6 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import CustomBottomSheet from "../CustomBottomSheet";
 import AddSongToPlaylist from "./AddSongToPlaylist";
-import { AddPlaylist, AddSong } from "../ModalPlaylist";
 
 interface ModalSongProps {
   id?: number;
@@ -66,6 +65,7 @@ const ModalSong = (props: ModalSongProps) => {
           backgroundColor: COLORS.WhiteRGBA15,
         }}
       />
+
       <View style={styles.body}>
         <TouchableHighlight
           underlayColor={COLORS.Black3}
@@ -124,7 +124,9 @@ const ModalSong = (props: ModalSongProps) => {
 export default ModalSong;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    paddingHorizontal: SPACING.space_8,
+  },
   textMain: {
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
@@ -156,10 +158,11 @@ const styles = StyleSheet.create({
   },
   body: {
     flexDirection: "column",
-    paddingVertical: SPACING.space_12,
+    paddingVertical: SPACING.space_8,
   },
   item: {
     flexDirection: "row",
+    alignItems: "center",
     paddingVertical: SPACING.space_14,
     paddingHorizontal: SPACING.space_12,
     gap: SPACING.space_12,
