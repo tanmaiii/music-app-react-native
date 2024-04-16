@@ -1,11 +1,12 @@
 import { db, promiseDb } from "../config/connect.js";
 import moment from "moment";
 
-const Song = (song) => {
+const Song = function (song){
   this.title = song.title;
   this.image_path = song.image_path;
   this.song_path = song.song_path;
   this.public = song.public;
+  this.genre_id = song.genre_id;
 };
 
 Song.create = (userId, newSong, result) => {
@@ -38,6 +39,7 @@ Song.update = (songId, newSong, result) => {
   );
 };
 
+//Xóa mềm
 Song.delete = (songId, result) => {
   db.query(
     `UPDATE songs SET is_deleted = 1 ,update_at = '${moment(Date.now()).format(
@@ -54,6 +56,7 @@ Song.delete = (songId, result) => {
   );
 };
 
+//Xóa hoàn toàn
 Song.destroy = (songId, userId, result) => {
   db.query("SELECT * FROM songs WHERE id = ? ", songId, (err, song) => {
     if (err) {
@@ -63,17 +66,17 @@ Song.destroy = (songId, userId, result) => {
     }
 
     if (song.length === 0) {
-      result("Không tìm thấy !", null);
-      return;
-    }
-
-    if (song[0].is_deleted === 0) {
-      result("Bài hát không có trong danh sách được xóa !", null);
+      result("Not found !", null);
       return;
     }
 
     if (song[0].user_id !== userId) {
-      result("Bài hát không thuộc sở hữu của người dùng !", null);
+      result("The song is not owned by the user!", null);
+      return;
+    }
+
+    if (song[0].is_deleted === 0) {
+      result("The song is not in the list to be deleted!", null);
       return;
     }
 
@@ -88,7 +91,9 @@ Song.destroy = (songId, userId, result) => {
   });
 };
 
+//Khôi phục bài hát đã xóa
 Song.restore = (songId, userId, result) => {
+  
   db.query("SELECT * FROM songs WHERE id = ? AND is_deleted = 1", [songId, userId], (err, song) => {
     if (err) {
       console.log("ERROR", err);

@@ -1,11 +1,18 @@
 import Joi from "joi";
 
+const bodyToken = {
+  body: Joi.object().keys({
+    token: Joi.string().required(),
+  }),
+};
+
 const bodySchema = {
   body: Joi.object().keys({
     title: Joi.string().min(0).max(255),
     genre_id: Joi.number(),
     image_path: Joi.string().min(0).max(255),
     public: Joi.number().valid(0, 1),
+    token: Joi.string().required(),
   }),
 };
 
@@ -18,11 +25,11 @@ const querySchema = {
   }),
 };
 
-const cookieSchema = {
-  cookies: Joi.object().keys({
-    accessToken: Joi.string().required(),
-  }),
-};
+// const cookieSchema = {
+//   cookies: Joi.object().keys({
+//     accessToken: Joi.string().required(),
+//   }),
+// };
 
 export default class playlistValidator {
   static getPlaylist = {
@@ -33,19 +40,31 @@ export default class playlistValidator {
 
   static createPlaylist = {
     ...bodySchema,
-    ...cookieSchema,
   };
 
   static updatePlaylist = {
     ...bodySchema,
-    ...cookieSchema,
   };
 
   static deletePlaylist = {
     params: Joi.object().keys({
       playlistId: Joi.number().integer().required(),
     }),
-    ...cookieSchema,
+    ...bodyToken,
+  };
+
+  static destroyPlaylist = {
+    params: Joi.object().keys({
+      playlistId: Joi.number().integer().required(),
+    }),
+    ...bodyToken,
+  };
+
+  static restorePlaylist = {
+    params: Joi.object().keys({
+      playlistId: Joi.number().integer().required(),
+    }),
+    ...bodyToken,
   };
 
   static getAllPlaylist = {
@@ -54,7 +73,7 @@ export default class playlistValidator {
 
   static getAllPlaylistByMe = {
     ...querySchema,
-    ...cookieSchema,
+    ...bodyToken,
   };
 
   static getAllPlaylistByUser = {
@@ -66,25 +85,25 @@ export default class playlistValidator {
 
   static getAllFavoritesByUser = {
     ...querySchema,
-    ...cookieSchema,
+    ...bodyToken,
   };
 
   static like = {
-    ...cookieSchema,
+    ...bodyToken,
     params: Joi.object().keys({
       playlistId: Joi.number().integer().required(),
     }),
   };
 
   static unLike = {
-    ...cookieSchema,
+    ...bodyToken,
     params: Joi.object().keys({
       playlistId: Joi.number().integer().required(),
     }),
   };
 
   static addSong = {
-    ...cookieSchema,
+    ...bodyToken,
     body: Joi.object().keys({
       playlist_id: Joi.number().min(1).max(255).required(),
       song_id: Joi.number().min(1).max(255).required(),
@@ -92,7 +111,7 @@ export default class playlistValidator {
   };
 
   static unAddSong = {
-    ...cookieSchema,
+    ...bodyToken,
     body: Joi.object().keys({
       playlist_id: Joi.number().min(1).max(255).required(),
       song_id: Joi.number().min(1).max(255).required(),

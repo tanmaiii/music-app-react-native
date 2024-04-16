@@ -33,6 +33,7 @@ import {
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavigationProp } from "../../navigation/TStack";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface LoginScreenProps {}
 
@@ -79,15 +80,11 @@ const LoginScreen = (props: LoginScreenProps) => {
 
   return (
     <View style={styles.container} onTouchStart={Keyboard.dismiss}>
-      <View
-        // showsVerticalScrollIndicator={false}
-        // showsHorizontalScrollIndicator={false}
-        style={{ justifyContent: "center" }}
-      >
-        <View style={styles.logo}>
-          <Image style={styles.image} source={IMAGES.LOGO} />
-        </View>
+      <View style={{ justifyContent: "center" }}>
         <View style={styles.body}>
+          <View style={styles.logo}>
+            <Image style={styles.image} source={IMAGES.LOGO} />
+          </View>
           <View style={styles.bodyTop}>
             <Text
               style={{
@@ -161,7 +158,7 @@ const LoginScreen = (props: LoginScreenProps) => {
             </View>
           </View>
 
-          <Pressable>
+          <Pressable onPress={() => navigation.navigate("Welcome")}>
             <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
           </Pressable>
 
@@ -169,10 +166,10 @@ const LoginScreen = (props: LoginScreenProps) => {
             {loading ? <ActivityIndicator /> : <Text style={styles.titleLogin}>Log In</Text>}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.buttonGoogle}>
+          {/* <TouchableOpacity style={styles.buttonGoogle}>
             <Image source={IMAGES.GOOGLE} style={{ width: 30, height: 30 }} />
             <Text style={styles.titleGoogle}>Google</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <View style={styles.boxBottom}>
             <Text

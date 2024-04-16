@@ -1,5 +1,11 @@
 import Joi from "joi";
 
+const bodyToken = {
+  body: Joi.object().keys({
+    token: Joi.string().required(),
+  }),
+};
+
 const bodySchema = {
   body: Joi.object().keys({
     title: Joi.string().min(0).max(255),
@@ -8,9 +14,9 @@ const bodySchema = {
     song_path: Joi.string().min(0).max(255),
     public: Joi.number().valid(0, 1),
     is_deleted: Joi.number().valid(0, 1),
+    token: Joi.string().required(),
   }),
 };
-
 
 const querySchema = {
   query: Joi.object().keys({
@@ -34,33 +40,31 @@ export default class songValidation {
 
   static updateSong = {
     ...bodySchema,
-    cookies: Joi.object().keys({
-      accessToken: Joi.string().required(),
-    }),
   };
 
   static deleteSong = {
+    ...bodyToken,
     params: Joi.object().keys({
       songId: Joi.number().integer().required(),
     }),
-    ...cookieSchema,
   };
 
   static destroySong = {
+    ...bodyToken,
     params: Joi.object().keys({
       songId: Joi.number().integer().required(),
     }),
-    ...cookieSchema,
   };
 
   static restoreSong = {
+    ...bodyToken,
     params: Joi.object().keys({
       songId: Joi.number().integer().required(),
     }),
-    ...cookieSchema,
   };
 
   static getSong = {
+    ...bodyToken,
     params: Joi.object().keys({
       songId: Joi.number().integer().required(),
     }),
@@ -71,13 +75,17 @@ export default class songValidation {
   };
 
   static getAllSongByMe = {
+    ...bodyToken,
     ...querySchema,
-    ...cookieSchema,
   };
 
   static getAllFavoritesByUser = {
+    //...bodyToken,
     ...querySchema,
-    ...cookieSchema,
+    // ...cookieSchema,
+    params: Joi.object().keys({
+      userId: Joi.number().integer().required(),
+    }),
   };
 
   static getAllSongByUser = {
@@ -95,14 +103,14 @@ export default class songValidation {
   };
 
   static like = {
-    ...cookieSchema,
+    ...bodyToken,
     params: Joi.object().keys({
       songId: Joi.number().integer().required(),
     }),
   };
 
   static unLike = {
-    ...cookieSchema,
+    ...bodyToken,
     params: Joi.object().keys({
       songId: Joi.number().integer().required(),
     }),

@@ -35,79 +35,19 @@ import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 import ModalSearchSong from "../../components/ModalSearchSong";
-import { transform } from "typescript";
+import { songApi } from "../../apis";
+import { useAuth } from "../../context/AuthContext";
 
 interface ListSongScreenProps {}
 
-const songs: TSong[] = [
-  {
-    id: 1,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
-  },
-  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 3,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 5,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 7,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-  { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-  { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-  { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-  {
-    id: 11,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
-  },
-  { id: 12, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 13,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 14, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 15,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 16, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 17,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-  { id: 18, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-  { id: 19, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-  { id: 20, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-];
-
 const ListSongScreen = (props: ListSongScreenProps) => {
+  const [songs, setSongs] = useState<TSong[]>(null);
   const navigation = useNavigation();
   const route = useRoute();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("Songs");
+  const { currentUser } = useAuth();
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -147,6 +87,18 @@ const ListSongScreen = (props: ListSongScreenProps) => {
     }),
   };
 
+  useEffect(() => {
+    const getSong = async () => {
+      try {
+        const res = await songApi.getAllFavoritesByUser(currentUser.id, 10, 1);
+        setSongs(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getSong();
+  }, []);
+
   return (
     <View style={styles.container}>
       <AnimatedLinearGradient
@@ -174,30 +126,39 @@ const ListSongScreen = (props: ListSongScreenProps) => {
         </Animated.View>
       </SafeAreaView>
 
-      <View style={styles.wrapper} onTouchStart={Keyboard.dismiss}>
-        <FlatList
-          onScroll={(e) => {
-            const offsetY = e.nativeEvent.contentOffset.y;
-            animatedValue.setValue(offsetY);
-          }}
-          scrollEventThrottle={16}
-          data={songs}
-          contentContainerStyle={{
-            paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 20,
-          }}
-          ListHeaderComponent={
-            <View style={[styles.wrapperTop]}>
-              <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>{title}</Text>
-              <Text style={styles.textExtra}>12 Songs</Text>
-              <TouchableOpacity style={styles.button}>
-                <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
-                <Text style={styles.textButton}>Play</Text>
-              </TouchableOpacity>
-            </View>
-          }
-          renderItem={({ item, index }) => <SongItem song={item} />}
-        />
-      </View>
+      {!songs ? (
+        <View style={styles.wrapper}>
+          <View style={[styles.wrapperTop]}>
+            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>{title}</Text>
+            <Text style={styles.textExtra}>Not found</Text>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.wrapper} onTouchStart={Keyboard.dismiss}>
+          <FlatList
+            onScroll={(e) => {
+              const offsetY = e.nativeEvent.contentOffset.y;
+              animatedValue.setValue(offsetY);
+            }}
+            scrollEventThrottle={16}
+            data={songs}
+            contentContainerStyle={{
+              paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 20,
+            }}
+            ListHeaderComponent={
+              <View style={[styles.wrapperTop]}>
+                <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>{title}</Text>
+                <Text style={styles.textExtra}>12 Songs</Text>
+                <TouchableOpacity style={styles.button}>
+                  <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+                  <Text style={styles.textButton}>Play</Text>
+                </TouchableOpacity>
+              </View>
+            }
+            renderItem={({ item, index }) => <SongItem song={item} />}
+          />
+        </View>
+      )}
 
       <ModalSearchSong isOpen={isOpenModal} setIsOpen={setIsOpenModal} />
     </View>

@@ -43,8 +43,6 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
 
   const handleSheetChanges = React.useCallback((index: number) => {
     if (index < 0) {
-      console.log("Nho hon 0");
-
       closeModal();
     }
   }, []);

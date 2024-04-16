@@ -28,7 +28,7 @@ router.get(
 );
 
 router.get(
-  "/like",
+  "/like/:userId",
   validate(songValidation.getAllFavoritesByUser),
   songController.getAllFavoritesByUser
 );

@@ -1,12 +1,31 @@
 import { Router } from "express";
 const router = Router();
 import followController from "../controllers/follow.controller.js";
+import followsValidation from "../validations/follow.validation.js";
+import validate from "../middlewares/validate.js";
 
-router.get("/following/:userId/count", followController.getCountFollowing);
-router.get("/followers/:userId/count", followController.getCountFollowers);
-router.get("/followers/:userId", followController.getAllFollowers);
-router.get("/following/:userId", followController.getAllFollowing);
-router.post("/:userId", followController.addFollow);
-router.delete("/:userId", followController.removeFollow);
+router.get(
+  "/following/:userId/count",
+  validate(followsValidation.getCountFollowing),
+  followController.getCountFollowing
+);
+router.get(
+  "/followers/:userId/count",
+  validate(followsValidation.getAllFollowers),
+  followController.getCountFollowers
+);
+router.get(
+  "/followers/:userId",
+  validate(followsValidation.getAllFollowers),
+  followController.getAllFollowers
+);
+router.get(
+  "/following/:userId",
+  validate(followsValidation.getAllFollowing),
+  followController.getAllFollowing
+);
+
+router.post("/:userId", validate(followsValidation.addFollow), followController.addFollow);
+router.delete("/:userId", validate(followsValidation.removeFollow), followController.removeFollow);
 
 export default router;

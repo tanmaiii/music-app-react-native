@@ -13,7 +13,7 @@ import { FlatList, TextInput } from "react-native-gesture-handler";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import Constants from "expo-constants";
 import { IMAGES } from "../../constants";
-import Modal from "../CustomModal";
+import CustomModal from "../CustomModal";
 import { TSong } from "../../types";
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -145,7 +145,7 @@ const SongItem = (props: TSongItem) => {
         </View>
       </TouchableOpacity>
       {isAdd && (
-        <Modal
+        <CustomModal
           withInput={true}
           isOpen={openModal}
           setIsOpen={setOpenModal}
@@ -155,7 +155,7 @@ const SongItem = (props: TSongItem) => {
           <Text style={{ color: COLORS.White1, fontSize: FONTSIZE.size_16 }}>
             Are you sure delete the song from the playlist ?
           </Text>
-        </Modal>
+        </CustomModal>
       )}
     </>
   );

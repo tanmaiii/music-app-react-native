@@ -6,8 +6,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Black1,
-    paddingHorizontal: SPACING.space_16,
-    paddingVertical: SPACING.space_32,
+    // paddingHorizontal: SPACING.space_16,
+    // paddingVertical: SPACING.space_32,
     overflow: "hidden",
     gap: SPACING.space_16,
     height: WINDOW_HEIGHT,
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    marginBottom: SPACING.space_18,
+    // marginBottom: SPACING.space_18,
   },
   image: {
     width: 100,
@@ -55,6 +55,8 @@ const styles = StyleSheet.create({
   body: {
     flexDirection: "column",
     gap: SPACING.space_14,
+    paddingHorizontal: SPACING.space_16,
+    paddingVertical: SPACING.space_32,
   },
   bodyTop: {
     justifyContent: "center",
@@ -119,6 +121,17 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.Primary,
+    borderRadius: BORDERRADIUS.radius_14,
+    alignContent: "center",
+    justifyContent: "center",
+    paddingHorizontal: SPACING.space_12,
+    paddingVertical: SPACING.space_16,
+    alignItems: "center",
+    height: 54,
+  },
+  buttonLine: {
+    borderWidth: 1,
+    borderColor: COLORS.Primary,
     borderRadius: BORDERRADIUS.radius_14,
     alignContent: "center",
     justifyContent: "center",

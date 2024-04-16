@@ -3,7 +3,7 @@ import jwtService from "../services/jwtService.js";
 
 export const createSongPlay = async (req, res) => {
   try {
-    const token = req.cookies.accessToken;
+    const { token } = req.body;
     const userInfo = await jwtService.verifyToken(token);
     SongPlay.find(userInfo.id, req.params.songId, (err, song) => {
       if (err) {

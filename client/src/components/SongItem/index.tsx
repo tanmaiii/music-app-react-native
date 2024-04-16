@@ -9,6 +9,7 @@ import { usePlaying } from "../../context/PlayingContext";
 import { TSong } from "../../types";
 import { ModalSong } from "../ItemModal";
 import CustomBottomSheet from "../CustomBottomSheet";
+import apiConfig from "../../apis/apiConfig";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -41,13 +42,22 @@ const SongItem = (props: SongItemProps) => {
         <View style={styles.swapper}>
           <View style={styles.swapperImage}>
             <Skeleton radius={4} width={"100%"} height={"100%"} {...SkeletonCommonProps}>
-              {loading ? null : <Image style={styles.image} source={IMAGES.POSTER} />}
+              {loading ? null : (
+                <Image
+                  style={styles.image}
+                  source={
+                    song?.image_path
+                      ? { uri: apiConfig.imageURL(song.image_path) }
+                      : IMAGES.PLAYLIST
+                  }
+                />
+              )}
             </Skeleton>
           </View>
           <View style={styles.body}>
             <View style={{ gap: SPACING.space_4 }}>
               <Skeleton radius={4} width={180} height={18} {...SkeletonCommonProps}>
-                {loading ? null : <Text style={styles.textMain}>Chắc ai đó sẽ về {song.id}</Text>}
+                {loading ? null : <Text style={styles.textMain}>{song.title}</Text>}
               </Skeleton>
               <Skeleton radius={4} width={100} height={18} {...SkeletonCommonProps}>
                 {loading ? null : <Text style={styles.textEtra}>12.343.000 - 2017</Text>}
@@ -98,14 +108,14 @@ const styles = StyleSheet.create({
   swapperImage: {
     height: 50,
     width: 50,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderRadius: BORDERRADIUS.radius_4,
     alignItems: "center",
     backgroundColor: COLORS.Black2,
   },
   image: {
-    height: "100%",
-    width: "100%",
+    height: 50,
+    width: 50,
     aspectRatio: 1 / 1,
     objectFit: "cover",
   },

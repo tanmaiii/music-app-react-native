@@ -3,10 +3,10 @@ import jwtService from "../services/jwtService.js";
 
 export const updateUser = async (req, res) => {
   try {
-    const token = req.cookies.accessToken;
+    const { token, ...newUser } = req.body;
     const userInfo = await jwtService.verifyToken(token);
 
-    User.update(userInfo.id, req.body, (err, data) => {
+    User.update(userInfo.id, newUser, (err, data) => {
       if (!data) {
         const conflictError = err;
         return res.status(401).json({ conflictError });

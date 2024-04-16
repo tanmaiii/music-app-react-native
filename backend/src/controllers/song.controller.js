@@ -9,7 +9,6 @@ export const getSong = async (req, res) => {
   try {
     // const token = req.cookies.accessToken;
     const { token } = req.body;
-    console.log("token",token);
     const userInfo = await jwtService.verifyToken(token);
 
     Song.findById(req.params.songId, userInfo.id, (err, song) => {
@@ -19,7 +18,7 @@ export const getSong = async (req, res) => {
       if (!song) {
         return res.status(404).json({ conflictError: "Không tìm thấy !" });
       }
-      console.log('Get song', song);
+      console.log("Get song", song);
       return res.json(song);
     });
   } catch (error) {
@@ -30,14 +29,16 @@ export const getSong = async (req, res) => {
 export const createSong = async (req, res) => {
   try {
     // const token = req.cookies.accessToken;
-    const { token } = req.body;
+    const { token, ...newSong } = req.body;
+
     const userInfo = await jwtService.verifyToken(token);
 
-    Song.create(userInfo.id, req.body, (err, data) => {
+    Song.create(userInfo.id, newSong, (err, data) => {
       if (err) {
         const conflictError = err;
         return res.status(401).json({ conflictError });
       } else {
+        console.log("CREATED SONG: ", data);
         return res.json(data);
       }
     });
@@ -49,8 +50,9 @@ export const createSong = async (req, res) => {
 export const updateSong = async (req, res) => {
   try {
     // const token = req.cookies.accessToken;
-    const { token } = req.body;
+    const { token, ...songs } = req.body;
     const userInfo = await jwtService.verifyToken(token);
+
     Song.findById(req.params.songId, userInfo.id, (err, song) => {
       if (err) {
         return res.status(401).json({ conflictError: err });
@@ -58,7 +60,7 @@ export const updateSong = async (req, res) => {
       if (song.user_id !== userInfo.id) {
         return res.status(401).json({ conflictError: "Không có quyền sửa" });
       }
-      Song.update(req.params.songId, req.body, (err, data) => {
+      Song.update(req.params.songId, songs, (err, data) => {
         if (err) {
           const conflictError = err;
           return res.status(401).json({ conflictError });
@@ -74,7 +76,6 @@ export const updateSong = async (req, res) => {
 
 export const deleteSong = async (req, res) => {
   try {
-    // const token = req.cookies.accessToken;
     const { token } = req.body;
     const userInfo = await jwtService.verifyToken(token);
 
@@ -204,10 +205,9 @@ export const getAllSongByUser = (req, res) => {
 export const getAllFavoritesByUser = async (req, res) => {
   try {
     // const token = req.cookies.accessToken;
-    const { token } = req.body;
-    const userInfo = await jwtService.verifyToken(token);
+    const { userId } = req.params;
 
-    Song.findByFavorite(userInfo.id, req.query, (err, data) => {
+    Song.findByFavorite(userId, req.query, (err, data) => {
       if (!data) {
         return res.status(401).json("Không tìm thấy");
       } else {

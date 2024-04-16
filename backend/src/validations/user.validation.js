@@ -27,11 +27,6 @@ const querySchema = {
   }),
 };
 
-// const cookieSchema = {
-//   cookies: Joi.object().keys({
-//     accessToken: Joi.string().required(),
-//   }),
-// };
 export default class userValidation {
   static getUser = {
     params: Joi.object().keys({

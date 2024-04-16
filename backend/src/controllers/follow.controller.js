@@ -4,7 +4,7 @@ import User from "../model/user.model.js";
 
 export const addFollow = async (req, res) => {
   try {
-    const token = req.cookies.accessToken;
+    const { token } = req.body;
     const userInfo = await jwtService.verifyToken(token);
 
     User.findById(req.params.userId, (err, user) => {
@@ -33,7 +33,7 @@ export const addFollow = async (req, res) => {
 
 export const removeFollow = async (req, res) => {
   try {
-    const token = req.cookies.accessToken;
+    const { token } = req.body;
     const userInfo = await jwtService.verifyToken(token);
 
     Follow.findFollowRelationship(userInfo.id, req.params.userId, (err, follow) => {

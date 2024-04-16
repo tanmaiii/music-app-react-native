@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 type TModalProps = ModalProps & {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  withInput;
+  withInput?: boolean;
   header: string;
   modalFunction: () => void;
 };
@@ -25,7 +25,7 @@ type TModalProps = ModalProps & {
 const CustomModal = ({
   isOpen,
   setIsOpen,
-  withInput,
+  withInput = false,
   header,
   children,
   modalFunction,
@@ -38,7 +38,6 @@ const CustomModal = ({
 
   const content = withInput ? (
     <KeyboardAvoidingView
-      // style={{ alignItems: "center", justifyContent: "center", flex: 1, padding: SPACING.space_4 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       {children}

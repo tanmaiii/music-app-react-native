@@ -6,19 +6,20 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { IMAGES } from "../../constants";
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
-import { faPenToSquare, faShare, faHeart } from "@fortawesome/free-solid-svg-icons";
 import {
+  faPenToSquare,
+  faShare,
+  faUserPlus,
+  faUserXmark,
   faFlag,
-  faHeart as faHeartRegular,
-  faPlusSquare,
-  faTrashCan,
-  faUser,
-} from "@fortawesome/free-regular-svg-icons";
+} from "@fortawesome/free-solid-svg-icons"
+import CustomModal from "../CustomModal";
 
 interface ModalArtistProps {}
 
 const ModalArtist = (props: ModalArtistProps) => {
   const [isFollow, setIsFollow] = React.useState<boolean>(false);
+  const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
   const handleShare = async () => {
     try {
@@ -31,48 +32,58 @@ const ModalArtist = (props: ModalArtistProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image
-            source={IMAGES.POSTER}
-            style={{
-              height: 50,
-              width: 50,
-              aspectRatio: 1,
-              objectFit: "cover",
-              overflow: "hidden",
-              borderRadius: 25,
-            }}
-          />
-          <View style={styles.headerDesc}>
-            <Text style={styles.textMain}>Phương Ly</Text>
-            <Text style={styles.textEtra}>Artist</Text>
+    <>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Image
+              source={IMAGES.ARTIST}
+              style={{
+                height: 50,
+                width: 50,
+                aspectRatio: 1,
+                objectFit: "cover",
+                overflow: "hidden",
+                borderRadius: 25,
+              }}
+            />
+            <View style={styles.headerDesc}>
+              <Text style={styles.textMain}>Phương Ly</Text>
+              <Text style={styles.textEtra}>12.213 follow</Text>
+            </View>
           </View>
         </View>
-
-        <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
-          <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          width: "100%",
-          height: 0.6,
-          backgroundColor: COLORS.WhiteRGBA15,
-        }}
-      />
-      <View style={styles.body}>
-        <Item
-          icon={isFollow ? faHeart : faHeartRegular}
-          title={isFollow ? "Unfollow" : "Follow"}
-          itemFunc={() => setIsFollow(!isFollow)}
+        <View
+          style={{
+            width: "100%",
+            height: 0.6,
+            backgroundColor: COLORS.WhiteRGBA15,
+          }}
         />
-        <Item icon={faPlusSquare} title="Add song" itemFunc={() => console.log("PRESS")} />
-        <Item icon={faPenToSquare} title="Edit playlist" itemFunc={() => console.log("PRESS")} />
-        <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
+        <View style={styles.body}>
+          <Item
+            icon={isFollow ? faUserXmark : faUserPlus}
+            title={isFollow ? "Unfollow" : "Follow"}
+            itemFunc={() => (isFollow ? setIsOpenModal(true) : setIsFollow(true))}
+          />
+          <Item icon={faPenToSquare} title="Edit profile" itemFunc={() => console.log("PRESS")} />
+          <Item icon={faShare} title="Share" itemFunc={() => handleShare()} />
+          <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
+        </View>
       </View>
-    </View>
+      {isOpenModal && (
+        <CustomModal
+          isOpen={isOpenModal}
+          setIsOpen={setIsOpenModal}
+          header={"Unfollow artist"}
+          modalFunction={() => setIsFollow(false)}
+        >
+          <Text style={{ color: COLORS.White1, fontSize: FONTSIZE.size_16 }}>
+            Are you sure unfollow artist Phuong Ly ?
+          </Text>
+        </CustomModal>
+      )}
+    </>
   );
 };
 
@@ -132,7 +143,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDERRADIUS.radius_25,
   },
   body: {
-    paddingVertical: SPACING.space_8
+    paddingVertical: SPACING.space_8,
   },
   item: {
     flexDirection: "row",

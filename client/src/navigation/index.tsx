@@ -24,9 +24,28 @@ import ListSongScreen from "../screens/ListSongScreen";
 import ListPlaylistScreen from "../screens/ListPlaylistScreen";
 // import ListSongLikeScreen from "../screens/ListSongScreen";
 import { RootStackParamList } from "./TStack";
+import LoginScreen from "../screens/AuthScreen/Login";
+import SignupScreen from "../screens/AuthScreen/Signup";
+import WelcomeScreen from "../screens/AuthScreen/Welcome";
+import VeridyScreen from "../screens/AuthScreen/Verify";
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export const StackAuth = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name={"Welcome"} component={WelcomeScreen} />
+      <Stack.Screen name={"Login"} component={LoginScreen} />
+      <Stack.Screen name={"Signup"} component={SignupScreen} />
+      <Stack.Screen name={"Verify"} component={VeridyScreen} />
+    </Stack.Navigator>
+  );
+};
 
 const StackNavigatorHome = () => {
   return (

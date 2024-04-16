@@ -31,7 +31,6 @@ import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
-import { ModalPlaylist } from "../../components/ModalPlaylist";
 
 interface HomeScreenProps {}
 
@@ -120,16 +119,6 @@ const HomeScreen = ({ navigation }: any) => {
               </TouchableOpacity>
               <Text style={styles.titleHello}>{`${greeting}, Mãi !`}</Text>
             </View>
-            <View style={styles.headerRight}>
-              <TouchableOpacity>
-                <Ionicons
-                  name="add-outline"
-                  size={24}
-                  color="black"
-                  style={styles.HomeHeaderIcon}
-                />
-              </TouchableOpacity>
-            </View>
           </Animated.View>
         </SafeAreaView>
 
@@ -198,7 +187,6 @@ const HomeScreen = ({ navigation }: any) => {
           </View>
         </ScrollView>
       </View>
-     
     </>
   );
 };

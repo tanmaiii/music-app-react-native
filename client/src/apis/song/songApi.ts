@@ -30,12 +30,13 @@ const songApi = {
     });
   },
   getAllFavoritesByUser(
+    userId: number,
     limit: number,
     page: number,
     sort?: string,
     q?: string
   ): Promise<ListResponse<TSong>> {
-    const url = "song/like";
+    const url = `song/like/${userId}`;
     return axiosClient.get(url, {
       params: {
         page: page,

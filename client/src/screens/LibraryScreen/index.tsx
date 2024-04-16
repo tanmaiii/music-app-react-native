@@ -45,9 +45,12 @@ const DATA = [
   { id: 4, title: "4 New jeans", desc: "Artist", type: "Artist" },
   { id: 5, title: "5 New jeans", desc: "Artist", type: "Artist" },
   { id: 6, title: "6 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "7 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "8 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
+  { id: 7, title: "7 New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 8, title: "8 New jeans", desc: "Playlist", type: "Playlist" },
+  { id: 9, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
+  { id: 10, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
+  { id: 11, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
+  { id: 12, title: "12 New jeans bottom", desc: "Playlist", type: "Playlist" },
 ];
 
 const LibraryScreen = (props: LibraryScreenProps) => {
@@ -104,7 +107,67 @@ const LibraryScreen = (props: LibraryScreenProps) => {
 
         <View style={{ height: 10 }}></View>
 
-        <ScrollView
+        <FlatList
+          data={DATA}
+          keyExtractor={(item: any) => item.id}
+          horizontal={false}
+          style={styles.scroll}
+          contentContainerStyle={{
+            paddingBottom: HEIGHT.playingCard + HEIGHT.navigator + 50,
+          }}
+          ListHeaderComponent={
+            <>
+              <View style={styles.headerList}>
+                <View style={styles.headerListLeft}>
+                  <FontAwesome
+                    name="sort"
+                    size={24}
+                    color="black"
+                    style={{ fontSize: FONTSIZE.size_14, color: COLORS.White2 }}
+                  />
+                  <Text style={styles.headerListText}>Recently played</Text>
+                </View>
+                <View style={styles.headerListRight}>
+                  <MaterialIcons
+                    style={styles.headerListIcon}
+                    name="grid-view"
+                    size={24}
+                    color="black"
+                  />
+                </View>
+              </View>
+
+              <TouchableHighlight
+                underlayColor={COLORS.Black}
+                onPress={() => navigation.navigate("ListSong", { id: 123 })}
+              >
+                <View style={styles.likeSong}>
+                  <View style={styles.boxImage}>
+                    <FontAwesomeIcon icon={faHeart} size={24} color={COLORS.White1} />
+                  </View>
+                  <View style={styles.body}>
+                    <Text style={styles.title}>Like Song</Text>
+                    <View style={styles.desc}>
+                      <FontAwesomeIcon icon={faThumbTack} size={14} color={COLORS.Primary} />
+                      <Text style={styles.descText}>Playlist - 26 songs</Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableHighlight>
+            </>
+          }
+          renderItem={({ item, index }) => (
+            <ItemHorizontal
+              id={item.id}
+              key={index}
+              title={item.title}
+              desc={item.desc}
+              type={item.type}
+            />
+          )}
+        />
+
+        {/* <ScrollView
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           style={styles.scroll}
@@ -164,7 +227,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
               );
             })}
           </View>
-        </ScrollView>
+        </ScrollView> */}
       </View>
       {openModal && (
         <CustomBottomSheet
