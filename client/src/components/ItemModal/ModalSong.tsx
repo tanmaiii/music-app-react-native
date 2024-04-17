@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity, Share } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, Share, Pressable } from "react-native";
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart, faMusic, faShare } from "@fortawesome/free-solid-svg-icons";
@@ -13,14 +13,39 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import CustomBottomSheet from "../CustomBottomSheet";
 import AddSongToPlaylist from "./AddSongToPlaylist";
+import { TSong } from "../../types";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import apiConfig from "../../apis/apiConfig";
+import { NavigationProp } from "../../navigation/TStack";
+import { useNavigation } from "@react-navigation/native";
+import { songApi } from "../../apis";
+import { useAuth } from "../../context/AuthContext";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface ModalSongProps {
-  id?: number;
+  song: TSong;
+  setOpenModal?: (boolean) => void;
 }
 
-const ModalSong = (props: ModalSongProps) => {
-  const { id } = props;
+const ModalSong = ({ song, setOpenModal }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const [isLike, setIsLike] = React.useState<boolean>(false);
+  const navigation = useNavigation<NavigationProp>();
+  const { token } = useAuth();
+
+  const checkLike = async () => {
+    try {
+      const res = await songApi.checkLikedSong(song.id, token);
+      setIsLike(res.isLiked);
+      console.log(res.isLiked);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    checkLike();
+  }, []);
 
   const handleShare = async () => {
     try {
@@ -32,12 +57,32 @@ const ModalSong = (props: ModalSongProps) => {
     }
   };
 
+  const handleLike = async () => {
+    const like = async () => {
+      try {
+        isLike ? await songApi.unLikeSong(song.id, token) : await songApi.likeSong(song.id, token);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    like();
+  };
+
+  const handleGoDetail = () => {
+    setOpenModal(false);
+    navigation.navigate("Song", { songId: song?.id });
+  };
+
+  const handleGoArtist = () => {
+    setOpenModal(false);
+    navigation.navigate("Artist", { userId: song?.id });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
+        <Pressable style={styles.headerLeft} onPress={() => handleGoDetail()}>
           <Image
-            source={IMAGES.POSTER}
             style={{
               height: 50,
               width: 50,
@@ -46,12 +91,13 @@ const ModalSong = (props: ModalSongProps) => {
               overflow: "hidden",
               borderRadius: BORDERRADIUS.radius_4,
             }}
+            source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
           />
           <View style={styles.headerDesc}>
-            <Text style={styles.textMain}>Thiên Lý ơi {id && id}</Text>
-            <Text style={styles.textEtra}>Jack 5 củ</Text>
+            <Text style={styles.textMain}>{song?.title}</Text>
+            <Text style={styles.textEtra}>{song?.author}</Text>
           </View>
-        </View>
+        </Pressable>
 
         <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
           <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
@@ -67,49 +113,15 @@ const ModalSong = (props: ModalSongProps) => {
       />
 
       <View style={styles.body}>
-        <TouchableHighlight
-          underlayColor={COLORS.Black3}
-          style={{ borderRadius: BORDERRADIUS.radius_8 }}
-          onPress={() => console.log("PRESS")}
-        >
-          <View style={styles.item}>
-            <FontAwesomeIcon icon={faHeartRegular} size={18} color={COLORS.White1} />
-            <Text style={styles.itemText}>Add to favorites</Text>
-          </View>
-        </TouchableHighlight>
-
-        <TouchableHighlight
-          underlayColor={COLORS.Black3}
-          style={{ borderRadius: BORDERRADIUS.radius_8 }}
-          onPress={() => setIsOpenModal(true)}
-        >
-          <View style={styles.item}>
-            <FontAwesomeIcon icon={faPlusSquare} size={18} color={COLORS.White1} />
-            <Text style={styles.itemText}>Add to playlist</Text>
-          </View>
-        </TouchableHighlight>
-
-        <TouchableHighlight
-          underlayColor={COLORS.Black3}
-          style={{ borderRadius: BORDERRADIUS.radius_8 }}
-          onPress={() => setIsOpenModal(true)}
-        >
-          <View style={styles.item}>
-            <FontAwesomeIcon icon={faUser} size={18} color={COLORS.White1} />
-            <Text style={styles.itemText}>View artist</Text>
-          </View>
-        </TouchableHighlight>
-
-        <TouchableHighlight
-          underlayColor={COLORS.Black3}
-          style={{ borderRadius: BORDERRADIUS.radius_8 }}
-          onPress={() => console.log("PRESS")}
-        >
-          <View style={styles.item}>
-            <FontAwesomeIcon icon={faFlag} size={18} color={COLORS.White1} />
-            <Text style={styles.itemText}>Repport</Text>
-          </View>
-        </TouchableHighlight>
+        <Item
+          icon={isLike ? faHeart : faHeartRegular}
+          title={isLike ? "Remove to favorites" : "Add to favorites"}
+          itemFunc={() => handleLike()}
+        />
+        <Item icon={faPlusSquare} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
+        <Item icon={faMusic} title="View detail" itemFunc={() => handleGoDetail()} />
+        <Item icon={faUser} title="View artist" itemFunc={() => handleGoArtist()} />
+        <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
       </View>
 
       {isOpenModal && (
@@ -122,6 +134,27 @@ const ModalSong = (props: ModalSongProps) => {
 };
 
 export default ModalSong;
+
+type TItem = {
+  icon: IconProp;
+  title: string;
+  itemFunc: () => void;
+};
+
+const Item = ({ icon, title, itemFunc }: TItem) => {
+  return (
+    <TouchableHighlight
+      underlayColor={COLORS.Black3}
+      style={{ borderRadius: BORDERRADIUS.radius_8 }}
+      onPress={() => itemFunc()}
+    >
+      <View style={styles.item}>
+        <FontAwesomeIcon icon={icon} size={18} color={COLORS.White1} />
+        <Text style={styles.itemText}>{title}</Text>
+      </View>
+    </TouchableHighlight>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

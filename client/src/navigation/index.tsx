@@ -59,6 +59,7 @@ const StackNavigatorHome = () => {
       <Stack.Screen name={"Artist"} component={ArtistDetail} />
       <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
       <Stack.Screen name={"ListSong"} component={ListSongScreen} />
+      <Stack.Screen name={"ListSongLike"} component={ListSongScreen} />
       <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
     </Stack.Navigator>
   );
@@ -76,6 +77,7 @@ const StackNavigatorLibrary = () => {
       <Stack.Screen name={"Artist"} component={ArtistDetail} />
       <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
       <Stack.Screen name={"ListSong"} component={ListSongScreen} />
+      <Stack.Screen name={"ListSongLike"} component={ListSongScreen} />
       <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
     </Stack.Navigator>
   );
@@ -93,6 +95,7 @@ const StackNavigatorSearch = () => {
       <Stack.Screen name={"Artist"} component={ArtistDetail} />
       <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
       <Stack.Screen name={"ListSong"} component={ListSongScreen} />
+      <Stack.Screen name={"ListSongLike"} component={ListSongScreen} />
       <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
     </Stack.Navigator>
   );
@@ -110,6 +113,7 @@ const StackNavigatorUserAccount = () => {
       <Stack.Screen name={"Artist"} component={ArtistDetail} />
       <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
       <Stack.Screen name={"ListSong"} component={ListSongScreen} />
+      <Stack.Screen name={"ListSongLike"} component={ListSongScreen} />
       <Stack.Screen name={"ListPlaylist"} component={ListPlaylistScreen} />
     </Stack.Navigator>
   );

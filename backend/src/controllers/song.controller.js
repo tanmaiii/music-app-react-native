@@ -258,7 +258,6 @@ export const unLikeSong = async (req, res) => {
 };
 
 const checkSongLiked = async (req, res) => {
-  // const token = req.cookies.accessToken;
   const { token } = req.body;
   const userInfo = await jwtService.verifyToken(token);
 

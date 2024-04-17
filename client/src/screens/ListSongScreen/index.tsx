@@ -13,6 +13,7 @@ import {
   Platform,
   FlatList,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import IMAGES from "../../constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -37,17 +38,29 @@ const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 import ModalSearchSong from "../../components/ModalSearchSong";
 import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
+import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
 
 interface ListSongScreenProps {}
 
 const ListSongScreen = (props: ListSongScreenProps) => {
   const [songs, setSongs] = useState<TSong[]>(null);
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RootRouteProps<"ListSong" | "ListSongLike">>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("Songs");
   const { currentUser } = useAuth();
+  const [limit, setLimit] = useState<number>(10);
+  const [page, setPage] = useState<number>(1);
+  const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const items = Array.from({ length: 10 }, (_, index) => index);
+
+  useEffect(() => {
+    console.log(route);
+    console.log(route.params.userId);
+  }, [route]);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -89,15 +102,40 @@ const ListSongScreen = (props: ListSongScreenProps) => {
 
   useEffect(() => {
     const getSong = async () => {
+      setLoading(true);
       try {
-        const res = await songApi.getAllFavoritesByUser(currentUser.id, 10, 1);
-        setSongs(res.data);
+        let res;
+        route.name === "ListSongLike"
+          ? (res = await songApi.getAllFavoritesByUser(route.params.userId, limit, page))
+          : (res = await songApi.getAllByUserId(route.params.userId, limit, page));
+        if (!songs) {
+          setSongs(res.data);
+          setTotalPages(res.pagination.totalPages);
+          setTotalCount(res.pagination.totalCount);
+        } else {
+          // Nếu đã được khởi tạo, sử dụng phép cộng mảng để thêm dữ liệu mới vào
+          setSongs((prevSongs) => [...prevSongs, ...res.data]);
+        }
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
     };
+    setLoading(false);
     getSong();
-  }, []);
+  }, [limit, page]);
+
+  const loadMore = () => {
+    page < totalPages && setPage(page + 1);
+  };
+
+  const renderLoader = () => {
+    return loading ? (
+      <View style={{ paddingVertical: SPACING.space_14 }}>
+        <ActivityIndicator size={"large"} color={COLORS.White1} />
+      </View>
+    ) : null;
+  };
 
   return (
     <View style={styles.container}>
@@ -140,22 +178,24 @@ const ListSongScreen = (props: ListSongScreenProps) => {
               const offsetY = e.nativeEvent.contentOffset.y;
               animatedValue.setValue(offsetY);
             }}
+            ListFooterComponent={renderLoader}
+            onEndReached={loadMore}
             scrollEventThrottle={16}
             data={songs}
             contentContainerStyle={{
-              paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 20,
+              paddingBottom: HEIGHT.playingCard + 20,
             }}
             ListHeaderComponent={
               <View style={[styles.wrapperTop]}>
                 <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>{title}</Text>
-                <Text style={styles.textExtra}>12 Songs</Text>
+                <Text style={styles.textExtra}>{totalCount} Songs</Text>
                 <TouchableOpacity style={styles.button}>
                   <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
                   <Text style={styles.textButton}>Play</Text>
                 </TouchableOpacity>
               </View>
             }
-            renderItem={({ item, index }) => <SongItem song={item} />}
+            renderItem={({ item, index }) => <SongItem song={item} loading={loading} />}
           />
         </View>
       )}

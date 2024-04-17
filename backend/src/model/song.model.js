@@ -1,7 +1,7 @@
 import { db, promiseDb } from "../config/connect.js";
 import moment from "moment";
 
-const Song = function (song){
+const Song = function (song) {
   this.title = song.title;
   this.image_path = song.image_path;
   this.song_path = song.song_path;
@@ -93,7 +93,6 @@ Song.destroy = (songId, userId, result) => {
 
 //Khôi phục bài hát đã xóa
 Song.restore = (songId, userId, result) => {
-  
   db.query("SELECT * FROM songs WHERE id = ? AND is_deleted = 1", [songId, userId], (err, song) => {
     if (err) {
       console.log("ERROR", err);
@@ -253,10 +252,11 @@ Song.findByUserId = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT * FROM songs WHERE ${
-      q ? ` title LIKE "%${q}%" AND` : ""
-    } user_id = ${userId} AND public = 1 AND is_deleted = 0 ` +
-      `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+    ` SELECT s.*, u.name as author FROM songs as s ` +
+      ` LEFT JOIN users AS u ON s.user_id = u.id` +
+      ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""} ` +
+      ` user_id = ${userId} AND public = 1 AND is_deleted = 0 ` +
+      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
@@ -352,14 +352,14 @@ Song.findMe = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT * FROM songs WHERE ${q ? ` title LIKE "%${q}%" AND` : ""} user_id = ${userId}  ` +
-      `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+    `SELECT * FROM songs WHERE ` +
+      ` ${q ? ` title LIKE "%${q}%" AND` : ""} user_id = ${userId} AND is_deleted = 0 ` +
+      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM songs WHERE ${
-      q ? ` title LIKE "%${q}%" AND` : ""
-    } user_id = ${userId} `
+    `SELECT COUNT(*) AS totalCount FROM songs  WHERE` +
+      ` ${q ? ` title LIKE "%${q}%" AND` : ""} user_id = ${userId} AND is_deleted = 0 `
   );
 
   if (data && totalCount) {

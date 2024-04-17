@@ -33,50 +33,48 @@ const ModalSong = ({ id, setIsOpenAddSong, setIsOpenEdit }: ModalSongProps) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Image
-              source={IMAGES.POSTER}
-              style={{
-                height: 50,
-                width: 50,
-                aspectRatio: 1,
-                objectFit: "cover",
-                overflow: "hidden",
-                borderRadius: BORDERRADIUS.radius_4,
-              }}
-            />
-            <View style={styles.headerDesc}>
-              <Text style={styles.textMain}>Thiên Lý ơi {id && id}</Text>
-              <Text style={styles.textEtra}>Jack 5 củ</Text>
-            </View>
-          </View>
-
-          <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
-            <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            width: "100%",
-            height: 0.6,
-            backgroundColor: COLORS.WhiteRGBA15,
-          }}
-        />
-        <View style={styles.body}>
-          <Item
-            icon={faHeartRegular}
-            title="Add to favorites"
-            itemFunc={() => console.log("PRESS")}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Image
+            source={IMAGES.POSTER}
+            style={{
+              height: 50,
+              width: 50,
+              aspectRatio: 1,
+              objectFit: "cover",
+              overflow: "hidden",
+              borderRadius: BORDERRADIUS.radius_4,
+            }}
           />
-          <Item icon={faPlusSquare} title="Add song" itemFunc={() => setIsOpenAddSong(true)} />
-          <Item icon={faPenToSquare} title="Edit playlist" itemFunc={() => setIsOpenEdit(true)} />
-          <Item icon={faTrashCan} title="Delete playlist" itemFunc={() => console.log("PRESS")} />
-          <Item icon={faUser} title="View artist" itemFunc={() => console.log("PRESS")} />
-          <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
+          <View style={styles.headerDesc}>
+            <Text style={styles.textMain}>Thiên Lý ơi {id && id}</Text>
+            <Text style={styles.textEtra}>Jack 5 củ</Text>
+          </View>
         </View>
-      </ScrollView>
+
+        <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
+          <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          width: "100%",
+          height: 0.6,
+          backgroundColor: COLORS.WhiteRGBA15,
+        }}
+      />
+      <View style={styles.body}>
+        <Item
+          icon={faHeartRegular}
+          title="Add to favorites"
+          itemFunc={() => console.log("PRESS")}
+        />
+        <Item icon={faPlusSquare} title="Add song" itemFunc={() => setIsOpenAddSong(true)} />
+        <Item icon={faPenToSquare} title="Edit playlist" itemFunc={() => setIsOpenEdit(true)} />
+        <Item icon={faTrashCan} title="Delete playlist" itemFunc={() => console.log("PRESS")} />
+        <Item icon={faUser} title="View artist" itemFunc={() => console.log("PRESS")} />
+        <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
+      </View>
     </View>
   );
 };
@@ -106,7 +104,6 @@ const Item = ({ icon, title, itemFunc }: TItem) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: SPACING.space_8,
   },
   textMain: {

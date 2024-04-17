@@ -28,6 +28,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
 import { AddSongPlaylist, AddPlaylist } from "../../components/ItemModal";
+import { useAuth } from "../../context/AuthContext";
 const { width, height } = Dimensions.get("window");
 
 interface LibraryScreenProps {
@@ -59,6 +60,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   const [heightModal, setHeightModal] = useState<number>(50);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [isOpenModalAddPlaylist, setIsOpenModalAddPlaylist] = React.useState<boolean>(false);
+  const { currentUser } = useAuth();
 
   return (
     <>
@@ -139,7 +141,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
 
               <TouchableHighlight
                 underlayColor={COLORS.Black}
-                onPress={() => navigation.navigate("ListSong", { id: 123 })}
+                onPress={() => navigation.navigate("ListSongLike", { userId: currentUser.id })}
               >
                 <View style={styles.likeSong}>
                   <View style={styles.boxImage}>
@@ -166,68 +168,6 @@ const LibraryScreen = (props: LibraryScreenProps) => {
             />
           )}
         />
-
-        {/* <ScrollView
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          style={styles.scroll}
-        >
-          <View style={styles.headerList}>
-            <View style={styles.headerListLeft}>
-              <FontAwesome
-                name="sort"
-                size={24}
-                color="black"
-                style={{ fontSize: FONTSIZE.size_14, color: COLORS.White2 }}
-              />
-              <Text style={styles.headerListText}>Recently played</Text>
-            </View>
-            <View style={styles.headerListRight}>
-              <MaterialIcons
-                style={styles.headerListIcon}
-                name="grid-view"
-                size={24}
-                color="black"
-              />
-            </View>
-          </View>
-
-          <View
-            style={{
-              paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 50,
-            }}
-          >
-            <TouchableHighlight
-              underlayColor={COLORS.Black}
-              onPress={() => navigation.navigate("ListSong", { id: 123 })}
-            >
-              <View style={styles.likeSong}>
-                <View style={styles.boxImage}>
-                  <FontAwesomeIcon icon={faHeart} size={24} color={COLORS.White1} />
-                </View>
-                <View style={styles.body}>
-                  <Text style={styles.title}>Like Song</Text>
-                  <View style={styles.desc}>
-                    <FontAwesomeIcon icon={faThumbTack} size={14} color={COLORS.Primary} />
-                    <Text style={styles.descText}>Playlist - 26 songs</Text>
-                  </View>
-                </View>
-              </View>
-            </TouchableHighlight>
-
-            {DATA.map((item, index) => {
-              return (
-                <ItemHorizontal
-                  id={item.id}
-                  key={index}
-                  title={item.title}
-                  desc={item.desc}
-                  type={item.type}
-                />
-              );
-            })}
-          </View>
-        </ScrollView> */}
       </View>
       {openModal && (
         <CustomBottomSheet

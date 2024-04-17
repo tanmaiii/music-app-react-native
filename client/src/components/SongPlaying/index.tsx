@@ -34,15 +34,16 @@ import {
 
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { usePlaying } from "../../context/PlayingContext";
 
+interface TSongPlaying {}
 
-interface SongPlaying {}
-
-const ModalPlaying = (props: SongPlaying) => {
+const ModalPlaying = (props: TSongPlaying) => {
+  const { songPlaying } = usePlaying();
   const { token } = useAuth();
   const [play, setPlay] = useState(false);
   const [like, setLike] = useState(false);
-  const [songs, setSongs] = useState<TSong | null>(null);
+  const [song, setSong] = useState<TSong | null>(null);
   const [sound, setSound] = useState(null);
   const [durationMillis, setDurationMillis] = useState(null);
 
@@ -53,18 +54,21 @@ const ModalPlaying = (props: SongPlaying) => {
     setSound(sound);
   };
 
-  const getSongs = async () => {
+  const getSong = async () => {
     try {
-      const res = await songApi.getDetail(19, token);
-      setSongs(res);
+      const res = await songApi.getDetail(songPlaying, token);
+      console.log(res);
+      setSong(res);
     } catch (err) {
       console.log(err.response.data.conflictError);
     }
   };
 
   React.useEffect(() => {
-    loadSound();
-  }, []);
+    console.log(songPlaying);
+
+    songPlaying && getSong();
+  }, [songPlaying]);
 
   const handleClickPlay = () => {
     setPlay((play) => !play);
@@ -72,7 +76,11 @@ const ModalPlaying = (props: SongPlaying) => {
   };
 
   return (
-    <ImageBackground source={IMAGES.POSTER} style={styles.container} blurRadius={80}>
+    <ImageBackground
+      source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
+      style={styles.container}
+      blurRadius={80}
+    >
       <LinearGradient
         colors={["transparent", COLORS.Black2]}
         style={[{ position: "absolute", left: 0, right: 0, top: 0, height: WINDOW_HEIGHT }]}
@@ -95,16 +103,19 @@ const ModalPlaying = (props: SongPlaying) => {
 
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <View style={styles.wrapperImage}>
-            <Image style={[styles.image, { zIndex: 99 }]} source={IMAGES.POSTER} />
+            <Image
+              style={[styles.image, { zIndex: 99 }]}
+              source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
+            />
           </View>
         </View>
 
         <View style={styles.playerControlsTop}>
           <Text numberOfLines={1} style={styles.textMain}>
-            Chúng ta của hiện tại
+            {song?.title}
           </Text>
           <Text numberOfLines={1} style={styles.textExtra}>
-            Sơn tùng & Hải Tú
+            {song?.author}
           </Text>
         </View>
 

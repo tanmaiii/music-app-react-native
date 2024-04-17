@@ -19,22 +19,48 @@ import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
 import { usePlaying } from "../../context/PlayingContext";
 import { faForwardStep, faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 import CustomBottomSheet from "../CustomBottomSheet";
-import SongPlaying from "../SongPlaying";
+import { TSong } from "../../types";
+import { songApi } from "../../apis";
+import { useAuth } from "../../context/AuthContext";
+import { default as SongModal } from "../SongPlaying";
+import apiConfig from "../../apis/apiConfig";
 
 interface PlayingCardProps {}
 
 const PlayingCard = (props: PlayingCardProps) => {
-  const { openBarSong } = usePlaying();
+  const { openBarSong, songPlaying } = usePlaying();
+  const { token } = useAuth();
+  const [song, setSong] = React.useState<TSong | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
   const [play, setPlay] = React.useState(false);
 
+  const getSongs = async () => {
+    setLoading(true);
+    try {
+      const res = await songApi.getDetail(songPlaying, token);
+      setSong(res);
+      console.log(res);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response.data.conflictError);
+    }
+    setLoading(false);
+  };
+
+  React.useEffect(() => {
+    console.log(songPlaying);
+
+    songPlaying && getSongs();
+  }, [songPlaying]);
+
   const handleTouch = () => {
     setIsOpenModal(true);
   };
 
-  return openBarSong ? (
+  return openBarSong && song ? (
     <>
       <Pressable style={[styles.container, { width: width }]} onPress={() => setIsOpenModal(true)}>
         <ImageBackground
@@ -49,11 +75,16 @@ const PlayingCard = (props: PlayingCardProps) => {
           <View style={styles.wrapper}>
             <View style={styles.left}>
               <View style={[styles.boxImage, styles.shadowProp]}>
-                <Image style={styles.image} source={IMAGES.AI} />
+                <Image
+                  style={styles.image}
+                  source={
+                    song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
+                  }
+                />
               </View>
               <View>
-                <Text style={styles.title}>Thằng điên</Text>
-                <Text style={styles.artist}>Phương Ly</Text>
+                <Text style={styles.title}>{song?.title}</Text>
+                <Text style={styles.artist}>{song?.author}</Text>
               </View>
             </View>
             <View style={styles.right}>
@@ -79,7 +110,7 @@ const PlayingCard = (props: PlayingCardProps) => {
       </Pressable>
       {isOpenModal && (
         <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1="100%">
-          <SongPlaying />
+          <SongModal />
         </CustomBottomSheet>
       )}
     </>

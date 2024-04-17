@@ -18,7 +18,7 @@ const bodySchema = {
 
 const querySchema = {
   query: Joi.object().keys({
-    q: Joi.string(),
+    q: Joi.string().allow(null, "").optional(),
     sort: Joi.string().valid("old", "new").default("new"),
     limit: Joi.number().integer().required(),
     page: Joi.number().integer().required(),

@@ -78,6 +78,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = React.useState<boolean>(false);
+  const [heightModal, setHeightModal] = React.useState<number>(400);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -271,11 +272,17 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
       </View>
 
       {isOpenModal && (
-        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400}>
-          <ModalPlaylist
-            setIsOpenAddSong={setIsOpenModalAddSong}
-            setIsOpenEdit={setIsOpenModalEdit}
-          />
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModal(false)}
+          height1={heightModal}
+        >
+          <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
+            <ModalPlaylist
+              setIsOpenAddSong={setIsOpenModalAddSong}
+              setIsOpenEdit={setIsOpenModalEdit}
+            />
+          </View>
         </CustomBottomSheet>
       )}
 

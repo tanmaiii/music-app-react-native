@@ -7,6 +7,6 @@ export interface PaginationParams {
   
   export interface ListResponse<T> {
     data: T[];
-    panination: PaginationParams;
+    pagination: PaginationParams;
   }
   
