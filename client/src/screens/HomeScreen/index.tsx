@@ -29,8 +29,8 @@ import apiConfig from "../../apis/apiConfig";
 import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomBottomSheet from "../../components/CustomBottomSheet";
+import { TUser } from "../../types";
+import { userApi } from "../../apis";
 
 interface HomeScreenProps {}
 
@@ -74,7 +74,7 @@ const HomeScreen = ({ navigation }: any) => {
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const linkTo = useLinkTo();
   const { currentUser, setCurrentUser, logout, token } = useAuth();
-  const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const [users, setUsers] = useState<TUser[]>();
 
   useEffect(() => {
     const date = new Date();
@@ -98,13 +98,24 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   const handleGetToken = async () => {
-    // console.log(AsyncStorage.getItem("token"));
     console.log("token", token);
   };
 
   useEffect(() => {
     if (!currentUser) return linkTo("/Login");
   });
+
+  const getUsers = async () => {
+    try {
+      let res = await userApi.getAll(10, 1);
+      console.log(res);
+      setUsers(res.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   return (
     <>
@@ -171,7 +182,7 @@ const HomeScreen = ({ navigation }: any) => {
             <View style={{ paddingHorizontal: SPACING.space_10 }}>
               <CategoryHeader title={"Artist song"} />
               <FlatList
-                data={songs}
+                data={users}
                 keyExtractor={(item: any) => item.id}
                 bounces={false}
                 snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}

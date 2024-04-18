@@ -15,18 +15,18 @@ import {
   Share,
 } from "react-native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import IMAGES from "../../constants/images";
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils";
 import styles from "./style";
 import CategoryHeader from "../../components/CategoryHeader";
 import SongItem from "../../components/SongItem";
-import { TSong } from "../../types";
+import { TSong, TUser } from "../../types";
 import { Skeleton } from "moti/skeleton";
 import ArtistCard from "../../components/ArtistCard";
 import PlaylistCard from "../../components/PlaylistCard";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Constants from "expo-constants";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
@@ -34,52 +34,74 @@ import { ModalArtist } from "../../components/ItemModal";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlay, faRandom } from "@fortawesome/free-solid-svg-icons";
 const statusBarHeight = Constants.statusBarHeight;
+import { songApi, userApi } from "../../apis";
+import apiConfig from "../../apis/apiConfig";
+import numeral from "numeral";
+import { useAuth } from "../../context/AuthContext";
+import moment from "moment";
+import { usePlaying } from "../../context/PlayingContext";
 
 const HEIGHT_AVATAR = 360;
 
-const songs: TSong[] = [
-  {
-    id: 1,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
-  },
-  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 3,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 5,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 7,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-  { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-  { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-  { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-];
+// const songs: TSong[] = [
+//   {
+//     id: 1,
+//     title: "Despacito, Despacito ,Despacito, Despacito",
+//     image_path: "despacito.jpg",
+//     author: "Luis Fonsi",
+//   },
+//   { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
+//   {
+//     id: 3,
+//     title: "Uptown Funk",
+//     image_path: "uptown_funk.jpg",
+//     author: "Mark Ronson ft. Bruno Mars",
+//   },
+//   { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
+//   {
+//     id: 5,
+//     title: "See You Again",
+//     image_path: "see_you_again.jpg",
+//     author: "Wiz Khalifa ft. Charlie Puth",
+//   },
+//   { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
+//   {
+//     id: 7,
+//     title: "Old Town Road",
+//     image_path: "old_town_road.jpg",
+//     author: "Lil Nas X ft. Billy Ray Cyrus",
+//   },
+//   { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
+//   { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
+//   { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
+// ];
 
 interface ArtistDetailProps {}
 
+const renderGroupOfSongs = (songs) => {
+  const chunkedSongs = [];
+  const chunkSize = 5;
+  for (let i = 1; i < songs.length; i += chunkSize) {
+    chunkedSongs.push(songs.slice(i, i + chunkSize));
+  }
+  return chunkedSongs;
+};
+
 const ArtistDetail = (props: ArtistDetailProps) => {
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RootRouteProps<"Artist">>();
+  const userId = route.params.userId;
+  const { currentUser, token } = useAuth();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [random, setRandom] = React.useState(false);
   const [follow, setFollow] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [isOpenModal, setIsOpenMoal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(100);
+  const [artist, setArtist] = React.useState<TUser>(null);
+  const [countFollowing, setCountFollowing] = React.useState<number>(0);
+  const [songs, setSongs] = React.useState<TSong[]>(null);
+  const groupedSongs = songs && renderGroupOfSongs(songs);
 
   const opacityAnimation = {
     opacity: animatedValue.interpolate({
@@ -114,6 +136,69 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     }),
   };
 
+  const checkFollowing = async () => {
+    try {
+      const res = userId && (await userApi.checkFollowing(userId, token));
+      setFollow(res.isFollowing);
+      console.log("Following:", res.isFollowing);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getCountFollowing = async () => {
+    try {
+      const res = await userApi.getCountFollowers(userId);
+      setCountFollowing(res);
+      // console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFollow = async () => {
+    try {
+      if (follow) {
+        await userApi.unFollow(userId, token);
+      } else {
+        await userApi.follow(userId, token);
+      }
+      checkFollowing();
+      getCountFollowing();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getUser = async () => {
+    setLoading(true);
+    try {
+      const res = await userApi.getDetail(userId);
+      setLoading(false);
+      setArtist(res);
+    } catch (error) {}
+    setLoading(false);
+  };
+
+  const getSongs = async () => {
+    try {
+      const res = await songApi.getAllByUserId(userId, 11, 1);
+      setSongs(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
+  React.useEffect(() => {
+    console.log("userId: ", userId);
+
+    userId && getUser();
+    userId && getCountFollowing();
+    userId && getSongs();
+    currentUser.id !== userId && checkFollowing();
+  }, [route, userId]);
+
   return (
     <>
       <View style={styles.container}>
@@ -133,7 +218,9 @@ const ArtistDetail = (props: ArtistDetailProps) => {
               <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
             </TouchableHighlight>
 
-            <Animated.Text style={[styles.title, opacityHideAnimation]}>Son Tung MTP</Animated.Text>
+            <Animated.Text numberOfLines={1} style={[styles.title, opacityHideAnimation]}>
+              {artist?.name}
+            </Animated.Text>
 
             <TouchableHighlight
               underlayColor={COLORS.Black2}
@@ -153,7 +240,16 @@ const ArtistDetail = (props: ArtistDetailProps) => {
               colorMode="dark"
               backgroundColor={COLORS.Black2}
             >
-              {loading ? null : <Image style={styles.imageAvatar} source={IMAGES.ARTIST} />}
+              {loading ? null : (
+                <Image
+                  style={styles.imageAvatar}
+                  source={
+                    artist?.image_path
+                      ? { uri: apiConfig.imageURL(artist.image_path) }
+                      : IMAGES.AVATAR
+                  }
+                />
+              )}
             </Skeleton>
           </Animated.View>
 
@@ -166,23 +262,32 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             style={{}}
           >
             <View style={[{ height: HEIGHT_AVATAR }]}>
-              <Text style={styles.avatarTitle}>Son Tung MTP</Text>
+              <Text numberOfLines={1} style={styles.avatarTitle}>
+                {artist?.name}
+              </Text>
             </View>
 
             <View style={[styles.body]}>
               <View>
-                <Text style={styles.countFollow}>1.2 milon following</Text>
+                <Text style={styles.countFollow}>
+                  {numeral(countFollowing).format("0a").toUpperCase()} following
+                </Text>
               </View>
 
               <View style={styles.bodyTop}>
-                <TouchableOpacity
-                  style={styles.buttonFollow}
-                  onPress={() => setFollow((follow) => !follow)}
-                >
-                  <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
-                    {follow ? "Follow" : "Following"}
-                  </Text>
-                </TouchableOpacity>
+                {currentUser.id !== userId ? (
+                  <TouchableOpacity style={styles.buttonFollow} onPress={() => handleFollow()}>
+                    <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
+                      {follow ? "Following" : "Follow"}
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity style={styles.buttonFollow}>
+                    <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
+                      Edit profile
+                    </Text>
+                  </TouchableOpacity>
+                )}
 
                 <View style={styles.bodyTopRight}>
                   <TouchableOpacity
@@ -215,72 +320,39 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                 </View>
               </View>
 
-              <TouchableHighlight
-                underlayColor={COLORS.Black2}
-                onPress={() => console.log("click song top")}
-              >
-                <View style={styles.SongTop}>
-                  <View style={styles.SongTopLeft}>
-                    <Image style={styles.SongTopImage} source={IMAGES.POSTER} />
-                  </View>
-                  <View style={styles.SongTopRight}>
-                    <View>
-                      <Text style={styles.textExtra}>4 otc 1, 2024</Text>
-                      <Text style={styles.textMain}>Chúng ta của tuơng lai</Text>
-                      <Text style={styles.textExtra}>Son Tung ..</Text>
-                    </View>
-                    <View>
-                      <TouchableOpacity style={styles.songTopLike}>
-                        <FontAwesome
-                          name="heart-o"
-                          size={18}
-                          color="black"
-                          style={{ color: COLORS.Red }}
-                        />
-                        {/* <FontAwesome name="heart" size={24} color="black" /> */}
-                        <Text
-                          style={[
-                            {
-                              color: COLORS.Red,
-                              fontSize: FONTSIZE.size_18,
-                              fontFamily: FONTFAMILY.regular,
-                            },
-                          ]}
-                        >
-                          Like
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </TouchableHighlight>
+              <SongTop song={songs?.length > 1 && songs[0]} />
 
-              <View style={styles.SlideSong}>
-                <CategoryHeader
-                  title={"Songs"}
-                  PropFunction={() => navigation.navigate("ListSong", { userId: 1 })}
-                />
-                <FlatList
-                  data={songs}
-                  snapToInterval={WINDOW_WIDTH - 20}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  decelerationRate={0}
-                  renderItem={({ item }) => (
-                    <View style={{ width: WINDOW_WIDTH - 20 }}>
-                      <SongItem song={item} />
-                      <SongItem song={item} />
-                      <SongItem song={item} />
-                      <SongItem song={item} />
-                    </View>
-                  )}
-                />
-              </View>
+              {songs?.length > 0 && (
+                <View style={styles.SlideSong}>
+                  <CategoryHeader
+                    title={"Songs"}
+                    PropFunction={
+                      songs?.length > 5
+                        ? () => navigation.navigate("ListSong", { userId: artist?.id })
+                        : null
+                    }
+                  />
+                  <FlatList
+                    data={groupedSongs}
+                    snapToInterval={WINDOW_WIDTH - 20}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    decelerationRate={0}
+                    renderItem={({ item }) => (
+                      <View style={{ width: WINDOW_WIDTH - 20 }}>
+                        {item.map((song) => (
+                          <SongItem song={song} />
+                        ))}
+                      </View>
+                    )}
+                  />
+                </View>
+              )}
 
               <View style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}>
                 <CategoryHeader
                   title={"Playlist popular"}
-                  PropFunction={() => navigation.navigate("ListPlaylist", { userId: 1 })}
+                  PropFunction={() => navigation.navigate("ListPlaylist", { userId: artist?.id })}
                 />
                 <FlatList
                   data={songs}
@@ -310,11 +382,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                     decelerationRate={0}
                     style={{ gap: SPACING.space_12 }}
                     renderItem={({ item, index }) => (
-                      <ArtistCard
-                        navigation={navigation}
-                        cardWidth={WINDOW_WIDTH / 3}
-                        artist={item}
-                      />
+                      <ArtistCard loading={loading} cardWidth={WINDOW_WIDTH / 3} artist={item} />
                     )}
                   />
                 </View>
@@ -330,11 +398,68 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           height1={heightModal}
         >
           <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
-            <ModalArtist />
+            <ModalArtist artist={artist} />
           </View>
         </CustomBottomSheet>
       )}
     </>
+  );
+};
+
+type TSongTop = {
+  song: TSong;
+};
+
+export const SongTop = ({ song }: TSongTop) => {
+  const { setOpenBarSong, setSongPlaying, songPlaying } = usePlaying();
+
+  const handlePress = () => {
+    setSongPlaying(song.id);
+    setOpenBarSong(true);
+  };
+
+  return (
+    song && (
+      <TouchableHighlight underlayColor={COLORS.Black2} onPress={() => handlePress()}>
+        <View style={styles.SongTop}>
+          <View style={styles.SongTopLeft}>
+            <Image
+              style={styles.SongTopImage}
+              source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
+            />
+          </View>
+          <View style={styles.SongTopRight}>
+            <View>
+              <Text numberOfLines={1} style={styles.textExtra}>
+                {moment(song?.created_at).format("LL")}
+              </Text>
+              <Text numberOfLines={1} style={styles.textMain}>
+                {song?.title}
+              </Text>
+              <Text numberOfLines={1} style={styles.textExtra}>
+                {song?.author}
+              </Text>
+            </View>
+            <View>
+              <TouchableOpacity style={styles.songTopLike}>
+                <FontAwesome name="heart-o" size={18} color="black" style={{ color: COLORS.Red }} />
+                <Text
+                  style={[
+                    {
+                      color: COLORS.Red,
+                      fontSize: FONTSIZE.size_18,
+                      fontFamily: FONTFAMILY.regular,
+                    },
+                  ]}
+                >
+                  Like
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </TouchableHighlight>
+    )
   );
 };
 

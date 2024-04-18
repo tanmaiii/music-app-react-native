@@ -48,4 +48,12 @@ export default class followValidation {
       userId: Joi.number().integer().required(),
     }),
   };
+  static checkFollowing = {
+    body: Joi.object().keys({
+      token: Joi.string().required(),
+    }),
+    params: Joi.object().keys({
+      userId: Joi.number().integer().required(),
+    }),
+  };
 }

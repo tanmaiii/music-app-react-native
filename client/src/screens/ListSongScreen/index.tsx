@@ -40,6 +40,7 @@ import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
 
+
 interface ListSongScreenProps {}
 
 const ListSongScreen = (props: ListSongScreenProps) => {
@@ -55,6 +56,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const items = Array.from({ length: 10 }, (_, index) => index);
 
   useEffect(() => {
@@ -100,29 +102,30 @@ const ListSongScreen = (props: ListSongScreenProps) => {
     }),
   };
 
-  useEffect(() => {
-    const getSong = async () => {
-      setLoading(true);
-      try {
-        let res;
-        route.name === "ListSongLike"
-          ? (res = await songApi.getAllFavoritesByUser(route.params.userId, limit, page))
-          : (res = await songApi.getAllByUserId(route.params.userId, limit, page));
-        if (!songs) {
-          setSongs(res.data);
-          setTotalPages(res.pagination.totalPages);
-          setTotalCount(res.pagination.totalCount);
-        } else {
-          // Nếu đã được khởi tạo, sử dụng phép cộng mảng để thêm dữ liệu mới vào
-          setSongs((prevSongs) => [...prevSongs, ...res.data]);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
+  const getSongs = async () => {
+    setLoading(true);
+    try {
+      let res;
+      route.name === "ListSongLike"
+        ? (res = await songApi.getAllFavoritesByUser(route.params.userId, limit, page))
+        : (res = await songApi.getAllByUserId(route.params.userId, limit, page));
+      if (res.pagination.page === 1) {
+        setSongs(res.data);
+        setTotalPages(res.pagination.totalPages);
+        setTotalCount(res.pagination.totalCount);
+      } else {
+        setSongs((prevSongs) => [...prevSongs, ...res.data]);
+        // Nếu đã được khởi tạo, sử dụng phép cộng mảng để thêm dữ liệu mới vào
       }
-    };
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
     setLoading(false);
-    getSong();
+  };
+
+  useEffect(() => {
+    getSongs();
   }, [limit, page]);
 
   const loadMore = () => {
@@ -135,6 +138,13 @@ const ListSongScreen = (props: ListSongScreenProps) => {
         <ActivityIndicator size={"large"} color={COLORS.White1} />
       </View>
     ) : null;
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setPage(1);
+    getSongs();
+    setRefreshing(false);
   };
 
   return (
@@ -170,6 +180,11 @@ const ListSongScreen = (props: ListSongScreenProps) => {
             <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>{title}</Text>
             <Text style={styles.textExtra}>Not found</Text>
           </View>
+          <View>
+            {items.map((item, index) => (
+              <SongItem loading={true}/>
+            ))}
+          </View>
         </View>
       ) : (
         <View style={styles.wrapper} onTouchStart={Keyboard.dismiss}>
@@ -180,6 +195,8 @@ const ListSongScreen = (props: ListSongScreenProps) => {
             }}
             ListFooterComponent={renderLoader}
             onEndReached={loadMore}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
             scrollEventThrottle={16}
             data={songs}
             contentContainerStyle={{
@@ -195,7 +212,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
                 </TouchableOpacity>
               </View>
             }
-            renderItem={({ item, index }) => <SongItem song={item} loading={loading} />}
+            renderItem={({ item, index }) => <SongItem key={index} song={item} loading={loading} />}
           />
         </View>
       )}

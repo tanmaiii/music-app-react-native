@@ -95,13 +95,17 @@ User.getAll = async (query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT email, name, image_path, verified, is_admin FROM users ${
-      q ? `WHERE users.name LIKE "%${q}%"` : ""
-    } ` + ` limit ${+limit} offset ${+offset}`
+    `SELECT id, name, email, image_path, is_admin, gender, brithday FROM users WHERE` +
+      ` ${q ? ` users.name LIKE "%${q}%" and` : ""} ` +
+      ` email_verified_at IS NOT NULL and not is_admin = 1 `+
+      ` limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM users ${q ? `WHERE users.name LIKE "%${q}%"` : ""}`
+    `SELECT COUNT(*) AS totalCount FROM users WHERE` +
+    ` ${q ? ` users.name LIKE "%${q}%" and` : ""}  ` +
+    ` email_verified_at IS NOT NULL and not is_admin = 1 `+
+    ` limit ${+limit} offset ${+offset}`
   );
 
   if (data && totalCount) {

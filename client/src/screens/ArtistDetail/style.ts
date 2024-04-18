@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   textMain: {
     fontSize: FONTSIZE.size_20,
     fontFamily: FONTFAMILY.medium,
-    textAlign: "center",
+    // textAlign: "center",
     color: COLORS.White1,
   },
   textExtra: {

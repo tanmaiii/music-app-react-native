@@ -30,10 +30,12 @@ interface ModalSongProps {
 const ModalSong = ({ song, setOpenModal }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [isLike, setIsLike] = React.useState<boolean>(false);
+  const [loading, setLoding] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
   const { token } = useAuth();
 
   const checkLike = async () => {
+    setLoding(true);
     try {
       const res = await songApi.checkLikedSong(song.id, token);
       setIsLike(res.isLiked);
@@ -41,6 +43,7 @@ const ModalSong = ({ song, setOpenModal }: ModalSongProps) => {
     } catch (error) {
       console.log(error);
     }
+    setLoding(false);
   };
 
   React.useEffect(() => {
@@ -60,7 +63,13 @@ const ModalSong = ({ song, setOpenModal }: ModalSongProps) => {
   const handleLike = async () => {
     const like = async () => {
       try {
-        isLike ? await songApi.unLikeSong(song.id, token) : await songApi.likeSong(song.id, token);
+        if (isLike) {
+          setIsLike(false);
+          await songApi.unLikeSong(song.id, token);
+        } else {
+          setIsLike(true);
+          await songApi.likeSong(song.id, token);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -113,11 +122,13 @@ const ModalSong = ({ song, setOpenModal }: ModalSongProps) => {
       />
 
       <View style={styles.body}>
-        <Item
-          icon={isLike ? faHeart : faHeartRegular}
-          title={isLike ? "Remove to favorites" : "Add to favorites"}
-          itemFunc={() => handleLike()}
-        />
+        {!loading && (
+          <Item
+            icon={isLike ? faHeart : faHeartRegular}
+            title={isLike ? "Remove to favorites" : "Add to favorites"}
+            itemFunc={() => handleLike()}
+          />
+        )}
         <Item icon={faPlusSquare} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
         <Item icon={faMusic} title="View detail" itemFunc={() => handleGoDetail()} />
         <Item icon={faUser} title="View artist" itemFunc={() => handleGoArtist()} />

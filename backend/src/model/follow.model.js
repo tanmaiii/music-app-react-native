@@ -159,4 +159,17 @@ Follow.countFollower = async (userId, result) => {
   result(null, null);
 };
 
+Follow.checkFollowing = async (userId, followedId, result) => {
+  const [count] = await promiseDb.query(
+    `SELECT COUNT(*) AS total FROM music.follows where follower_user_id = ? and followed_user_id = ?`,
+    [userId, followedId]
+  );
+  console.log(userId, followedId);
+  if (count) {
+    result(null, count[0].total);
+    return;
+  }
+  result(null, null);
+};
+
 export default Follow;

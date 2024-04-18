@@ -7,12 +7,14 @@ interface CheckLikedResponse {
 }
 
 const songApi = {
-  getAll(): Promise<ListResponse<TSong>> {
+  getAll(limit: number, page: number, q?: string, sort?: string): Promise<ListResponse<TSong>> {
     const url = "song";
     return axiosClient.get(url, {
       params: {
-        page: 1,
-        limit: 4,
+        page: page,
+        limit: limit,
+        q: q,
+        sort: sort,
       },
     });
   },

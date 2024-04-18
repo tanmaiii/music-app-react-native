@@ -35,6 +35,7 @@
     "lottie-react-native": "^6.7.0",
     "moment": "^2.30.1",
     "moti": "^0.26.1",
+    "numeral": "^2.0.6",
     "react": "18.2.0",
     "react-content-loader": "^7.0.0",
     "react-native": "^0.73.5",

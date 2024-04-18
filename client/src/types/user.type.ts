@@ -6,6 +6,7 @@ export type TUser = {
     verified: number;
     is_admin: number;
     email_verified_at: string;
-    confirm: number;
+    gender: string;
+    brithday: string;
   };
   

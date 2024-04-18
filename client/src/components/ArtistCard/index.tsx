@@ -7,6 +7,8 @@ import { Skeleton } from "moti/skeleton";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { TUser } from "../../types";
+import apiConfig from "../../apis/apiConfig";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -17,13 +19,19 @@ const SkeletonCommonProps = {
   backgroundColor: COLORS.Black2,
 } as const;
 
-const ArtistCard = (props: any) => {
-  const { artist, loading = false } = props;
+type TArtistCard = {
+  artist: TUser;
+  loading?: boolean;
+  cardWidth: number;
+};
+
+const ArtistCard = (prop: TArtistCard) => {
+  const { artist, loading = false, cardWidth } = prop;
   const linkTo = useLinkTo();
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {
-    navigation.navigate("Artist", { id: artist.id });
+    navigation.navigate("Artist", { userId: artist.id });
   };
 
   return (
@@ -32,22 +40,16 @@ const ArtistCard = (props: any) => {
         style={[
           styles.container,
           { marginRight: SPACING.space_12 },
-          { maxWidth: props.cardWidth || "100%" },
+          { maxWidth: cardWidth || "100%" },
         ]}
       >
-        <Skeleton
-          radius="square"
-          height={props.cardWidth}
-          width={props.cardWidth}
-          {...SkeletonCommonProps}
-        >
+        <Skeleton radius="square" height={cardWidth} width={cardWidth} {...SkeletonCommonProps}>
           {loading ? null : (
             <Image
-              style={[
-                styles.image,
-                { width: props.cardWidth || "100%", height: props.cardWidth || "100%" },
-              ]}
-              source={IMAGES.ARTIST}
+              style={[styles.image, { width: cardWidth || "100%", height: cardWidth || "100%" }]}
+              source={
+                artist?.image_path ? { uri: apiConfig.imageURL(artist.image_path) } : IMAGES.AVATAR
+              }
             />
           )}
         </Skeleton>
@@ -55,7 +57,7 @@ const ArtistCard = (props: any) => {
           <Skeleton height={18} width={"100%"} {...SkeletonCommonProps}>
             {loading ? null : (
               <Text numberOfLines={1} style={styles.textTitle}>
-                {artist.title}
+                {artist.name}
               </Text>
             )}
           </Skeleton>

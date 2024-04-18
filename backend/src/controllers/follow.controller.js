@@ -94,9 +94,10 @@ export const getAllFollowers = (req, res) => {
 export const getCountFollowers = (req, res) => {
   try {
     Follow.countFollowed(req.params.userId, (err, data) => {
-      if (!data) {
-        const conflictError = "Không tìm thấy";
-        return res.status(401).json({ conflictError });
+      if (err) {
+        return res.status(401).json({ conflictError: err });
+      } else if (!data) {
+        return res.status(401).json(0);
       } else {
         return res.json(data);
       }
@@ -109,11 +110,29 @@ export const getCountFollowers = (req, res) => {
 export const getCountFollowing = (req, res) => {
   try {
     Follow.countFollower(req.params.userId, (err, data) => {
-      if (!data) {
-        const conflictError = "Không tìm thấy";
-        return res.status(401).json({ conflictError });
+      if (err) {
+        return res.status(401).json({ conflictError: err });
+      } else if (!data) {
+        return res.status(401).json(0);
       } else {
         return res.json(data);
+      }
+    });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+export const checkFollowing = async (req, res) => {
+  const { token } = req.body;
+  const userInfo = await jwtService.verifyToken(token);
+
+  try {
+    Follow.checkFollowing(userInfo.id, req.params.userId, (err, data) => {
+      if (data) {
+        return res.status(200).json({ isFollowing: true });
+      } else {
+        return res.status(200).json({ isFollowing: false });
       }
     });
   } catch (error) {
@@ -128,4 +147,5 @@ export default {
   getAllFollowers,
   getCountFollowers,
   getCountFollowing,
+  checkFollowing,
 };

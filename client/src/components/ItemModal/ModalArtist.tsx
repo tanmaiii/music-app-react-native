@@ -12,12 +12,17 @@ import {
   faUserPlus,
   faUserXmark,
   faFlag,
-} from "@fortawesome/free-solid-svg-icons"
+} from "@fortawesome/free-solid-svg-icons";
 import CustomModal from "../CustomModal";
+import { TUser } from "../../types";
+import apiConfig from "../../apis/apiConfig";
+import numeral from "numeral";
 
-interface ModalArtistProps {}
+type ModalArtistProps = {
+  artist: TUser;
+};
 
-const ModalArtist = (props: ModalArtistProps) => {
+const ModalArtist = ({ artist }: ModalArtistProps) => {
   const [isFollow, setIsFollow] = React.useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
@@ -37,7 +42,9 @@ const ModalArtist = (props: ModalArtistProps) => {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Image
-              source={IMAGES.ARTIST}
+              source={
+                artist?.image_path ? { uri: apiConfig.imageURL(artist.image_path) } : IMAGES.AVATAR
+              }
               style={{
                 height: 50,
                 width: 50,
@@ -48,8 +55,10 @@ const ModalArtist = (props: ModalArtistProps) => {
               }}
             />
             <View style={styles.headerDesc}>
-              <Text style={styles.textMain}>Phương Ly</Text>
-              <Text style={styles.textEtra}>12.213 follow</Text>
+              <Text style={styles.textMain}>{artist?.name}</Text>
+              <Text style={styles.textEtra}>
+                {numeral(1000000).format("0a").toUpperCase()} following
+              </Text>
             </View>
           </View>
         </View>

@@ -27,5 +27,10 @@ router.get(
 
 router.post("/:userId", validate(followsValidation.addFollow), followController.addFollow);
 router.delete("/:userId", validate(followsValidation.removeFollow), followController.removeFollow);
+router.post(
+  "/:userId/check",
+  validate(followsValidation.checkFollowing),
+  followController.checkFollowing
+);
 
 export default router;
