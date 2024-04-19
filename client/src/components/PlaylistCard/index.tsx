@@ -8,9 +8,14 @@ import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
 import { useNavigation, useLinkTo } from "@react-navigation/native";
 import { usePlaying } from "../../context/PlayingContext";
-import { PATH } from "../../constants/path";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/TStack";
+import { TPlaylist } from "../../types";
+import { NavigationProp } from "../../navigation/TStack";
+import apiConfig from "../../apis/apiConfig";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
+import moment from "moment";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -21,19 +26,11 @@ const SkeletonCommonProps = {
   backgroundColor: COLORS.Black2,
 } as const;
 
-type TPlaylist = {
-  id: number;
-  title: string;
-  desc: string;
-};
-
 interface PlaylistCardProps {
   loading?: boolean;
   playlist: TPlaylist;
   cardWidth?: number;
 }
-
-import { NavigationProp } from "../../navigation/TStack";
 
 const PlaylistCard = (props: PlaylistCardProps) => {
   const { playlist, loading = false, cardWidth = "100%" } = props;
@@ -45,10 +42,7 @@ const PlaylistCard = (props: PlaylistCardProps) => {
   const goToScreen = () => {};
 
   const handlePress = () => {
-    // setOpenBarSong(true);
-    // setSongPlaying(playlist.id);
-    // linkTo(`/${PATH.PLAYLIST}/${playlist.id}`);
-    navigation.navigate("Playlist", { id: 123 });
+    navigation.navigate("Playlist", { playlistId: 123 });
   };
 
   return (
@@ -60,7 +54,11 @@ const PlaylistCard = (props: PlaylistCardProps) => {
           {loading ? null : (
             <Image
               style={[styles.image, { width: props.cardWidth, height: props.cardWidth }]}
-              source={IMAGES.POSTER}
+              source={
+                playlist?.image_path
+                  ? { uri: apiConfig.imageURL(playlist.image_path) }
+                  : IMAGES.PLAYLIST
+              }
             />
           )}
         </Skeleton>
@@ -74,9 +72,15 @@ const PlaylistCard = (props: PlaylistCardProps) => {
           </Skeleton>
           <Skeleton height={14} width={80} {...SkeletonCommonProps}>
             {loading ? null : (
-              <Text numberOfLines={2} style={styles.textDes}>
-                {playlist.desc || "Đây là phần giới thiệu ...."}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.space_4 }}>
+                <Text numberOfLines={1} style={[styles.textDes]}>
+                  {playlist.author}
+                </Text>
+                <FontAwesomeIcon icon={faCircle} size={2} color={COLORS.White2} />
+                <Text numberOfLines={1} style={[styles.textDes]}>
+                  {moment(playlist.created_at).format("YYYY")}
+                </Text>
+              </View>
             )}
           </Skeleton>
         </View>

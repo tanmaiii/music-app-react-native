@@ -61,7 +61,6 @@ const SignupScreen = (props: SignupScreenProps) => {
   const [name, setName] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
-  const { currentUser, login } = useAuth();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,30}$/;
@@ -73,11 +72,11 @@ const SignupScreen = (props: SignupScreenProps) => {
   const handlePress = () => {
     setSuccess("");
     setErr("");
-    setLoading(true);
     if (name.trim().length === 0 || errName) return inputNameRef.current.focus();
     if (email.trim().length === 0 || errEmail) return inputEmailRef.current.focus();
     if (password.trim().length === 0 || errPassword) return inputPasswordRef.current.focus();
 
+    setLoading(true);
     const post = async () => {
       try {
         const res = await authApi.signup(name, email, password);

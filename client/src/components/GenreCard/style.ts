@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     height: 80,
     objectFit: "cover",
     transform: [{ rotate: "20deg" }],
+    backgroundColor: COLORS.BlackRGB06,
   },
 
   shadowProp: {

@@ -54,7 +54,7 @@ Playlist.delete = (playlistId, result) => {
   });
 };
 
-Playlist.destroy = (playlistId,userId, result) => {
+Playlist.destroy = (playlistId, userId, result) => {
   db.query("SELECT * FROM playlists WHERE id = ? ", playlistId, (err, playlist) => {
     if (err) {
       console.log("ERROR", err);
@@ -89,35 +89,36 @@ Playlist.destroy = (playlistId,userId, result) => {
 };
 
 Playlist.restore = (playlistId, userId, result) => {
-  db.query("SELECT * FROM playlists WHERE id = ? AND is_deleted = 1", [playlistId, userId], (err, playlist) => {
-    if (err) {
-      console.log("ERROR", err);
-      result(err, null);
-      return;
-    }
+  db.query(
+    "SELECT * FROM playlists WHERE id = ? AND is_deleted = 1",
+    [playlistId, userId],
+    (err, playlist) => {
+      if (err) {
+        console.log("ERROR", err);
+        result(err, null);
+        return;
+      }
 
-    if (playlist.length === 0) {
-      result("Không tìm thấy !", null);
-      return;
-    }
+      if (playlist.length === 0) {
+        result("Không tìm thấy !", null);
+        return;
+      }
 
-    if (playlist[0].user_id !== userId) {
-      result("Bài hát không thuộc sở hữu của người dùng !", null);
-      return;
-    }
+      if (playlist[0].user_id !== userId) {
+        result("Bài hát không thuộc sở hữu của người dùng !", null);
+        return;
+      }
 
-    db.query(
-      `update playlists set is_deleted = 0 where id = ${playlistId}`,
-      (err, res) => {
+      db.query(`update playlists set is_deleted = 0 where id = ${playlistId}`, (err, res) => {
         if (err) {
           console.log("ERROR", err);
           result(err, null);
           return;
         }
         result(null, { id: playlistId });
-      }
-    );
-  });
+      });
+    }
+  );
 };
 
 Playlist.getAll = async (query, result) => {
@@ -129,16 +130,19 @@ Playlist.getAll = async (query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT * FROM playlists WHERE ${
-      q ? ` title like "%${q}%" and` : ""
-    } public = 1 AND is_deleted = 0 ` +
+    `SELECT p.*,  u.name as author ` +
+      ` FROM playlists as p ` +
+      ` LEFT JOIN users AS u ON p.user_id = u.id` +
+      ` WHERE ${q ? ` title like "%${q}%" and` : ""} ` +
+      ` public = 1 AND is_deleted = 0 ` +
       `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM playlists WHERE ${
-      q ? ` title like "%${q}%" and` : ""
-    } public = 1 AND is_deleted = 0 `
+    `SELECT COUNT(*) AS totalCount FROM playlists as p ` +
+      ` LEFT JOIN users AS u ON p.user_id = u.id` +
+      ` WHERE ${q ? ` title like "%${q}%" and` : ""} ` +
+      ` public = 1 AND is_deleted = 0 `
   );
 
   if (data && totalCount) {
@@ -168,16 +172,19 @@ Playlist.getMe = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT * FROM playlists WHERE ${
-      q ? ` title like "%${q}%" and` : ""
-    } user_id = ${userId} AND is_deleted = 0 ` +
+    `SELECT p.*,  u.name as author ` +
+      ` FROM playlists as p ` +
+      ` LEFT JOIN users AS u ON p.user_id = u.id` +
+      ` WHERE ${q ? ` title like "%${q}%" and` : ""}` +
+      ` user_id = ${userId} AND is_deleted = 0 ` +
       `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM playlists WHERE ${
-      q ? ` title like "%${q}%" and` : ""
-    } user_id = ${userId} AND is_deleted = 0 `
+    `SELECT COUNT(*) AS totalCount FROM playlists as p ` +
+      ` LEFT JOIN users AS u ON p.user_id = u.id` +
+      ` WHERE ${q ? ` title like "%${q}%" and` : ""} ` +
+      ` user_id = ${userId} AND is_deleted = 0 `
   );
 
   if (data && totalCount) {
@@ -234,16 +241,18 @@ Playlist.findByUserId = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT * FROM playlists WHERE ${
-      q ? ` title like "%${q}%" and ` : ""
-    } user_id = ${userId} and public = 1 AND is_deleted = 0` +
+    `SELECT p.*, u.name as author FROM playlists as p ` +
+      ` LEFT JOIN users AS u ON p.user_id = u.id` +
+      ` WHERE ${q ? ` title like "%${q}%" and ` : ""} ` +
+      ` user_id = ${userId} and public = 1 AND is_deleted = 0` +
       ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM playlists WHERE ${
-      q ? ` title like "%${q}%" and ` : ""
-    } user_id = ${userId} and public = 1 AND is_deleted = 0`
+    `SELECT COUNT(*) AS totalCount FROM playlists as p ` +
+      ` LEFT JOIN users AS u ON p.user_id = u.id` +
+      ` WHERE ${q ? ` title like "%${q}%" and ` : ""} ` +
+      ` user_id = ${userId} and public = 1 AND is_deleted = 0`
   );
 
   if (data && totalCount) {
@@ -273,17 +282,25 @@ Playlist.findByFavorite = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT * FROM favourite_playlists as fp , playlists as p WHERE ${
-      q ? ` p.title LIKE "%${q}%" AND` : ""
-    } fp.user_id = ${userId} and fp.playlist_id = p.id and p.public = 1 AND is_deleted = 0 ` +
-      `ORDER BY fp.created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+    `SELECT p.*, u.name as author ` +
+      ` FROM favourite_playlists AS fp` +
+      ` INNER JOIN playlists AS p ON fp.playlist_id = p.id` +
+      ` LEFT JOIN users AS u ON p.user_id = u.id` +
+      ` WHERE ${q ? ` p.title LIKE "%${q}%" AND` : ""} fp.user_id = ${userId} AND p.public = 1` +
+      ` ORDER BY fp.created_at ${sort === "new" ? "DESC" : "ASC"}` +
+      ` LIMIT ${+limit} OFFSET ${+offset};`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM favourite_playlists as fp , playlists as p WHERE ${
-      q ? ` p.title LIKE "%${q}%" AND` : ""
-    } fp.user_id = ${userId} and fp.playlist_id = p.id and p.public = 1 AND is_deleted = 0 `
+    `SELECT COUNT(*) AS totalCount ` +
+      ` FROM favourite_playlists AS fp ` +
+      ` INNER JOIN playlists AS p ON fp.playlist_id = p.id` +
+      ` LEFT JOIN users AS u ON p.user_id = u.id` +
+      ` WHERE ${q ? ` p.title LIKE "%${q}%" AND` : ""} fp.user_id = ${userId} AND p.public = 1` +
+      ` ORDER BY fp.created_at ${sort === "new" ? "DESC" : "ASC"}` +
+      ` LIMIT ${+limit} OFFSET ${+offset};`
   );
+
   if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0].totalCount / limit);
 

@@ -5,6 +5,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Black1,
+    overflow: "hidden",
   },
   textMain: {
     fontSize: FONTSIZE.size_20,
@@ -39,8 +40,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.button,
     justifyContent: "center",
     alignItems: "center",
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: 25,
   },
   title: {
@@ -54,10 +55,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 400,
     backgroundColor: COLORS.Black1,
+    overflow: "hidden",
   },
   imageAvatar: {
     width: "100%",
     height: "100%",
+    overflow: "hidden",
   },
   avatarTitle: {
     position: "absolute",
@@ -70,6 +73,7 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: COLORS.Black1,
+    paddingVertical: SPACING.space_12,
   },
   bodyTop: {
     flexDirection: "row",
@@ -86,7 +90,7 @@ const styles = StyleSheet.create({
   countFollow: {
     fontSize: FONTSIZE.size_14,
     color: COLORS.White2,
-    margin: SPACING.space_18,
+    paddingHorizontal: SPACING.space_12,
   },
   buttonFollow: {
     paddingHorizontal: SPACING.space_12,
@@ -142,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: SPACING.space_4,
     backgroundColor: COLORS.Black2,
-    paddingVertical: SPACING.space_4,
+    paddingVertical: 6,
     paddingHorizontal: SPACING.space_12,
     borderRadius: BORDERRADIUS.radius_25,
   },

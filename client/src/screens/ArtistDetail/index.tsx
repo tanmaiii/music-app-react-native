@@ -13,6 +13,7 @@ import {
   FlatList,
   Platform,
   Share,
+  Pressable,
 } from "react-native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -22,7 +23,7 @@ import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils";
 import styles from "./style";
 import CategoryHeader from "../../components/CategoryHeader";
 import SongItem from "../../components/SongItem";
-import { TSong, TUser } from "../../types";
+import { TSong, TUser, TPlaylist } from "../../types";
 import { Skeleton } from "moti/skeleton";
 import ArtistCard from "../../components/ArtistCard";
 import PlaylistCard from "../../components/PlaylistCard";
@@ -32,16 +33,23 @@ import Constants from "expo-constants";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
 import { ModalArtist } from "../../components/ItemModal";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faPlay, faRandom } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faEllipsis,
+  faPlay,
+  faPlus,
+  faRandom,
+} from "@fortawesome/free-solid-svg-icons";
 const statusBarHeight = Constants.statusBarHeight;
-import { songApi, userApi } from "../../apis";
+import { playlistApi, songApi, userApi } from "../../apis";
 import apiConfig from "../../apis/apiConfig";
 import numeral from "numeral";
 import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
 import { usePlaying } from "../../context/PlayingContext";
+import { faHeart } from "@fortawesome/free-regular-svg-icons";
 
-const HEIGHT_AVATAR = 360;
+const HEIGHT_AVATAR = 400;
 
 // const songs: TSong[] = [
 //   {
@@ -87,6 +95,8 @@ const renderGroupOfSongs = (songs) => {
   return chunkedSongs;
 };
 
+const AnimatedTouchableHighlight = Animated.createAnimatedComponent(TouchableHighlight);
+
 const ArtistDetail = (props: ArtistDetailProps) => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RootRouteProps<"Artist">>();
@@ -101,6 +111,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const [artist, setArtist] = React.useState<TUser>(null);
   const [countFollowing, setCountFollowing] = React.useState<number>(0);
   const [songs, setSongs] = React.useState<TSong[]>(null);
+  const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
   const groupedSongs = songs && renderGroupOfSongs(songs);
 
   const opacityAnimation = {
@@ -130,8 +141,16 @@ const ArtistDetail = (props: ArtistDetailProps) => {
 
   const backgroundColorAnimation = {
     backgroundColor: animatedValue.interpolate({
+      inputRange: [0, 100],
+      outputRange: ["rgba(0,0,0,0)", COLORS.Black2],
+      extrapolate: "clamp",
+    }),
+  };
+
+  const buttonHeaderAnimation = {
+    backgroundColor: animatedValue.interpolate({
       inputRange: [0, 100], // Phạm vi scroll
-      outputRange: ["rgba(0,0,0,0)", COLORS.Black2], // Màu nền tương ứng
+      outputRange: [COLORS.button, "rgba(0,0,0,0)"], // Màu nền tương ứng
       extrapolate: "clamp", // Giữ giá trị nằm trong phạm vi inputRange
     }),
   };
@@ -140,7 +159,6 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     try {
       const res = userId && (await userApi.checkFollowing(userId, token));
       setFollow(res.isFollowing);
-      console.log("Following:", res.isFollowing);
     } catch (error) {
       console.log(error);
     }
@@ -150,7 +168,6 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     try {
       const res = await userApi.getCountFollowers(userId);
       setCountFollowing(res);
-      // console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -160,11 +177,12 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     try {
       if (follow) {
         await userApi.unFollow(userId, token);
+        countFollowing !== 0 ? setCountFollowing(countFollowing - 1) : setCountFollowing(0);
       } else {
         await userApi.follow(userId, token);
+        setCountFollowing(countFollowing + 1);
       }
       checkFollowing();
-      getCountFollowing();
     } catch (error) {
       console.log(error);
     }
@@ -181,9 +199,21 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   };
 
   const getSongs = async () => {
+    setLoading(true);
     try {
       const res = await songApi.getAllByUserId(userId, 11, 1);
       setSongs(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
+  const getPlaylists = async () => {
+    setLoading(true);
+    try {
+      const res = await playlistApi.getAllByUserId(userId, 10, 1);
+      setPlaylists(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -196,6 +226,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     userId && getUser();
     userId && getCountFollowing();
     userId && getSongs();
+    userId && getPlaylists();
     currentUser.id !== userId && checkFollowing();
   }, [route, userId]);
 
@@ -210,25 +241,25 @@ const ArtistDetail = (props: ArtistDetailProps) => {
               Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
             ]}
           >
-            <TouchableHighlight
+            <AnimatedTouchableHighlight
               underlayColor={COLORS.Black2}
-              style={styles.buttonHeader}
+              style={[styles.buttonHeader, buttonHeaderAnimation]}
               onPress={() => navigation.goBack()}
             >
-              <Ionicons name="chevron-back" size={24} color="black" style={styles.icon} />
-            </TouchableHighlight>
+              <FontAwesomeIcon icon={faChevronLeft} size={18} style={styles.icon} />
+            </AnimatedTouchableHighlight>
 
             <Animated.Text numberOfLines={1} style={[styles.title, opacityHideAnimation]}>
               {artist?.name}
             </Animated.Text>
 
-            <TouchableHighlight
+            <AnimatedTouchableHighlight
               underlayColor={COLORS.Black2}
-              style={styles.buttonHeader}
+              style={[styles.buttonHeader, buttonHeaderAnimation]}
               onPress={() => setIsOpenMoal(true)}
             >
-              <Feather name="more-horizontal" size={24} style={styles.icon} />
-            </TouchableHighlight>
+              <FontAwesomeIcon icon={faEllipsis} size={18} style={styles.icon} />
+            </AnimatedTouchableHighlight>
           </Animated.View>
         </SafeAreaView>
 
@@ -276,9 +307,12 @@ const ArtistDetail = (props: ArtistDetailProps) => {
 
               <View style={styles.bodyTop}>
                 {currentUser.id !== userId ? (
-                  <TouchableOpacity style={styles.buttonFollow} onPress={() => handleFollow()}>
+                  <TouchableOpacity
+                    style={[styles.buttonFollow, follow && { borderColor: COLORS.White1 }]}
+                    onPress={() => handleFollow()}
+                  >
                     <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
-                      {follow ? "Following" : "Follow"}
+                      {follow ? "Unfollow" : "Follow"}
                     </Text>
                   </TouchableOpacity>
                 ) : (
@@ -322,7 +356,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
 
               <SongTop song={songs?.length > 1 && songs[0]} />
 
-              {songs?.length > 0 && (
+              {songs?.length > 1 && (
                 <View style={styles.SlideSong}>
                   <CategoryHeader
                     title={"Songs"}
@@ -349,25 +383,33 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                 </View>
               )}
 
-              <View style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}>
-                <CategoryHeader
-                  title={"Playlist popular"}
-                  PropFunction={() => navigation.navigate("ListPlaylist", { userId: artist?.id })}
-                />
-                <FlatList
-                  data={songs}
-                  keyExtractor={(item: any) => item.id}
-                  bounces={false}
-                  snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  decelerationRate={0}
-                  style={{ gap: SPACING.space_12 }}
-                  renderItem={({ item, index }) => (
-                    <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
-                  )}
-                />
-              </View>
+              {playlists?.length > 0 && (
+                <View
+                  style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}
+                >
+                  <CategoryHeader
+                    title={"Playlist popular"}
+                    PropFunction={
+                      playlists?.length > 5
+                        ? () => navigation.navigate("ListPlaylist", { userId: artist?.id })
+                        : null
+                    }
+                  />
+                  <FlatList
+                    data={playlists}
+                    keyExtractor={(item: any) => item.id}
+                    bounces={false}
+                    snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    decelerationRate={0}
+                    style={{ gap: SPACING.space_12 }}
+                    renderItem={({ item, index }) => (
+                      <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
+                    )}
+                  />
+                </View>
+              )}
 
               <View style={styles.bodyBottom}>
                 <View style={{ paddingHorizontal: SPACING.space_10 }}>
@@ -398,7 +440,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           height1={heightModal}
         >
           <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
-            <ModalArtist artist={artist} />
+            <ModalArtist artist={artist} countFollowing={countFollowing} />
           </View>
         </CustomBottomSheet>
       )}
@@ -442,7 +484,7 @@ export const SongTop = ({ song }: TSongTop) => {
             </View>
             <View>
               <TouchableOpacity style={styles.songTopLike}>
-                <FontAwesome name="heart-o" size={18} color="black" style={{ color: COLORS.Red }} />
+                <FontAwesomeIcon icon={faHeart} size={18} color={COLORS.Red} />
                 <Text
                   style={[
                     {

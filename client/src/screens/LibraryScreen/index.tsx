@@ -31,14 +31,7 @@ import { AddSongPlaylist, AddPlaylist } from "../../components/ItemModal";
 import { useAuth } from "../../context/AuthContext";
 const { width, height } = Dimensions.get("window");
 
-interface LibraryScreenProps {
-  navigation: any;
-}
-
-const item = {
-  title: "Liked Songs",
-  desc: "Artists",
-};
+interface LibraryScreenProps {}
 
 const DATA = [
   { id: 2, title: "2 Les", desc: "Playlist", type: "Playlist" },
@@ -87,13 +80,13 @@ const LibraryScreen = (props: LibraryScreenProps) => {
               onPress={() => setActive("Playlists")}
               style={[styles.categoryItem, active === "Playlists" && styles.categoryItemActive]}
             >
-              <Text style={styles.categoryItemText}>Playlists</Text>
+              <Text style={styles.categoryItemText}>All</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setActive("Artists")}
               style={[styles.categoryItem, active === "Artists" && styles.categoryItemActive]}
             >
-              <Text style={styles.categoryItemText}>Artists</Text>
+              <Text style={styles.categoryItemText}>Playlist</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setActive("Podcasts & shows")}
@@ -102,7 +95,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
                 active === "Podcasts & shows" && styles.categoryItemActive,
               ]}
             >
-              <Text style={styles.categoryItemText}>Podcasts & shows</Text>
+              <Text style={styles.categoryItemText}>Artist</Text>
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>

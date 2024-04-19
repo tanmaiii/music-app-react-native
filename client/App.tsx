@@ -83,25 +83,27 @@ export default function App() {
 export const Layout = () => {
   const { currentUser, loadingAuth } = useAuth();
 
-  if (loadingAuth) {
-    return (
-      <View
-        style={{
-          backgroundColor: COLORS.Black1,
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <LottieView
-          source={require("./src/assets/images/Animation.json")}
-          style={{ width: "60%", height: "60%" }}
-          autoPlay
-          loop
-        />
-      </View>
-    );
-  }
+  useEffect(() => {
+    console.log("loadingAuth", loadingAuth);
+  }, [loadingAuth]);
+
+  loadingAuth && (
+    <View
+      style={{
+        backgroundColor: COLORS.Black1,
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <LottieView
+        source={require("./src/assets/images/Animation.json")}
+        style={{ width: "60%", height: "60%" }}
+        autoPlay
+        loop
+      />
+    </View>
+  );
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

@@ -8,6 +8,7 @@ import {
   Keyboard,
   Modal,
   Platform,
+  SafeAreaView,
 } from "react-native";
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -26,7 +27,6 @@ import { TSong } from "../../types";
 import CustomBottomSheet from "../CustomBottomSheet";
 import AddPlaylist from "./AddPlaylist";
 import Constants from "expo-constants";
-import EditPlaylist from "../ModalPlaylist/EditPlaylist";
 const statusBarHeight = Constants.statusBarHeight;
 
 const songs: TSong[] = [
@@ -67,9 +67,14 @@ const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
   return (
     <>
       <View style={styles.container} onTouchStart={Keyboard.dismiss}>
-        <View style={[styles.header]}>
+        <SafeAreaView
+          style={[
+            styles.header,
+            Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_12 },
+          ]}
+        >
           <Text style={styles.textMain}>Add song to playlist</Text>
-        </View>
+        </SafeAreaView>
         <View
           style={{
             width: "100%",

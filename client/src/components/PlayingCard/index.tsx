@@ -62,7 +62,7 @@ const PlayingCard = (props: PlayingCardProps) => {
 
   return openBarSong && song ? (
     <>
-      <Pressable style={[styles.container, { width: width }]} onPress={() => setIsOpenModal(true)}>
+      <Pressable style={[styles.container, { width: width }]} onPress={() => setIsOpenModal(!isOpenModal)}>
         <ImageBackground
           source={IMAGES.AI}
           style={{

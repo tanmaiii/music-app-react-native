@@ -12,6 +12,7 @@ import {
   StatusBar,
   TouchableHighlight,
   TextInput,
+  RefreshControl,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import apiConfig from "../../apis/apiConfig";
@@ -33,6 +34,8 @@ import IMAGES from "../../constants/images";
 import CustomModal from "../../components/CustomModal";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
+import { userApi } from "../../apis";
+import numeral from "numeral";
 
 interface UserAccountProps {}
 
@@ -42,6 +45,32 @@ const UserAccount = (props: UserAccountProps) => {
   const linkTo = useLinkTo();
   const navigation = useNavigation<NavigationProp>();
   const { currentUser } = useAuth();
+  const [countFollowing, setCountFollowing] = React.useState<number>(0);
+  const [countFollowers, setCountFollowers] = React.useState<number>(0);
+  const [refreshing, setRefreshing] = React.useState<boolean>(false);
+
+  const getCountFollower = async () => {
+    try {
+      const count = await userApi.getCountFollowers(currentUser.id);
+      const count2 = await userApi.getCountFollowing(currentUser.id);
+      setCountFollowers(count);
+      setCountFollowing(count2);
+
+      console.log(count, count2);
+    } catch (error) {}
+  };
+
+  React.useEffect(() => {
+    getCountFollower();
+  }, []);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getCountFollower();
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -54,122 +83,132 @@ const UserAccount = (props: UserAccountProps) => {
           <Text style={styles.headerTitle}>Profile</Text>
         </View>
       </SafeAreaView>
-
-      <TouchableHighlight
-        underlayColor={COLORS.Black}
-        onPress={() => navigation.navigate("Artist", { id: 123 })}
-      >
-        <View style={styles.account}>
-          <View style={styles.accountLeft}>
-            <Image
-              style={styles.accountAvatar}
-              source={
-                currentUser?.image_path
-                  ? { uri: apiConfig.imageURL(currentUser.image_path) }
-                  : IMAGES.AVATAR
-              }
-            />
-            <View style={styles.accountBody}>
-              <Text numberOfLines={1} style={[styles.textMain]}>
-                {currentUser.name}
-              </Text>
-              <Text numberOfLines={1} style={styles.textEtra}>
-                {currentUser.email}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.accountRight}>
-            <View style={styles.flexCenter}>
-              <Text style={styles.textMain}>0</Text>
-              <Text style={styles.textEtra}>Followers</Text>
-            </View>
-            <View style={styles.flexCenter}>
-              <Text style={styles.textMain}>0</Text>
-              <Text style={styles.textEtra}>Followed</Text>
-            </View>
-          </View>
-        </View>
-      </TouchableHighlight>
-
-      <View style={styles.line} />
-
-      <TouchableHighlight
-        underlayColor={COLORS.Black}
-        onPress={() => navigation.navigate("UserEditAccount")}
-      >
-        <View style={styles.box}>
-          <View style={styles.boxLeft}>
-            <View style={styles.boxIcon}>
-              <FontAwesomeIcon icon={faUser} size={20} style={{ color: COLORS.White1 }} />
-            </View>
-            <Text style={styles.textMain}>Account</Text>
-          </View>
-          <TouchableOpacity>
-            <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-          </TouchableOpacity>
-        </View>
-      </TouchableHighlight>
-
-      <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
-        <View style={styles.box}>
-          <View style={styles.boxLeft}>
-            <View style={styles.boxIcon}>
-              <FontAwesomeIcon icon={faPenToSquare} size={20} style={{ color: COLORS.White1 }} />
-            </View>
-            <Text style={styles.textMain}>Edit Information</Text>
-          </View>
-          <TouchableOpacity>
-            <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-          </TouchableOpacity>
-        </View>
-      </TouchableHighlight>
-      <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
-        <View style={styles.box}>
-          <View style={styles.boxLeft}>
-            <View style={styles.boxIcon}>
-              <FontAwesomeIcon icon={faGear} size={20} style={{ color: COLORS.White1 }} />
-            </View>
-            <Text style={styles.textMain}>Settings</Text>
-          </View>
-          <TouchableOpacity>
-            <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-          </TouchableOpacity>
-        </View>
-      </TouchableHighlight>
-
-      <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
-        <View style={styles.box}>
-          <View style={styles.boxLeft}>
-            <View style={styles.boxIcon}>
-              <FontAwesomeIcon icon={faCircleQuestion} size={20} style={{ color: COLORS.White1 }} />
-            </View>
-            <Text style={styles.textMain}>Help & Support</Text>
-          </View>
-          <TouchableOpacity>
-            <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-          </TouchableOpacity>
-        </View>
-      </TouchableHighlight>
-
-      <View style={styles.line} />
-
-      <TouchableHighlight underlayColor={COLORS.Black} onPress={() => setOpenModal(true)}>
-        <View style={styles.box}>
-          <View style={styles.boxLeft}>
-            <View style={styles.boxIcon}>
-              <FontAwesomeIcon
-                icon={faArrowRightFromBracket}
-                size={20}
-                style={{ color: COLORS.Red }}
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        <TouchableHighlight
+          underlayColor={COLORS.Black}
+          onPress={() => navigation.navigate("Artist", { userId: currentUser?.id })}
+        >
+          <View style={styles.account}>
+            <View style={styles.accountLeft}>
+              <Image
+                style={styles.accountAvatar}
+                source={
+                  currentUser?.image_path
+                    ? { uri: apiConfig.imageURL(currentUser.image_path) }
+                    : IMAGES.AVATAR
+                }
               />
+              <View style={styles.accountBody}>
+                <Text numberOfLines={1} style={[styles.textMain]}>
+                  {currentUser.name}
+                </Text>
+                <Text numberOfLines={1} style={styles.textEtra}>
+                  {currentUser.email}
+                </Text>
+              </View>
             </View>
-            <Text style={[styles.textMain, { color: COLORS.Red }]}>Log out</Text>
+            <View style={styles.accountRight}>
+              <View style={styles.flexCenter}>
+                <Text style={styles.textMain}>
+                  {numeral(countFollowing).format("0a").toUpperCase()}
+                </Text>
+                <Text style={styles.textEtra}>Followers</Text>
+              </View>
+              <View style={styles.flexCenter}>
+                <Text style={styles.textMain}>
+                  {" "}
+                  {numeral(countFollowers).format("0a").toUpperCase()}
+                </Text>
+                <Text style={styles.textEtra}>Followed</Text>
+              </View>
+            </View>
           </View>
-          <TouchableOpacity>
-            <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-          </TouchableOpacity>
-        </View>
-      </TouchableHighlight>
+        </TouchableHighlight>
+
+        <View style={styles.line} />
+        <TouchableHighlight
+          underlayColor={COLORS.Black}
+          onPress={() => navigation.navigate("UserEditAccount")}
+        >
+          <View style={styles.box}>
+            <View style={styles.boxLeft}>
+              <View style={styles.boxIcon}>
+                <FontAwesomeIcon icon={faUser} size={20} style={{ color: COLORS.White1 }} />
+              </View>
+              <Text style={styles.textMain}>Account</Text>
+            </View>
+            <TouchableOpacity>
+              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
+            </TouchableOpacity>
+          </View>
+        </TouchableHighlight>
+
+        <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
+          <View style={styles.box}>
+            <View style={styles.boxLeft}>
+              <View style={styles.boxIcon}>
+                <FontAwesomeIcon icon={faPenToSquare} size={20} style={{ color: COLORS.White1 }} />
+              </View>
+              <Text style={styles.textMain}>Edit Information</Text>
+            </View>
+            <TouchableOpacity>
+              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
+            </TouchableOpacity>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
+          <View style={styles.box}>
+            <View style={styles.boxLeft}>
+              <View style={styles.boxIcon}>
+                <FontAwesomeIcon icon={faGear} size={20} style={{ color: COLORS.White1 }} />
+              </View>
+              <Text style={styles.textMain}>Settings</Text>
+            </View>
+            <TouchableOpacity>
+              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
+            </TouchableOpacity>
+          </View>
+        </TouchableHighlight>
+
+        <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
+          <View style={styles.box}>
+            <View style={styles.boxLeft}>
+              <View style={styles.boxIcon}>
+                <FontAwesomeIcon
+                  icon={faCircleQuestion}
+                  size={20}
+                  style={{ color: COLORS.White1 }}
+                />
+              </View>
+              <Text style={styles.textMain}>Help & Support</Text>
+            </View>
+            <TouchableOpacity>
+              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
+            </TouchableOpacity>
+          </View>
+        </TouchableHighlight>
+
+        <View style={styles.line} />
+
+        <TouchableHighlight underlayColor={COLORS.Black} onPress={() => setOpenModal(true)}>
+          <View style={styles.box}>
+            <View style={styles.boxLeft}>
+              <View style={styles.boxIcon}>
+                <FontAwesomeIcon
+                  icon={faArrowRightFromBracket}
+                  size={20}
+                  style={{ color: COLORS.Red }}
+                />
+              </View>
+              <Text style={[styles.textMain, { color: COLORS.Red }]}>Log out</Text>
+            </View>
+            <TouchableOpacity>
+              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
+            </TouchableOpacity>
+          </View>
+        </TouchableHighlight>
+      </ScrollView>
+
       <CustomModal
         withInput={true}
         isOpen={openModal}

@@ -25,9 +25,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 interface ModalSongProps {
   song: TSong;
   setOpenModal?: (boolean) => void;
+  size?: number;
 }
 
-const ModalSong = ({ song, setOpenModal }: ModalSongProps) => {
+const ModalSong = ({ song, setOpenModal, size = 1 }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [isLike, setIsLike] = React.useState<boolean>(false);
   const [loading, setLoding] = React.useState<boolean>(false);
@@ -89,37 +90,71 @@ const ModalSong = ({ song, setOpenModal }: ModalSongProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Pressable style={styles.headerLeft} onPress={() => handleGoDetail()}>
-          <Image
-            style={{
-              height: 50,
-              width: 50,
-              aspectRatio: 1,
-              objectFit: "cover",
-              overflow: "hidden",
-              borderRadius: BORDERRADIUS.radius_4,
-            }}
-            source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
-          />
-          <View style={styles.headerDesc}>
-            <Text style={styles.textMain}>{song?.title}</Text>
-            <Text style={styles.textEtra}>{song?.author}</Text>
+      {size === 1 && (
+        <>
+          <View style={styles.header}>
+            <Pressable style={styles.headerLeft} onPress={() => handleGoDetail()}>
+              <Image
+                style={{
+                  height: 50,
+                  width: 50,
+                  aspectRatio: 1,
+                  objectFit: "cover",
+                  overflow: "hidden",
+                  borderRadius: BORDERRADIUS.radius_4,
+                }}
+                source={
+                  song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
+                }
+              />
+              <View style={styles.headerDesc}>
+                <Text style={styles.textMain}>{song?.title}</Text>
+                <Text style={styles.textEtra}>{song?.author}</Text>
+              </View>
+            </Pressable>
+
+            <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
+              <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
+            </TouchableOpacity>
           </View>
-        </Pressable>
+          <View
+            style={{
+              width: "100%",
+              height: 0.6,
+              backgroundColor: COLORS.WhiteRGBA15,
+            }}
+          />
+        </>
+      )}
 
-        <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
-          <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
-        </TouchableOpacity>
-      </View>
+      {size === 2 && (
+        <View style={styles.header2}>
+          <Pressable
+            onPress={() => handleGoDetail()}
+            style={{ justifyContent: "center", alignItems: "center" }}
+          >
+            <Image
+              style={{
+                height: 160,
+                width: 160,
+                aspectRatio: 1,
+                objectFit: "cover",
+                overflow: "hidden",
+                borderRadius: BORDERRADIUS.radius_4,
+              }}
+              source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
+            />
+            <View style={styles.header2Desc}>
+              <Text style={styles.textMain}>{song?.title}</Text>
+              <Text style={styles.textEtra}>{song?.author}</Text>
+            </View>
+          </Pressable>
 
-      <View
-        style={{
-          width: "100%",
-          height: 0.6,
-          backgroundColor: COLORS.WhiteRGBA15,
-        }}
-      />
+          {/* <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
+            <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
+          </TouchableOpacity> */}
+        </View>
+      )}
 
       <View style={styles.body}>
         {!loading && (
@@ -136,7 +171,7 @@ const ModalSong = ({ song, setOpenModal }: ModalSongProps) => {
       </View>
 
       {isOpenModal && (
-        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400}>
+        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400} height2={"100%"}>
           <AddSongToPlaylist />
         </CustomBottomSheet>
       )}
@@ -172,12 +207,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.space_8,
   },
   textMain: {
-    fontSize: FONTSIZE.size_16,
+    fontSize: FONTSIZE.size_18,
     fontFamily: FONTFAMILY.medium,
     color: COLORS.White1,
   },
   textEtra: {
-    fontSize: FONTSIZE.size_14,
+    fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.regular,
     color: COLORS.White2,
   },
@@ -200,6 +235,21 @@ const styles = StyleSheet.create({
     borderRadius: BORDERRADIUS.radius_25,
     // backgroundColor: COLORS.button,
   },
+
+  header2: {
+    flexDirection: "row",
+    paddingVertical: SPACING.space_14,
+    paddingHorizontal: SPACING.space_12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: SPACING.space_18,
+  },
+
+  header2Desc: {
+    marginTop: SPACING.space_12,
+    alignItems: "center",
+  },
+
   body: {
     flexDirection: "column",
     paddingVertical: SPACING.space_8,

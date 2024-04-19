@@ -216,7 +216,7 @@ Song.findByFavorite = async (userId, query, result) => {
 
   const [totalCount] = await promiseDb.query(
     `SELECT COUNT(*) AS totalCount ` +
-      ` FROM favourite_songs AS fs` +
+      ` FROM favourite_songs AS fs ` +
       ` INNER JOIN songs AS s ON fs.song_id = s.id` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""} fs.user_id = ${userId} AND s.public = 1` +

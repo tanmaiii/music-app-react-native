@@ -40,9 +40,11 @@ export const AuthContextProvider = ({ children }: Props) => {
   const login = async (email: string, password: string) => {
     setLoadingAuth(true);
     const res = await authApi.signin(email, password);
-    setCurrentUser(res.data);
-    setToken(res.token);
     setLoadingAuth(false);
+    if (res) {
+      setCurrentUser(res.data);
+      setToken(res.token);
+    }
   };
 
   const signup = async (name: string, email: string, password: string) => {
@@ -60,6 +62,7 @@ export const AuthContextProvider = ({ children }: Props) => {
       } catch (error) {
         console.log("Get Me", error);
         setCurrentUser(null);
+        setToken(null);
       }
       setLoadingAuth(false);
     };

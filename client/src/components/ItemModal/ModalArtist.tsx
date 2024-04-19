@@ -17,14 +17,42 @@ import CustomModal from "../CustomModal";
 import { TUser } from "../../types";
 import apiConfig from "../../apis/apiConfig";
 import numeral from "numeral";
+import { useAuth } from "../../context/AuthContext";
+import { userApi } from "../../apis";
 
 type ModalArtistProps = {
   artist: TUser;
+  countFollowing: numeral;
 };
 
-const ModalArtist = ({ artist }: ModalArtistProps) => {
+const ModalArtist = ({ artist, countFollowing }: ModalArtistProps) => {
   const [isFollow, setIsFollow] = React.useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const { currentUser, token } = useAuth();
+
+  const checkFollowing = async () => {
+    try {
+      const res = artist.id && (await userApi.checkFollowing(artist.id, token));
+      setIsFollow(res.isFollowing);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFollow = async () => {
+    try {
+      if (isFollow) {
+        await userApi.unFollow(artist.id, token);
+        countFollowing !== 0 && countFollowing - 1;
+      } else {
+        await userApi.follow(artist.id, token);
+        countFollowing++;
+      }
+      checkFollowing();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -35,6 +63,10 @@ const ModalArtist = ({ artist }: ModalArtistProps) => {
       console.log(error);
     }
   };
+
+  React.useEffect(() => {
+    checkFollowing(), [artist];
+  });
 
   return (
     <>
@@ -57,7 +89,7 @@ const ModalArtist = ({ artist }: ModalArtistProps) => {
             <View style={styles.headerDesc}>
               <Text style={styles.textMain}>{artist?.name}</Text>
               <Text style={styles.textEtra}>
-                {numeral(1000000).format("0a").toUpperCase()} following
+                {numeral(countFollowing).format("0a").toUpperCase()} following
               </Text>
             </View>
           </View>
@@ -70,11 +102,13 @@ const ModalArtist = ({ artist }: ModalArtistProps) => {
           }}
         />
         <View style={styles.body}>
-          <Item
-            icon={isFollow ? faUserXmark : faUserPlus}
-            title={isFollow ? "Unfollow" : "Follow"}
-            itemFunc={() => (isFollow ? setIsOpenModal(true) : setIsFollow(true))}
-          />
+          {currentUser.id !== artist.id && (
+            <Item
+              icon={isFollow ? faUserXmark : faUserPlus}
+              title={isFollow ? "Unfollow" : "Follow"}
+              itemFunc={() => handleFollow()}
+            />
+          )}
           <Item icon={faPenToSquare} title="Edit profile" itemFunc={() => console.log("PRESS")} />
           <Item icon={faShare} title="Share" itemFunc={() => handleShare()} />
           <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />

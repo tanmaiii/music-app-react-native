@@ -62,8 +62,9 @@ const LoginScreen = (props: LoginScreenProps) => {
     if (email.trim() !== "" && password.trim() !== "") {
       try {
         await login(email, password);
+        setLoading(false);
       } catch (err: any) {
-        console.log(err);
+        console.log(err.response.data.conflictError);
         setErr(err.response.data.conflictError);
       }
     } else {
@@ -109,7 +110,6 @@ const LoginScreen = (props: LoginScreenProps) => {
           {err && (
             <View style={styles.boxErr}>
               <FontAwesomeIcon icon={faCircleExclamation} size={24} color={COLORS.White1} />
-
               <Text style={styles.textErr}>{err}</Text>
             </View>
           )}
