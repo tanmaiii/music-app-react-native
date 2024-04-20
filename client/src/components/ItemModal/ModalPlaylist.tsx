@@ -13,14 +13,16 @@ import {
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { TPlaylist } from "../../types";
+import apiConfig from "../../apis/apiConfig";
 
 interface ModalSongProps {
-  id?: number;
+  playlist?: TPlaylist;
   setIsOpenAddSong: (boolean) => void;
   setIsOpenEdit: (boolean) => void;
 }
 
-const ModalSong = ({ id, setIsOpenAddSong, setIsOpenEdit }: ModalSongProps) => {
+const ModalSong = ({ playlist, setIsOpenAddSong, setIsOpenEdit }: ModalSongProps) => {
   const handleShare = async () => {
     try {
       await Share.share({
@@ -36,7 +38,11 @@ const ModalSong = ({ id, setIsOpenAddSong, setIsOpenEdit }: ModalSongProps) => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Image
-            source={IMAGES.POSTER}
+            source={
+              playlist?.image_path
+                ? { uri: apiConfig.imageURL(playlist.image_path) }
+                : IMAGES.PLAYLIST
+            }
             style={{
               height: 50,
               width: 50,
@@ -47,8 +53,8 @@ const ModalSong = ({ id, setIsOpenAddSong, setIsOpenEdit }: ModalSongProps) => {
             }}
           />
           <View style={styles.headerDesc}>
-            <Text style={styles.textMain}>Thiên Lý ơi {id && id}</Text>
-            <Text style={styles.textEtra}>Jack 5 củ</Text>
+            <Text style={styles.textMain}>{playlist.title}</Text>
+            <Text style={styles.textEtra}>{playlist.author}</Text>
           </View>
         </View>
 

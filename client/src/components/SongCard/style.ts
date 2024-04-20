@@ -9,10 +9,14 @@ const styles = StyleSheet.create({
     // padding: SPACING.space_10,
     gap: SPACING.space_4,
   },
+  wrapperImage: {
+    aspectRatio: 1,
+  },
   image: {
-    aspectRatio: 3 / 3,
+    width: "100%",
+    height: "100%",
     borderRadius: BORDERRADIUS.radius_8,
-    backgroundColor: COLORS.Black2
+    backgroundColor: COLORS.Black2,
   },
   textTitle: {
     fontSize: FONTSIZE.size_16,

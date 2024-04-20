@@ -62,7 +62,10 @@ const PlayingCard = (props: PlayingCardProps) => {
 
   return openBarSong && song ? (
     <>
-      <Pressable style={[styles.container, { width: width }]} onPress={() => setIsOpenModal(!isOpenModal)}>
+      <Pressable
+        style={[styles.container, { width: width }]}
+        onPress={() => setIsOpenModal(!isOpenModal)}
+      >
         <ImageBackground
           source={IMAGES.AI}
           style={{
@@ -90,9 +93,9 @@ const PlayingCard = (props: PlayingCardProps) => {
             <View style={styles.right}>
               <TouchableOpacity onPress={() => setPlay((play) => !play)} style={styles.iconPlay}>
                 {play ? (
-                  <FontAwesomeIcon icon={faPlay} size={26} color={COLORS.White1} />
+                  <FontAwesomeIcon icon={faPlay} size={24} color={COLORS.White1} />
                 ) : (
-                  <FontAwesomeIcon icon={faPause} size={26} color={COLORS.White1} />
+                  <FontAwesomeIcon icon={faPause} size={24} color={COLORS.White1} />
                 )}
               </TouchableOpacity>
               <TouchableOpacity

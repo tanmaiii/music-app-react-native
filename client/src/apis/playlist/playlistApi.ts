@@ -1,9 +1,9 @@
 import { TUser } from "./../../types/user.type";
-import { ListResponse, TSong } from "../../types";
+import { ListResponse, TSong, TPlaylist } from "../../types";
 import axiosClient from "../axiosClient";
 
 const playlistApi = {
-  getAll(limit: number, page: number, q?: string, sort?: string): Promise<ListResponse<TSong>> {
+  getAll(limit: number, page: number, q?: string, sort?: string): Promise<ListResponse<TPlaylist>> {
     const url = "playlist";
     return axiosClient.get(url, {
       params: {
@@ -14,9 +14,9 @@ const playlistApi = {
       },
     });
   },
-  getDetail(songId: number, token: string): Promise<TSong> {
-    const url = "song/detail/";
-    return axiosClient.post(url + songId, { token });
+  getDetail(playlistId: number, token: string): Promise<TPlaylist> {
+    const url = "playlist/detail/";
+    return axiosClient.post(url + playlistId, { token });
   },
   getAllByUserId(
     userId: number,
@@ -24,7 +24,7 @@ const playlistApi = {
     page: number,
     q?: string,
     sort?: string
-  ): Promise<ListResponse<TSong>> {
+  ): Promise<ListResponse<TPlaylist>> {
     const url = "playlist/user/";
     return axiosClient.get(url + userId, {
       params: {

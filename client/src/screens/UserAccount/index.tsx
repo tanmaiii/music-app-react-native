@@ -133,13 +133,13 @@ const UserAccount = (props: UserAccountProps) => {
           <View style={styles.box}>
             <View style={styles.boxLeft}>
               <View style={styles.boxIcon}>
-                <FontAwesomeIcon icon={faUser} size={20} style={{ color: COLORS.White1 }} />
+                <FontAwesomeIcon icon={faUser} size={20} style={{ color: COLORS.Primary }} />
               </View>
               <Text style={styles.textMain}>Account</Text>
             </View>
-            <TouchableOpacity>
+            <View>
               <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </TouchableOpacity>
+            </View>
           </View>
         </TouchableHighlight>
 
@@ -147,26 +147,26 @@ const UserAccount = (props: UserAccountProps) => {
           <View style={styles.box}>
             <View style={styles.boxLeft}>
               <View style={styles.boxIcon}>
-                <FontAwesomeIcon icon={faPenToSquare} size={20} style={{ color: COLORS.White1 }} />
+                <FontAwesomeIcon icon={faPenToSquare} size={20} style={{ color: COLORS.Primary }} />
               </View>
               <Text style={styles.textMain}>Edit Information</Text>
             </View>
-            <TouchableOpacity>
+            <View>
               <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </TouchableOpacity>
+            </View>
           </View>
         </TouchableHighlight>
         <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
           <View style={styles.box}>
             <View style={styles.boxLeft}>
               <View style={styles.boxIcon}>
-                <FontAwesomeIcon icon={faGear} size={20} style={{ color: COLORS.White1 }} />
+                <FontAwesomeIcon icon={faGear} size={20} style={{ color: COLORS.Primary }} />
               </View>
               <Text style={styles.textMain}>Settings</Text>
             </View>
-            <TouchableOpacity>
+            <View>
               <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </TouchableOpacity>
+            </View>
           </View>
         </TouchableHighlight>
 
@@ -177,14 +177,14 @@ const UserAccount = (props: UserAccountProps) => {
                 <FontAwesomeIcon
                   icon={faCircleQuestion}
                   size={20}
-                  style={{ color: COLORS.White1 }}
+                  style={{ color: COLORS.Primary }}
                 />
               </View>
               <Text style={styles.textMain}>Help & Support</Text>
             </View>
-            <TouchableOpacity>
+            <View>
               <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </TouchableOpacity>
+            </View>
           </View>
         </TouchableHighlight>
 
@@ -202,9 +202,9 @@ const UserAccount = (props: UserAccountProps) => {
               </View>
               <Text style={[styles.textMain, { color: COLORS.Red }]}>Log out</Text>
             </View>
-            <TouchableOpacity>
+            <View>
               <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </TouchableOpacity>
+            </View>
           </View>
         </TouchableHighlight>
       </ScrollView>

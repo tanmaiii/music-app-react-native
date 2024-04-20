@@ -10,6 +10,9 @@ import { COLORS, SPACING } from "../../theme/theme";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { usePlaying } from "../../context/PlayingContext";
 import { NavigationProp } from "../../navigation/TStack";
+import apiConfig from "../../apis/apiConfig";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -23,7 +26,6 @@ const SkeletonCommonProps = {
 interface SongCardProps {
   loading?: boolean;
   song: TSong;
-  cardWidth: number;
 }
 
 const SongCard = (props: SongCardProps) => {
@@ -34,27 +36,30 @@ const SongCard = (props: SongCardProps) => {
 
   const handlePress = () => {
     // setOpenBarSong(true);
-    navigation.navigate("Song", { id: 123 });
+    navigation.navigate("Song", { songId: song.id });
   };
 
   return (
     <TouchableOpacity onPress={handlePress}>
-      <View
-        style={[styles.container, { marginRight: SPACING.space_12 }, { maxWidth: props.cardWidth }]}
-      >
-        <Skeleton height={props.cardWidth} width={props.cardWidth} {...SkeletonCommonProps}>
-          <>
-            {loading ? null : (
-              <Image
-                style={[styles.image, { width: props.cardWidth, height: props.cardWidth }]}
-                source={IMAGES.POSTER}
-              />
-            )}
-            <View style={[styles.buttonPlay]}>
-              <Ionicons name="play" size={30} style={styles.iconButtonPlay} />
-            </View>
-          </>
-        </Skeleton>
+      <View style={[styles.container]}>
+        <View style={styles.wrapperImage}>
+          <Skeleton {...SkeletonCommonProps}>
+            <>
+              {loading ? null : (
+                <Image
+                  style={[styles.image]}
+                  source={
+                    song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
+                  }
+                />
+              )}
+              <View style={[styles.buttonPlay]}>
+                <FontAwesomeIcon icon={faPlay} color={COLORS.White1} />
+              </View>
+            </>
+          </Skeleton>
+        </View>
+
         <View style={{ gap: SPACING.space_4 }}>
           <Skeleton height={18} width={"100%"} {...SkeletonCommonProps}>
             {loading ? null : (

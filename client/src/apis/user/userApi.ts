@@ -37,6 +37,40 @@ const userApi = {
     const url = `follow/followers/${userId}/count`;
     return axiosClient.get(url);
   },
+  getFollowing(
+    userId: number,
+    page: number,
+    limit: number,
+    q?: string,
+    sort?: string
+  ): Promise<ListResponse<TUser>> {
+    const url = "/follow/following/";
+    return axiosClient.get(url + userId, {
+      params: {
+        page: page,
+        limit: limit,
+        sort: sort,
+        q: q,
+      },
+    });
+  },
+  getFollowers(
+    userId: number,
+    page: number,
+    limit: number,
+    q?: string,
+    sort?: string
+  ): Promise<ListResponse<TUser>> {
+    const url = "/follow/followers/";
+    return axiosClient.get(url + userId, {
+      params: {
+        page: page,
+        limit: limit,
+        sort: sort,
+        q: q,
+      },
+    });
+  },
   checkFollowing(userId: number, token: string): Promise<CheckFollowingResponse> {
     const url = `follow/${userId}/check`;
     return axiosClient.post(url, { token });

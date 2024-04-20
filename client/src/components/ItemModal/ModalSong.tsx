@@ -2,13 +2,17 @@ import * as React from "react";
 import { Text, View, StyleSheet, Image, TouchableOpacity, Share, Pressable } from "react-native";
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faHeart, faMusic, faShare } from "@fortawesome/free-solid-svg-icons";
 import {
-  faFlag,
-  faHeart as faHeartRegular,
-  faPlusSquare,
+  faHeart,
+  faMinus,
+  faMusic,
+  faShare,
+  faMinusCircle,
+  faPlusCircle,
   faUser,
-} from "@fortawesome/free-regular-svg-icons";
+  faFlag,
+} from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import CustomBottomSheet from "../CustomBottomSheet";
@@ -26,9 +30,10 @@ interface ModalSongProps {
   song: TSong;
   setOpenModal?: (boolean) => void;
   size?: number;
+  inPlaylist?: boolean;
 }
 
-const ModalSong = ({ song, setOpenModal, size = 1 }: ModalSongProps) => {
+const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [isLike, setIsLike] = React.useState<boolean>(false);
   const [loading, setLoding] = React.useState<boolean>(false);
@@ -149,10 +154,6 @@ const ModalSong = ({ song, setOpenModal, size = 1 }: ModalSongProps) => {
               <Text style={styles.textEtra}>{song?.author}</Text>
             </View>
           </Pressable>
-
-          {/* <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
-            <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
-          </TouchableOpacity> */}
         </View>
       )}
 
@@ -164,14 +165,26 @@ const ModalSong = ({ song, setOpenModal, size = 1 }: ModalSongProps) => {
             itemFunc={() => handleLike()}
           />
         )}
-        <Item icon={faPlusSquare} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
+        <Item icon={faPlusCircle} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
+        {inPlaylist && (
+          <Item
+            icon={faMinusCircle}
+            title="Remove to playlist"
+            itemFunc={() => console.log("PRESS")}
+          />
+        )}
         <Item icon={faMusic} title="View detail" itemFunc={() => handleGoDetail()} />
         <Item icon={faUser} title="View artist" itemFunc={() => handleGoArtist()} />
         <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
       </View>
 
       {isOpenModal && (
-        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={400} height2={"100%"}>
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModal(false)}
+          height1={400}
+          height2={"100%"}
+        >
           <AddSongToPlaylist />
         </CustomBottomSheet>
       )}

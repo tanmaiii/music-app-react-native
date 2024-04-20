@@ -39,6 +39,23 @@ const songApi = {
       },
     });
   },
+  getAllByPlaylistId(
+    playlistId: number,
+    limit: number,
+    page: number,
+    q?: string,
+    sort?: string
+  ): Promise<ListResponse<TSong>> {
+    const url = `song/playlist/${playlistId}`;
+    return axiosClient.get(url, {
+      params: {
+        page: page,
+        limit: limit,
+        sort: sort,
+        q: q,
+      },
+    });
+  },
   getAllFavoritesByUser(
     userId: number,
     limit: number,

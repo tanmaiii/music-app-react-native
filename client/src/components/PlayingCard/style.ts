@@ -84,14 +84,13 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   iconPlay: {
-    padding: SPACING.space_4,
-    // backgroundColor: COLORS.WhiteRGBA32,
-    width: 38,
-    height: 38,
+    backgroundColor: COLORS.Primary,
+    width: 40,
+    height: 40,
     borderRadius: 50,
-    display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    padding: SPACING.space_10,
   },
   iconNext: {
     padding: SPACING.space_4,

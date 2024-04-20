@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { TSong } from "../../types";
+import { TPlaylist, TSong } from "../../types";
 import SongItem from "../../components/SongItem";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -31,6 +31,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
 import { AddPlaylist, AddSong, ModalPlaylist, EditPlaylist } from "../../components/ItemModal";
+import { RootRouteProps } from "../../navigation/TStack";
+import { playlistApi, songApi } from "../../apis";
+import { useAuth } from "../../context/AuthContext";
+import apiConfig from "../../apis/apiConfig";
+import { FlatList } from "react-native-gesture-handler";
+import CategoryHeader from "../../components/CategoryHeader";
+import PlaylistCard from "../../components/PlaylistCard";
 const statusBarHeight = Constants.statusBarHeight;
 
 const songs: TSong[] = [
@@ -72,13 +79,20 @@ interface PlaylistDetailProps {}
 
 const PlaylistDetail = (props: PlaylistDetailProps) => {
   const navigation = useNavigation();
-  const route = useRoute();
+  const route = useRoute<RootRouteProps<"Playlist">>();
+  const flatListRef = React.useRef<FlatList>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [isLike, setIsLike] = React.useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(400);
+  const [playlist, setPlaylist] = React.useState<TPlaylist>(null);
+  const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
+  const [songs, setSongs] = React.useState<TSong[]>(null);
+  const [totalCount, setTotalCount] = React.useState<number>(0);
+  const playlistId = route.params.playlistId;
+  const { token } = useAuth();
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -135,9 +149,27 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     }),
   };
 
+  const getPlaylist = async () => {
+    try {
+      const res = await playlistApi.getDetail(playlistId, token);
+      const resSongs = await songApi.getAllByPlaylistId(playlistId, 10, 1);
+      const resPlaylists = await playlistApi.getAll(6, 1);
+
+      console.log(res);
+
+      setPlaylist(res);
+      setSongs(resSongs.data);
+      setTotalCount(resSongs.pagination.totalCount);
+      setPlaylists(resPlaylists.data);
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+
   React.useEffect(() => {
-    console.log("Mo ne", isOpenModal);
-  }, [isOpenModal]);
+    flatListRef.current && flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+    playlistId && getPlaylist();
+  }, [playlistId]);
 
   return (
     <View style={styles.container}>
@@ -161,7 +193,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
               <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
             </TouchableOpacity>
             <Animated.Text style={[styles.titleHeader, headerAnimation]}>
-              AI Music 123
+              {playlist?.title || "Unknown"}
             </Animated.Text>
             <TouchableOpacity
               style={[styles.buttonHeader]}
@@ -172,63 +204,51 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
           </Animated.View>
         </SafeAreaView>
 
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          onScroll={(e) => {
-            const offsetY = e.nativeEvent.contentOffset.y;
-            animatedValue.setValue(offsetY);
-          }}
-          scrollEventThrottle={16}
-        >
-          <View style={styles.wrapper}>
-            <View style={[styles.wrapperImage]}>
-              <Animated.Image style={[styles.image, imageAnimation]} source={IMAGES.AI} />
-            </View>
+        <View style={styles.wrapper}>
+          <FlatList
+            ref={flatListRef}
+            onScroll={(e) => {
+              const offsetY = e.nativeEvent.contentOffset.y;
+              animatedValue.setValue(offsetY);
+            }}
+            scrollEventThrottle={16}
+            ListHeaderComponent={
+              <View style={styles.wrapperHeader}>
+                <View style={[styles.wrapperImage]}>
+                  <Animated.Image
+                    style={[styles.image, imageAnimation]}
+                    source={
+                      playlist?.image_path
+                        ? { uri: apiConfig.imageURL(playlist.image_path) }
+                        : IMAGES.PLAYLIST
+                    }
+                  />
+                </View>
 
-            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>AI Music </Text>
-
-            <Text
-              style={{
-                fontSize: FONTSIZE.size_16,
-                color: COLORS.Primary,
-                fontFamily: FONTFAMILY.regular,
-              }}
-            >
-              Sound Hub
-            </Text>
-
-            <Text style={styles.textExtra}>12 Songs</Text>
-
-            <View style={styles.groupButton}>
-              <TouchableOpacity style={styles.buttonExtra}>
-                <FontAwesomeIcon
-                  icon={faArrowUpFromBracket}
-                  size={18}
-                  style={{ color: COLORS.White2 }}
-                />
+                <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
+                  {playlist?.title || "Unknown"}
+                </Text>
 
                 <Text
                   style={{
-                    fontSize: FONTSIZE.size_12,
-                    color: COLORS.White2,
+                    fontSize: FONTSIZE.size_16,
+                    color: COLORS.Primary,
                     fontFamily: FONTFAMILY.regular,
                   }}
                 >
-                  Share
+                  {playlist?.author || "Unknown"}
                 </Text>
-              </TouchableOpacity>
 
-              <TouchableOpacity style={styles.button}>
-                <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+                <Text style={styles.textExtra}>{totalCount} Songs</Text>
 
-                <Text style={styles.textButton}>Play</Text>
-              </TouchableOpacity>
+                <View style={styles.groupButton}>
+                  <TouchableOpacity style={styles.buttonExtra}>
+                    <FontAwesomeIcon
+                      icon={faArrowUpFromBracket}
+                      size={18}
+                      style={{ color: COLORS.White2 }}
+                    />
 
-              <TouchableOpacity style={styles.buttonExtra} onPress={() => setIsLike(!isLike)}>
-                {isLike ? (
-                  <>
-                    <FontAwesomeIcon icon={faHeartSolid} size={18} style={{ color: COLORS.Red }} />
                     <Text
                       style={{
                         fontSize: FONTSIZE.size_12,
@@ -236,39 +256,97 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                         fontFamily: FONTFAMILY.regular,
                       }}
                     >
-                      Unlike
+                      Share
                     </Text>
-                  </>
-                ) : (
-                  <>
-                    <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.White2 }} />
-                    <Text
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.button}>
+                    <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+
+                    <Text style={styles.textButton}>Play</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.buttonExtra} onPress={() => setIsLike(!isLike)}>
+                    {isLike ? (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faHeartSolid}
+                          size={18}
+                          style={{ color: COLORS.Red }}
+                        />
+                        <Text
+                          style={{
+                            fontSize: FONTSIZE.size_12,
+                            color: COLORS.White2,
+                            fontFamily: FONTFAMILY.regular,
+                          }}
+                        >
+                          Unlike
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          size={18}
+                          style={{ color: COLORS.White2 }}
+                        />
+                        <Text
+                          style={{
+                            fontSize: FONTSIZE.size_12,
+                            color: COLORS.White2,
+                            fontFamily: FONTFAMILY.regular,
+                          }}
+                        >
+                          Like
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={styles.textDesc}>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, vitae obcaecati
+                  accusamus labore eius aperiam soluta dolores nihil velit eveniet aliquid facere
+                  reprehenderit. Iusto maiores sit saepe modi non? Hic?
+                </Text>
+              </View>
+            }
+            contentContainerStyle={{
+              paddingBottom: HEIGHT.playingCard + 50,
+            }}
+            style={{ width: "100%" }}
+            data={songs}
+            renderItem={({ item, index }) => <SongItem song={item} inPlaylist={true} />}
+            ListFooterComponent={
+              <View style={styles.wrapperFooter}>
+                <CategoryHeader
+                  title={"Related playlists"}
+                  style={{ paddingHorizontal: SPACING.space_10 }}
+                />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    paddingHorizontal: SPACING.space_8,
+                  }}
+                >
+                  {playlists?.map((playlist, index) => (
+                    <View
                       style={{
-                        fontSize: FONTSIZE.size_12,
-                        color: COLORS.White2,
-                        fontFamily: FONTFAMILY.regular,
+                        width: WINDOW_WIDTH / 2 - SPACING.space_8,
+                        padding: SPACING.space_8,
+                        // backgroundColor: "pink",
                       }}
                     >
-                      Like
-                    </Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.textDesc}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, vitae obcaecati
-              accusamus labore eius aperiam soluta dolores nihil velit eveniet aliquid facere
-              reprehenderit. Iusto maiores sit saepe modi non? Hic?
-            </Text>
-
-            <View style={{ width: "100%" }}>
-              {songs.map((item) => (
-                <SongItem song={item} />
-              ))}
-            </View>
-          </View>
-        </ScrollView>
+                      <PlaylistCard playlist={playlist} />
+                    </View>
+                  ))}
+                </View>
+              </View>
+            }
+          />
+        </View>
       </View>
 
       {isOpenModal && (
@@ -279,6 +357,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         >
           <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
             <ModalPlaylist
+              playlist={playlist}
               setIsOpenAddSong={setIsOpenModalAddSong}
               setIsOpenEdit={setIsOpenModalEdit}
             />
@@ -367,7 +446,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: SPACING.space_12,
     gap: SPACING.space_8,
-    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
+    // paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
+  },
+  wrapperHeader: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.space_12,
+    gap: SPACING.space_8,
     marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
   },
   wrapperImage: {
@@ -376,6 +461,7 @@ const styles = StyleSheet.create({
   image: {
     width: 300,
     height: 300,
+    backgroundColor: COLORS.Black1,
     borderRadius: BORDERRADIUS.radius_8,
     transformOrigin: "bottom",
   },
@@ -416,5 +502,8 @@ const styles = StyleSheet.create({
     color: COLORS.White2,
     width: "100%",
     marginBottom: SPACING.space_12,
+  },
+  wrapperFooter: {
+    // paddingHorizontal: SPACING.space_10,
   },
 });

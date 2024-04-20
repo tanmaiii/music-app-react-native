@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: COLORS.Black1,
-    paddingVertical: SPACING.space_12,
+    paddingTop: SPACING.space_12,
   },
   bodyTop: {
     flexDirection: "row",

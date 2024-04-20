@@ -29,6 +29,8 @@ import { NavigationProp } from "../../navigation/TStack";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
 import { AddSongPlaylist, AddPlaylist } from "../../components/ItemModal";
 import { useAuth } from "../../context/AuthContext";
+import { TUser } from "../../types";
+import { userApi } from "../../apis";
 const { width, height } = Dimensions.get("window");
 
 interface LibraryScreenProps {}
@@ -54,6 +56,30 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [isOpenModalAddPlaylist, setIsOpenModalAddPlaylist] = React.useState<boolean>(false);
   const { currentUser } = useAuth();
+  const [artists, setArtists] = useState<TUser[]>(null);
+  const [playlists, setPlaylists] = useState<TUser[]>(null);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const getData = async () => {
+    try {
+      console.log("Goi ne");
+      const resArtist = await userApi.getFollowing(currentUser.id, 1, 10);
+      setArtists(resArtist.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getData();
+    console.log("Load");
+    setRefreshing(false);
+  };
+
+  React.useEffect(() => {
+    getData();
+  }, [currentUser]);
 
   return (
     <>
@@ -103,7 +129,9 @@ const LibraryScreen = (props: LibraryScreenProps) => {
         <View style={{ height: 10 }}></View>
 
         <FlatList
-          data={DATA}
+          data={artists}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
           keyExtractor={(item: any) => item.id}
           horizontal={false}
           style={styles.scroll}
@@ -151,17 +179,10 @@ const LibraryScreen = (props: LibraryScreenProps) => {
               </TouchableHighlight>
             </>
           }
-          renderItem={({ item, index }) => (
-            <ItemHorizontal
-              id={item.id}
-              key={index}
-              title={item.title}
-              desc={item.desc}
-              type={item.type}
-            />
-          )}
+          renderItem={({ item, index }) => <ItemHorizontal artist={item} key={index} />}
         />
       </View>
+
       {openModal && (
         <CustomBottomSheet
           isOpen={true}

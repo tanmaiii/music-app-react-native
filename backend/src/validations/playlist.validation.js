@@ -33,6 +33,7 @@ const querySchema = {
 
 export default class playlistValidator {
   static getPlaylist = {
+    ...bodyToken,
     params: Joi.object().keys({
       playlistId: Joi.number().integer().required(),
     }),

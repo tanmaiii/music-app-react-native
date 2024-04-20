@@ -5,7 +5,7 @@ import playlistValidation from "../validations/playlist.validation.js";
 
 import validate from "../middlewares/validate.js";
 
-router.get(
+router.post(
   "/detail/:playlistId",
   validate(playlistValidation.getPlaylist),
   playlistController.getPlaylist

@@ -40,7 +40,6 @@ import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
 
-
 interface ListSongScreenProps {}
 
 const ListSongScreen = (props: ListSongScreenProps) => {
@@ -58,11 +57,6 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const items = Array.from({ length: 10 }, (_, index) => index);
-
-  useEffect(() => {
-    console.log(route);
-    console.log(route.params.userId);
-  }, [route]);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -103,7 +97,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   };
 
   const getSongs = async () => {
-    setLoading(true);
+    page === 1 && setLoading(true);
     try {
       let res;
       route.name === "ListSongLike"
@@ -141,6 +135,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   };
 
   const handleRefresh = () => {
+
     setRefreshing(true);
     setPage(1);
     getSongs();
@@ -182,7 +177,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
           </View>
           <View>
             {items.map((item, index) => (
-              <SongItem loading={true}/>
+              <SongItem loading={true} />
             ))}
           </View>
         </View>

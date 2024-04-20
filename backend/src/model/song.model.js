@@ -167,16 +167,22 @@ Song.findByPlaylistId = async (playlistId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT * FROM playlist_songs as pvs , songs as s WHERE ${
-      q ? ` s.title LIKE "%${q}%" AND` : ""
-    }  pvs.playlist_id = ${playlistId} and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0 ` +
+    `SELECT s.*, u.name as author  ` +
+      ` FROM playlist_songs as pvs ` +
+      ` INNER JOIN songs AS s ON pvs.song_id = s.id` +
+      ` LEFT JOIN users AS u ON s.user_id = u.id` +
+      ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""}` +
+      ` pvs.playlist_id = ${playlistId} and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0 ` +
       `ORDER BY pvs.created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM playlist_songs as pvs , songs as s WHERE ${
-      q ? ` s.title LIKE "%${q}%" AND` : ""
-    } pvs.playlist_id = ${playlistId} and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0`
+    `SELECT COUNT(*) AS totalCount` +
+      ` FROM playlist_songs as pvs` +
+      ` INNER JOIN songs AS s ON pvs.song_id = s.id` +
+      ` LEFT JOIN users AS u ON s.user_id = u.id` +
+      ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""}` +
+      ` pvs.playlist_id = ${playlistId} and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0`
   );
   if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0].totalCount / limit);
@@ -260,9 +266,10 @@ Song.findByUserId = async (userId, query, result) => {
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM songs WHERE ${
-      q ? ` title LIKE "%${q}%" AND` : ""
-    } user_id = ${userId} AND public = 1 AND is_deleted = 0 `
+    `SELECT COUNT(*) AS totalCount FROM songs as s ` +
+      ` LEFT JOIN users AS u ON s.user_id = u.id` +
+      ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""}` +
+      ` user_id = ${userId} AND public = 1 AND is_deleted = 0 `
   );
 
   if (data && totalCount) {
@@ -314,16 +321,18 @@ Song.findAll = async (query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT * FROM songs WHERE ${
-      q ? ` title LIKE "%${q}%" AND` : ""
-    } is_deleted = 0 and public = 1 ` +
+    ` SELECT s.*, u.name as author FROM songs as s ` +
+      ` LEFT JOIN users AS u ON s.user_id = u.id` +
+      ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""} ` +
+      ` is_deleted = 0 and public = 1 ` +
       `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM songs WHERE ${
-      q ? ` title LIKE "%${q}%" AND` : ""
-    } is_deleted = 0 and public = 1 `
+    `SELECT COUNT(*) AS totalCount FROM songs as s ` +
+      ` LEFT JOIN users AS u ON s.user_id = u.id` +
+      ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""} ` +
+      ` is_deleted = 0 and public = 1 `
   );
 
   if (data && totalCount) {

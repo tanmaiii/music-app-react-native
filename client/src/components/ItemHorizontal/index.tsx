@@ -11,12 +11,14 @@ import {
 
 import styles from "./style";
 import IMAGES from "../../constants/images";
-import { COLORS, FONTSIZE } from "../../theme/theme";
+import { BORDERRADIUS, COLORS, FONTSIZE } from "../../theme/theme";
 import { AntDesign } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import TouchableScale from "../TouchableScale";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
+import { TPlaylist, TUser } from "../../types";
+import apiConfig from "../../apis/apiConfig";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -28,79 +30,68 @@ const SkeletonCommonProps = {
 } as const;
 
 interface ItemHorizontalProps {
-  id: number;
-  title: string;
-  desc: string;
-  image_path?: string;
-  type?: string;
+  artist?: TUser;
+  playlist?: TPlaylist;
   loading?: boolean;
 }
 
 const ItemHorizontal = (props: ItemHorizontalProps) => {
-  const { title, desc, image_path, id, type, loading = false } = props;
+  const { artist, playlist, loading = false } = props;
   const navigation = useNavigation<NavigationProp>();
 
   const linkTo = useLinkTo();
 
-  const border = type === "Artist" ? 50 : 8;
-
-  const handleTouch = () => {
-    if (type === "Artist") {
-      navigation.navigate("Artist", { id: 123 });
-    } else if (type === "Playlist") {
-      navigation.navigate("Playlist", { id: 123 });
-    }
-  };
-
   return (
-    <TouchableHighlight
-      onPress={() => handleTouch()}
-      style={{ backgroundColor: COLORS.Black1 }}
-      underlayColor={COLORS.Black}
-    >
-      <View style={styles.container}>
-        <View
-          style={[
-            styles.boxImage,
-            ,
-            title === "Liked Songs" && { backgroundColor: COLORS.Primary },
-          ]}
+    <View>
+      {artist && (
+        <TouchableHighlight
+          onPress={() => navigation.navigate("Artist", { userId: artist.id })}
+          style={{ backgroundColor: COLORS.Black1 }}
+          underlayColor={COLORS.Black}
         >
-          {title === "Liked Songs" ? (
-            <AntDesign style={{ color: COLORS.White1 }} name="heart" size={24} color="black" />
-          ) : (
-            <Skeleton height={"100%"} width={"100%"} {...SkeletonCommonProps}>
-              {loading ? null : (
-                <Image
-                  style={[styles.image, { borderRadius: border }]}
-                  source={image_path || IMAGES.POSTER}
-                />
-              )}
-            </Skeleton>
-          )}
-        </View>
-        <View style={styles.body}>
-          <Skeleton {...SkeletonCommonProps} height={18} width={"60%"}>
-            {loading ? null : <Text style={styles.title}>{title}</Text>}
-          </Skeleton>
-          <Skeleton {...SkeletonCommonProps} height={18} width={"40%"}>
-            {loading ? null : (
-              <View style={styles.desc}>
-                {title === "Liked Songs" && (
-                  <AntDesign
-                    style={{ color: COLORS.Primary, fontSize: FONTSIZE.size_14 }}
-                    name="pushpin"
-                    size={24}
-                    color="black"
-                  />
-                )}
-                <Text style={styles.descText}>{desc}</Text>
-              </View>
-            )}
-          </Skeleton>
-        </View>
-      </View>
-    </TouchableHighlight>
+          <View style={styles.container}>
+            <View style={styles.boxImage}>
+              <Image
+                style={[styles.image, { borderRadius: 50 }]}
+                source={
+                  artist?.image_path
+                    ? { uri: apiConfig.imageURL(artist.image_path) }
+                    : IMAGES.AVATAR
+                }
+              />
+            </View>
+            <View style={styles.body}>
+              <Text style={styles.title} numberOfLines={1}>
+                {artist?.name}
+              </Text>
+              <Text style={styles.descText}>Artist</Text>
+            </View>
+          </View>
+        </TouchableHighlight>
+      )}
+      {playlist && (
+        <TouchableHighlight
+          onPress={() => console.log("asd")}
+          style={{ backgroundColor: COLORS.Black1 }}
+          underlayColor={COLORS.Black}
+        >
+          <View style={styles.container}>
+            <View style={styles.boxImage}>
+              <Image
+                style={[styles.image, { borderRadius: BORDERRADIUS.radius_8 }]}
+                source={IMAGES.POSTER}
+              />
+            </View>
+            <View style={styles.body}>
+              <Text style={styles.title} numberOfLines={1}>
+                {playlist?.title}
+              </Text>
+              <Text style={styles.descText}>Playlist</Text>
+            </View>
+          </View>
+        </TouchableHighlight>
+      )}
+    </View>
   );
 };
 //

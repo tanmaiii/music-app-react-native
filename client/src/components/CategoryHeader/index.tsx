@@ -7,12 +7,13 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 interface CategoryHeaderProps {
   title: string;
   PropFunction?: () => void;
+  style?: any;
 }
 
-const CategoryHeader = ({ title, PropFunction }: CategoryHeaderProps) => {
+const CategoryHeader = ({ title, PropFunction, style }: CategoryHeaderProps) => {
   if (PropFunction) {
     return (
-      <Pressable style={styles.container} onPress={() => PropFunction()}>
+      <Pressable style={[styles.container]} {...style} onPress={() => PropFunction()}>
         <Text style={styles.textMain}>{title}</Text>
         <FontAwesomeIcon size={20} color={COLORS.White1} icon={faChevronRight} />
       </Pressable>
@@ -20,7 +21,7 @@ const CategoryHeader = ({ title, PropFunction }: CategoryHeaderProps) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} {...style}>
       <Text style={styles.textMain}>{title}</Text>
     </View>
   );

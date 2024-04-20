@@ -13,6 +13,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Animated,
+  RefreshControl,
 } from "react-native";
 import styles from "./style";
 import IMAGES from "../../constants/images";
@@ -29,43 +30,43 @@ import apiConfig from "../../apis/apiConfig";
 import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
-import { TUser } from "../../types";
-import { userApi } from "../../apis";
+import { TPlaylist, TUser } from "../../types";
+import { playlistApi, songApi, userApi } from "../../apis";
 
 interface HomeScreenProps {}
 
-const songs: TSong[] = [
-  {
-    id: 1,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
-  },
-  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 3,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 5,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 7,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-  { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-  { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-  { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-];
+// const songs: TSong[] = [
+//   {
+//     id: 1,
+//     title: "Despacito, Despacito ,Despacito, Despacito",
+//     image_path: "despacito.jpg",
+//     author: "Luis Fonsi",
+//   },
+//   { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
+//   {
+//     id: 3,
+//     title: "Uptown Funk",
+//     image_path: "uptown_funk.jpg",
+//     author: "Mark Ronson ft. Bruno Mars",
+//   },
+//   { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
+//   {
+//     id: 5,
+//     title: "See You Again",
+//     image_path: "see_you_again.jpg",
+//     author: "Wiz Khalifa ft. Charlie Puth",
+//   },
+//   { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
+//   {
+//     id: 7,
+//     title: "Old Town Road",
+//     image_path: "old_town_road.jpg",
+//     author: "Lil Nas X ft. Billy Ray Cyrus",
+//   },
+//   { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
+//   { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
+//   { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
+// ];
 
 //Chiều cao, rộng của màn hình
 
@@ -75,6 +76,9 @@ const HomeScreen = ({ navigation }: any) => {
   const linkTo = useLinkTo();
   const { currentUser, setCurrentUser, logout, token } = useAuth();
   const [users, setUsers] = useState<TUser[]>();
+  const [playlists, setPlaylists] = useState<TPlaylist[]>();
+  const [songs, setSongs] = useState<TSong[]>();
+  const [refreshing, setRefreshing] = React.useState<boolean>(false);
 
   useEffect(() => {
     const date = new Date();
@@ -105,6 +109,22 @@ const HomeScreen = ({ navigation }: any) => {
     if (!currentUser) return linkTo("/Login");
   });
 
+  const getPlaylists = async () => {
+    try {
+      let res = await playlistApi.getAll(10, 1);
+      console.log(res);
+      setPlaylists(res.data);
+    } catch (error) {}
+  };
+
+  const getSongs = async () => {
+    try {
+      let res = await songApi.getAll(10, 1);
+      console.log(res);
+      setSongs(res.data);
+    } catch (error) {}
+  };
+
   const getUsers = async () => {
     try {
       let res = await userApi.getAll(10, 1);
@@ -114,7 +134,19 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   useEffect(() => {
+    getPlaylists();
     getUsers();
+    getSongs();
+  }, []);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getPlaylists();
+      getUsers();
+      getSongs();
+      setRefreshing(false);
+    }, 2000);
   }, []);
 
   return (
@@ -140,6 +172,13 @@ const HomeScreen = ({ navigation }: any) => {
             const offsetY = e.nativeEvent.contentOffset.y;
             animatedValue.setValue(offsetY);
           }}
+          refreshControl={
+            <RefreshControl
+              colors={["pink", "red"]}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
           scrollEventThrottle={16}
         >
           <View style={styles.scroll}>
@@ -157,7 +196,9 @@ const HomeScreen = ({ navigation }: any) => {
                 decelerationRate={0}
                 style={{ gap: SPACING.space_12 }}
                 renderItem={({ item, index }) => (
-                  <SongCard cardWidth={WINDOW_WIDTH / 2.4} song={item} />
+                  <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                    <SongCard song={item} />
+                  </View>
                 )}
               />
             </View>
@@ -165,7 +206,7 @@ const HomeScreen = ({ navigation }: any) => {
             <View style={{ paddingHorizontal: SPACING.space_10 }}>
               <CategoryHeader title={"Playlist popular"} />
               <FlatList
-                data={songs}
+                data={playlists}
                 keyExtractor={(item: any) => item.id}
                 bounces={false}
                 snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
@@ -174,7 +215,9 @@ const HomeScreen = ({ navigation }: any) => {
                 decelerationRate={0}
                 style={{ gap: SPACING.space_12 }}
                 renderItem={({ item, index }) => (
-                  <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
+                  <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                    <PlaylistCard playlist={item} />
+                  </View>
                 )}
               />
             </View>

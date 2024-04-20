@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     height: 70,
     objectFit: "cover",
     aspectRatio: 1 / 1,
+    backgroundColor: COLORS.Black2,
   },
   body: {
     padding: SPACING.space_12,

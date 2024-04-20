@@ -11,7 +11,7 @@ router.get(
 );
 router.get(
   "/followers/:userId/count",
-  validate(followsValidation.getAllFollowers),
+  validate(followsValidation.getCountFollowers),
   followController.getCountFollowers
 );
 router.get(

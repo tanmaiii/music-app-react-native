@@ -11,88 +11,39 @@ import {
   Animated,
   Platform,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { useNavigation } from "@react-navigation/native";
-import { TSong } from "../../types";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { TPlaylist, TSong } from "../../types";
 import { FlatList, ScrollView } from "react-native-gesture-handler";
 import SongItem from "../../components/SongItem";
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
 import IMAGES from "../../constants/images";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
 import Constants from "expo-constants";
+import { playlistApi } from "../../apis";
+import apiConfig from "../../apis/apiConfig";
+import { useAuth } from "../../context/AuthContext";
 const statusBarHeight = Constants.statusBarHeight;
-
-const songs: TSong[] = [
-  {
-    id: 1,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
-  },
-  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 3,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 5,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 7,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-  { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-  { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-  { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-  {
-    id: 11,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
-  },
-  { id: 12, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 13,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 14, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 15,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 16, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 17,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-  { id: 18, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-  { id: 19, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-  { id: 20, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-];
 
 interface ListPlaylistScreenProps {}
 
 const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
   const navigation = useNavigation<NavigationProp>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const route = useRoute<RootRouteProps<"ListPlaylist">>();
+  const userId = route.params.userId;
+  const [limit, setLimit] = React.useState(10);
+  const [page, setPage] = React.useState(1);
+  const { currentUser, token } = useAuth();
+  const items = Array.from({ length: 10 }, (_, index) => index);
+  const [refreshing, setRefreshing] = React.useState<boolean>(false);
+  const [totalPages, setTotalPages] = React.useState<number>(1);
 
   const backgroundColorAnimation = {
     backgroundColor: animatedValue.interpolate({
@@ -101,6 +52,50 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
       extrapolate: "clamp", // Giữ giá trị nằm trong phạm vi inputRange
     }),
   };
+
+  const getPlaylists = async () => {
+    page === 1 && setLoading(true);
+    try {
+      const res = await playlistApi.getAllByUserId(userId, limit, page);
+      if (res.pagination.page === 1) {
+        setPlaylists(res.data);
+        setTotalPages(res.pagination.totalPages);
+      } else {
+        setPlaylists((prevSongs) => [...prevSongs, ...res.data]);
+        // Nếu đã được khởi tạo, sử dụng phép cộng mảng để thêm dữ liệu mới vào
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
+  const loadMore = () => {
+    page < totalPages && setPage(page + 1);
+  };
+
+  const renderLoader = () => {
+    return loading ? (
+      <View style={{ paddingVertical: SPACING.space_14 }}>
+        <ActivityIndicator size={"large"} color={COLORS.White1} />
+      </View>
+    ) : null;
+  };
+
+  const handleRefresh = () => {
+    console.log("Refreshing Playlist");
+    setRefreshing(true);
+    setTimeout(() => {
+      setPage(1);
+      getPlaylists();
+    }, 2000);
+    setRefreshing(false);
+  };
+
+  React.useEffect(() => {
+    userId && getPlaylists();
+  }, [userId, page]);
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ zIndex: 99 }}>
@@ -124,42 +119,60 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
           <View style={styles.buttonBack}></View>
         </Animated.View>
       </SafeAreaView>
-
-      <View style={styles.scroll}>
-        <FlatList
-          onScroll={(e) => {
-            const offsetY = e.nativeEvent.contentOffset.y;
-            animatedValue.setValue(offsetY);
-          }}
-          scrollEventThrottle={16}
-          data={songs}
-          keyExtractor={(item: any) => item.id}
-          style={styles.flatlist}
-          numColumns={2}
-          contentContainerStyle={{
+      {!playlists || loading ? (
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
             paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
-            paddingBottom: HEIGHT.playingCard + 20,
           }}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate("Playlist", { id: 123 })}
+        >
+          {items.map((item, index) => (
+            <View
+              style={{
+                width: WINDOW_WIDTH / 2,
+                padding: SPACING.space_10,
+                height: 240,
+              }}
             >
-              <View style={styles.imageCard}>
-                <Image style={styles.image} source={IMAGES.POSTER} />
+              <PlaylistCard loading={true} />
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={styles.scroll}>
+          <FlatList
+            data={playlists}
+            onScroll={(e) => {
+              const offsetY = e.nativeEvent.contentOffset.y;
+              animatedValue.setValue(offsetY);
+            }}
+            ListFooterComponent={renderLoader}
+            onEndReached={loadMore}
+            scrollEventThrottle={16}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            keyExtractor={(item: any) => item.id}
+            style={styles.flatlist}
+            numColumns={2}
+            contentContainerStyle={{
+              paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+              paddingBottom: HEIGHT.playingCard + 20,
+            }}
+            renderItem={({ item, index }) => (
+              <View
+                key={index}
+                style={{
+                  width: WINDOW_WIDTH / 2,
+                  padding: SPACING.space_10,
+                }}
+              >
+                <PlaylistCard playlist={item} loading={loading} />
               </View>
-              <View style={styles.descCard}>
-                <Text numberOfLines={1} style={styles.textTitle}>
-                  Xin chao
-                </Text>
-                <Text numberOfLines={1} style={styles.textExtra}>
-                  2019
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -202,7 +215,10 @@ const styles = StyleSheet.create({
   scroll: {
     // paddingBottom: HEIGHT.playingCard + 10,
   },
-  flatlist: {},
+  flatlist: {
+    // gap: SPACING.space_10,
+    // paddingHorizontal: SPACING.space_10,
+  },
   card: {
     display: "flex",
     justifyContent: "center",
@@ -212,6 +228,7 @@ const styles = StyleSheet.create({
   },
   imageCard: {},
   image: {
+    backgroundColor: COLORS.Black2,
     aspectRatio: 3 / 3,
     borderRadius: BORDERRADIUS.radius_8,
     objectFit: "cover",

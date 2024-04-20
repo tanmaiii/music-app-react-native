@@ -28,12 +28,11 @@ const SkeletonCommonProps = {
 
 interface PlaylistCardProps {
   loading?: boolean;
-  playlist: TPlaylist;
-  cardWidth?: number;
+  playlist?: TPlaylist;
 }
 
 const PlaylistCard = (props: PlaylistCardProps) => {
-  const { playlist, loading = false, cardWidth = "100%" } = props;
+  const { playlist, loading = false } = props;
 
   const { setOpenBarSong, setSongPlaying } = usePlaying();
   const linkTo = useLinkTo();
@@ -42,18 +41,18 @@ const PlaylistCard = (props: PlaylistCardProps) => {
   const goToScreen = () => {};
 
   const handlePress = () => {
-    navigation.navigate("Playlist", { playlistId: 123 });
+    playlist && navigation.navigate("Playlist", { playlistId: playlist.id });
   };
 
   return (
     <TouchableOpacity onPress={handlePress}>
-      <View
-        style={[styles.container, { marginRight: SPACING.space_12 }, { maxWidth: props.cardWidth }]}
-      >
-        <Skeleton height={props.cardWidth} width={props.cardWidth} {...SkeletonCommonProps}>
-          {loading ? null : (
+      <View style={[styles.container]}>
+        <View style={styles.wrapperImage}>
+          {loading ? (
+            <Skeleton {...SkeletonCommonProps} width={"100%"} height={180} />
+          ) : (
             <Image
-              style={[styles.image, { width: props.cardWidth, height: props.cardWidth }]}
+              style={[styles.image]}
               source={
                 playlist?.image_path
                   ? { uri: apiConfig.imageURL(playlist.image_path) }
@@ -61,7 +60,8 @@ const PlaylistCard = (props: PlaylistCardProps) => {
               }
             />
           )}
-        </Skeleton>
+        </View>
+
         <View style={{ gap: SPACING.space_4 }}>
           <Skeleton height={18} width={"100%"} {...SkeletonCommonProps}>
             {loading ? null : (

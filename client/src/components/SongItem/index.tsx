@@ -26,6 +26,7 @@ const SkeletonCommonProps = {
 interface SongItemProps {
   loading?: boolean;
   song?: TSong;
+  inPlaylist?: boolean;
 }
 
 const SongItem = (props: SongItemProps) => {
@@ -102,7 +103,7 @@ const SongItem = (props: SongItemProps) => {
           height1={heightModal}
         >
           <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
-            <ModalSong song={song} setOpenModal={setIsOpenModal} />
+            <ModalSong song={song} setOpenModal={setIsOpenModal} inPlaylist={props.inPlaylist} />
           </View>
         </CustomBottomSheet>
       )}

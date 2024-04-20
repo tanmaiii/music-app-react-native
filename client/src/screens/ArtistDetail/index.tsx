@@ -98,6 +98,7 @@ const renderGroupOfSongs = (songs) => {
 const AnimatedTouchableHighlight = Animated.createAnimatedComponent(TouchableHighlight);
 
 const ArtistDetail = (props: ArtistDetailProps) => {
+  const scrollViewRef = React.useRef<ScrollView>();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RootRouteProps<"Artist">>();
   const userId = route.params.userId;
@@ -109,9 +110,10 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const [isOpenModal, setIsOpenMoal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(100);
   const [artist, setArtist] = React.useState<TUser>(null);
-  const [countFollowing, setCountFollowing] = React.useState<number>(0);
+  const [artists, setArtists] = React.useState<TUser[]>(null);
   const [songs, setSongs] = React.useState<TSong[]>(null);
   const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
+  const [countFollowing, setCountFollowing] = React.useState<number>(0);
   const groupedSongs = songs && renderGroupOfSongs(songs);
 
   const opacityAnimation = {
@@ -220,13 +222,27 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     setLoading(false);
   };
 
+  const getArtists = async () => {
+    setLoading(true);
+    try {
+      const res = await userApi.getAll(10, 1);
+      setArtists(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
   React.useEffect(() => {
-    console.log("userId: ", userId);
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: false });
+    }
 
     userId && getUser();
     userId && getCountFollowing();
     userId && getSongs();
     userId && getPlaylists();
+    userId && getArtists();
     currentUser.id !== userId && checkFollowing();
   }, [route, userId]);
 
@@ -285,6 +301,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           </Animated.View>
 
           <ScrollView
+            ref={scrollViewRef}
             onScroll={(e) => {
               const offsetY = e.nativeEvent.contentOffset.y;
               animatedValue.setValue(offsetY);
@@ -390,7 +407,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                   <CategoryHeader
                     title={"Playlist popular"}
                     PropFunction={
-                      playlists?.length > 5
+                      playlists?.length > 1
                         ? () => navigation.navigate("ListPlaylist", { userId: artist?.id })
                         : null
                     }
@@ -405,7 +422,9 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                     decelerationRate={0}
                     style={{ gap: SPACING.space_12 }}
                     renderItem={({ item, index }) => (
-                      <PlaylistCard cardWidth={WINDOW_WIDTH / 2.4} playlist={item} />
+                      <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                        <PlaylistCard playlist={item} />
+                      </View>
                     )}
                   />
                 </View>
@@ -415,7 +434,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                 <View style={{ paddingHorizontal: SPACING.space_10 }}>
                   <CategoryHeader title={"Related artists"} />
                   <FlatList
-                    data={songs}
+                    data={artists}
                     keyExtractor={(item: any) => item.id}
                     bounces={false}
                     snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
@@ -423,9 +442,12 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                     showsHorizontalScrollIndicator={false}
                     decelerationRate={0}
                     style={{ gap: SPACING.space_12 }}
-                    renderItem={({ item, index }) => (
-                      <ArtistCard loading={loading} cardWidth={WINDOW_WIDTH / 3} artist={item} />
-                    )}
+                    renderItem={({ item, index }) => {
+                      if (item.id === userId) return;
+                      return (
+                        <ArtistCard loading={loading} cardWidth={WINDOW_WIDTH / 3} artist={item} />
+                      );
+                    }}
                   />
                 </View>
               </View>
