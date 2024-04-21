@@ -6,7 +6,7 @@ interface CheckFollowingResponse {
 }
 
 const userApi = {
-  getAll(limit: number, page: number, q?: string, sort?: string): Promise<ListResponse<TUser>> {
+  getAll(page: number, limit: number , q?: string, sort?: string): Promise<ListResponse<TUser>> {
     const url = "user";
     return axiosClient.get(url, {
       params: {

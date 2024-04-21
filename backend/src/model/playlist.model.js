@@ -282,11 +282,12 @@ Playlist.findByFavorite = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT p.*, u.name as author ` +
+    `SELECT fp.*, p.*, u.name as author ` +
       ` FROM favourite_playlists AS fp` +
       ` INNER JOIN playlists AS p ON fp.playlist_id = p.id` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
-      ` WHERE ${q ? ` p.title LIKE "%${q}%" AND` : ""} fp.user_id = ${userId} AND p.public = 1` +
+      ` WHERE ${q ? ` p.title LIKE "%${q}%" AND ` : ""} ` +
+      ` (p.public = 1 AND fp.user_id = ${userId} ) OR (fp.user_id = ${userId} AND p.user_id = fp.user_id) AND p.is_deleted = 0` +
       ` ORDER BY fp.created_at ${sort === "new" ? "DESC" : "ASC"}` +
       ` LIMIT ${+limit} OFFSET ${+offset};`
   );
@@ -296,7 +297,8 @@ Playlist.findByFavorite = async (userId, query, result) => {
       ` FROM favourite_playlists AS fp ` +
       ` INNER JOIN playlists AS p ON fp.playlist_id = p.id` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
-      ` WHERE ${q ? ` p.title LIKE "%${q}%" AND` : ""} fp.user_id = ${userId} AND p.public = 1` +
+      ` WHERE ${q ? ` p.title LIKE "%${q}%" AND ` : ""} ` +
+      ` (p.public = 1 AND fp.user_id = ${userId} ) OR (fp.user_id = ${userId} AND p.user_id = fp.user_id) AND p.is_deleted = 0` +
       ` ORDER BY fp.created_at ${sort === "new" ? "DESC" : "ASC"}` +
       ` LIMIT ${+limit} OFFSET ${+offset};`
   );

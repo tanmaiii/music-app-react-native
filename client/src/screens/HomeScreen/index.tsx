@@ -111,7 +111,7 @@ const HomeScreen = ({ navigation }: any) => {
 
   const getPlaylists = async () => {
     try {
-      let res = await playlistApi.getAll(10, 1);
+      let res = await playlistApi.getAll(1, 10);
       console.log(res);
       setPlaylists(res.data);
     } catch (error) {}
@@ -119,7 +119,7 @@ const HomeScreen = ({ navigation }: any) => {
 
   const getSongs = async () => {
     try {
-      let res = await songApi.getAll(10, 1);
+      let res = await songApi.getAll(1, 10);
       console.log(res);
       setSongs(res.data);
     } catch (error) {}
@@ -127,7 +127,7 @@ const HomeScreen = ({ navigation }: any) => {
 
   const getUsers = async () => {
     try {
-      let res = await userApi.getAll(10, 1);
+      let res = await userApi.getAll(1, 10);
       console.log(res);
       setUsers(res.data);
     } catch (error) {}
@@ -234,7 +234,9 @@ const HomeScreen = ({ navigation }: any) => {
                 decelerationRate={0}
                 style={{ gap: SPACING.space_12 }}
                 renderItem={({ item, index }) => (
-                  <ArtistCard cardWidth={WINDOW_WIDTH / 3} artist={item} />
+                  <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
+                    <ArtistCard artist={item} />
+                  </View>
                 )}
               />
             </View>

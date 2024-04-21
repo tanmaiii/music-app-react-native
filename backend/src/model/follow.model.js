@@ -63,13 +63,15 @@ Follow.findAllByFollowerId = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT id, name, verified, image_path ,is_admin FROM music.follows, music.users WHERE follows.followed_user_id = users.id AND follows.follower_user_id = ${userId} ${
-      q ? `AND users.name LIKE "%${q}%"` : ""
-    }` + `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+    `SELECT id, name, verified, image_path ,is_admin, f.* ` +
+      ` FROM music.follows as f, music.users WHERE ` +
+      ` f.followed_user_id = users.id AND f.follower_user_id = ${userId}` +
+      ` ${q ? `AND users.name LIKE "%${q}%"` : ""}` +
+      `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM follows where follower_user_id = ${userId} ${
+    `SELECT COUNT(*) AS totalCount FROM follows as f where follower_user_id = ${userId} ${
       q ? `AND title LIKE "%${q}%"` : ""
     }`
   );
@@ -103,9 +105,11 @@ Follow.findAllByFollowedId = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT id, name, verified, image_path ,is_admin  FROM music.follows, music.users WHERE follows.follower_user_id = users.id AND follows.followed_user_id = ${userId} ${
-      q ? `AND users.name LIKE "%${q}%"` : ""
-    }` + `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+    `SELECT id, name, verified, image_path ,is_admin, f.* ` +
+      ` FROM music.follows as f, music.users WHERE ` +
+      ` f.follower_user_id = users.id AND f.followed_user_id = ${userId}` +
+      ` ${q ? `AND users.name LIKE "%${q}%"` : ""}` +
+      `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(

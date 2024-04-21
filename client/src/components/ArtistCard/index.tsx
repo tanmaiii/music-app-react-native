@@ -22,12 +22,10 @@ const SkeletonCommonProps = {
 type TArtistCard = {
   artist: TUser;
   loading?: boolean;
-  cardWidth: number;
 };
 
 const ArtistCard = (prop: TArtistCard) => {
-  const { artist, loading = false, cardWidth } = prop;
-  const linkTo = useLinkTo();
+  const { artist, loading = false } = prop;
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {
@@ -35,25 +33,26 @@ const ArtistCard = (prop: TArtistCard) => {
   };
 
   return (
-    <TouchableOpacity onPress={() => handlePress()}>
-      <View
-        style={[
-          styles.container,
-          { marginRight: SPACING.space_12 },
-          { maxWidth: cardWidth || "100%" },
-        ]}
-      >
-        <Skeleton radius="square" height={cardWidth} width={cardWidth} {...SkeletonCommonProps}>
-          {loading ? null : (
-            <Image
-              style={[styles.image, { width: cardWidth || "100%", height: cardWidth || "100%" }]}
-              source={
-                artist?.image_path ? { uri: apiConfig.imageURL(artist.image_path) } : IMAGES.AVATAR
-              }
-            />
-          )}
-        </Skeleton>
-        <View>
+    <TouchableOpacity onPress={handlePress}>
+      <View style={[styles.container]}>
+        <View style={styles.wrapperImage}>
+          <Skeleton {...SkeletonCommonProps}>
+            {loading ? (
+              <Skeleton {...SkeletonCommonProps} width={"100%"} height={170} />
+            ) : (
+              <Image
+                style={[styles.image]}
+                source={
+                  artist?.image_path
+                    ? { uri: apiConfig.imageURL(artist.image_path) }
+                    : IMAGES.PLAYLIST
+                }
+              />
+            )}
+          </Skeleton>
+        </View>
+
+        <View style={{ gap: SPACING.space_4 }}>
           <Skeleton height={18} width={"100%"} {...SkeletonCommonProps}>
             {loading ? null : (
               <Text numberOfLines={1} style={styles.textTitle}>
@@ -61,6 +60,13 @@ const ArtistCard = (prop: TArtistCard) => {
               </Text>
             )}
           </Skeleton>
+          {/* <Skeleton height={14} width={80} {...SkeletonCommonProps}>
+            {loading ? null : (
+              <Text numberOfLines={2} style={styles.textDes}>
+                {artist.}
+              </Text>
+            )}
+          </Skeleton> */}
         </View>
       </View>
     </TouchableOpacity>

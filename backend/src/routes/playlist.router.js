@@ -5,7 +5,7 @@ import playlistValidation from "../validations/playlist.validation.js";
 
 import validate from "../middlewares/validate.js";
 
-router.post(
+router.get(
   "/detail/:playlistId",
   validate(playlistValidation.getPlaylist),
   playlistController.getPlaylist
@@ -33,10 +33,16 @@ router.patch(
   validate(playlistValidation.deletePlaylist),
   playlistController.deletePlaylist
 );
-router.patch("/restore/:playlistId", validate(playlistValidation.restorePlaylist), playlistController.restorePlaylist);
-router.delete("/destroy/:playlistId", validate(playlistValidation.destroyPlaylist), playlistController.destroyPlaylist);
-
-
+router.patch(
+  "/restore/:playlistId",
+  validate(playlistValidation.restorePlaylist),
+  playlistController.restorePlaylist
+);
+router.delete(
+  "/destroy/:playlistId",
+  validate(playlistValidation.destroyPlaylist),
+  playlistController.destroyPlaylist
+);
 
 router.get(
   "/like",

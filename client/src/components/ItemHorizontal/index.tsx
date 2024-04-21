@@ -71,7 +71,7 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
       )}
       {playlist && (
         <TouchableHighlight
-          onPress={() => console.log("asd")}
+          onPress={() => navigation.navigate("Playlist", { playlistId: playlist.id })}
           style={{ backgroundColor: COLORS.Black1 }}
           underlayColor={COLORS.Black}
         >
@@ -79,7 +79,11 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
             <View style={styles.boxImage}>
               <Image
                 style={[styles.image, { borderRadius: BORDERRADIUS.radius_8 }]}
-                source={IMAGES.POSTER}
+                source={
+                  playlist?.image_path
+                    ? { uri: apiConfig.imageURL(playlist.image_path) }
+                    : IMAGES.PLAYLIST
+                }
               />
             </View>
             <View style={styles.body}>

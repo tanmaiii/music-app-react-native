@@ -1,5 +1,6 @@
 import axios from "axios";
 import queryString from "query-string";
+import { useAuth } from "../context/AuthContext"; // Đây là context chứa token
 
 import apiConfig from "./apiConfig";
 
@@ -23,6 +24,7 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 
 axiosClient.interceptors.response.use(
   (response) => {

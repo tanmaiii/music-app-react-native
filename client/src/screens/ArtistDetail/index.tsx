@@ -14,6 +14,7 @@ import {
   Platform,
   Share,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -115,6 +116,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
   const [countFollowing, setCountFollowing] = React.useState<number>(0);
   const groupedSongs = songs && renderGroupOfSongs(songs);
+  const [refreshing, setRefreshing] = React.useState<boolean>(false);
 
   const opacityAnimation = {
     opacity: animatedValue.interpolate({
@@ -166,15 +168,6 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     }
   };
 
-  const getCountFollowing = async () => {
-    try {
-      const res = await userApi.getCountFollowers(userId);
-      setCountFollowing(res);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleFollow = async () => {
     try {
       if (follow) {
@@ -194,8 +187,19 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     setLoading(true);
     try {
       const res = await userApi.getDetail(userId);
-      setLoading(false);
       setArtist(res);
+      setLoading(false);
+    } catch (error) {}
+    setLoading(false);
+  };
+
+  const getPlaylist = async () => {
+    setLoading(true);
+    try {
+      const resPlaylist = await playlistApi.getAllByUserId(userId, 1, 10);
+
+      setPlaylists(resPlaylist.data);
+      setLoading(false);
     } catch (error) {}
     setLoading(false);
   };
@@ -203,48 +207,64 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const getSongs = async () => {
     setLoading(true);
     try {
-      const res = await songApi.getAllByUserId(userId, 11, 1);
-      setSongs(res.data);
+      const resSong = await songApi.getAllByUserId(userId, 1, 11);
+
+      setSongs(resSong.data);
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data);
     }
     setLoading(false);
   };
 
-  const getPlaylists = async () => {
+  const getFollowing = async () => {
     setLoading(true);
     try {
-      const res = await playlistApi.getAllByUserId(userId, 10, 1);
-      setPlaylists(res.data);
+      const resCountFollowing = await userApi.getCountFollowers(userId);
+
+      setCountFollowing(resCountFollowing);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data);
     }
     setLoading(false);
   };
 
-  const getArtists = async () => {
+  const getArtist = async () => {
     setLoading(true);
     try {
-      const res = await userApi.getAll(10, 1);
-      setArtists(res.data);
+      const resUser = await userApi.getAll(1, 10);
+      setArtists(resUser.data);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data);
     }
     setLoading(false);
   };
 
   React.useEffect(() => {
+    console.log(userId);
+
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({ y: 0, animated: false });
     }
 
     userId && getUser();
-    userId && getCountFollowing();
+    userId && getFollowing();
+    userId && getPlaylist();
+    userId && getArtist();
     userId && getSongs();
-    userId && getPlaylists();
-    userId && getArtists();
+
     currentUser.id !== userId && checkFollowing();
   }, [route, userId]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    userId && getUser();
+    userId && getFollowing();
+    userId && getPlaylist();
+    userId && getArtist();
+    userId && getSongs();
+    setRefreshing(false);
+  };
 
   return (
     <>
@@ -301,6 +321,13 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           </Animated.View>
 
           <ScrollView
+            refreshControl={
+              <RefreshControl
+                colors={["pink", "red"]}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            }
             ref={scrollViewRef}
             onScroll={(e) => {
               const offsetY = e.nativeEvent.contentOffset.y;
@@ -445,7 +472,9 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                     renderItem={({ item, index }) => {
                       if (item.id === userId) return;
                       return (
-                        <ArtistCard loading={loading} cardWidth={WINDOW_WIDTH / 3} artist={item} />
+                        <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
+                          <ArtistCard loading={loading} artist={item} />
+                        </View>
                       );
                     }}
                   />

@@ -7,7 +7,7 @@ interface CheckLikedResponse {
 }
 
 const songApi = {
-  getAll(limit: number, page: number, q?: string, sort?: string): Promise<ListResponse<TSong>> {
+  getAll(page: number, limit: number, q?: string, sort?: string): Promise<ListResponse<TSong>> {
     const url = "song";
     return axiosClient.get(url, {
       params: {
@@ -24,8 +24,8 @@ const songApi = {
   },
   getAllByUserId(
     userId: number,
-    limit: number,
     page: number,
+    limit: number,
     q?: string,
     sort?: string
   ): Promise<ListResponse<TSong>> {

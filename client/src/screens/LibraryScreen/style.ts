@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flexDirection: "row",
     alignItems: "center",
+    width: "100%"
   },
   headerListLeft: {
     display: "flex",
@@ -96,7 +97,6 @@ const styles = StyleSheet.create({
   scroll: {
     height: "100%",
   },
-
   likeSong: {
     paddingVertical: SPACING.space_8,
     paddingHorizontal: SPACING.space_12,

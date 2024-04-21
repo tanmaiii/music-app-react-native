@@ -90,6 +90,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const [playlist, setPlaylist] = React.useState<TPlaylist>(null);
   const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
   const [songs, setSongs] = React.useState<TSong[]>(null);
+  const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const playlistId = route.params.playlistId;
   const { token } = useAuth();
@@ -166,6 +167,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     }
   };
 
+
   React.useEffect(() => {
     flatListRef.current && flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
     playlistId && getPlaylist();
@@ -192,7 +194,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
               <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
             </TouchableOpacity>
-            <Animated.Text style={[styles.titleHeader, headerAnimation]}>
+            <Animated.Text numberOfLines={1} style={[styles.titleHeader, headerAnimation]}>
               {playlist?.title || "Unknown"}
             </Animated.Text>
             <TouchableOpacity
@@ -213,7 +215,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             }}
             scrollEventThrottle={16}
             ListHeaderComponent={
-              <View style={styles.wrapperHeader}>
+              <View style={[styles.wrapperHeader]}>
                 <View style={[styles.wrapperImage]}>
                   <Animated.Image
                     style={[styles.image, imageAnimation]}
@@ -225,7 +227,10 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                   />
                 </View>
 
-                <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
+                <Text
+                  numberOfLines={2}
+                  style={[styles.textMain, { fontSize: FONTSIZE.size_24, maxWidth: "80%" }]}
+                >
                   {playlist?.title || "Unknown"}
                 </Text>
 

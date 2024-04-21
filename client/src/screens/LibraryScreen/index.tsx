@@ -29,25 +29,11 @@ import { NavigationProp } from "../../navigation/TStack";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
 import { AddSongPlaylist, AddPlaylist } from "../../components/ItemModal";
 import { useAuth } from "../../context/AuthContext";
-import { TUser } from "../../types";
-import { userApi } from "../../apis";
+import { TPlaylist, TUser } from "../../types";
+import { playlistApi, userApi } from "../../apis";
 const { width, height } = Dimensions.get("window");
 
 interface LibraryScreenProps {}
-
-const DATA = [
-  { id: 2, title: "2 Les", desc: "Playlist", type: "Playlist" },
-  { id: 3, title: "3 New jeans", desc: "Artist", type: "Artist" },
-  { id: 4, title: "4 New jeans", desc: "Artist", type: "Artist" },
-  { id: 5, title: "5 New jeans", desc: "Artist", type: "Artist" },
-  { id: 6, title: "6 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 7, title: "7 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 8, title: "8 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 9, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
-  { id: 10, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
-  { id: 11, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
-  { id: 12, title: "12 New jeans bottom", desc: "Playlist", type: "Playlist" },
-];
 
 const LibraryScreen = (props: LibraryScreenProps) => {
   const [active, setActive] = useState("Playlists");
@@ -57,18 +43,24 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   const [isOpenModalAddPlaylist, setIsOpenModalAddPlaylist] = React.useState<boolean>(false);
   const { currentUser } = useAuth();
   const [artists, setArtists] = useState<TUser[]>(null);
-  const [playlists, setPlaylists] = useState<TUser[]>(null);
+  const [playlists, setPlaylists] = useState<TPlaylist[]>(null);
+  const [data, setData] = useState<any>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const { token } = useAuth();
 
   const getData = async () => {
     try {
       console.log("Goi ne");
       const resArtist = await userApi.getFollowing(currentUser.id, 1, 10);
+      const resPlaylist = await playlistApi.getAllFavoritesByUser(token, 1, 10);
+      setPlaylists(resPlaylist.data);
       setArtists(resArtist.data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err.response.data.conflictError);
     }
   };
+
+  React.useEffect(() => {}, [artists, playlists]);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -106,40 +98,93 @@ const LibraryScreen = (props: LibraryScreenProps) => {
               onPress={() => setActive("Playlists")}
               style={[styles.categoryItem, active === "Playlists" && styles.categoryItemActive]}
             >
-              <Text style={styles.categoryItemText}>All</Text>
+              <Text style={styles.categoryItemText}>Playlists</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               onPress={() => setActive("Artists")}
               style={[styles.categoryItem, active === "Artists" && styles.categoryItemActive]}
             >
-              <Text style={styles.categoryItemText}>Playlist</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setActive("Podcasts & shows")}
-              style={[
-                styles.categoryItem,
-                active === "Podcasts & shows" && styles.categoryItemActive,
-              ]}
-            >
-              <Text style={styles.categoryItemText}>Artist</Text>
+              <Text style={styles.categoryItemText}>Artists</Text>
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
 
         <View style={{ height: 10 }}></View>
 
-        <FlatList
-          data={artists}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          keyExtractor={(item: any) => item.id}
-          horizontal={false}
-          style={styles.scroll}
-          contentContainerStyle={{
-            paddingBottom: HEIGHT.playingCard + HEIGHT.navigator + 50,
-          }}
-          ListHeaderComponent={
-            <>
+        {active === "Playlists" && (
+          <FlatList
+            data={playlists}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            keyExtractor={(item: any) => item.id}
+            horizontal={false}
+            style={styles.scroll}
+            contentContainerStyle={{
+              paddingBottom: HEIGHT.playingCard + HEIGHT.navigator + 50,
+            }}
+            ListHeaderComponent={
+              <>
+                <View style={styles.headerList}>
+                  <View style={styles.headerListLeft}>
+                    <FontAwesome
+                      name="sort"
+                      size={24}
+                      color="black"
+                      style={{ fontSize: FONTSIZE.size_14, color: COLORS.White2 }}
+                    />
+                    <Text style={styles.headerListText}>Recently played</Text>
+                  </View>
+                  <View style={styles.headerListRight}>
+                    <MaterialIcons
+                      style={styles.headerListIcon}
+                      name="grid-view"
+                      size={24}
+                      color="black"
+                    />
+                  </View>
+                </View>
+
+                {active === "Playlists" && (
+                  <TouchableHighlight
+                    underlayColor={COLORS.Black}
+                    onPress={() => navigation.navigate("ListSongLike", { userId: currentUser.id })}
+                  >
+                    <View style={styles.likeSong}>
+                      <View style={styles.boxImage}>
+                        <FontAwesomeIcon icon={faHeart} size={24} color={COLORS.White1} />
+                      </View>
+                      <View style={styles.body}>
+                        <Text style={styles.title}>Like Song</Text>
+                        <View style={styles.desc}>
+                          <FontAwesomeIcon icon={faThumbTack} size={14} color={COLORS.Primary} />
+                          <Text style={styles.descText}>Playlist - 26 songs</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableHighlight>
+                )}
+              </>
+            }
+            renderItem={({ item, index }) => <ItemHorizontal playlist={item} key={index} />}
+          />
+        )}
+
+        {active === "Artists" && (
+          <FlatList
+            data={artists}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            keyExtractor={(item: any) => item.id}
+            horizontal={false}
+            style={[
+              styles.scroll,
+              { paddingVertical: SPACING.space_12, width: "100%" },
+            ]}
+            contentContainerStyle={{
+              paddingBottom: HEIGHT.playingCard + HEIGHT.navigator + 50,
+            }}
+            ListHeaderComponent={
               <View style={styles.headerList}>
                 <View style={styles.headerListLeft}>
                   <FontAwesome
@@ -159,28 +204,18 @@ const LibraryScreen = (props: LibraryScreenProps) => {
                   />
                 </View>
               </View>
-
-              <TouchableHighlight
-                underlayColor={COLORS.Black}
-                onPress={() => navigation.navigate("ListSongLike", { userId: currentUser.id })}
-              >
-                <View style={styles.likeSong}>
-                  <View style={styles.boxImage}>
-                    <FontAwesomeIcon icon={faHeart} size={24} color={COLORS.White1} />
-                  </View>
-                  <View style={styles.body}>
-                    <Text style={styles.title}>Like Song</Text>
-                    <View style={styles.desc}>
-                      <FontAwesomeIcon icon={faThumbTack} size={14} color={COLORS.Primary} />
-                      <Text style={styles.descText}>Playlist - 26 songs</Text>
-                    </View>
-                  </View>
+            }
+            renderItem={({ item, index }) => {
+              return (
+                <View
+                  style={{ width: WINDOW_WIDTH / 3 - SPACING.space_8, padding: SPACING.space_8 }}
+                >
+                  <ArtistCard artist={item} />
                 </View>
-              </TouchableHighlight>
-            </>
-          }
-          renderItem={({ item, index }) => <ItemHorizontal artist={item} key={index} />}
-        />
+              );
+            }}
+          />
+        )}
       </View>
 
       {openModal && (

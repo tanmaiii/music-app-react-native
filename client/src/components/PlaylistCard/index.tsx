@@ -49,7 +49,7 @@ const PlaylistCard = (props: PlaylistCardProps) => {
       <View style={[styles.container]}>
         <View style={styles.wrapperImage}>
           {loading ? (
-            <Skeleton {...SkeletonCommonProps} width={"100%"} height={180} />
+            <Skeleton {...SkeletonCommonProps} width={"100%"} height={170} />
           ) : (
             <Image
               style={[styles.image]}

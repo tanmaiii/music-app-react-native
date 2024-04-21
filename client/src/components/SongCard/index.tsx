@@ -43,21 +43,16 @@ const SongCard = (props: SongCardProps) => {
     <TouchableOpacity onPress={handlePress}>
       <View style={[styles.container]}>
         <View style={styles.wrapperImage}>
-          <Skeleton {...SkeletonCommonProps}>
-            <>
-              {loading ? null : (
-                <Image
-                  style={[styles.image]}
-                  source={
-                    song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
-                  }
-                />
-              )}
-              <View style={[styles.buttonPlay]}>
-                <FontAwesomeIcon icon={faPlay} color={COLORS.White1} />
-              </View>
-            </>
-          </Skeleton>
+          {loading ? (
+            <Skeleton {...SkeletonCommonProps} width={"100%"} height={170} />
+          ) : (
+            <Image
+              style={[styles.image]}
+              source={
+                song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.PLAYLIST
+              }
+            />
+          )}
         </View>
 
         <View style={{ gap: SPACING.space_4 }}>
