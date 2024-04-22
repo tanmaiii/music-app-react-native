@@ -1,8 +1,9 @@
 import axios from "axios";
 import queryString from "query-string";
-import { useAuth } from "../context/AuthContext"; // Đây là context chứa token
+import { AuthContext } from "../context/AuthContext"; // Đây là context chứa token
 
 import apiConfig from "./apiConfig";
+import { useContext } from "react";
 
 const axiosClient = axios.create({
   baseURL: apiConfig.baseUrl,
@@ -25,6 +26,19 @@ axios.interceptors.request.use(
   }
 );
 
+// // Đính kèm token vào headers trước khi gửi mỗi yêu cầu
+// axiosClient.interceptors.request.use(
+//   async function (config) {
+//     const { token } = useContext(AuthContext); // Lấy token từ context
+//     if (token) {
+//       config.headers.Authorization = `${token}`;
+//     }
+//     return config;
+//   },
+//   function (error) {
+//     return Promise.reject(error);
+//   }
+// );
 
 axiosClient.interceptors.response.use(
   (response) => {

@@ -14,7 +14,7 @@ import {
 import IMAGES from "../../constants/images";
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import TouchableScale from "../../components/TouchableScale";
+import TouchableScale from "../TouchableScale";
 import { songApi } from "../../apis";
 import { TSong } from "../../types";
 import { useAuth } from "../../context/AuthContext";
@@ -256,7 +256,7 @@ const MoreSong = ({
           ]}
         >
           <ScrollView style={{ flex: 1 }}>
-            <ModalSong song={song} size={2} />
+            <ModalSong song={song} size={2} setOpenModal={setIsOpenModal} />
           </ScrollView>
         </Animated.View>
         <TouchableOpacity

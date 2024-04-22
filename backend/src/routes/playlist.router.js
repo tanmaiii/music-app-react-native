@@ -45,6 +45,12 @@ router.delete(
 );
 
 router.get(
+  "/checkLiked/:playlistId",
+  validate(playlistValidation.checkLike),
+  playlistController.checkPlaylistLike
+);
+
+router.get(
   "/like",
   validate(playlistValidation.getAllFavoritesByUser),
   playlistController.getAllFavoritesByUser

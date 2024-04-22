@@ -259,7 +259,7 @@ const SongDetail = (props: SongDetailProps) => {
           height1={heightModal}
         >
           <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
-            <ModalSong song={song} />
+            <ModalSong song={song} setOpenModal={setIsOpenModal} />
           </View>
         </CustomBottomSheet>
       )}

@@ -22,7 +22,7 @@ import CustomBottomSheet from "../CustomBottomSheet";
 import { TSong } from "../../types";
 import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
-import { default as SongModal } from "../SongPlaying";
+import ModalPlaying from "../ModalPlaying";
 import apiConfig from "../../apis/apiConfig";
 
 interface PlayingCardProps {}
@@ -113,7 +113,7 @@ const PlayingCard = (props: PlayingCardProps) => {
       </Pressable>
       {isOpenModal && (
         <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1="100%">
-          <SongModal />
+          <ModalPlaying />
         </CustomBottomSheet>
       )}
     </>

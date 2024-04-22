@@ -49,7 +49,7 @@ const userApi = {
       params: {
         page: page,
         limit: limit,
-        sort: sort,
+        sortBy: sort,
         q: q,
       },
     });
@@ -66,7 +66,7 @@ const userApi = {
       params: {
         page: page,
         limit: limit,
-        sort: sort,
+        sortBy: sort,
         q: q,
       },
     });

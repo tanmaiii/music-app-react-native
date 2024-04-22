@@ -23,7 +23,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faHeart, faMusic, faPlus, faThumbTack } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faMusic, faPlus, faSort, faThumbTack } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
@@ -37,6 +37,7 @@ interface LibraryScreenProps {}
 
 const LibraryScreen = (props: LibraryScreenProps) => {
   const [active, setActive] = useState("Playlists");
+  const [sort, setSort] = useState("new");
   const navigation = useNavigation<NavigationProp>();
   const [heightModal, setHeightModal] = useState<number>(50);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -46,13 +47,16 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   const [playlists, setPlaylists] = useState<TPlaylist[]>(null);
   const [data, setData] = useState<any>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [limit, setLimit] = useState<number>(10);
+  const [page, setPage] = useState<number>(1);
+  const [laoding, setLoading] = useState<boolean>(false);
   const { token } = useAuth();
 
   const getData = async () => {
     try {
       console.log("Goi ne");
-      const resArtist = await userApi.getFollowing(currentUser.id, 1, 10);
-      const resPlaylist = await playlistApi.getAllFavoritesByUser(token, 1, 10);
+      const resArtist = await userApi.getFollowing(currentUser.id, page, 10, null, sort);
+      const resPlaylist = await playlistApi.getAllFavoritesByUser(token, page, 10, null, sort);
       setPlaylists(resPlaylist.data);
       setArtists(resArtist.data);
     } catch (err) {
@@ -71,7 +75,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
 
   React.useEffect(() => {
     getData();
-  }, [currentUser]);
+  }, [currentUser, sort]);
 
   return (
     <>
@@ -126,23 +130,16 @@ const LibraryScreen = (props: LibraryScreenProps) => {
             ListHeaderComponent={
               <>
                 <View style={styles.headerList}>
-                  <View style={styles.headerListLeft}>
-                    <FontAwesome
-                      name="sort"
-                      size={24}
-                      color="black"
-                      style={{ fontSize: FONTSIZE.size_14, color: COLORS.White2 }}
-                    />
-                    <Text style={styles.headerListText}>Recently played</Text>
-                  </View>
-                  <View style={styles.headerListRight}>
-                    <MaterialIcons
-                      style={styles.headerListIcon}
-                      name="grid-view"
-                      size={24}
-                      color="black"
-                    />
-                  </View>
+                  <TouchableOpacity
+                    onPress={() => setSort((sort) => (sort === "new" ? "old" : "new"))}
+                  >
+                    <View style={styles.headerListLeft}>
+                      <FontAwesomeIcon icon={faSort} size={16} color={COLORS.White2} />
+                      <Text style={styles.headerListText}>
+                        {sort === "new" ? "Recently add" : "Oldest add"}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
 
                 {active === "Playlists" && (
@@ -176,43 +173,26 @@ const LibraryScreen = (props: LibraryScreenProps) => {
             refreshing={refreshing}
             onRefresh={handleRefresh}
             keyExtractor={(item: any) => item.id}
-            horizontal={false}
-            style={[
-              styles.scroll,
-              { paddingVertical: SPACING.space_12, width: "100%" },
-            ]}
+            style={[styles.scroll]}
             contentContainerStyle={{
               paddingBottom: HEIGHT.playingCard + HEIGHT.navigator + 50,
             }}
             ListHeaderComponent={
               <View style={styles.headerList}>
-                <View style={styles.headerListLeft}>
-                  <FontAwesome
-                    name="sort"
-                    size={24}
-                    color="black"
-                    style={{ fontSize: FONTSIZE.size_14, color: COLORS.White2 }}
-                  />
-                  <Text style={styles.headerListText}>Recently played</Text>
-                </View>
-                <View style={styles.headerListRight}>
-                  <MaterialIcons
-                    style={styles.headerListIcon}
-                    name="grid-view"
-                    size={24}
-                    color="black"
-                  />
-                </View>
+                <TouchableOpacity
+                  onPress={() => setSort((sort) => (sort === "new" ? "old" : "new"))}
+                >
+                  <View style={styles.headerListLeft}>
+                    <FontAwesomeIcon icon={faSort} size={16} color={COLORS.White2} />
+                    <Text style={styles.headerListText}>
+                      {sort === "new" ? "Recently add" : "Oldest add"}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               </View>
             }
             renderItem={({ item, index }) => {
-              return (
-                <View
-                  style={{ width: WINDOW_WIDTH / 3 - SPACING.space_8, padding: SPACING.space_8 }}
-                >
-                  <ArtistCard artist={item} />
-                </View>
-              );
+              return <ItemHorizontal artist={item} key={index} />;
             }}
           />
         )}

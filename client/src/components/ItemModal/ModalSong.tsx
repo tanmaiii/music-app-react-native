@@ -28,7 +28,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface ModalSongProps {
   song: TSong;
-  setOpenModal?: (boolean) => void;
+  setOpenModal: (boolean) => void;
   size?: number;
   inPlaylist?: boolean;
 }
@@ -67,20 +67,17 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
   };
 
   const handleLike = async () => {
-    const like = async () => {
-      try {
-        if (isLike) {
-          setIsLike(false);
-          await songApi.unLikeSong(song.id, token);
-        } else {
-          setIsLike(true);
-          await songApi.likeSong(song.id, token);
-        }
-      } catch (error) {
-        console.log(error);
+    try {
+      if (isLike) {
+        setIsLike(false);
+        await songApi.unLikeSong(song.id, token);
+      } else {
+        setIsLike(true);
+        await songApi.likeSong(song.id, token);
       }
-    };
-    like();
+    } catch (error) {
+      console.log(error.response.data);
+    }
   };
 
   const handleGoDetail = () => {
@@ -90,7 +87,7 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
 
   const handleGoArtist = () => {
     setOpenModal(false);
-    navigation.navigate("Artist", { userId: song?.id });
+    navigation.navigate("Artist", { userId: song?.user_id });
   };
 
   return (
@@ -158,13 +155,11 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
       )}
 
       <View style={styles.body}>
-        {!loading && (
-          <Item
-            icon={isLike ? faHeart : faHeartRegular}
-            title={isLike ? "Remove to favorites" : "Add to favorites"}
-            itemFunc={() => handleLike()}
-          />
-        )}
+        <Item
+          icon={isLike ? faHeart : faHeartRegular}
+          title={isLike ? "Remove to favorites" : "Add to favorites"}
+          itemFunc={() => !loading && handleLike()}
+        />
         <Item icon={faPlusCircle} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
         {inPlaylist && (
           <Item

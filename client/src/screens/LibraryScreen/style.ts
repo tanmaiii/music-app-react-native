@@ -70,12 +70,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.regular,
   },
   headerList: {
-    padding: SPACING.space_8,
+    paddingHorizontal: SPACING.space_8,
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "row",
     alignItems: "center",
-    width: "100%"
+    width: "100%",
   },
   headerListLeft: {
     display: "flex",
@@ -142,7 +142,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.regular,
     color: COLORS.White2,
   },
-
 });
 
 export default styles;

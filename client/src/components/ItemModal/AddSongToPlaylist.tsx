@@ -69,11 +69,15 @@ const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
       <View style={styles.container} onTouchStart={Keyboard.dismiss}>
         <SafeAreaView
           style={[
-            styles.header,
-            Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_12 },
+            Platform.OS === "ios" && {
+              paddingTop: statusBarHeight + SPACING.space_12,
+              padding: SPACING.space_12,
+            },
           ]}
         >
-          <Text style={styles.textMain}>Add song to playlist</Text>
+          <View style={styles.header}>
+            <Text style={styles.textMain}>Add song to playlist</Text>
+          </View>
         </SafeAreaView>
         <View
           style={{
@@ -168,8 +172,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    paddingVertical: SPACING.space_16,
-    paddingHorizontal: SPACING.space_12,
+    padding: SPACING.space_12,
     justifyContent: "center",
     alignItems: "center",
   },

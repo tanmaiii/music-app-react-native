@@ -8,7 +8,7 @@ import jwtService from "../services/jwtService.js";
 export const getSong = async (req, res) => {
   try {
     // const token = req.cookies.accessToken;
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Song.findById(req.params.songId, userInfo.id, (err, song) => {
@@ -29,11 +29,10 @@ export const getSong = async (req, res) => {
 export const createSong = async (req, res) => {
   try {
     // const token = req.cookies.accessToken;
-    const { token, ...newSong } = req.body;
-
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
-    Song.create(userInfo.id, newSong, (err, data) => {
+    Song.create(userInfo.id, req.body, (err, data) => {
       if (err) {
         const conflictError = err;
         return res.status(401).json({ conflictError });
@@ -50,7 +49,7 @@ export const createSong = async (req, res) => {
 export const updateSong = async (req, res) => {
   try {
     // const token = req.cookies.accessToken;
-    const { token, ...songs } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Song.findById(req.params.songId, userInfo.id, (err, song) => {
@@ -60,7 +59,7 @@ export const updateSong = async (req, res) => {
       if (song.user_id !== userInfo.id) {
         return res.status(401).json({ conflictError: "Không có quyền sửa" });
       }
-      Song.update(req.params.songId, songs, (err, data) => {
+      Song.update(req.params.songId, req.body, (err, data) => {
         if (err) {
           const conflictError = err;
           return res.status(401).json({ conflictError });
@@ -76,7 +75,7 @@ export const updateSong = async (req, res) => {
 
 export const deleteSong = async (req, res) => {
   try {
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Song.findById(req.params.songId, userInfo.id, (err, song) => {
@@ -107,8 +106,7 @@ export const deleteSong = async (req, res) => {
 
 export const destroySong = async (req, res) => {
   try {
-    // const token = req.cookies.accessToken;
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Song.destroy(req.params.songId, userInfo.id, (err, data) => {
@@ -126,8 +124,7 @@ export const destroySong = async (req, res) => {
 
 export const restoreSong = async (req, res) => {
   try {
-    // const token = req.cookies.accessToken;
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Song.restore(req.params.songId, userInfo.id, (err, data) => {
@@ -158,8 +155,7 @@ export const getAllSong = (req, res) => {
 
 export const getAllSongByMe = async (req, res) => {
   try {
-    // const token = req.cookies.accessToken;
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Song.findMe(userInfo.id, req.query, (err, data) => {
@@ -204,7 +200,6 @@ export const getAllSongByUser = (req, res) => {
 
 export const getAllFavoritesByUser = async (req, res) => {
   try {
-    // const token = req.cookies.accessToken;
     const { userId } = req.params;
 
     Song.findByFavorite(userId, req.query, (err, data) => {
@@ -221,8 +216,7 @@ export const getAllFavoritesByUser = async (req, res) => {
 
 export const likeSong = async (req, res) => {
   try {
-    // const token = req.cookies.accessToken;
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Song.like(req.params.songId, userInfo.id, (err, data) => {
@@ -240,8 +234,7 @@ export const likeSong = async (req, res) => {
 
 export const unLikeSong = async (req, res) => {
   try {
-    // const token = req.cookies.accessToken;
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Song.unlike(req.params.songId, userInfo.id, (err, data) => {
@@ -258,10 +251,10 @@ export const unLikeSong = async (req, res) => {
 };
 
 const checkSongLiked = async (req, res) => {
-  const { token } = req.body;
-  const userInfo = await jwtService.verifyToken(token);
-
   try {
+    const token = req.headers["authorization"]["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+    
     // Tìm bài hát trong database dựa trên songId
     Song.findById(req.params.songId, userInfo.id, (err, song) => {
       if (err || !song) {
@@ -279,7 +272,7 @@ const checkSongLiked = async (req, res) => {
       }
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return res
       .status(500)
       .json({ conflictError: "Đã xảy ra lỗi khi kiểm tra bài hát đã được thích hay chưa" });

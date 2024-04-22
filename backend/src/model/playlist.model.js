@@ -322,6 +322,28 @@ Playlist.findByFavorite = async (userId, query, result) => {
   result(null, null);
 };
 
+Playlist.findUserLike = (playlistId, result) => {
+  db.query(
+    `SELECT user_id FROM favourite_playlists as fs WHERE fs.playlist_id = ${playlistId}`,
+    (err, data) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+
+      if (data.length) {
+        result(
+          null,
+          data.map((user) => user.user_id)
+        );
+        return;
+      }
+
+      result(null, null);
+    }
+  );
+};
+
 Playlist.like = (playlistId, userId, result) => {
   // Tìm kiếm bài hát theo id
   Playlist.findById(playlistId, userId, (err, playlist) => {

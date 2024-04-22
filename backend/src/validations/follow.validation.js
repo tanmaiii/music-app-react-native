@@ -12,6 +12,15 @@ const bodySchema = {
   }),
 };
 
+const querySchema = {
+  query: Joi.object().keys({
+    page: Joi.number().integer().required(),
+    limit: Joi.number().integer().required(),
+    q: Joi.string().allow(null, "").optional(),
+    sortBy: Joi.string().valid("old", "new").default("new"),
+  }),
+};
+
 export default class followValidation {
   static addFollow = {
     body: Joi.object().keys({
@@ -32,10 +41,10 @@ export default class followValidation {
   };
 
   static getAllFollowers = {
-    ...bodySchema,
+    ...querySchema,
   };
   static getAllFollowing = {
-    ...bodySchema,
+    ...querySchema,
   };
 
   static getCountFollowers = {

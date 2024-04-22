@@ -16,7 +16,7 @@ interface IAuthContext {
 }
 
 // Tạo AuthContext với giá trị mặc định là null
-const AuthContext = createContext<IAuthContext | null>(null);
+export const AuthContext = createContext<IAuthContext | null>(null);
 
 export function useAuth() {
   return useContext(AuthContext)!; // Bạn cần xác nhận rằng giá trị không phải null

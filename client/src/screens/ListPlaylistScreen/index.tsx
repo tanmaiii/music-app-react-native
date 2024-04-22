@@ -56,7 +56,8 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
   const getPlaylists = async () => {
     page === 1 && setLoading(true);
     try {
-      const res = await playlistApi.getAllByUserId(userId, limit, page);
+      const res = await playlistApi.getAllByUserId(userId, page, limit);
+
       if (res.pagination.page === 1) {
         setPlaylists(res.data);
         setTotalPages(res.pagination.totalPages);
@@ -213,11 +214,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   scroll: {
-    // paddingBottom: HEIGHT.playingCard + 10,
   },
   flatlist: {
-    // gap: SPACING.space_10,
-    // paddingHorizontal: SPACING.space_10,
   },
   card: {
     display: "flex",

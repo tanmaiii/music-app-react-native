@@ -77,7 +77,9 @@ const AddSong = ({ setIsOpen }: AddSongProps) => {
       <View
         style={[
           styles.header,
-          Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_12 },
+          Platform.OS === "ios" && {
+            paddingTop: statusBarHeight + SPACING.space_12,
+          },
         ]}
       >
         <View style={styles.groupTitle}>

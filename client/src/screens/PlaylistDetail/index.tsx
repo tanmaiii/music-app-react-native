@@ -150,11 +150,32 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     }),
   };
 
+  const checkLike = async () => {
+    try {
+      const res = await playlistApi.checkLikedPlaylist(playlistId, token);
+      setIsLike(res.isLiked);
+    } catch (error) {}
+  };
+
+  const handleLike = async () => {
+    try {
+      if (isLike) {
+        setIsLike(false);
+        await playlistApi.unLikePlaylist(playlistId, token);
+      } else {
+        setIsLike(true);
+        await playlistApi.likePlaylist(playlistId, token);
+      }
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+
   const getPlaylist = async () => {
     try {
       const res = await playlistApi.getDetail(playlistId, token);
-      const resSongs = await songApi.getAllByPlaylistId(playlistId, 10, 1);
-      const resPlaylists = await playlistApi.getAll(6, 1);
+      const resSongs = await songApi.getAllByPlaylistId(playlistId, 1, 10);
+      const resPlaylists = await playlistApi.getAll(1, 6);
 
       console.log(res);
 
@@ -167,10 +188,10 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     }
   };
 
-
   React.useEffect(() => {
     flatListRef.current && flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
     playlistId && getPlaylist();
+    playlistId && checkLike();
   }, [playlistId]);
 
   return (
@@ -271,42 +292,23 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                     <Text style={styles.textButton}>Play</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.buttonExtra} onPress={() => setIsLike(!isLike)}>
-                    {isLike ? (
-                      <>
-                        <FontAwesomeIcon
-                          icon={faHeartSolid}
-                          size={18}
-                          style={{ color: COLORS.Red }}
-                        />
-                        <Text
-                          style={{
-                            fontSize: FONTSIZE.size_12,
-                            color: COLORS.White2,
-                            fontFamily: FONTFAMILY.regular,
-                          }}
-                        >
-                          Unlike
-                        </Text>
-                      </>
-                    ) : (
-                      <>
-                        <FontAwesomeIcon
-                          icon={faHeart}
-                          size={18}
-                          style={{ color: COLORS.White2 }}
-                        />
-                        <Text
-                          style={{
-                            fontSize: FONTSIZE.size_12,
-                            color: COLORS.White2,
-                            fontFamily: FONTFAMILY.regular,
-                          }}
-                        >
-                          Like
-                        </Text>
-                      </>
-                    )}
+                  <TouchableOpacity style={styles.buttonExtra} onPress={() => handleLike()}>
+                    <>
+                      <FontAwesomeIcon
+                        icon={isLike ? faHeartSolid : faHeart}
+                        size={18}
+                        color={isLike ? COLORS.Red : COLORS.White}
+                      />
+                      <Text
+                        style={{
+                          fontSize: FONTSIZE.size_12,
+                          color: COLORS.White2,
+                          fontFamily: FONTFAMILY.regular,
+                        }}
+                      >
+                        Like
+                      </Text>
+                    </>
                   </TouchableOpacity>
                 </View>
 
@@ -336,17 +338,21 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                     paddingHorizontal: SPACING.space_8,
                   }}
                 >
-                  {playlists?.map((playlist, index) => (
-                    <View
-                      style={{
-                        width: WINDOW_WIDTH / 2 - SPACING.space_8,
-                        padding: SPACING.space_8,
-                        // backgroundColor: "pink",
-                      }}
-                    >
-                      <PlaylistCard playlist={playlist} />
-                    </View>
-                  ))}
+                  {playlists?.map((playlist, index) => {
+                    if (playlist.id === playlistId) return <></>;
+
+                    return (
+                      <View
+                        style={{
+                          width: WINDOW_WIDTH / 2 - SPACING.space_8,
+                          padding: SPACING.space_8,
+                          // backgroundColor: "pink",
+                        }}
+                      >
+                        <PlaylistCard playlist={playlist} />
+                      </View>
+                    );
+                  })}
                 </View>
               </View>
             }

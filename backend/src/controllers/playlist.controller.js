@@ -3,7 +3,7 @@ import jwtService from "../services/jwtService.js";
 
 export const getPlaylist = async (req, res) => {
   try {
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
     const user = await jwtService.verifyToken(token);
 
     Playlist.findById(req.params.playlistId, user.id, (err, playlist) => {
@@ -20,7 +20,9 @@ export const getPlaylist = async (req, res) => {
 
 export const createPlaylist = async (req, res) => {
   try {
-    const { token, ...newPlaylist } = req.body;
+    const token = req.headers["authorization"];
+
+    const { ...newPlaylist } = req.body;
     const userInfo = await jwtService.verifyToken(token);
 
     Playlist.create(userInfo.id, newPlaylist, (err, data) => {
@@ -38,8 +40,10 @@ export const createPlaylist = async (req, res) => {
 
 export const updatePlaylist = async (req, res) => {
   try {
-    const { token, ...newPlaylist } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
+
+    const {...newPlaylist } = req.body;
 
     Playlist.update(req.params.playlistId, userInfo.id, newPlaylist, (err, data) => {
       if (err) {
@@ -55,7 +59,7 @@ export const updatePlaylist = async (req, res) => {
 
 export const deletePlaylist = async (req, res) => {
   try {
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Playlist.findById(req.params.playlistId, userInfo.id, (err, playlist) => {
@@ -87,7 +91,7 @@ export const deletePlaylist = async (req, res) => {
 export const destroyPlaylist = async (req, res) => {
   try {
     // const token = req.cookies.accessToken;
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Playlist.destroy(req.params.playlistId, userInfo.id, (err, data) => {
@@ -105,7 +109,7 @@ export const destroyPlaylist = async (req, res) => {
 
 export const restorePlaylist = async (req, res) => {
   try {
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Playlist.restore(req.params.playlistId, userInfo.id, (err, data) => {
@@ -135,7 +139,7 @@ export const getAllPlaylist = (req, res) => {
 };
 
 export const getAllPlaylistByMe = async (req, res) => {
-  const { token } = req.headers;
+  const token = req.headers["authorization"];
   const userInfo = await jwtService.verifyToken(token);
 
   Playlist.getMe(userInfo.id, req.query, (err, data) => {
@@ -164,7 +168,7 @@ export const getAllPlaylistByUser = (req, res) => {
 
 export const getAllFavoritesByUser = async (req, res) => {
   try {
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Playlist.findByFavorite(userInfo.id, req.query, (err, data) => {
@@ -179,10 +183,39 @@ export const getAllFavoritesByUser = async (req, res) => {
   }
 };
 
+export const checkPlaylistLike = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+
+    // Tìm bài hát trong database dựa trên songId
+    Playlist.findById(req.params.playlistId, userInfo.id, (err, song) => {
+      if (err || !song) {
+        return res.status(404).json({ conflictError: "Playlist not found" });
+      } else {
+        // Kiểm tra xem userId có tồn tại trong danh sách người thích của bài hát hay không
+        Playlist.findUserLike(req.params.playlistId, (err, data) => {
+          if (data) {
+            const isLiked = data.includes(userInfo.id);
+            return res.status(200).json({ isLiked });
+          } else {
+            return res.status(200).json({ isLiked: false });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
+
 export const likePlaylist = async (req, res) => {
   try {
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
+    console.log("body ne", req.body);
     const userInfo = await jwtService.verifyToken(token);
+
     Playlist.like(req.params.playlistId, userInfo.id, (err, data) => {
       if (err) {
         const conflictError = err;
@@ -198,7 +231,7 @@ export const likePlaylist = async (req, res) => {
 
 export const unLikePlaylist = async (req, res) => {
   try {
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Playlist.unlike(req.params.playlistId, userInfo.id, (err, data) => {
@@ -216,7 +249,7 @@ export const unLikePlaylist = async (req, res) => {
 
 export const addSongPlaylist = async (req, res) => {
   try {
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Playlist.addSong(req.body.playlist_id, req.body.song_id, userInfo.id, (err, data) => {
@@ -234,7 +267,7 @@ export const addSongPlaylist = async (req, res) => {
 
 export const unAddSongPlaylist = async (req, res) => {
   try {
-    const { token } = req.headers;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Playlist.unAddSong(req.body.playlist_id, req.body.song_id, userInfo.id, (err, data) => {
@@ -257,10 +290,13 @@ export default {
   deletePlaylist,
   destroyPlaylist,
   restorePlaylist,
+
   getAllPlaylist,
   getAllPlaylistByMe,
   getAllPlaylistByUser,
   getAllFavoritesByUser,
+
+  checkPlaylistLike,
   likePlaylist,
   unLikePlaylist,
   addSongPlaylist,

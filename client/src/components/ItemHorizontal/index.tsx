@@ -69,6 +69,7 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
           </View>
         </TouchableHighlight>
       )}
+
       {playlist && (
         <TouchableHighlight
           onPress={() => navigation.navigate("Playlist", { playlistId: playlist.id })}
@@ -90,7 +91,7 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
               <Text style={styles.title} numberOfLines={1}>
                 {playlist?.title}
               </Text>
-              <Text style={styles.descText}>Playlist</Text>
+              <Text style={styles.descText}>{playlist.author}</Text>
             </View>
           </View>
         </TouchableHighlight>

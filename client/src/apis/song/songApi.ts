@@ -14,13 +14,17 @@ const songApi = {
         page: page,
         limit: limit,
         q: q,
-        sort: sort,
+        sortBy: sort,
       },
     });
   },
   getDetail(songId: number, token: string): Promise<TSong> {
     const url = "song/detail/";
-    return axiosClient.post(url + songId, { token });
+    return axiosClient.get(url + songId, {
+      headers: {
+        authorization: token,
+      },
+    });
   },
   getAllByUserId(
     userId: number,
@@ -34,15 +38,15 @@ const songApi = {
       params: {
         page: page,
         limit: limit,
-        sort: sort,
+        sortBy: sort,
         q: q,
       },
     });
   },
   getAllByPlaylistId(
     playlistId: number,
-    limit: number,
     page: number,
+    limit: number,
     q?: string,
     sort?: string
   ): Promise<ListResponse<TSong>> {
@@ -51,7 +55,7 @@ const songApi = {
       params: {
         page: page,
         limit: limit,
-        sort: sort,
+        sortBy: sort,
         q: q,
       },
     });
@@ -68,7 +72,7 @@ const songApi = {
       params: {
         page: page,
         limit: limit,
-        sort: sort,
+        sortBy: sort,
         q: q,
       },
     });
@@ -79,15 +83,27 @@ const songApi = {
   },
   checkLikedSong(songId: number, token: string): Promise<CheckLikedResponse> {
     const url = "song/checkLiked/";
-    return axiosClient.post(url + songId, { token });
+    return axiosClient.get(url + songId, {
+      headers: {
+        authorization: token,
+      },
+    });
   },
   likeSong(songId: number, token: string) {
     const url = "song/like/";
-    return axiosClient.post(url + songId, { token });
+    return axiosClient.post(url + songId, undefined, {
+      headers: {
+        authorization: token,
+      },
+    });
   },
   unLikeSong(songId: number, token: string) {
     const url = "song/like/";
-    return axiosClient.delete(url + songId, { data: { token: token } });
+    return axiosClient.delete(url + songId, {
+      headers: {
+        authorization: token,
+      },
+    });
   },
 };
 

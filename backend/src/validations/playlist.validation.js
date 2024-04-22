@@ -6,7 +6,6 @@ const bodySchema = {
     genre_id: Joi.number(),
     image_path: Joi.string().min(0).max(255),
     public: Joi.number().valid(0, 1),
-    token: Joi.string().required(),
   }),
 };
 
@@ -15,7 +14,7 @@ const querySchema = {
     page: Joi.number().integer().required(),
     limit: Joi.number().integer().required(),
     q: Joi.string().allow(null, "").optional(),
-    sort: Joi.string().valid("old", "new").default("new"),
+    sortBy: Joi.string().valid("old", "new").default("new"),
   }),
 };
 
@@ -69,6 +68,12 @@ export default class playlistValidator {
 
   static getAllFavoritesByUser = {
     ...querySchema,
+  };
+
+  static checkLike = {
+    params: Joi.object().keys({
+      playlistId: Joi.number().integer().required(),
+    }),
   };
 
   static like = {

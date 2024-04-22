@@ -2,15 +2,19 @@ import { TUser } from "./../../types/user.type";
 import { ListResponse, TSong, TPlaylist } from "../../types";
 import axiosClient from "../axiosClient";
 
+interface CheckLikedResponse {
+  isLiked: boolean;
+}
+
 const playlistApi = {
-  getAll(page: number,limit: number, q?: string, sort?: string): Promise<ListResponse<TPlaylist>> {
+  getAll(page: number, limit: number, q?: string, sort?: string): Promise<ListResponse<TPlaylist>> {
     const url = "playlist";
     return axiosClient.get(url, {
       params: {
         page: page,
         limit: limit,
         q: q,
-        sort: sort,
+        sortBy: sort,
       },
     });
   },
@@ -18,7 +22,7 @@ const playlistApi = {
     const url = "playlist/detail/";
     return axiosClient.get(url + playlistId, {
       headers: {
-        token: token,
+        authorization: token,
       },
     });
   },
@@ -34,7 +38,7 @@ const playlistApi = {
       params: {
         page: page,
         limit: limit,
-        sort: sort,
+        sortBy: sort,
         q: q,
       },
     });
@@ -49,13 +53,37 @@ const playlistApi = {
     const url = `playlist/like`;
     return axiosClient.get(url, {
       headers: {
-        token: token,
+        authorization: token,
       },
       params: {
         page: page,
         limit: limit,
-        sort: sort,
+        sortBy: sort,
         q: q,
+      },
+    });
+  },
+  checkLikedPlaylist(songId: number, token: string): Promise<CheckLikedResponse> {
+    const url = "playlist/checkLiked/";
+    return axiosClient.get(url + songId, {
+      headers: {
+        authorization: token,
+      },
+    });
+  },
+  likePlaylist(playlistId: number, token: string) {
+    const url = "playlist/like/";
+    return axiosClient.post(url + playlistId, undefined, {
+      headers: {
+        authorization: token,
+      },
+    });
+  },
+  unLikePlaylist(playlistId: number, token: string) {
+    const url = "playlist/like/";
+    return axiosClient.delete(url + playlistId, {
+      headers: {
+        authorization: token,
       },
     });
   },

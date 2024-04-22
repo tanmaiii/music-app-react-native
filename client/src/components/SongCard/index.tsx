@@ -46,12 +46,17 @@ const SongCard = (props: SongCardProps) => {
           {loading ? (
             <Skeleton {...SkeletonCommonProps} width={"100%"} height={170} />
           ) : (
-            <Image
-              style={[styles.image]}
-              source={
-                song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.PLAYLIST
-              }
-            />
+            <>
+              <Image
+                style={[styles.image]}
+                source={
+                  song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.PLAYLIST
+                }
+              />
+              <View style={styles.buttonPlay}>
+                <FontAwesomeIcon icon={faPlay} size={24} color={COLORS.White1} />
+              </View>
+            </>
           )}
         </View>
 
