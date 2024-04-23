@@ -25,6 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 
 interface ModalSongProps {
   song: TSong;
@@ -94,8 +95,8 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
     <View style={styles.container}>
       {size === 1 && (
         <>
-          <View style={styles.header}>
-            <Pressable style={styles.headerLeft} onPress={() => handleGoDetail()}>
+          <View style={[styles.header]}>
+            <Pressable style={[styles.headerLeft]} onPress={() => handleGoDetail()}>
               <Image
                 style={{
                   height: 50,
@@ -104,6 +105,8 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
                   objectFit: "cover",
                   overflow: "hidden",
                   borderRadius: BORDERRADIUS.radius_4,
+                  borderWidth: 0.6,
+                  borderColor: COLORS.WhiteRGBA15,
                 }}
                 source={
                   song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
@@ -121,7 +124,6 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
           </View>
           <View
             style={{
-              width: "100%",
               height: 0.6,
               backgroundColor: COLORS.WhiteRGBA15,
             }}
@@ -133,7 +135,10 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
         <View style={styles.header2}>
           <Pressable
             onPress={() => handleGoDetail()}
-            style={{ justifyContent: "center", alignItems: "center" }}
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
             <Image
               style={{
@@ -241,7 +246,6 @@ const styles = StyleSheet.create({
   btnShare: {
     padding: SPACING.space_12,
     borderRadius: BORDERRADIUS.radius_25,
-    // backgroundColor: COLORS.button,
   },
 
   header2: {

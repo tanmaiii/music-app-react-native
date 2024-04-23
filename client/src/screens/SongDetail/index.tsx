@@ -102,6 +102,29 @@ const SongDetail = (props: SongDetailProps) => {
     }),
   };
 
+  const checkLike = async () => {
+    try {
+      const res = await songApi.checkLikedSong(songId, token);
+      setIsLike(res.isLiked);
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+
+  const handleLike = async () => {
+    try {
+      if (isLike) {
+        setIsLike(false);
+        await songApi.unLikeSong(songId, token);
+      } else {
+        setIsLike(true);
+        await songApi.likeSong(songId, token);
+      }
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+
   const getSong = async () => {
     try {
       const res = await songApi.getDetail(songId, token);
@@ -120,8 +143,9 @@ const SongDetail = (props: SongDetailProps) => {
   };
 
   React.useEffect(() => {
+    checkLike();
     getSong();
-  }, []);
+  }, [songId]);
 
   return (
     <>
@@ -213,16 +237,12 @@ const SongDetail = (props: SongDetailProps) => {
                   <Text style={styles.textButton}>Play</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.buttonExtra} onPress={() => setIsLike(!isLike)}>
-                  {isLike ? (
-                    <FontAwesomeIcon icon={faHeart} size={18} style={{ color: COLORS.Red }} />
-                  ) : (
-                    <FontAwesomeIcon
-                      icon={faHeartRegular}
-                      size={18}
-                      style={{ color: COLORS.White2 }}
-                    />
-                  )}
+                <TouchableOpacity style={styles.buttonExtra} onPress={() => handleLike()}>
+                  <FontAwesomeIcon
+                    icon={isLike ? faHeart : faHeartRegular}
+                    size={18}
+                    color={isLike ? COLORS.Red : COLORS.White1}
+                  />
                   <Text
                     style={{
                       fontSize: FONTSIZE.size_12,
@@ -245,7 +265,6 @@ const SongDetail = (props: SongDetailProps) => {
                   About artist
                 </Text>
                 <ItemArtist userId={song?.user_id} />
-                {/* <ItemArtist userId={song?.user_id} /> */}
               </ScrollView>
             </View>
           </ScrollView>

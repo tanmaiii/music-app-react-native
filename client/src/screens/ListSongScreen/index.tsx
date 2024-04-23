@@ -101,8 +101,8 @@ const ListSongScreen = (props: ListSongScreenProps) => {
     try {
       let res;
       route.name === "ListSongLike"
-        ? (res = await songApi.getAllFavoritesByUser(route.params.userId, limit, page))
-        : (res = await songApi.getAllByUserId(route.params.userId, limit, page));
+        ? (res = await songApi.getAllFavoritesByUser(route.params.userId,page, limit ))
+        : (res = await songApi.getAllByUserId(route.params.userId, page, limit));
       if (res.pagination.page === 1) {
         setSongs(res.data);
         setTotalPages(res.pagination.totalPages);
@@ -135,7 +135,6 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   };
 
   const handleRefresh = () => {
-
     setRefreshing(true);
     setPage(1);
     getSongs();

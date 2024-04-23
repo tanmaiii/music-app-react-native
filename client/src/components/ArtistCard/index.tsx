@@ -45,7 +45,7 @@ const ArtistCard = (prop: TArtistCard) => {
                 source={
                   artist?.image_path
                     ? { uri: apiConfig.imageURL(artist.image_path) }
-                    : IMAGES.PLAYLIST
+                    : IMAGES.AVATAR
                 }
               />
             )}

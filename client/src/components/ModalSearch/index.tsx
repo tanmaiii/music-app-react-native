@@ -26,17 +26,25 @@ import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import ItemHorizontal from "../ItemHorizontal";
 import { WINDOW_WIDTH } from "../../utils";
 import HeaderSearch from "../HeaderSearch";
+import { TPlaylist } from "../../types";
+import { IMAGES } from "../../constants";
 
-const DATA = [
-  { id: 1, title: "1 Front Left", desc: "Song", type: "Song" },
-  { id: 2, title: "2 Les", desc: "Song", type: "Song" },
-  { id: 3, title: "3 New jeans", desc: "Artist", type: "Artist" },
-  { id: 4, title: "4 New jeans", desc: "Artist", type: "Artist" },
-  { id: 5, title: "5 New jeans", desc: "Artist", type: "Artist" },
-  { id: 6, title: "6 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "7 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "8 New jeans", desc: "Playlist", type: "Playlist" },
-  { id: 6, title: "9 New jeans bottom", desc: "Playlist", type: "Playlist" },
+const DATA: TPlaylist[] = [
+  { id: 1, title: "1 Front Left", desc: "Song", image_path: IMAGES.AI, author: "Joihn Cena" },
+  { id: 2, title: "2 Les", desc: "Song", image_path: IMAGES.AI, author: "Joihn Cena" },
+  { id: 3, title: "3 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
+  { id: 4, title: "4 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
+  { id: 5, title: "5 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
+  { id: 6, title: "6 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
+  { id: 6, title: "7 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
+  { id: 6, title: "8 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
+  {
+    id: 6,
+    title: "9 New jeans bottom",
+    desc: "Playlist",
+    image_path: IMAGES.AI,
+    author: "Joihn Cena",
+  },
 ];
 
 interface ModalSearchProps {
@@ -56,7 +64,13 @@ const ModalSearch = ({ isOpen, setIsOpen }: ModalSearchProps) => {
   return (
     <View style={[styles.modal, isOpen ? { display: "flex" } : { display: "none" }]}>
       <View style={styles.container}>
-        <HeaderSearch focus={focus} setIsOpen={setIsOpen} isOpen={isOpen} setKeyword={setKeyword} keyword={keyword} />
+        <HeaderSearch
+          focus={focus}
+          setIsOpen={setIsOpen}
+          isOpen={isOpen}
+          setKeyword={setKeyword}
+          keyword={keyword}
+        />
         <ScrollView style={styles.scroll} onTouchStart={Keyboard.dismiss}>
           <View>
             <Text style={styles.titleHeaderScroll}>Recent searches</Text>
@@ -65,11 +79,12 @@ const ModalSearch = ({ isOpen, setIsOpen }: ModalSearchProps) => {
             {DATA.map((item, index) => {
               return (
                 <ItemHorizontal
-                  id={item.id}
-                  key={index}
-                  title={item.title}
-                  desc={item.desc}
-                  type={item.type}
+                  playlist={item}
+                  // id={item.id}
+                  // key={index}
+                  // title={item.title}
+                  // desc={item.desc}
+                  // type={item.type}
                 />
               );
             })}

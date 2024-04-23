@@ -2,7 +2,8 @@ import { db, promiseDb } from "../config/connect.js";
 
 const Playlist = (playlist) => {
   this.id = playlist.id;
-  this.name = playlist.name;
+  this.title = playlist.title;
+  this.desc = playlist.desc;
   this.image_path = playlist.image_path;
   this.genre_id = playlist.genre_id;
   this.public = playlist.public;

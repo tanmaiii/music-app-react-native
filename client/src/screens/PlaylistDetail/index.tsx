@@ -312,11 +312,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                   </TouchableOpacity>
                 </View>
 
-                <Text style={styles.textDesc}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, vitae obcaecati
-                  accusamus labore eius aperiam soluta dolores nihil velit eveniet aliquid facere
-                  reprehenderit. Iusto maiores sit saepe modi non? Hic?
-                </Text>
+                <Text style={styles.textDesc}>{playlist?.desc}</Text>
               </View>
             }
             contentContainerStyle={{

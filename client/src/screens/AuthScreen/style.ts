@@ -13,6 +13,30 @@ const styles = StyleSheet.create({
     height: WINDOW_HEIGHT,
     justifyContent: "center",
   },
+  header: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    padding: SPACING.space_12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    // backgroundColor: "pink",
+  },
+  buttonHeader: {
+    backgroundColor: COLORS.button,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 32,
+    height: 32,
+    borderRadius: 25,
+  },
+  titleHeader: {
+    fontSize: FONTSIZE.size_16,
+    color: COLORS.White1,
+    fontFamily: FONTFAMILY.medium,
+  },
   boxSucc: {
     backgroundColor: COLORS.Green,
     paddingHorizontal: SPACING.space_14,
@@ -53,6 +77,8 @@ const styles = StyleSheet.create({
     objectFit: "cover",
   },
   body: {
+    flex: 1,
+    justifyContent: "center",
     flexDirection: "column",
     gap: SPACING.space_14,
     paddingHorizontal: SPACING.space_16,
@@ -72,8 +98,8 @@ const styles = StyleSheet.create({
     gap: SPACING.space_2,
   },
   boxInput: {
-    borderColor: COLORS.White2,
     borderWidth: 1,
+    borderColor: COLORS.WhiteRGBA15,
     borderRadius: BORDERRADIUS.radius_14,
     flexDirection: "row",
     gap: SPACING.space_4,
@@ -81,6 +107,7 @@ const styles = StyleSheet.create({
     height: 54,
     paddingVertical: SPACING.space_4,
     paddingHorizontal: SPACING.space_12,
+    backgroundColor: COLORS.Black1,
   },
   boxInputErr: {
     borderColor: COLORS.Red,
@@ -96,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Black1,
     // padding: SPACING.space_4,
     paddingHorizontal: SPACING.space_4,
-    borderRadius: BORDERRADIUS.radius_4,
+    borderRadius: BORDERRADIUS.radius_8,
     position: "absolute",
     left: 36,
   },
@@ -130,8 +157,8 @@ const styles = StyleSheet.create({
     height: 54,
   },
   buttonLine: {
-    borderWidth: 1,
-    borderColor: COLORS.Primary,
+    // borderWidth: 1,
+    // borderColor: COLORS.Primary,
     borderRadius: BORDERRADIUS.radius_14,
     alignContent: "center",
     justifyContent: "center",
@@ -139,11 +166,12 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.space_16,
     alignItems: "center",
     height: 54,
+    // backgroundColor: COLORS.Black2,
   },
   titleLogin: {
-    fontSize: FONTSIZE.size_18,
+    fontSize: FONTSIZE.size_16,
     color: COLORS.White1,
-    fontFamily: FONTFAMILY.regular,
+    fontFamily: FONTFAMILY.medium,
   },
   titleOr: {
     fontSize: FONTSIZE.size_16,
@@ -152,7 +180,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonGoogle: {
-    backgroundColor: "#d9e3fc",
+    backgroundColor: COLORS.Primary2,
     borderRadius: BORDERRADIUS.radius_14,
     alignContent: "center",
     flexDirection: "row",
@@ -164,7 +192,7 @@ const styles = StyleSheet.create({
   },
   titleGoogle: {
     fontSize: FONTSIZE.size_16,
-    color: COLORS.Primary,
+    color: COLORS.White1,
     fontFamily: FONTFAMILY.regular,
   },
   boxBottom: {

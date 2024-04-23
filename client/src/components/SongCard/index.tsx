@@ -50,7 +50,7 @@ const SongCard = (props: SongCardProps) => {
               <Image
                 style={[styles.image]}
                 source={
-                  song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.PLAYLIST
+                  song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
                 }
               />
               <View style={styles.buttonPlay}>

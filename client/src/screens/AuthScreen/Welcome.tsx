@@ -12,8 +12,8 @@ import { usePlaying } from "../../context/PlayingContext";
 interface WelcomeScreenProps {}
 
 const WelcomeScreen = (props: WelcomeScreenProps) => {
-  const {setOpenBarSong} = usePlaying();
-  
+  const { setOpenBarSong } = usePlaying();
+
   const navigate = useNavigation<NavigationProp>();
 
   React.useEffect(() => {
@@ -22,7 +22,7 @@ const WelcomeScreen = (props: WelcomeScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={[COLORS.Black, COLORS.Black2]} style={{ flex: 1 }}>
+      <ImageBackground source={IMAGES.GRADIENT} style={{ flex: 1 }} blurRadius={30}>
         <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>
           <View style={styles.body}>
             <View style={styles.logo}>
@@ -43,26 +43,31 @@ const WelcomeScreen = (props: WelcomeScreenProps) => {
                   fontSize: FONTSIZE.size_16,
                   fontFamily: FONTFAMILY.regular,
                   color: COLORS.White2,
+                  maxWidth: "80%",
+                  textAlign: "center",
                 }}
               >
-                Please login to continue using our app
+                Welcome! Get ready to dive into the world of music.
               </Text>
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigate.navigate("Signup")}>
-              <Text style={styles.titleLogin}>Sign Up</Text>
+            <TouchableOpacity style={styles.button} onPress={() => navigate.navigate("Login")}>
+              <Text style={styles.titleLogin}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buttonGoogle}>
               <Image source={IMAGES.GOOGLE} style={{ width: 30, height: 30 }} />
               <Text style={styles.titleGoogle}>Google</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonLine} onPress={() => navigate.navigate("Login")}>
-              <Text style={[styles.titleLogin, { color: COLORS.Primary }]}>Login</Text>
+            <TouchableOpacity
+              style={[styles.buttonLine, { alignItems: "center" }]}
+              onPress={() => navigate.navigate("Signup")}
+            >
+              <Text style={[styles.titleLogin]}>Create new account</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </LinearGradient>
+      </ImageBackground>
     </View>
   );
 };

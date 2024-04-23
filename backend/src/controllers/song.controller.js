@@ -252,9 +252,9 @@ export const unLikeSong = async (req, res) => {
 
 const checkSongLiked = async (req, res) => {
   try {
-    const token = req.headers["authorization"]["authorization"];
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
-    
+
     // Tìm bài hát trong database dựa trên songId
     Song.findById(req.params.songId, userInfo.id, (err, song) => {
       if (err || !song) {
@@ -272,10 +272,8 @@ const checkSongLiked = async (req, res) => {
       }
     });
   } catch (error) {
-    // console.log(error);
-    return res
-      .status(500)
-      .json({ conflictError: "Đã xảy ra lỗi khi kiểm tra bài hát đã được thích hay chưa" });
+    console.log(error);
+    return res.status(500).json(error);
   }
 };
 

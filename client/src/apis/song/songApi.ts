@@ -62,8 +62,8 @@ const songApi = {
   },
   getAllFavoritesByUser(
     userId: number,
-    limit: number,
     page: number,
+    limit: number,
     q?: string,
     sort?: string
   ): Promise<ListResponse<TSong>> {

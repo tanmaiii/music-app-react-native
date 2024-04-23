@@ -79,8 +79,9 @@ export const COLORS: Color = {
   White: "#FFFFFF",
 
   // Primary: "#7c74ee",
+  // Primary2: "#a29bfe",
   Primary: "#d23259",
-  Primary2: "#a29bfe",
+  Primary2: "#c32f53",
   // Primary: "#2ecc71",
   // Primary2: "#1dd1a1",
 

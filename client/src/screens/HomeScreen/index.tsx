@@ -32,6 +32,7 @@ import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
 import { TPlaylist, TUser } from "../../types";
 import { playlistApi, songApi, userApi } from "../../apis";
+import Slider from "../../components/Slider";
 
 interface HomeScreenProps {}
 
@@ -183,6 +184,8 @@ const HomeScreen = ({ navigation }: any) => {
         >
           <View style={styles.scroll}>
             <HomeTop />
+
+            <Slider/>
 
             <View style={{ paddingHorizontal: SPACING.space_10 }}>
               <CategoryHeader title={"Song popular"} />

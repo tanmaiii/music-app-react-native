@@ -87,17 +87,16 @@ const ModalPlaying = (props: TSongPlaying) => {
   return (
     <>
       <ImageBackground
-        source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
+        source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : null}
         style={styles.container}
         blurRadius={80}
       >
         <LinearGradient
-          colors={["transparent", COLORS.Black2]}
+          colors={[!song?.image_path ? COLORS.Primary : "transparent", COLORS.Black2]}
           style={[{ position: "absolute", left: 0, right: 0, top: 0, height: WINDOW_HEIGHT }]}
         ></LinearGradient>
 
         <StatusBar barStyle="light-content" />
-
         <View style={styles.wrapper}>
           <View
             style={{
@@ -226,8 +225,6 @@ const ModalPlaying = (props: TSongPlaying) => {
   );
 };
 
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
-
 const MoreSong = ({
   setIsOpenModal,
   song,
@@ -239,7 +236,7 @@ const MoreSong = ({
 
   return (
     <View style={{ flex: 1, height: WINDOW_HEIGHT }}>
-      <AnimatedBlurView
+      <BlurView
         tint="dark"
         intensity={100}
         style={{ flex: 1, paddingVertical: SPACING.space_12 }}
@@ -265,7 +262,7 @@ const MoreSong = ({
         >
           <Text style={styles.textExtra}>Close</Text>
         </TouchableOpacity>
-      </AnimatedBlurView>
+      </BlurView>
     </View>
   );
 };

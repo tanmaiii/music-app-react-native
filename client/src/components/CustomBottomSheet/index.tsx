@@ -72,10 +72,10 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
       onChange={handleSheetChanges}
       enablePanDownToClose={enableClose}
       handleComponent={() => null}
-      keyboardBehavior= {Platform.OS !== "ios" ? 'interactive' : 'extend'}
+      keyboardBehavior={Platform.OS !== "ios" ? "interactive" : "extend"}
       // //@ts-ignore
-      keyboardBlurBehavior= {Platform.OS !== "ios" ? 'restore' : 'none'}
-      android_keyboardInputMode= {Platform.OS !== "ios" ? 'adjustResize' : 'adjustPan'}
+      keyboardBlurBehavior={Platform.OS !== "ios" ? "restore" : "none"}
+      android_keyboardInputMode={Platform.OS !== "ios" ? "adjustResize" : "adjustPan"}
     >
       <BottomSheetView
         style={[

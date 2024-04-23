@@ -1,37 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  faGlassCheers,
-  faMagnifyingGlass,
-  faMagnifyingGlassPlus,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  Text,
-  View,
-  StyleSheet,
-  StatusBar,
-  SafeAreaView,
-  Pressable,
-  Modal,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  FlatList,
-  TouchableWithoutFeedback,
-  Keyboard,
-} from "react-native";
+import { View, StyleSheet, TextInput, FlatList, Keyboard } from "react-native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
-import ItemHorizontal from "../ItemHorizontal";
 import { WINDOW_WIDTH } from "../../utils";
 import HeaderSearch from "../HeaderSearch";
 import SongItem from "../SongItem";
 import { TSong } from "../../types";
 import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { TouchableHighlight } from "react-native-gesture-handler";
 import { useRoute } from "@react-navigation/native";
 import { RootRouteProps } from "../../navigation/TStack";
 
@@ -126,11 +102,11 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
         route.name === "ListSongLike"
           ? (res = await songApi.getAllFavoritesByUser(
               route.params.userId,
-              20,
               page,
+              20,
               keyword && keyword
             ))
-          : (res = await songApi.getAllByUserId(route.params.userId, 20, page, keyword && keyword));
+          : (res = await songApi.getAllByUserId(route.params.userId, page, 20, keyword && keyword));
 
         setSongs(res.data);
         setTotalPages(res.pagination.totalPages);
