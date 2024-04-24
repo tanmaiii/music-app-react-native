@@ -7,7 +7,6 @@ import jwtService from "../services/jwtService.js";
 
 export const getSong = async (req, res) => {
   try {
-    // const token = req.cookies.accessToken;
     const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 

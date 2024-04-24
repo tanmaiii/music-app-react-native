@@ -1,5 +1,5 @@
 import { TUser, ResLoginApi } from "./../../types";
-import axiosClient from "../axiosClient";
+import axiosClient from "../../configs/axios/axiosClient";
 
 //: Promise<ResLoginApi>
 const authApi = {

@@ -22,9 +22,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
   faChevronLeft,
+  faCirclePlus,
   faEllipsis,
   faHeart as faHeartSolid,
   faPlay,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -34,44 +36,22 @@ import { AddPlaylist, AddSong, ModalPlaylist, EditPlaylist } from "../../compone
 import { RootRouteProps } from "../../navigation/TStack";
 import { playlistApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import { FlatList } from "react-native-gesture-handler";
 import CategoryHeader from "../../components/CategoryHeader";
 import PlaylistCard from "../../components/PlaylistCard";
 const statusBarHeight = Constants.statusBarHeight;
+import { Skeleton } from "moti/skeleton";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const songs: TSong[] = [
-  {
-    id: 1,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
+const SkeletonCommonProps = {
+  colorMode: "dark",
+  transition: {
+    type: "timing",
+    duration: 1500,
   },
-  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 3,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 5,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 7,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-  { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-  { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-  { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-];
+  backgroundColor: COLORS.Black2,
+} as const;
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -82,7 +62,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const route = useRoute<RootRouteProps<"Playlist">>();
   const flatListRef = React.useRef<FlatList>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
-  const [isLike, setIsLike] = React.useState<boolean>(false);
+  // const [isLike, setIsLike] = React.useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = React.useState<boolean>(false);
@@ -90,10 +70,12 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const [playlist, setPlaylist] = React.useState<TPlaylist>(null);
   const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
   const [songs, setSongs] = React.useState<TSong[]>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const playlistId = route.params.playlistId;
-  const { token } = useAuth();
+  const { token, currentUser } = useAuth();
+  const queryClient = useQueryClient();
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -150,48 +132,49 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     }),
   };
 
-  const checkLike = async () => {
-    try {
+  const { data: isLike } = useQuery({
+    queryKey: ["like-playlist", playlistId],
+    queryFn: async () => {
       const res = await playlistApi.checkLikedPlaylist(playlistId, token);
-      setIsLike(res.isLiked);
-    } catch (error) {}
-  };
+      return res.isLiked;
+    },
+  });
 
-  const handleLike = async () => {
-    try {
-      if (isLike) {
-        setIsLike(false);
-        await playlistApi.unLikePlaylist(playlistId, token);
-      } else {
-        setIsLike(true);
-        await playlistApi.likePlaylist(playlistId, token);
-      }
-    } catch (error) {
-      console.log(error.response.data);
-    }
-  };
+  const mutationLike = useMutation({
+    mutationFn: (like: boolean) => {
+      if (like) return playlistApi.unLikePlaylist(playlistId, token);
+      return playlistApi.likePlaylist(playlistId, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["like-playlist", playlistId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["playlists-favorites"],
+      });
+    },
+  });
 
   const getPlaylist = async () => {
+    setLoading(true);
     try {
       const res = await playlistApi.getDetail(playlistId, token);
       const resSongs = await songApi.getAllByPlaylistId(playlistId, 1, 10);
       const resPlaylists = await playlistApi.getAll(1, 6);
-
-      console.log(res);
-
       setPlaylist(res);
       setSongs(resSongs.data);
       setTotalCount(resSongs.pagination.totalCount);
       setPlaylists(resPlaylists.data);
+      setLoading(false);
     } catch (error) {
       console.log(error.response.data);
     }
+    setLoading(false);
   };
 
   React.useEffect(() => {
     flatListRef.current && flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
     playlistId && getPlaylist();
-    playlistId && checkLike();
   }, [playlistId]);
 
   return (
@@ -237,33 +220,46 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             scrollEventThrottle={16}
             ListHeaderComponent={
               <View style={[styles.wrapperHeader]}>
-                <View style={[styles.wrapperImage]}>
-                  <Animated.Image
-                    style={[styles.image, imageAnimation]}
-                    source={
-                      playlist?.image_path
-                        ? { uri: apiConfig.imageURL(playlist.image_path) }
-                        : IMAGES.PLAYLIST
-                    }
-                  />
-                </View>
+                <Animated.View style={[styles.wrapperImage, imageAnimation]}>
+                  <Skeleton {...SkeletonCommonProps} width={300} height={300}>
+                    {loading ? null : (
+                      <Animated.Image
+                        style={[styles.image]}
+                        source={
+                          playlist?.image_path
+                            ? { uri: apiConfig.imageURL(playlist.image_path) }
+                            : IMAGES.PLAYLIST
+                        }
+                      />
+                    )}
+                  </Skeleton>
+                </Animated.View>
 
-                <Text
-                  numberOfLines={2}
-                  style={[styles.textMain, { fontSize: FONTSIZE.size_24, maxWidth: "80%" }]}
-                >
-                  {playlist?.title || "Unknown"}
-                </Text>
-
-                <Text
-                  style={{
-                    fontSize: FONTSIZE.size_16,
-                    color: COLORS.Primary,
-                    fontFamily: FONTFAMILY.regular,
-                  }}
-                >
-                  {playlist?.author || "Unknown"}
-                </Text>
+                <Skeleton {...SkeletonCommonProps} width={"80%"}>
+                  {loading ? null : (
+                    <Text
+                      numberOfLines={2}
+                      style={[styles.textMain, { fontSize: FONTSIZE.size_24, maxWidth: "80%" }]}
+                    >
+                      {playlist?.title || "Unknown"}
+                    </Text>
+                  )}
+                </Skeleton>
+                <Skeleton {...SkeletonCommonProps} width={100} height={18}>
+                  {loading ? null : (
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        textAlign: "center",
+                        fontSize: FONTSIZE.size_16,
+                        color: COLORS.Primary,
+                        fontFamily: FONTFAMILY.regular,
+                      }}
+                    >
+                      {playlist?.author || "Unknown"}
+                    </Text>
+                  )}
+                </Skeleton>
 
                 <Text style={styles.textExtra}>{totalCount} Songs</Text>
 
@@ -292,12 +288,31 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                     <Text style={styles.textButton}>Play</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.buttonExtra} onPress={() => handleLike()}>
-                    <>
+                  {currentUser?.id == playlist?.user_id ? (
+                    <TouchableOpacity
+                      style={styles.buttonExtra}
+                      onPress={() => console.log("asdas")}
+                    >
+                      <FontAwesomeIcon icon={faPlus} size={18} color={COLORS.White2} />
+                      <Text
+                        style={{
+                          fontSize: FONTSIZE.size_12,
+                          color: COLORS.White2,
+                          fontFamily: FONTFAMILY.regular,
+                        }}
+                      >
+                        Add
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.buttonExtra}
+                      onPress={() => mutationLike.mutate(isLike)}
+                    >
                       <FontAwesomeIcon
                         icon={isLike ? faHeartSolid : faHeart}
                         size={18}
-                        color={isLike ? COLORS.Red : COLORS.White}
+                        color={isLike ? COLORS.Red : COLORS.White2}
                       />
                       <Text
                         style={{
@@ -308,8 +323,8 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                       >
                         Like
                       </Text>
-                    </>
-                  </TouchableOpacity>
+                    </TouchableOpacity>
+                  )}
                 </View>
 
                 <Text style={styles.textDesc}>{playlist?.desc}</Text>
@@ -463,14 +478,18 @@ const styles = StyleSheet.create({
     marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
   },
   wrapperImage: {
-    aspectRatio: 1,
+    width: 300,
+    height: 300,
+    overflow: "hidden",
+    borderRadius: BORDERRADIUS.radius_8,
   },
   image: {
     width: 300,
     height: 300,
-    backgroundColor: COLORS.Black1,
-    borderRadius: BORDERRADIUS.radius_8,
+    aspectRatio: 1,
+    objectFit: "cover",
     transformOrigin: "bottom",
+    backgroundColor: COLORS.Black2,
   },
   groupButton: {
     width: "100%",

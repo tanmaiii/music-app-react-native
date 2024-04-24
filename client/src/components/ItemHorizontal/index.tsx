@@ -18,7 +18,7 @@ import TouchableScale from "../TouchableScale";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
 import { TPlaylist, TUser } from "../../types";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 
 const SkeletonCommonProps = {
   colorMode: "dark",

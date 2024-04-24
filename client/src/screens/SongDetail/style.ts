@@ -56,13 +56,17 @@ const styles = StyleSheet.create({
     marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
   },
   wrapperImage: {
-    aspectRatio: 1,
+    width: 300,
+    height: 300,
+    borderRadius: BORDERRADIUS.radius_8,
+    overflow: "hidden",
   },
   image: {
-    width: 280,
-    height: 280,
-    borderRadius: BORDERRADIUS.radius_8,
+    width: 300,
+    height: 300,
+    aspectRatio: 1,
     transformOrigin: "bottom",
+    backgroundColor: COLORS.Black2,
   },
   groupButton: {
     width: "100%",
@@ -111,8 +115,8 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: SPACING.space_12,
     display: "flex",
-    flexDirection: 'column',
-    gap: SPACING.space_14
+    flexDirection: "column",
+    gap: SPACING.space_14,
   },
   boxArtist: {
     width: "100%",
@@ -123,7 +127,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: SPACING.space_12
+    marginBottom: SPACING.space_12,
   },
   leftBox: {
     flexDirection: "row",
@@ -135,17 +139,17 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
   },
-  boxDesc:{
-    gap: SPACING.space_4
+  boxDesc: {
+    gap: SPACING.space_4,
   },
   rightBox: {},
-  btnFollow:{
+  btnFollow: {
     borderRadius: BORDERRADIUS.radius_20,
     borderColor: COLORS.WhiteRGBA15,
     borderWidth: 0.6,
     paddingHorizontal: SPACING.space_16,
-    paddingVertical: SPACING.space_8
-  }
+    paddingVertical: SPACING.space_8,
+  },
 });
 
 export default styles;

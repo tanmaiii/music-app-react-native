@@ -19,7 +19,7 @@ import CustomBottomSheet from "../CustomBottomSheet";
 import AddSongToPlaylist from "./AddSongToPlaylist";
 import { TSong } from "../../types";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import { NavigationProp } from "../../navigation/TStack";
 import { useNavigation } from "@react-navigation/native";
 import { songApi } from "../../apis";
@@ -36,26 +36,23 @@ interface ModalSongProps {
 
 const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
-  const [isLike, setIsLike] = React.useState<boolean>(false);
+  // const [isLike, setIsLike] = React.useState<boolean>(false);
   const [loading, setLoding] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
   const { token } = useAuth();
+  const queryClient = useQueryClient();
 
-  const checkLike = async () => {
-    setLoding(true);
-    try {
-      const res = await songApi.checkLikedSong(song.id, token);
-      setIsLike(res.isLiked);
-      console.log(res.isLiked);
-    } catch (error) {
-      console.log(error);
-    }
-    setLoding(false);
-  };
-
-  React.useEffect(() => {
-    checkLike();
-  }, []);
+  // const checkLike = async () => {
+  //   setLoding(true);
+  //   try {
+  //     const res = await songApi.checkLikedSong(song.id, token);
+  //     setIsLike(res.isLiked);
+  //     console.log(res.isLiked);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   setLoding(false);
+  // };
 
   const handleShare = async () => {
     try {
@@ -67,19 +64,43 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
     }
   };
 
-  const handleLike = async () => {
-    try {
-      if (isLike) {
-        setIsLike(false);
-        await songApi.unLikeSong(song.id, token);
-      } else {
-        setIsLike(true);
-        await songApi.likeSong(song.id, token);
-      }
-    } catch (error) {
-      console.log(error.response.data);
-    }
-  };
+  const { data: isLike } = useQuery({
+    queryKey: ["like-song", song.id],
+
+    queryFn: async () => {
+      const res = await songApi.checkLikedSong(song.id, token);
+      return res.isLiked;
+    },
+  });
+
+  const mutationLike = useMutation({
+    mutationFn: (like: boolean) => {
+      if (like) return songApi.unLikeSong(song.id, token);
+      return songApi.likeSong(song.id, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["like-song", song.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs-favorites"],
+      });
+    },
+  });
+
+  // const handleLike = async () => {
+  //   try {
+  //     if (isLike) {
+  //       // setIsLike(false);
+  //       await songApi.unLikeSong(song.id, token);
+  //     } else {
+  //       // setIsLike(true);
+  //       await songApi.likeSong(song.id, token);
+  //     }
+  //   } catch (error) {
+  //     console.log(error.response.data);
+  //   }
+  // };
 
   const handleGoDetail = () => {
     setOpenModal(false);
@@ -163,7 +184,7 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
         <Item
           icon={isLike ? faHeart : faHeartRegular}
           title={isLike ? "Remove to favorites" : "Add to favorites"}
-          itemFunc={() => !loading && handleLike()}
+          itemFunc={() => mutationLike.mutate(isLike)}
         />
         <Item icon={faPlusCircle} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
         {inPlaylist && (

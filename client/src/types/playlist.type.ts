@@ -4,7 +4,7 @@ export type TPlaylist = {
   desc: string;
   image_path: string;
   author: string;
-  user_id?: string;
+  user_id?: number;
   genre_id?: string;
   public?: number;
   is_deleted?: number;

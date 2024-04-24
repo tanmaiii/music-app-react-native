@@ -146,8 +146,8 @@ Playlist.getAll = async (query, result) => {
       ` public = 1 AND is_deleted = 0 `
   );
 
-  if (data && totalCount) {
-    const totalPages = Math.ceil(totalCount[0].totalCount / limit);
+  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+    const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
       data,
@@ -188,8 +188,8 @@ Playlist.getMe = async (userId, query, result) => {
       ` user_id = ${userId} AND is_deleted = 0 `
   );
 
-  if (data && totalCount) {
-    const totalPages = Math.ceil(totalCount[0].totalCount / limit);
+  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+    const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
       data,
@@ -237,7 +237,7 @@ Playlist.findByUserId = async (userId, query, result) => {
   const q = query?.q;
   const page = query?.page;
   const limit = query?.limit;
-  const sort = query?.sort;
+  const sort = query?.sortBy;
 
   const offset = (page - 1) * limit;
 
@@ -256,8 +256,8 @@ Playlist.findByUserId = async (userId, query, result) => {
       ` user_id = ${userId} and public = 1 AND is_deleted = 0`
   );
 
-  if (data && totalCount) {
-    const totalPages = Math.ceil(totalCount[0].totalCount / limit);
+  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+    const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
       data,
@@ -278,7 +278,7 @@ Playlist.findByFavorite = async (userId, query, result) => {
   const q = query?.q;
   const page = query?.page;
   const limit = query?.limit;
-  const sort = query?.sort || "new";
+  const sort = query?.sortBy || "new";
 
   const offset = (page - 1) * limit;
 
@@ -299,13 +299,11 @@ Playlist.findByFavorite = async (userId, query, result) => {
       ` INNER JOIN playlists AS p ON fp.playlist_id = p.id` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` p.title LIKE "%${q}%" AND ` : ""} ` +
-      ` (p.public = 1 AND fp.user_id = ${userId} ) OR (fp.user_id = ${userId} AND p.user_id = fp.user_id) AND p.is_deleted = 0` +
-      ` ORDER BY fp.created_at ${sort === "new" ? "DESC" : "ASC"}` +
-      ` LIMIT ${+limit} OFFSET ${+offset};`
+      ` (p.public = 1 AND fp.user_id = ${userId} ) OR (fp.user_id = ${userId} AND p.user_id = fp.user_id) AND p.is_deleted = 0`
   );
 
-  if (data && totalCount) {
-    const totalPages = Math.ceil(totalCount[0].totalCount / limit);
+  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+    const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
       data,

@@ -20,7 +20,7 @@ import { TSong } from "../../types";
 import { useAuth } from "../../context/AuthContext";
 import Slider from "@react-native-community/slider";
 import { Audio } from "expo-av";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import TrackPlayer, { State } from "react-native-track-player";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {

@@ -24,9 +24,7 @@ const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 // Tạo một instance của QueryClient
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 2 } },
-});
+const client = new QueryClient();
 
 export default function App() {
   const linkTo = useLinkTo();
@@ -61,7 +59,7 @@ export default function App() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={client}>
       <NavigationContainer>
         <AuthContextProvider>
           <PlayingContextProvider>

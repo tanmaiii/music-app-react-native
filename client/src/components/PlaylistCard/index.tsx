@@ -12,7 +12,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/TStack";
 import { TPlaylist } from "../../types";
 import { NavigationProp } from "../../navigation/TStack";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";

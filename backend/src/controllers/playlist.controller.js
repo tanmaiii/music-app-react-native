@@ -43,7 +43,7 @@ export const updatePlaylist = async (req, res) => {
     const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
-    const {...newPlaylist } = req.body;
+    const { ...newPlaylist } = req.body;
 
     Playlist.update(req.params.playlistId, userInfo.id, newPlaylist, (err, data) => {
       if (err) {
@@ -173,7 +173,7 @@ export const getAllFavoritesByUser = async (req, res) => {
 
     Playlist.findByFavorite(userInfo.id, req.query, (err, data) => {
       if (!data) {
-        return res.status(401).json("Không tìm thấy");
+        return res.status(401).json({ conflictError: "Not found" });
       } else {
         return res.json(data);
       }

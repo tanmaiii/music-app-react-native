@@ -15,7 +15,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import {

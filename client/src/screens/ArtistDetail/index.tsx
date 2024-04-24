@@ -43,7 +43,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 const statusBarHeight = Constants.statusBarHeight;
 import { playlistApi, songApi, userApi } from "../../apis";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import numeral from "numeral";
 import { useAuth } from "../../context/AuthContext";
 import moment from "moment";

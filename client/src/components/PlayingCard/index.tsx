@@ -23,7 +23,7 @@ import { TSong } from "../../types";
 import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import ModalPlaying from "../ModalPlaying";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 
 interface PlayingCardProps {}
 
@@ -51,8 +51,6 @@ const PlayingCard = (props: PlayingCardProps) => {
   };
 
   React.useEffect(() => {
-    console.log(songPlaying);
-
     songPlaying && getSongs();
   }, [songPlaying]);
 

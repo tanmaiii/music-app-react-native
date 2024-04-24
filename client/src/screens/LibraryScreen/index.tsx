@@ -3,14 +3,10 @@ import { useState } from "react";
 import {
   Text,
   View,
-  StyleSheet,
   TouchableOpacity,
   Image,
   ScrollView,
   TouchableHighlight,
-  Alert,
-  Dimensions,
-  StatusBar,
   FlatList,
 } from "react-native";
 import styles from "./style";
@@ -31,51 +27,102 @@ import { AddSongPlaylist, AddPlaylist } from "../../components/ItemModal";
 import { useAuth } from "../../context/AuthContext";
 import { TPlaylist, TUser } from "../../types";
 import { playlistApi, userApi } from "../../apis";
-const { width, height } = Dimensions.get("window");
+import { useQuery } from "@tanstack/react-query";
 
 interface LibraryScreenProps {}
 
 const LibraryScreen = (props: LibraryScreenProps) => {
   const [active, setActive] = useState("Playlists");
   const [sort, setSort] = useState("new");
-  const navigation = useNavigation<NavigationProp>();
   const [heightModal, setHeightModal] = useState<number>(50);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [isOpenModalAddPlaylist, setIsOpenModalAddPlaylist] = React.useState<boolean>(false);
-  const { currentUser } = useAuth();
-  const [artists, setArtists] = useState<TUser[]>(null);
-  const [playlists, setPlaylists] = useState<TPlaylist[]>(null);
-  const [data, setData] = useState<any>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [limit, setLimit] = useState<number>(10);
-  const [page, setPage] = useState<number>(1);
-  const [laoding, setLoading] = useState<boolean>(false);
-  const { token } = useAuth();
+  const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
+  const [artists, setArtists] = React.useState<TUser[]>(null);
+  const [limitPlaylists, setLimitPlaylists] = useState<number>(6);
+  const [limitArtists, setLimitArtists] = useState<number>(6);
+  const [pagePlaylists, setPagePlaylists] = useState<number>(1);
+  const [totalPagePlaylists, setTotalPagePlaylists] = useState<number>(1);
+  const [totalPageArtists, settotalPageArtists] = useState<number>(1);
+  const [pageArtists, setPageArtists] = useState<number>(1);
+  const { token, currentUser } = useAuth();
+  const navigation = useNavigation<NavigationProp>();
 
-  const getData = async () => {
-    try {
-      console.log("Goi ne");
-      const resArtist = await userApi.getFollowing(currentUser.id, page, 10, null, sort);
-      const resPlaylist = await playlistApi.getAllFavoritesByUser(token, page, 10, null, sort);
-      setPlaylists(resPlaylist.data);
-      setArtists(resArtist.data);
-    } catch (err) {
-      console.log(err.response.data.conflictError);
+  const getPlaylists = async () => {
+    const res = await playlistApi.getAllFavoritesByUser(
+      token,
+      pagePlaylists,
+      limitPlaylists,
+      null,
+      sort
+    );
+    if (res.pagination.page === 1) {
+      setPlaylists(res.data);
+      setTotalPagePlaylists(res.pagination.totalPages);
+    } else {
+      setPlaylists((prevSongs) => [...prevSongs, ...res.data]);
     }
+    return res.data;
   };
 
-  React.useEffect(() => {}, [artists, playlists]);
+  const getArtist = async () => {
+    const res = await userApi.getFollowing(currentUser.id, pageArtists, limitArtists, null, sort);
+
+    if (res.pagination.page === 1) {
+      setArtists(res.data);
+      settotalPageArtists(res.pagination.totalPages);
+    } else {
+      setArtists((prevSongs) => [...prevSongs, ...res.data]);
+    }
+
+    return res.data;
+  };
+
+  const {} = useQuery({
+    queryKey: ["playlists-favorites"],
+    queryFn: async () => {
+      return getPlaylists();
+    },
+  });
+
+  const {} = useQuery({
+    queryKey: ["artist-follow"],
+    queryFn: async () => {
+      return getArtist();
+    },
+  });
 
   const handleRefresh = () => {
     setRefreshing(true);
-    getData();
-    console.log("Load");
+
+    active === "Playlists" && (setPageArtists(1), getPlaylists());
+
+    active === "Artists" && (setPagePlaylists(1), getArtist());
+
     setRefreshing(false);
   };
 
+  const loadMore = () => {
+    console.log("Load more");
+
+    active === "Playlists" &&
+      pagePlaylists < totalPagePlaylists &&
+      setPagePlaylists(pagePlaylists + 1);
+
+    active === "Artists" && pageArtists < totalPageArtists && setPageArtists(pageArtists + 1);
+  };
   React.useEffect(() => {
-    getData();
-  }, [currentUser, sort]);
+    setPageArtists(1);
+    setPagePlaylists(1);
+    getPlaylists();
+    getArtist();
+  }, [sort]);
+
+  React.useEffect(() => {
+    getPlaylists();
+    getArtist();
+  }, [currentUser, , pageArtists, pagePlaylists, limitArtists, limitPlaylists]);
 
   return (
     <>
@@ -120,6 +167,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           <FlatList
             data={playlists}
             refreshing={refreshing}
+            onEndReached={loadMore}
             onRefresh={handleRefresh}
             keyExtractor={(item: any) => item.id}
             horizontal={false}
@@ -170,6 +218,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
         {active === "Artists" && (
           <FlatList
             data={artists}
+            onEndReached={loadMore}
             refreshing={refreshing}
             onRefresh={handleRefresh}
             keyExtractor={(item: any) => item.id}

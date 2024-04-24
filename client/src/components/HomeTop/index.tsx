@@ -6,33 +6,16 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import TouchableScale from "../TouchableScale";
 import { Skeleton } from "moti/skeleton";
 import { NavigationProp } from "../../navigation/TStack";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../../context/AuthContext";
+import { TPlaylist } from "../../types";
+import { playlistApi } from "../../apis";
+import apiConfig from "../../configs/axios/apiConfig";
 
 interface HomeTopProps {
-  loading?: boolean;
+  data: TPlaylist[];
 }
-
-const data = [
-  {
-    id: 1,
-    title: "Son Tung MTP",
-  },
-  {
-    id: 2,
-    title: "Charlie Puth",
-  },
-  {
-    id: 3,
-    title: "Hot Hits Vietnam",
-  },
-  {
-    id: 4,
-    title: "Chill",
-  },
-  {
-    id: 5,
-    title: "Tuyển tập của RPT MCK",
-  },
-];
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -43,10 +26,30 @@ const SkeletonCommonProps = {
   backgroundColor: COLORS.Black2,
 } as const;
 
-const HomeTop = (props: HomeTopProps) => {
-  const { loading = false } = props;
+const HomeTop = ({ data }: HomeTopProps) => {
   const linkTo = useLinkTo();
   const navigation = useNavigation<NavigationProp>();
+  const { currentUser, token } = useAuth();
+  const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  // const getData = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // const resArtist = await userApi.getFollowing(currentUser.id, page, 10, null, sort);
+  //     const resPlaylist = await playlistApi.getAllFavoritesByUser(token, 1, 10, null, "new");
+  //     setPlaylists(resPlaylist.data);
+  //     // setArtists(resArtist.data);
+  //     setLoading(false);
+  //   } catch (err) {
+  //     console.log(err.response.data.conflictError);
+  //   }
+  //   setLoading(false);
+  // };
+
+  // React.useEffect(() => {
+  //   getData();
+  // }, [currentUser]);
 
   if (loading)
     return (
@@ -76,19 +79,43 @@ const HomeTop = (props: HomeTopProps) => {
 
   return (
     <View style={styles.container}>
-      {data.map((item) => (
-        <TouchableScale
-          style={styles.card}
-          onPress={() => navigation.navigate("Playlist", { id: 123 })}
-        >
-          <View style={[styles.wrapper]}>
-            <Image style={styles.cardImage} source={IMAGES.POSTER} />
-            <View style={styles.cardBody}>
-              <Text style={styles.title}>{item.title}</Text>
-            </View>
+      <TouchableScale
+        style={styles.card}
+        onPress={() => navigation.navigate("ListSongLike", { userId: currentUser.id })}
+      >
+        <View style={[styles.wrapper]}>
+          <View
+            style={[
+              styles.cardImage,
+              { backgroundColor: COLORS.Primary, alignItems: "center", justifyContent: "center" },
+            ]}
+          >
+            <FontAwesomeIcon icon={faHeart} size={20} color={COLORS.White} />
           </View>
-        </TouchableScale>
-      ))}
+          <View style={styles.cardBody}>
+            <Text style={styles.title}>Favorite Song</Text>
+          </View>
+        </View>
+      </TouchableScale>
+      {data &&
+        data?.slice(0, 5).map((item) => (
+          <TouchableScale
+            style={styles.card}
+            onPress={() => navigation.navigate("Playlist", { playlistId: item.id })}
+          >
+            <View style={[styles.wrapper]}>
+              <Image
+                style={styles.cardImage}
+                source={
+                  item?.image_path ? { uri: apiConfig.imageURL(item.image_path) } : IMAGES.PLAYLIST
+                }
+              />
+              <View style={styles.cardBody}>
+                <Text style={styles.title}>{item.title}</Text>
+              </View>
+            </View>
+          </TouchableScale>
+        ))}
     </View>
   );
 };
@@ -125,6 +152,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: 56,
     aspectRatio: 1 / 1,
+    backgroundColor: COLORS.Black2,
   },
   cardBody: {
     flex: 1,

@@ -39,6 +39,7 @@ import ModalSearchSong from "../../components/ModalSearchSong";
 import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
+import { useQuery } from "@tanstack/react-query";
 
 interface ListSongScreenProps {}
 
@@ -48,7 +49,6 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const route = useRoute<RootRouteProps<"ListSong" | "ListSongLike">>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("Songs");
   const { currentUser } = useAuth();
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
@@ -96,30 +96,44 @@ const ListSongScreen = (props: ListSongScreenProps) => {
     }),
   };
 
-  const getSongs = async () => {
+  const getLikeSongs = async () => {
     page === 1 && setLoading(true);
-    try {
-      let res;
-      route.name === "ListSongLike"
-        ? (res = await songApi.getAllFavoritesByUser(route.params.userId,page, limit ))
-        : (res = await songApi.getAllByUserId(route.params.userId, page, limit));
-      if (res.pagination.page === 1) {
-        setSongs(res.data);
-        setTotalPages(res.pagination.totalPages);
-        setTotalCount(res.pagination.totalCount);
-      } else {
-        setSongs((prevSongs) => [...prevSongs, ...res.data]);
-        // Nếu đã được khởi tạo, sử dụng phép cộng mảng để thêm dữ liệu mới vào
-      }
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
+    const res = await songApi.getAllFavoritesByUser(route.params.userId, page, limit);
+    if (res.pagination.page === 1) {
+      setSongs(res.data);
+      setTotalPages(res.pagination.totalPages);
+      setTotalCount(res.pagination.totalCount);
+    } else {
+      setSongs((prevSongs) => [...prevSongs, ...res.data]);
     }
     setLoading(false);
+    return res;
   };
 
+  const getSongs = async () => {
+    page === 1 && setLoading(true);
+    const res = await songApi.getAllByUserId(route.params.userId, page, limit);
+    if (res.pagination.page === 1) {
+      setSongs(res.data);
+      setTotalPages(res.pagination.totalPages);
+      setTotalCount(res.pagination.totalCount);
+    } else {
+      setSongs((prevSongs) => [...prevSongs, ...res.data]);
+    }
+    setLoading(false);
+
+    return res;
+  };
+
+  const {} = useQuery({
+    queryKey: route.name === "ListSongLike" ? ["songs-favorites"] : ["songs"],
+    queryFn: () => {
+      return route.name === "ListSongLike" ? getLikeSongs() : getSongs();
+    },
+  });
+
   useEffect(() => {
-    getSongs();
+    route.name === "ListSongLike" ? getLikeSongs() : getSongs();
   }, [limit, page]);
 
   const loadMore = () => {
@@ -137,7 +151,6 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const handleRefresh = () => {
     setRefreshing(true);
     setPage(1);
-    getSongs();
     setRefreshing(false);
   };
 
@@ -161,7 +174,9 @@ const ListSongScreen = (props: ListSongScreenProps) => {
           <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
             <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
           </TouchableOpacity>
-          <Animated.Text style={[styles.titleHeader, headerAnimation]}>{title}</Animated.Text>
+          <Animated.Text style={[styles.titleHeader, headerAnimation]}>
+            {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
+          </Animated.Text>
           <TouchableOpacity style={[styles.buttonHeader]} onPress={() => setIsOpenModal(true)}>
             <FontAwesomeIcon icon={faMagnifyingGlass} size={20} style={{ color: COLORS.White1 }} />
           </TouchableOpacity>
@@ -171,7 +186,10 @@ const ListSongScreen = (props: ListSongScreenProps) => {
       {!songs ? (
         <View style={styles.wrapper}>
           <View style={[styles.wrapperTop]}>
-            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>{title}</Text>
+            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
+              {" "}
+              {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
+            </Text>
             <Text style={styles.textExtra}>Not found</Text>
           </View>
           <View>
@@ -187,18 +205,21 @@ const ListSongScreen = (props: ListSongScreenProps) => {
               const offsetY = e.nativeEvent.contentOffset.y;
               animatedValue.setValue(offsetY);
             }}
+            data={songs}
             ListFooterComponent={renderLoader}
             onEndReached={loadMore}
             refreshing={refreshing}
             onRefresh={handleRefresh}
             scrollEventThrottle={16}
-            data={songs}
             contentContainerStyle={{
               paddingBottom: HEIGHT.playingCard + 20,
             }}
             ListHeaderComponent={
               <View style={[styles.wrapperTop]}>
-                <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>{title}</Text>
+                <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
+                  {" "}
+                  {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
+                </Text>
                 <Text style={styles.textExtra}>{totalCount} Songs</Text>
                 <TouchableOpacity style={styles.button}>
                   <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />

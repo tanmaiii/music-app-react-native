@@ -10,7 +10,7 @@ import { COLORS, SPACING } from "../../theme/theme";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { usePlaying } from "../../context/PlayingContext";
 import { NavigationProp } from "../../navigation/TStack";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
@@ -35,7 +35,6 @@ const SongCard = (props: SongCardProps) => {
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {
-    // setOpenBarSong(true);
     navigation.navigate("Song", { songId: song.id });
   };
 

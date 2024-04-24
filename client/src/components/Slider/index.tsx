@@ -9,15 +9,15 @@ import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
 const data = [
   {
     id: 1,
-    image: IMAGES.AI,
+    image: require("../../assets/images/banner1.jpg"),
   },
   {
     id: 2,
-    image: IMAGES.ARTIST,
+    image: require("../../assets/images/banner2.jpg"),
   },
   {
     id: 3,
-    image: IMAGES.BG,
+    image: require("../../assets/images/banner3.jpg"),
   },
 ];
 

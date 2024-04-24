@@ -4,24 +4,18 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING, HEIGHT } from "../
 const styles = StyleSheet.create({
   container: {
     height: HEIGHT.playingCard,
-    // paddingHorizontal: SPACING.space_10,
-    // overflow: "hidden",
-    // borderRadius: BORDERRADIUS.radius_8,
     width: "100%",
 
     position: "absolute",
     left: 0,
     bottom: HEIGHT.navigator,
-    // bottom: 0,
     zIndex: 1,
 
     borderBottomWidth: 0.8,
     borderBottomColor: COLORS.Black1,
   },
   wrapper: {
-    // opacity: 0.9,
-    // blur: '10',
-    backgroundColor: COLORS.Black2,
+    backgroundColor: COLORS.Black3,
     padding: SPACING.space_8,
     display: "flex",
     flexDirection: "row",
@@ -74,9 +68,6 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: FONTSIZE.size_24,
     color: COLORS.White1,
-    // marginLeft: SPACING.space_4,
-    // marginRight: 'auto',
-    // marginLeft: 'auto'
   },
   iconDisable: {
     fontSize: FONTSIZE.size_24,

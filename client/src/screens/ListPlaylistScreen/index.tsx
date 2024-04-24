@@ -25,7 +25,7 @@ import IMAGES from "../../constants/images";
 import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
 import Constants from "expo-constants";
 import { playlistApi } from "../../apis";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import { useAuth } from "../../context/AuthContext";
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -63,7 +63,6 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
         setTotalPages(res.pagination.totalPages);
       } else {
         setPlaylists((prevSongs) => [...prevSongs, ...res.data]);
-        // Nếu đã được khởi tạo, sử dụng phép cộng mảng để thêm dữ liệu mới vào
       }
     } catch (error) {
       console.log(error);
@@ -84,7 +83,6 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
   };
 
   const handleRefresh = () => {
-    console.log("Refreshing Playlist");
     setRefreshing(true);
     setTimeout(() => {
       setPage(1);

@@ -1,4 +1,4 @@
-import axiosClient from "../axiosClient";
+import axiosClient from "../../configs/axios/axiosClient";
 import { ListResponse, TUser } from "../../types";
 
 interface CheckFollowingResponse {

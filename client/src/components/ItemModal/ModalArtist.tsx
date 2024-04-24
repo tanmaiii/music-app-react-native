@@ -15,7 +15,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CustomModal from "../CustomModal";
 import { TUser } from "../../types";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import numeral from "numeral";
 import { useAuth } from "../../context/AuthContext";
 import { userApi } from "../../apis";

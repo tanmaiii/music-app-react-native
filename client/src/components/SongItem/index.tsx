@@ -9,7 +9,7 @@ import { usePlaying } from "../../context/PlayingContext";
 import { TSong } from "../../types";
 import { ModalSong } from "../ItemModal";
 import CustomBottomSheet from "../CustomBottomSheet";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle, faDotCircle } from "@fortawesome/free-solid-svg-icons";

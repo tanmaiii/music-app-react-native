@@ -14,7 +14,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { TPlaylist } from "../../types";
-import apiConfig from "../../apis/apiConfig";
+import apiConfig from "../../configs/axios/apiConfig";
 
 interface ModalSongProps {
   playlist?: TPlaylist;

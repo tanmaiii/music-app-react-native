@@ -225,9 +225,7 @@ Song.findByFavorite = async (userId, query, result) => {
       ` FROM favourite_songs AS fs ` +
       ` INNER JOIN songs AS s ON fs.song_id = s.id` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
-      ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""} fs.user_id = ${userId} AND s.public = 1` +
-      ` ORDER BY fs.created_at ${sort === "new" ? "DESC" : "ASC"}` +
-      ` LIMIT ${+limit} OFFSET ${+offset};`
+      ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""} fs.user_id = ${userId} AND s.public = 1`
   );
 
   if (data && totalCount) {

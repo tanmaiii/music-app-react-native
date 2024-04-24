@@ -10,6 +10,7 @@ import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { useRoute } from "@react-navigation/native";
 import { RootRouteProps } from "../../navigation/TStack";
+import { useQuery } from "@tanstack/react-query";
 
 // const songs: TSong[] = [
 //   {
@@ -94,34 +95,47 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
     isOpen ? setFocus(true) : setFocus(false);
   }, [isOpen]);
 
-  useEffect(() => {
-    const getSong = async () => {
-      setLoading(true);
-      try {
-        let res;
-        route.name === "ListSongLike"
-          ? (res = await songApi.getAllFavoritesByUser(
-              route.params.userId,
-              page,
-              20,
-              keyword && keyword
-            ))
-          : (res = await songApi.getAllByUserId(route.params.userId, page, 20, keyword && keyword));
-
-        setSongs(res.data);
-        setTotalPages(res.pagination.totalPages);
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const getLikeSongs = async () => {
+    page === 1 && setLoading(true);
+    const res = await songApi.getAllFavoritesByUser(route.params.userId, page, 20, keyword);
+    if (res.pagination.page === 1) {
+      setSongs(res.data);
+      setTotalPages(res.pagination.totalPages);
+    } else {
+      setSongs((prevSongs) => [...prevSongs, ...res.data]);
+    }
     setLoading(false);
-    getSong();
-  }, [keyword, page]);
+    return res;
+  };
+
+  const getSongs = async () => {
+    page === 1 && setLoading(true);
+    const res = await songApi.getAllByUserId(route.params.userId, page, 20, keyword);
+    if (res.pagination.page === 1) {
+      setSongs(res.data);
+      setTotalPages(res.pagination.totalPages);
+    } else {
+      setSongs((prevSongs) => [...prevSongs, ...res.data]);
+    }
+    setLoading(false);
+
+    return res;
+  };
+
+  const {} = useQuery({
+    queryKey: route.name === "ListSongLike" ? ["songs-favorites"] : ["songs"],
+    queryFn: () => {
+      return route.name === "ListSongLike" ? getLikeSongs() : getSongs();
+    },
+  });
 
   const loadMore = () => {
     page < totalPages && setPage(page + 1);
   };
+
+  useEffect(() => {
+    route.name === "ListSongLike" ? getLikeSongs() : getSongs();
+  }, [keyword, page]);
 
   return (
     <View style={[styles.modal, isOpen ? { display: "flex" } : { display: "none" }]}>
