@@ -36,23 +36,10 @@ interface ModalSongProps {
 
 const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
-  // const [isLike, setIsLike] = React.useState<boolean>(false);
   const [loading, setLoding] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
   const { token } = useAuth();
   const queryClient = useQueryClient();
-
-  // const checkLike = async () => {
-  //   setLoding(true);
-  //   try {
-  //     const res = await songApi.checkLikedSong(song.id, token);
-  //     setIsLike(res.isLiked);
-  //     console.log(res.isLiked);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   setLoding(false);
-  // };
 
   const handleShare = async () => {
     try {
@@ -87,20 +74,6 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
       });
     },
   });
-
-  // const handleLike = async () => {
-  //   try {
-  //     if (isLike) {
-  //       // setIsLike(false);
-  //       await songApi.unLikeSong(song.id, token);
-  //     } else {
-  //       // setIsLike(true);
-  //       await songApi.likeSong(song.id, token);
-  //     }
-  //   } catch (error) {
-  //     console.log(error.response.data);
-  //   }
-  // };
 
   const handleGoDetail = () => {
     setOpenModal(false);

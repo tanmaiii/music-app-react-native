@@ -62,10 +62,10 @@ const songs: TSong[] = [
 ];
 
 interface AddSongProps {
-  setIsOpen: (boolean) => void;
+  // setIsOpen: (boolean) => void;
 }
 
-const AddSong = ({ setIsOpen }: AddSongProps) => {
+const AddSong = (props: AddSongProps) => {
   const textInputRef = React.useRef<TextInput>();
 
   React.useEffect(() => {
@@ -86,7 +86,8 @@ const AddSong = ({ setIsOpen }: AddSongProps) => {
           <View>
             <Text style={styles.textMain}>Add song to playlist</Text>
           </View>
-          <TouchableOpacity onPress={() => setIsOpen(false)}>
+          {/* <TouchableOpacity onPress={() => setIsOpen(false)}> */}
+          <TouchableOpacity>
             <FontAwesomeIcon icon={faXmark} size={24} color={COLORS.White2} />
           </TouchableOpacity>
         </View>

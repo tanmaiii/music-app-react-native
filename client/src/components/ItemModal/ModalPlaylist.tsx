@@ -15,14 +15,28 @@ import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { TPlaylist } from "../../types";
 import apiConfig from "../../configs/axios/apiConfig";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { playlistApi } from "../../apis";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../navigation/TStack";
+import CustomBottomSheet from "../CustomBottomSheet";
+import AddSong from "./AddSong";
 
 interface ModalSongProps {
   playlist?: TPlaylist;
-  setIsOpenAddSong: (boolean) => void;
+  setOpenModal: (boolean) => void;
+  // setIsOpenAddSong: (boolean) => void;
   setIsOpenEdit: (boolean) => void;
 }
 
-const ModalSong = ({ playlist, setIsOpenAddSong, setIsOpenEdit }: ModalSongProps) => {
+const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit }: ModalSongProps) => {
+  const queryClient = useQueryClient();
+  const { token, currentUser } = useAuth();
+  const navigation = useNavigation<NavigationProp>();
+
+  const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
+
   const handleShare = async () => {
     try {
       await Share.share({
@@ -31,6 +45,34 @@ const ModalSong = ({ playlist, setIsOpenAddSong, setIsOpenEdit }: ModalSongProps
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const { data: isLike } = useQuery({
+    queryKey: ["like-playlist", playlist.id],
+    queryFn: async () => {
+      const res = await playlistApi.checkLikedPlaylist(playlist.id, token);
+      return res.isLiked;
+    },
+  });
+
+  const mutationLike = useMutation({
+    mutationFn: (like: boolean) => {
+      if (like) return playlistApi.unLikePlaylist(playlist.id, token);
+      return playlistApi.likePlaylist(playlist.id, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["like-playlist", playlist.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["playlists-favorites"],
+      });
+    },
+  });
+
+  const handleGoArtist = () => {
+    setOpenModal(false);
+    navigation.navigate("Artist", { userId: playlist?.user_id });
   };
 
   return (
@@ -71,16 +113,32 @@ const ModalSong = ({ playlist, setIsOpenAddSong, setIsOpenEdit }: ModalSongProps
       />
       <View style={styles.body}>
         <Item
-          icon={faHeartRegular}
-          title="Add to favorites"
-          itemFunc={() => console.log("PRESS")}
+          icon={isLike ? faHeart : faHeartRegular}
+          title={isLike ? "Remove to favorites" : "Add to favorites"}
+          itemFunc={() => mutationLike.mutate(isLike)}
         />
-        <Item icon={faPlusSquare} title="Add song" itemFunc={() => setIsOpenAddSong(true)} />
-        <Item icon={faPenToSquare} title="Edit playlist" itemFunc={() => setIsOpenEdit(true)} />
-        <Item icon={faTrashCan} title="Delete playlist" itemFunc={() => console.log("PRESS")} />
-        <Item icon={faUser} title="View artist" itemFunc={() => console.log("PRESS")} />
+        <Item icon={faPlusSquare} title="Add song" itemFunc={() => setIsOpenModalAddSong(true)} />
+        {playlist?.user_id === currentUser.id && (
+          <Item icon={faPenToSquare} title="Edit playlist" itemFunc={() => setIsOpenEdit(true)} />
+        )}
+        {playlist?.user_id === currentUser.id && (
+          <Item icon={faTrashCan} title="Delete playlist" itemFunc={() => console.log("PRESS")} />
+        )}
+        <Item icon={faUser} title="View artist" itemFunc={() => handleGoArtist()} />
         <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
       </View>
+
+      {isOpenModalAddSong && (
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModalAddSong(false)}
+          height1={"100%"}
+          border={false}
+          // enableClose={false}
+        >
+          <AddSong />
+        </CustomBottomSheet>
+      )}
     </View>
   );
 };

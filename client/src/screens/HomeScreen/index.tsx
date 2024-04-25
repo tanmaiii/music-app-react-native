@@ -76,10 +76,36 @@ const HomeScreen = ({ navigation }: any) => {
     if (!currentUser) return linkTo("/Login");
   });
 
+  // const getSongs = async () => {
+  //   const res = await songApi.getAll(1, 10);
+  //   return res.data;
+  // };
+
+  // const getPlaylists = async () => {
+  //   const res = await playlistApi.getAll(1, 10);
+  //   return res.data;
+  // };
+
+  // const getArtists = async () => {
+  //   const res = await userApi.getAll(1, 10);
+  //   return res.data;
+  // };
+
+  // const getPlaylistsFavorites = async () => {
+  //   const res = await playlistApi.getAllFavoritesByUser(token, 1, 10);
+  //   return res.data;
+  // };
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-
-    setRefreshing(false);
+    console.log("Reload");
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["playlists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
+      queryClient.invalidateQueries({ queryKey: ["songs"] });
+      queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
+      setRefreshing(false);
+    }, 2000);
   }, []);
 
   const { data: playlists } = useQuery({
@@ -139,7 +165,7 @@ const HomeScreen = ({ navigation }: any) => {
           }}
           refreshControl={
             <RefreshControl
-              colors={["pink", "red"]}
+              tintColor={COLORS.White1}
               refreshing={refreshing}
               onRefresh={onRefresh}
             />

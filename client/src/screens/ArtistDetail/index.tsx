@@ -49,6 +49,7 @@ import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
 import { usePlaying } from "../../context/PlayingContext";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const HEIGHT_AVATAR = 400;
 
@@ -106,17 +107,17 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const { currentUser, token } = useAuth();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [random, setRandom] = React.useState(false);
-  const [follow, setFollow] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [isOpenModal, setIsOpenMoal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(100);
-  const [artist, setArtist] = React.useState<TUser>(null);
-  const [artists, setArtists] = React.useState<TUser[]>(null);
-  const [songs, setSongs] = React.useState<TSong[]>(null);
-  const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
+  // const [artist, setArtist] = React.useState<TUser>(null);
+  // const [artists, setArtists] = React.useState<TUser[]>(null);
+  // const [songs, setSongs] = React.useState<TSong[]>(null);
+  // const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
   const [countFollowing, setCountFollowing] = React.useState<number>(0);
-  const groupedSongs = songs && renderGroupOfSongs(songs);
+
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   const opacityAnimation = {
     opacity: animatedValue.interpolate({
@@ -159,111 +160,90 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     }),
   };
 
-  const checkFollowing = async () => {
-    try {
-      const res = userId && (await userApi.checkFollowing(userId, token));
-      setFollow(res.isFollowing);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { data: follow, isLoading: loadingFollow } = useQuery({
+    queryKey: ["follow", userId],
+    queryFn: async () => {
+      const res = await userApi.checkFollowing(userId, token);
+      return res.isFollowing;
+    },
+  });
 
-  const handleFollow = async () => {
-    try {
-      if (follow) {
-        await userApi.unFollow(userId, token);
-        countFollowing !== 0 ? setCountFollowing(countFollowing - 1) : setCountFollowing(0);
-      } else {
-        await userApi.follow(userId, token);
-        setCountFollowing(countFollowing + 1);
-      }
-      checkFollowing();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { data: followers, isLoading: loadingFollower } = useQuery({
+    queryKey: ["followers", userId],
+    queryFn: async () => {
+      const res = await userApi.getCountFollowers(userId);
+      return res;
+    },
+  });
 
-  const getUser = async () => {
-    setLoading(true);
-    try {
+  const mutationFollow = useMutation({
+    mutationFn: (follow: boolean) => {
+      if (follow) return userApi.unFollow(userId, token);
+      return userApi.follow(userId, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["follow", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["followers", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["artists-follow"],
+      });
+    },
+  });
+
+  const { data: artist } = useQuery({
+    queryKey: ["artist", userId],
+    queryFn: async () => {
       const res = await userApi.getDetail(userId);
-      setArtist(res);
-      setLoading(false);
-    } catch (error) {}
-    setLoading(false);
-  };
+      return res;
+    },
+  });
 
-  const getPlaylist = async () => {
-    setLoading(true);
-    try {
-      const resPlaylist = await playlistApi.getAllByUserId(userId, 1, 10);
+  const { data: playlists } = useQuery({
+    queryKey: ["playlists", userId],
+    queryFn: async () => {
+      const res = await playlistApi.getAllByUserId(userId, 1, 10);
+      return res.data;
+    },
+  });
 
-      setPlaylists(resPlaylist.data);
-      setLoading(false);
-    } catch (error) {}
-    setLoading(false);
-  };
+  const { data: songs } = useQuery({
+    queryKey: ["songs", userId],
+    queryFn: async () => {
+      const res = await songApi.getAllByUserId(userId, 1, 11);
+      return res.data;
+    },
+  });
 
-  const getSongs = async () => {
-    setLoading(true);
-    try {
-      const resSong = await songApi.getAllByUserId(userId, 1, 11);
+  const { data: artists } = useQuery({
+    queryKey: ["artists"],
+    queryFn: async () => {
+      const res = await userApi.getAll(1, 10);
+      return res.data;
+    },
+  });
 
-      setSongs(resSong.data);
-      setLoading(false);
-    } catch (error) {
-      console.log(error.response.data);
-    }
-    setLoading(false);
-  };
-
-  const getFollowing = async () => {
-    setLoading(true);
-    try {
-      const resCountFollowing = await userApi.getCountFollowers(userId);
-
-      setCountFollowing(resCountFollowing);
-    } catch (error) {
-      console.log(error.response.data);
-    }
-    setLoading(false);
-  };
-
-  const getArtist = async () => {
-    setLoading(true);
-    try {
-      const resUser = await userApi.getAll(1, 10);
-      setArtists(resUser.data);
-    } catch (error) {
-      console.log(error.response.data);
-    }
-    setLoading(false);
-  };
+  const groupedSongs = songs && renderGroupOfSongs(songs);
 
   React.useEffect(() => {
-    console.log(userId);
-
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({ y: 0, animated: false });
     }
-
-    userId && getUser();
-    userId && getFollowing();
-    userId && getPlaylist();
-    userId && getArtist();
-    userId && getSongs();
-
-    currentUser.id !== userId && checkFollowing();
   }, [route, userId]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    userId && getUser();
-    userId && getFollowing();
-    userId && getPlaylist();
-    userId && getArtist();
-    userId && getSongs();
-    setRefreshing(false);
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["playlists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
+      queryClient.invalidateQueries({ queryKey: ["artist"] });
+      queryClient.invalidateQueries({ queryKey: ["songs"] });
+      queryClient.invalidateQueries({ queryKey: ["followers", userId] });
+      setRefreshing(false);
+    }, 2000);
   };
 
   return (
@@ -292,7 +272,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             <AnimatedTouchableHighlight
               underlayColor={COLORS.Black2}
               style={[styles.buttonHeader, buttonHeaderAnimation]}
-              onPress={() => setIsOpenMoal(true)}
+              onPress={() => setIsOpenMoal(!isOpenModal)}
             >
               <FontAwesomeIcon icon={faEllipsis} size={18} style={styles.icon} />
             </AnimatedTouchableHighlight>
@@ -323,7 +303,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           <ScrollView
             refreshControl={
               <RefreshControl
-                colors={["pink", "red"]}
+                tintColor={COLORS.White1}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
               />
@@ -345,20 +325,22 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             <View style={[styles.body]}>
               <View>
                 <Text style={styles.countFollow}>
-                  {numeral(countFollowing).format("0a").toUpperCase()} following
+                  {numeral(followers).format("0a").toUpperCase()} following
                 </Text>
               </View>
 
               <View style={styles.bodyTop}>
                 {currentUser.id !== userId ? (
-                  <TouchableOpacity
-                    style={[styles.buttonFollow, follow && { borderColor: COLORS.White1 }]}
-                    onPress={() => handleFollow()}
-                  >
-                    <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
-                      {follow ? "Unfollow" : "Follow"}
-                    </Text>
-                  </TouchableOpacity>
+                  loadingFollow ? null : (
+                    <TouchableOpacity
+                      style={[styles.buttonFollow, follow && { borderColor: COLORS.White1 }]}
+                      onPress={() => mutationFollow.mutate(follow)}
+                    >
+                      <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
+                        {follow ? "Unfollow" : "Follow"}
+                      </Text>
+                    </TouchableOpacity>
+                  )
                 ) : (
                   <TouchableOpacity style={styles.buttonFollow}>
                     <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
@@ -491,7 +473,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           height1={heightModal}
         >
           <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
-            <ModalArtist artist={artist} countFollowing={countFollowing} />
+            <ModalArtist artist={artist}/>
           </View>
         </CustomBottomSheet>
       )}

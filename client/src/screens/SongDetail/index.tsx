@@ -42,6 +42,7 @@ import numeral from "numeral";
 import { Skeleton } from "moti/skeleton";
 import { usePlaying } from "../../context/PlayingContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import ArtistItem from "../../components/ArtistItem";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -160,7 +161,6 @@ const SongDetail = (props: SongDetailProps) => {
     setSongPlaying(song.id);
     setOpenBarSong(true);
   };
-
 
   React.useEffect(() => {
     getSong();
@@ -307,7 +307,7 @@ const SongDetail = (props: SongDetailProps) => {
                 <Text style={[styles.textMain, { marginBottom: SPACING.space_12 }]}>
                   About artist
                 </Text>
-                <ItemArtist userId={song?.user_id} />
+                <ArtistItem userId={song?.user_id} />
               </ScrollView>
             </View>
           </ScrollView>
@@ -326,62 +326,6 @@ const SongDetail = (props: SongDetailProps) => {
         </CustomBottomSheet>
       )}
     </>
-  );
-};
-
-const ItemArtist = ({ userId }: { userId: number }) => {
-  const [artist, setArtist] = React.useState<TUser>();
-  const [followersCount, setFollowersCount] = React.useState<number>(0);
-  const navigate = useNavigation<NavigationProp>();
-
-  const getFollower = async () => {
-    try {
-      const res = await userApi.getCountFollowers(userId);
-      setFollowersCount(res);
-    } catch (error) {}
-  };
-
-  const getArtist = async () => {
-    try {
-      const res = await userApi.getDetail(userId);
-      setArtist(res);
-    } catch (error) {}
-  };
-
-  React.useEffect(() => {
-    userId && getArtist();
-    userId && getFollower();
-  }, [userId]);
-
-  return (
-    artist && (
-      <TouchableOpacity
-        style={styles.boxArtist}
-        onPress={() => navigate.navigate("Artist", { userId: userId })}
-      >
-        <View style={styles.leftBox}>
-          <Image
-            style={styles.boxImage}
-            source={
-              artist?.image_path ? { uri: apiConfig.imageURL(artist.image_path) } : IMAGES.AVATAR
-            }
-          />
-          <View style={styles.boxDesc}>
-            <Text style={styles.textMain} numberOfLines={1}>
-              {artist?.name}
-            </Text>
-            <Text style={styles.textExtra}>
-              {numeral(followersCount).format("0a").toUpperCase()} follower
-            </Text>
-          </View>
-        </View>
-        <View style={styles.rightBox}>
-          <TouchableOpacity style={styles.btnFollow}>
-            <Text style={styles.textExtra}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    )
   );
 };
 

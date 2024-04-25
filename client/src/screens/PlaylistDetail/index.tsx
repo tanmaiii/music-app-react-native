@@ -379,15 +379,16 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         >
           <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
             <ModalPlaylist
+              setOpenModal={setIsOpenModal}
               playlist={playlist}
-              setIsOpenAddSong={setIsOpenModalAddSong}
+              // setIsOpenAddSong={setIsOpenModalAddSong}
               setIsOpenEdit={setIsOpenModalEdit}
             />
           </View>
         </CustomBottomSheet>
       )}
 
-      {isOpenModalAddSong && (
+      {/* {isOpenModalAddSong && (
         <CustomBottomSheet
           isOpen={true}
           closeModal={() => setIsOpenModalAddSong(false)}
@@ -397,7 +398,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         >
           <AddSong setIsOpen={setIsOpenModalAddSong} />
         </CustomBottomSheet>
-      )}
+      )} */}
 
       {isOpenModalEdit && (
         <CustomBottomSheet

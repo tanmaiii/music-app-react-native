@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonGoogle: {
-    backgroundColor: COLORS.Primary2,
+    backgroundColor: COLORS.Primary,
     borderRadius: BORDERRADIUS.radius_14,
     alignContent: "center",
     flexDirection: "row",

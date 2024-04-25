@@ -19,40 +19,51 @@ import apiConfig from "../../configs/axios/apiConfig";
 import numeral from "numeral";
 import { useAuth } from "../../context/AuthContext";
 import { userApi } from "../../apis";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type ModalArtistProps = {
   artist: TUser;
-  countFollowing: numeral;
 };
 
-const ModalArtist = ({ artist, countFollowing }: ModalArtistProps) => {
+const ModalArtist = ({ artist }: ModalArtistProps) => {
   const [isFollow, setIsFollow] = React.useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const { currentUser, token } = useAuth();
+  const queryClient = useQueryClient();
 
-  const checkFollowing = async () => {
-    try {
-      const res = artist.id && (await userApi.checkFollowing(artist.id, token));
-      setIsFollow(res.isFollowing);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { data: follow, isLoading: loadingFollow } = useQuery({
+    queryKey: ["follow", artist.id],
+    queryFn: async () => {
+      const res = await userApi.checkFollowing(artist.id, token);
+      return res.isFollowing;
+    },
+  });
 
-  const handleFollow = async () => {
-    try {
-      if (isFollow) {
-        await userApi.unFollow(artist.id, token);
-        countFollowing !== 0 && countFollowing - 1;
-      } else {
-        await userApi.follow(artist.id, token);
-        countFollowing++;
-      }
-      checkFollowing();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { data: followers, isLoading: loadingFollower } = useQuery({
+    queryKey: ["followers", artist.id],
+    queryFn: async () => {
+      const res = await userApi.getCountFollowers(artist.id);
+      return res;
+    },
+  });
+
+  const mutationFollow = useMutation({
+    mutationFn: (follow: boolean) => {
+      if (follow) return userApi.unFollow(artist.id, token);
+      return userApi.follow(artist.id, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["follow", artist.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["followers", artist.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["artists-follow"],
+      });
+    },
+  });
 
   const handleShare = async () => {
     try {
@@ -63,10 +74,6 @@ const ModalArtist = ({ artist, countFollowing }: ModalArtistProps) => {
       console.log(error);
     }
   };
-
-  React.useEffect(() => {
-    checkFollowing(), [artist];
-  });
 
   return (
     <>
@@ -89,7 +96,7 @@ const ModalArtist = ({ artist, countFollowing }: ModalArtistProps) => {
             <View style={styles.headerDesc}>
               <Text style={styles.textMain}>{artist?.name}</Text>
               <Text style={styles.textEtra}>
-                {numeral(countFollowing).format("0a").toUpperCase()} following
+                {numeral(followers).format("0a").toUpperCase()} following
               </Text>
             </View>
           </View>
@@ -104,9 +111,9 @@ const ModalArtist = ({ artist, countFollowing }: ModalArtistProps) => {
         <View style={styles.body}>
           {currentUser.id !== artist.id && (
             <Item
-              icon={isFollow ? faUserXmark : faUserPlus}
-              title={isFollow ? "Unfollow" : "Follow"}
-              itemFunc={() => handleFollow()}
+              icon={follow ? faUserXmark : faUserPlus}
+              title={follow ? "Unfollow" : "Follow"}
+              itemFunc={() => (follow ? setIsOpenModal(true) : mutationFollow.mutate(follow))}
             />
           )}
           <Item icon={faPenToSquare} title="Edit profile" itemFunc={() => console.log("PRESS")} />
@@ -119,7 +126,7 @@ const ModalArtist = ({ artist, countFollowing }: ModalArtistProps) => {
           isOpen={isOpenModal}
           setIsOpen={setIsOpenModal}
           header={"Unfollow artist"}
-          modalFunction={() => setIsFollow(false)}
+          modalFunction={() => mutationFollow.mutate(follow)}
         >
           <Text style={{ color: COLORS.White1, fontSize: FONTSIZE.size_16 }}>
             Are you sure unfollow artist Phuong Ly ?

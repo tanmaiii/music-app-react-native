@@ -68,14 +68,12 @@ const LibraryScreen = (props: LibraryScreenProps) => {
 
   const getArtist = async () => {
     const res = await userApi.getFollowing(currentUser.id, pageArtists, limitArtists, null, sort);
-
     if (res.pagination.page === 1) {
       setArtists(res.data);
       settotalPageArtists(res.pagination.totalPages);
     } else {
       setArtists((prevSongs) => [...prevSongs, ...res.data]);
     }
-
     return res.data;
   };
 
@@ -87,7 +85,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   });
 
   const {} = useQuery({
-    queryKey: ["artist-follow"],
+    queryKey: ["artists-follow"],
     queryFn: async () => {
       return getArtist();
     },

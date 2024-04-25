@@ -78,12 +78,8 @@ export const COLORS: Color = {
   WhiteRGBA15: "rgba(255,255,255,0.15)",
   White: "#FFFFFF",
 
-  // Primary: "#7c74ee",
-  // Primary2: "#a29bfe",
   Primary: "#d23259",
-  Primary2: "#c32f53",
-  // Primary: "#2ecc71",
-  // Primary2: "#1dd1a1",
+  Primary2: "#d23259",
 
   White1: "#FFFFFF",
   White2: "#b3b3b3",

@@ -2,7 +2,6 @@ import * as React from "react";
 import { Text, View, StyleSheet, ImageBackground, Image } from "react-native";
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { IMAGES } from "../../constants";
-import { LinearGradient } from "expo-linear-gradient";
 import styles from "./style";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
@@ -73,13 +72,3 @@ const WelcomeScreen = (props: WelcomeScreenProps) => {
 };
 
 export default WelcomeScreen;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-//   wrapper: {
-//     paddingHorizontal: SPACING.space_16,
-//     paddingVertical: SPACING.space_32,
-//   },
-// });

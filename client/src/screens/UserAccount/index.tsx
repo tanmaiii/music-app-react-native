@@ -21,13 +21,10 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../
 import {
   faAngleRight,
   faArrowRightFromBracket,
-  faCircleArrowRight,
-  faCircleChevronRight,
   faCircleQuestion,
   faGear,
   faPenToSquare,
   faUser,
-  faUserPen,
 } from "@fortawesome/free-solid-svg-icons";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import IMAGES from "../../constants/images";
@@ -36,38 +33,39 @@ import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
 import { userApi } from "../../apis";
 import numeral from "numeral";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface UserAccountProps {}
 
 const UserAccount = (props: UserAccountProps) => {
   const [openModal, setOpenModal] = React.useState(false);
   const { logout } = useAuth();
-  const linkTo = useLinkTo();
   const navigation = useNavigation<NavigationProp>();
   const { currentUser } = useAuth();
-  const [countFollowing, setCountFollowing] = React.useState<number>(0);
-  const [countFollowers, setCountFollowers] = React.useState<number>(0);
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
+  const queryClient = useQueryClient();
 
-  const getCountFollower = async () => {
-    try {
-      const count = await userApi.getCountFollowers(currentUser.id);
-      const count2 = await userApi.getCountFollowing(currentUser.id);
-      setCountFollowers(count);
-      setCountFollowing(count2);
+  const { data: followers } = useQuery({
+    queryKey: ["followers"],
+    queryFn: async () => {
+      const res = await userApi.getCountFollowers(currentUser.id);
+      return res;
+    },
+  });
 
-      console.log(count, count2);
-    } catch (error) {}
-  };
-
-  React.useEffect(() => {
-    getCountFollower();
-  }, []);
+  const { data: following } = useQuery({
+    queryKey: ["following"],
+    queryFn: async () => {
+      const res = await userApi.getCountFollowing(currentUser.id);
+      return res;
+    },
+  });
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      getCountFollower();
+      queryClient.invalidateQueries({ queryKey: ["following"] });
+      queryClient.invalidateQueries({ queryKey: ["followers"] });
       setRefreshing(false);
     }, 2000);
   }, []);
@@ -83,7 +81,11 @@ const UserAccount = (props: UserAccountProps) => {
           <Text style={styles.headerTitle}>Profile</Text>
         </View>
       </SafeAreaView>
-      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.White1} />
+        }
+      >
         <TouchableHighlight
           underlayColor={COLORS.Black}
           onPress={() => navigation.navigate("Artist", { userId: currentUser?.id })}
@@ -109,15 +111,13 @@ const UserAccount = (props: UserAccountProps) => {
             </View>
             <View style={styles.accountRight}>
               <View style={styles.flexCenter}>
-                <Text style={styles.textMain}>
-                  {numeral(countFollowing).format("0a").toUpperCase()}
-                </Text>
+                <Text style={styles.textMain}>{numeral(following).format("0a").toUpperCase()}</Text>
                 <Text style={styles.textEtra}>Followers</Text>
               </View>
               <View style={styles.flexCenter}>
                 <Text style={styles.textMain}>
                   {" "}
-                  {numeral(countFollowers).format("0a").toUpperCase()}
+                  {numeral(followers).format("0a").toUpperCase()}
                 </Text>
                 <Text style={styles.textEtra}>Followed</Text>
               </View>
