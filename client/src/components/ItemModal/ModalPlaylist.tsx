@@ -62,6 +62,9 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit }: ModalSongProps) =>
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
+        queryKey: ["all-favorites"],
+      });
+      queryClient.invalidateQueries({
         queryKey: ["like-playlist", playlist.id],
       });
       queryClient.invalidateQueries({

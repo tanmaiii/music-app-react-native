@@ -21,9 +21,8 @@ export const getPlaylist = async (req, res) => {
 export const createPlaylist = async (req, res) => {
   try {
     const token = req.headers["authorization"];
-
-    const { ...newPlaylist } = req.body;
     const userInfo = await jwtService.verifyToken(token);
+    const { ...newPlaylist } = req.body;
 
     Playlist.create(userInfo.id, newPlaylist, (err, data) => {
       if (err) {

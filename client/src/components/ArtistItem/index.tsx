@@ -13,7 +13,7 @@ import numeral from "numeral";
 
 interface ArtistItemProps {}
 
-const ArtistItem = ({ userId }: { userId: number }) => {
+const ArtistItem = ({ userId }: { userId: string }) => {
   const [artist, setArtist] = React.useState<TUser>();
   const [followersCount, setFollowersCount] = React.useState<number>(0);
   const navigate = useNavigation<NavigationProp>();
@@ -58,7 +58,10 @@ const ArtistItem = ({ userId }: { userId: number }) => {
     try {
       const res = await userApi.getDetail(userId);
       setArtist(res);
-    } catch (error) {}
+    } catch (err) {
+      console.log(err.response.data);
+      
+    }
   };
 
   React.useEffect(() => {

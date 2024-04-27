@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   ImageBackground,
+  Modal,
 } from "react-native";
 import styles from "./style";
 import IMAGES from "../../constants/images";
@@ -24,11 +25,12 @@ import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import ModalPlaying from "../ModalPlaying";
 import apiConfig from "../../configs/axios/apiConfig";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface PlayingCardProps {}
 
 const PlayingCard = (props: PlayingCardProps) => {
-  const { openBarSong, songPlaying } = usePlaying();
+  const { openBarSong, songIdPlaying } = usePlaying();
   const { token } = useAuth();
   const [song, setSong] = React.useState<TSong | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -40,7 +42,7 @@ const PlayingCard = (props: PlayingCardProps) => {
   const getSongs = async () => {
     setLoading(true);
     try {
-      const res = await songApi.getDetail(songPlaying, token);
+      const res = await songApi.getDetail(songIdPlaying, token);
       setSong(res);
       console.log(res);
       setLoading(false);
@@ -51,12 +53,9 @@ const PlayingCard = (props: PlayingCardProps) => {
   };
 
   React.useEffect(() => {
-    songPlaying && getSongs();
-  }, [songPlaying]);
+    songIdPlaying && getSongs();
+  }, [songIdPlaying]);
 
-  const handleTouch = () => {
-    setIsOpenModal(true);
-  };
 
   return openBarSong && song ? (
     <>

@@ -12,13 +12,13 @@ export type RootStackParamList = {
 
   UserEditAccount: undefined;
 
-  Song: { songId: number };
-  Playlist: { playlistId: number };
-  Artist: { userId: number };
+  Song: { songId: string };
+  Playlist: { playlistId: string };
+  Artist: { userId: string };
 
-  ListSong: { userId: number };
-  ListPlaylist: { userId: number };
-  ListSongLike: { userId: number };
+  ListSong: { userId: string };
+  ListPlaylist: { userId: string };
+  ListSongLike: { userId: string };
 
   Login: undefined;
   Signup: undefined;

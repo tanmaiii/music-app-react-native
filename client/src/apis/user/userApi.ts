@@ -6,7 +6,7 @@ interface CheckFollowingResponse {
 }
 
 const userApi = {
-  getAll(page: number, limit: number , q?: string, sort?: string): Promise<ListResponse<TUser>> {
+  getAll(page: number, limit: number, q?: string, sort?: string): Promise<ListResponse<TUser>> {
     const url = "user";
     return axiosClient.get(url, {
       params: {
@@ -17,28 +17,32 @@ const userApi = {
       },
     });
   },
-  getDetail(userId: number): Promise<TUser> {
+  getDetail(userId: string): Promise<TUser> {
     const url = "user/";
     return axiosClient.get(url + userId);
   },
   getMe(token: string): Promise<TUser> {
     const url = "user/me";
-    return axiosClient.post(url, { token });
+    return axiosClient.post(url, {
+      headers: {
+        authorization: token,
+      },
+    });
   },
   findByEmail(email: string) {
     const url = "user/email";
     return axiosClient.post(url, { email });
   },
-  getCountFollowing(userId: number): Promise<number> {
+  getCountFollowing(userId: string): Promise<number> {
     const url = `follow/following/${userId}/count`;
     return axiosClient.get(url);
   },
-  getCountFollowers(userId: number): Promise<number> {
+  getCountFollowers(userId: string): Promise<number> {
     const url = `follow/followers/${userId}/count`;
     return axiosClient.get(url);
   },
   getFollowing(
-    userId: number,
+    userId: string,
     page: number,
     limit: number,
     q?: string,
@@ -55,7 +59,7 @@ const userApi = {
     });
   },
   getFollowers(
-    userId: number,
+    userId: string,
     page: number,
     limit: number,
     q?: string,
@@ -71,17 +75,29 @@ const userApi = {
       },
     });
   },
-  checkFollowing(userId: number, token: string): Promise<CheckFollowingResponse> {
+  checkFollowing(userId: string, token: string): Promise<CheckFollowingResponse> {
     const url = `follow/${userId}/check`;
-    return axiosClient.post(url, { token });
+    return axiosClient.get(url, {
+      headers: {
+        authorization: token,
+      },
+    });
   },
-  follow(userId: number, token: string) {
+  follow(userId: string, token: string) {
     const url = `follow/${userId}`;
-    return axiosClient.post(url, { token });
+    return axiosClient.post(url, undefined, {
+      headers: {
+        authorization: token,
+      },
+    });
   },
-  unFollow(userId: number, token: string) {
+  unFollow(userId: string, token: string) {
     const url = `follow/${userId}`;
-    return axiosClient.delete(url, { data: { token: token } });
+    return axiosClient.delete(url, {
+      headers: {
+        authorization: token,
+      },
+    });
   },
 };
 

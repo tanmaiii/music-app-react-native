@@ -4,7 +4,7 @@ import User from "../model/user.model.js";
 
 export const addFollow = async (req, res) => {
   try {
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     User.findById(req.params.userId, (err, user) => {
@@ -20,6 +20,7 @@ export const addFollow = async (req, res) => {
             if (err) {
               return res.status(401).json({ conflictError: err });
             } else {
+              console.log("Add follow", data);
               return res.json("Thành công !");
             }
           });
@@ -27,13 +28,14 @@ export const addFollow = async (req, res) => {
       }
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json(error);
   }
 };
 
 export const removeFollow = async (req, res) => {
   try {
-    const { token } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     Follow.findFollowRelationship(userInfo.id, req.params.userId, (err, follow) => {
@@ -124,7 +126,7 @@ export const getCountFollowing = (req, res) => {
 };
 
 export const checkFollowing = async (req, res) => {
-  const { token } = req.body;
+  const token = req.headers["authorization"];
   const userInfo = await jwtService.verifyToken(token);
 
   try {

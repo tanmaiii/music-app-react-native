@@ -6,8 +6,8 @@ type TPlayingContext = {
   setOpenBarSong: (value: boolean) => void;
   openModalSong: boolean;
   setOpenModalSong: (value: boolean) => void;
-  songPlaying: number;
-  setSongPlaying: (value: number) => void;
+  songIdPlaying: string;
+  setSongIdPlaying: (value: string) => void;
 };
 
 // Tạo AuthContext với giá trị mặc định là null
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export const PlayingContextProvider = ({ children }: Props) => {
-  const [songPlaying, setSongPlaying] = useState<number | null>(null);
+  const [songIdPlaying, setSongIdPlaying] = useState<string | null>(null);
   const [openBarSong, setOpenBarSong] = useState<boolean>(true);
   const [openModalSong, setOpenModalSong] = useState<boolean>(false);
 
@@ -32,8 +32,8 @@ export const PlayingContextProvider = ({ children }: Props) => {
     setOpenBarSong,
     openModalSong,
     setOpenModalSong,
-    songPlaying,
-    setSongPlaying,
+    songIdPlaying,
+    setSongIdPlaying,
   };
 
   // Sử dụng PlayingContext.Provider để cung cấp giá trị cho các component con

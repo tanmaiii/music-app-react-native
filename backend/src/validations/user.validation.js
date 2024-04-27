@@ -1,12 +1,6 @@
 import { query } from "express";
 import Joi from "joi";
 
-const bodyToken = {
-  body: Joi.object().keys({
-    token: Joi.string().required(),
-  }),
-};
-
 const bodySchema = {
   body: Joi.object().keys({
     email: Joi.string().email().max(255),
@@ -30,15 +24,13 @@ const querySchema = {
 export default class userValidation {
   static getUser = {
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
   static getMe = {
-    ...bodyToken,
   };
   static updateUser = {
     ...bodySchema,
-    ...bodyToken,
   };
   static getAllUser = {
     ...querySchema,

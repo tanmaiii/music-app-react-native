@@ -30,7 +30,7 @@ interface SongItemProps {
 }
 
 const SongItem = (props: SongItemProps) => {
-  const { setOpenBarSong, setSongPlaying, songPlaying } = usePlaying();
+  const { setOpenBarSong, setSongIdPlaying, songIdPlaying } = usePlaying();
   const { song, loading = false } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [activeMore, setActiveMore] = React.useState(false);
@@ -39,7 +39,7 @@ const SongItem = (props: SongItemProps) => {
   const route = useRoute();
 
   const handlePress = () => {
-    setSongPlaying(song.id);
+    setSongIdPlaying(song.id);
     setOpenBarSong(true);
   };
 

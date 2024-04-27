@@ -34,7 +34,7 @@ interface PlaylistCardProps {
 const PlaylistCard = (props: PlaylistCardProps) => {
   const { playlist, loading = false } = props;
 
-  const { setOpenBarSong, setSongPlaying } = usePlaying();
+  const { setOpenBarSong, setSongIdPlaying } = usePlaying();
   const linkTo = useLinkTo();
   const navigation = useNavigation<NavigationProp>();
 

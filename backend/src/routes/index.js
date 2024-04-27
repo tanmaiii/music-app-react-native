@@ -11,6 +11,7 @@ import genreRoute from "./genre.route.js";
 import followRoute from "./follow.route.js";
 import songPlayRoute from "./songPlay.route.js";
 import userSongRoute from "./userSong.route.js";
+import favouriteRoute from "./favourite.route.js";
 
 router.use("/auth", authRoute);
 router.use("/user", userRoute);
@@ -20,6 +21,7 @@ router.use("/genre", genreRoute);
 router.use("/follow", followRoute);
 router.use("/songPlay", songPlayRoute);
 router.use("/userSong", userSongRoute);
+router.use("/favourite", favouriteRoute);
 
 router.use("/image", imageRoute);
 router.use("/mp3", mp3Route);

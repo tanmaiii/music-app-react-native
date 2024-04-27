@@ -69,7 +69,7 @@ const SongDetail = (props: SongDetailProps) => {
   const [loading, setLoading] = React.useState<boolean>(false);
   const songId = route.params.songId;
   const { token } = useAuth();
-  const { setOpenBarSong, setSongPlaying, songPlaying } = usePlaying();
+  const { setOpenBarSong, setSongIdPlaying, songIdPlaying } = usePlaying();
   const queryClient = useQueryClient();
 
   const headerAnimation = {
@@ -158,7 +158,7 @@ const SongDetail = (props: SongDetailProps) => {
   };
 
   const handlePlay = () => {
-    setSongPlaying(song.id);
+    song && setSongIdPlaying(song?.id);
     setOpenBarSong(true);
   };
 

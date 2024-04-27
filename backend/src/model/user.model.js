@@ -1,5 +1,6 @@
 import { db, promiseDb } from "../config/connect.js";
 import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
 
 const User = function (user) {
   this.email = user.email;
@@ -14,7 +15,7 @@ const User = function (user) {
 };
 
 User.create = (newUser, result) => {
-  db.query("insert into users set ? ", newUser, (err, res) => {
+  db.query(`insert into users set ? , id = ?`, [newUser, uuidv4()], (err, res) => {
     if (err) {
       console.log("ERROR", err);
       result(err, null);
@@ -31,7 +32,7 @@ User.update = (userId, newUser, result) => {
       result(err, null);
       return;
     }
-    db.query(`update users set ? where id = ${userId}`, newUser, (err, res) => {
+    db.query(`update users set ? where id = '${userId}'`, newUser, (err, res) => {
       if (err) {
         console.log("ERROR", err);
         result(err, null);
@@ -95,17 +96,17 @@ User.getAll = async (query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT id, name, email, image_path, is_admin, gender, brithday FROM users WHERE` +
+    `SELECT id, name, image_path, is_admin, verified FROM users WHERE` +
       ` ${q ? ` users.name LIKE "%${q}%" and` : ""} ` +
-      ` email_verified_at IS NOT NULL and not is_admin = 1 `+
+      ` email_verified_at IS NOT NULL and is_admin IS NULL  ` +
       ` limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
     `SELECT COUNT(*) AS totalCount FROM users WHERE` +
-    ` ${q ? ` users.name LIKE "%${q}%" and` : ""}  ` +
-    ` email_verified_at IS NOT NULL and not is_admin = 1 `+
-    ` limit ${+limit} offset ${+offset}`
+      ` ${q ? ` users.name LIKE "%${q}%" and` : ""}  ` +
+      ` email_verified_at IS NOT NULL and is_admin IS NULL  ` +
+      ` limit ${+limit} offset ${+offset}`
   );
 
   if (data && totalCount) {

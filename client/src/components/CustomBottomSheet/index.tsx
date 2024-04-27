@@ -1,6 +1,7 @@
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetModal as BottomSheetModalGorhom,
+  BottomSheetScrollView,
   BottomSheetView,
   useBottomSheetDynamicSnapPoints,
 } from "@gorhom/bottom-sheet";
@@ -83,12 +84,13 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
             borderTopLeftRadius: 12,
             borderTopRightRadius: 12,
             overflow: "hidden",
+            backgroundColor: COLORS.Black2,
           },
         ]}
       >
         <View
           style={{
-            backgroundColor: COLORS.Black2,
+            // backgroundColor: COLORS.Black2,
             height: "100%",
           }}
         >

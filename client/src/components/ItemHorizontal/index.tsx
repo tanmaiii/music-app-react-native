@@ -11,14 +11,16 @@ import {
 
 import styles from "./style";
 import IMAGES from "../../constants/images";
-import { BORDERRADIUS, COLORS, FONTSIZE } from "../../theme/theme";
+import { BORDERRADIUS, COLORS, FONTSIZE, SPACING } from "../../theme/theme";
 import { AntDesign } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import TouchableScale from "../TouchableScale";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
-import { TPlaylist, TUser } from "../../types";
+import { ResFavourite, TPlaylist, TUser } from "../../types";
 import apiConfig from "../../configs/axios/apiConfig";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -32,20 +34,23 @@ const SkeletonCommonProps = {
 interface ItemHorizontalProps {
   artist?: TUser;
   playlist?: TPlaylist;
+  data?: ResFavourite;
   loading?: boolean;
+  type?: string;
+  key: number;
 }
 
 const ItemHorizontal = (props: ItemHorizontalProps) => {
-  const { artist, playlist, loading = false } = props;
+  const { data, artist, playlist, loading = false, type, key } = props;
   const navigation = useNavigation<NavigationProp>();
 
   const linkTo = useLinkTo();
 
   return (
     <View>
-      {artist && (
+      {type === "artist" && (
         <TouchableHighlight
-          onPress={() => navigation.navigate("Artist", { userId: artist.id })}
+          onPress={() => navigation.navigate("Artist", { userId: data.id })}
           style={{ backgroundColor: COLORS.Black1 }}
           underlayColor={COLORS.Black}
         >
@@ -54,15 +59,13 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
               <Image
                 style={[styles.image, { borderRadius: 50 }]}
                 source={
-                  artist?.image_path
-                    ? { uri: apiConfig.imageURL(artist.image_path) }
-                    : IMAGES.AVATAR
+                  data?.image_path ? { uri: apiConfig.imageURL(data.image_path) } : IMAGES.AVATAR
                 }
               />
             </View>
             <View style={styles.body}>
               <Text style={styles.title} numberOfLines={1}>
-                {artist?.name}
+                {data?.name}
               </Text>
               <Text style={styles.descText}>Artist</Text>
             </View>
@@ -70,9 +73,9 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
         </TouchableHighlight>
       )}
 
-      {playlist && (
+      {type === "playlist" && (
         <TouchableHighlight
-          onPress={() => navigation.navigate("Playlist", { playlistId: playlist.id })}
+          onPress={() => navigation.navigate("Playlist", { playlistId: data.id })}
           style={{ backgroundColor: COLORS.Black1 }}
           underlayColor={COLORS.Black}
         >
@@ -81,17 +84,23 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
               <Image
                 style={[styles.image, { borderRadius: BORDERRADIUS.radius_8 }]}
                 source={
-                  playlist?.image_path
-                    ? { uri: apiConfig.imageURL(playlist.image_path) }
-                    : IMAGES.PLAYLIST
+                  data?.image_path ? { uri: apiConfig.imageURL(data.image_path) } : IMAGES.PLAYLIST
                 }
               />
             </View>
             <View style={styles.body}>
               <Text style={styles.title} numberOfLines={1}>
-                {playlist?.title}
+                {data?.title}
               </Text>
-              <Text style={styles.descText}>{playlist.author}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.space_4 }}>
+                <Text numberOfLines={1} style={[styles.descText]}>
+                  Playlist
+                </Text>
+                <FontAwesomeIcon icon={faCircle} size={2} color={COLORS.White2} />
+                <Text numberOfLines={1} style={[styles.descText]}>
+                  {data.author}
+                </Text>
+              </View>
             </View>
           </View>
         </TouchableHighlight>

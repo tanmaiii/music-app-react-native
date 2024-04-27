@@ -1,5 +1,6 @@
 import { db, promiseDb } from "../config/connect.js";
 import moment from "moment";
+import { v4 as uuidv4 } from "uuid";
 
 const Song = function (song) {
   this.title = song.title;
@@ -10,15 +11,19 @@ const Song = function (song) {
 };
 
 Song.create = (userId, newSong, result) => {
-  db.query(`insert into songs set ? ,user_id = ${userId}`, newSong, (err, res) => {
-    if (err) {
-      console.log("ERROR", err);
-      result(err, null);
-      return;
+  db.query(
+    `insert into songs set ?, user_id = ?, id = ? `,
+    [newSong, userId, uuidv4()],
+    (err, res) => {
+      if (err) {
+        console.log("ERROR", err);
+        result(err, null);
+        return;
+      }
+      console.log("CREATE SONG : ", { res });
+      result(null, { id: res.insertId, ...newSong });
     }
-    console.log("CREATE SONG : ", { res });
-    result(null, { id: res.insertId, ...newSong });
-  });
+  );
 };
 
 Song.update = (songId, newSong, result) => {
@@ -172,7 +177,7 @@ Song.findByPlaylistId = async (playlistId, query, result) => {
       ` INNER JOIN songs AS s ON pvs.song_id = s.id` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""}` +
-      ` pvs.playlist_id = ${playlistId} and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0 ` +
+      ` pvs.playlist_id = '${playlistId}' and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0 ` +
       `ORDER BY pvs.created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
@@ -182,7 +187,7 @@ Song.findByPlaylistId = async (playlistId, query, result) => {
       ` INNER JOIN songs AS s ON pvs.song_id = s.id` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""}` +
-      ` pvs.playlist_id = ${playlistId} and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0`
+      ` pvs.playlist_id = '${playlistId}' and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0`
   );
   if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0].totalCount / limit);
@@ -215,7 +220,7 @@ Song.findByFavorite = async (userId, query, result) => {
       ` FROM favourite_songs AS fs` +
       ` INNER JOIN songs AS s ON fs.song_id = s.id` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
-      ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""} fs.user_id = ${userId} AND s.public = 1` +
+      ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""} fs.user_id = '${userId}' AND s.public = 1` +
       ` ORDER BY fs.created_at ${sort === "new" ? "DESC" : "ASC"}` +
       ` LIMIT ${+limit} OFFSET ${+offset};`
   );
@@ -225,7 +230,7 @@ Song.findByFavorite = async (userId, query, result) => {
       ` FROM favourite_songs AS fs ` +
       ` INNER JOIN songs AS s ON fs.song_id = s.id` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
-      ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""} fs.user_id = ${userId} AND s.public = 1`
+      ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""} fs.user_id = '${userId}' AND s.public = 1`
   );
 
   if (data && totalCount) {
@@ -259,7 +264,7 @@ Song.findByUserId = async (userId, query, result) => {
     ` SELECT s.*, u.name as author FROM songs as s ` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""} ` +
-      ` user_id = ${userId} AND public = 1 AND is_deleted = 0 ` +
+      ` user_id = '${userId}' AND public = 1 AND is_deleted = 0 ` +
       ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
@@ -267,7 +272,7 @@ Song.findByUserId = async (userId, query, result) => {
     `SELECT COUNT(*) AS totalCount FROM songs as s ` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""}` +
-      ` user_id = ${userId} AND public = 1 AND is_deleted = 0 `
+      ` user_id = '${userId}' AND public = 1 AND is_deleted = 0 `
   );
 
   if (data && totalCount) {
@@ -290,7 +295,8 @@ Song.findByUserId = async (userId, query, result) => {
 
 Song.findUserLike = async (songId, result) => {
   db.query(
-    `SELECT user_id FROM music.favourite_songs as fs WHERE fs.song_id = ${songId}`,
+    `SELECT user_id FROM favourite_songs as fs WHERE fs.song_id = ?`,
+    [songId],
     (err, data) => {
       if (err) {
         result(err, null);
@@ -360,13 +366,13 @@ Song.findMe = async (userId, query, result) => {
 
   const [data] = await promiseDb.query(
     `SELECT * FROM songs WHERE ` +
-      ` ${q ? ` title LIKE "%${q}%" AND` : ""} user_id = ${userId} AND is_deleted = 0 ` +
+      ` ${q ? ` title LIKE "%${q}%" AND` : ""} user_id = '${userId}' AND is_deleted = 0 ` +
       ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
     `SELECT COUNT(*) AS totalCount FROM songs  WHERE` +
-      ` ${q ? ` title LIKE "%${q}%" AND` : ""} user_id = ${userId} AND is_deleted = 0 `
+      ` ${q ? ` title LIKE "%${q}%" AND` : ""} user_id = '${userId}' AND is_deleted = 0 `
   );
 
   if (data && totalCount) {

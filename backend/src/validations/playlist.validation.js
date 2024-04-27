@@ -2,7 +2,7 @@ import Joi from "joi";
 
 const bodySchema = {
   body: Joi.object().keys({
-    title: Joi.string().min(0).max(255),
+    title: Joi.string().min(0).max(255).required(),
     desc: Joi.string().min(0).max(500),
     genre_id: Joi.number(),
     image_path: Joi.string().min(0).max(255),
@@ -22,7 +22,7 @@ const querySchema = {
 export default class playlistValidator {
   static getPlaylist = {
     params: Joi.object().keys({
-      playlistId: Joi.number().integer().required(),
+      playlistId: Joi.string().min(0).max(36).required(),
     }),
   };
 
@@ -36,19 +36,19 @@ export default class playlistValidator {
 
   static deletePlaylist = {
     params: Joi.object().keys({
-      playlistId: Joi.number().integer().required(),
+      playlistId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static destroyPlaylist = {
     params: Joi.object().keys({
-      playlistId: Joi.number().integer().required(),
+      playlistId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static restorePlaylist = {
     params: Joi.object().keys({
-      playlistId: Joi.number().integer().required(),
+      playlistId: Joi.string().min(0).max(36).required(),
     }),
   };
 
@@ -63,7 +63,7 @@ export default class playlistValidator {
   static getAllPlaylistByUser = {
     ...querySchema,
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
 
@@ -73,33 +73,33 @@ export default class playlistValidator {
 
   static checkLike = {
     params: Joi.object().keys({
-      playlistId: Joi.number().integer().required(),
+      playlistId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static like = {
     params: Joi.object().keys({
-      playlistId: Joi.number().integer().required(),
+      playlistId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static unLike = {
     params: Joi.object().keys({
-      playlistId: Joi.number().integer().required(),
+      playlistId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static addSong = {
     body: Joi.object().keys({
-      playlist_id: Joi.number().min(1).max(255).required(),
-      song_id: Joi.number().min(1).max(255).required(),
+      playlist_id: Joi.string().min(0).max(36).required(),
+      song_id: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static unAddSong = {
     body: Joi.object().keys({
-      playlist_id: Joi.number().min(1).max(255).required(),
-      song_id: Joi.number().min(1).max(255).required(),
+      playlist_id: Joi.string().min(0).max(36).required(),
+      song_id: Joi.string().min(0).max(36).required(),
     }),
   };
 }

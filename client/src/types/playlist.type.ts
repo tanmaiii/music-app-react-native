@@ -1,10 +1,10 @@
 export type TPlaylist = {
-  id: number;
+  id: string;
   title: string;
-  desc: string;
+  desc?: string;
   image_path: string;
   author: string;
-  user_id?: number;
+  user_id?: string;
   genre_id?: string;
   public?: number;
   is_deleted?: number;

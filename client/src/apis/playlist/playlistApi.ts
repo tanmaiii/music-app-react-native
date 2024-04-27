@@ -18,7 +18,7 @@ const playlistApi = {
       },
     });
   },
-  getDetail(playlistId: number, token: string): Promise<TPlaylist> {
+  getDetail(playlistId: string, token: string): Promise<TPlaylist> {
     const url = "playlist/detail/";
     return axiosClient.get(url + playlistId, {
       headers: {
@@ -27,7 +27,7 @@ const playlistApi = {
     });
   },
   getAllByUserId(
-    userId: number,
+    userId: string,
     page: number,
     limit: number,
     q?: string,
@@ -67,15 +67,15 @@ const playlistApi = {
       },
     });
   },
-  checkLikedPlaylist(songId: number, token: string): Promise<CheckLikedResponse> {
+  checkLikedPlaylist(playlistId: string, token: string): Promise<CheckLikedResponse> {
     const url = "playlist/checkLiked/";
-    return axiosClient.get(url + songId, {
+    return axiosClient.get(url + playlistId, {
       headers: {
         authorization: token,
       },
     });
   },
-  likePlaylist(playlistId: number, token: string) {
+  likePlaylist(playlistId: string, token: string) {
     const url = "playlist/like/";
     return axiosClient.post(url + playlistId, undefined, {
       headers: {
@@ -83,7 +83,7 @@ const playlistApi = {
       },
     });
   },
-  unLikePlaylist(playlistId: number, token: string) {
+  unLikePlaylist(playlistId: string, token: string) {
     const url = "playlist/like/";
     return axiosClient.delete(url + playlistId, {
       headers: {

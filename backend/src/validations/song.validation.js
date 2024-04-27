@@ -20,7 +20,6 @@ const querySchema = {
   }),
 };
 
-
 export default class songValidation {
   static createSong = {
     ...bodySchema,
@@ -32,25 +31,25 @@ export default class songValidation {
 
   static deleteSong = {
     params: Joi.object().keys({
-      songId: Joi.number().integer().required(),
+      songId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static destroySong = {
     params: Joi.object().keys({
-      songId: Joi.number().integer().required(),
+      songId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static restoreSong = {
     params: Joi.object().keys({
-      songId: Joi.number().integer().required(),
+      songId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static getSong = {
     params: Joi.object().keys({
-      songId: Joi.number().integer().required(),
+      songId: Joi.string().min(0).max(36).required(),
     }),
   };
 
@@ -65,38 +64,38 @@ export default class songValidation {
   static getAllFavoritesByUser = {
     ...querySchema,
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static getAllSongByUser = {
     ...querySchema,
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static getAllSongByPlaylist = {
     ...querySchema,
     params: Joi.object().keys({
-      playlistId: Joi.number().integer().required(),
+      playlistId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static like = {
     params: Joi.object().keys({
-      songId: Joi.number().integer().required(),
+      songId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static unLike = {
     params: Joi.object().keys({
-      songId: Joi.number().integer().required(),
+      songId: Joi.string().min(0).max(36).required(),
     }),
   };
   static checkSongLiked = {
     params: Joi.object().keys({
-      songId: Joi.number().integer().required(),
+      songId: Joi.string().min(0).max(36).required(),
     }),
   };
 }

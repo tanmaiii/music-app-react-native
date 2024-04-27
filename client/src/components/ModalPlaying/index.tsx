@@ -10,6 +10,7 @@ import {
   StatusBar,
   Modal,
   Animated,
+  Share,
 } from "react-native";
 import IMAGES from "../../constants/images";
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
@@ -43,18 +44,29 @@ import CustomBottomSheet from "../CustomBottomSheet";
 import { BlurView } from "expo-blur";
 import { ScrollView } from "react-native-gesture-handler";
 import { opacity } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import { useQuery } from "@tanstack/react-query";
 
 interface TSongPlaying {}
 
 const ModalPlaying = (props: TSongPlaying) => {
-  const { songPlaying } = usePlaying();
+  const { songIdPlaying } = usePlaying();
   const { token } = useAuth();
   const [play, setPlay] = useState(false);
   const [like, setLike] = useState(false);
-  const [song, setSong] = useState<TSong | null>(null);
+  // const [song, setSong] = useState<TSong | null>(null);
   const [sound, setSound] = useState(null);
   const [durationMillis, setDurationMillis] = useState(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: "React Native | A framework for building native apps using React",
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const loadSound = async () => {
     const { sound, status: any } = await Audio.Sound.createAsync(
@@ -63,21 +75,13 @@ const ModalPlaying = (props: TSongPlaying) => {
     setSound(sound);
   };
 
-  const getSong = async () => {
-    try {
-      const res = await songApi.getDetail(songPlaying, token);
-      console.log(res);
-      setSong(res);
-    } catch (err) {
-      console.log(err.response.data.conflictError);
-    }
-  };
-
-  React.useEffect(() => {
-    console.log(songPlaying);
-
-    songPlaying && getSong();
-  }, [songPlaying]);
+  const { data: song } = useQuery({
+    queryKey: ["song", songIdPlaying],
+    queryFn: async () => {
+      const res = await songApi.getDetail(songIdPlaying, token);
+      return res;
+    },
+  });
 
   const handleClickPlay = () => {
     setPlay((play) => !play);
@@ -85,10 +89,9 @@ const ModalPlaying = (props: TSongPlaying) => {
   };
 
   return (
-    <>
+    <View style={styles.container}>
       <ImageBackground
         source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : null}
-        style={styles.container}
         blurRadius={80}
       >
         <LinearGradient
@@ -204,7 +207,7 @@ const ModalPlaying = (props: TSongPlaying) => {
             <TouchableOpacity style={styles.BottomButton}>
               <FontAwesomeIcon icon={faShuffle} size={20} color={COLORS.WhiteRGBA50} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.BottomButton}>
+            <TouchableOpacity style={styles.BottomButton} onPress={handleShare}>
               <FontAwesomeIcon icon={faArrowUpFromBracket} size={20} color={COLORS.WhiteRGBA50} />
             </TouchableOpacity>
             <TouchableOpacity
@@ -215,13 +218,17 @@ const ModalPlaying = (props: TSongPlaying) => {
             </TouchableOpacity>
           </View>
         </View>
-        {isOpenModal && (
-          <Modal visible={isOpenModal} transparent>
-            <MoreSong song={song} setIsOpenModal={setIsOpenModal} />
-          </Modal>
-        )}
       </ImageBackground>
-    </>
+      {isOpenModal && (
+        <CustomBottomSheet
+          isOpen={isOpenModal}
+          closeModal={() => setIsOpenModal(false)}
+          height1={400}
+        >
+          <ModalSong song={song} setOpenModal={setIsOpenModal} />
+        </CustomBottomSheet>
+      )}
+    </View>
   );
 };
 
@@ -233,6 +240,7 @@ const MoreSong = ({
   song: TSong;
 }) => {
   const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const [scrollViewRef, setScrollViewRef] = React.useState(null);
 
   return (
     <View style={{ flex: 1, height: WINDOW_HEIGHT }}>
@@ -252,7 +260,7 @@ const MoreSong = ({
             },
           ]}
         >
-          <ScrollView style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1 }} ref={setScrollViewRef}>
             <ModalSong song={song} size={2} setOpenModal={setIsOpenModal} />
           </ScrollView>
         </Animated.View>
@@ -274,6 +282,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: WINDOW_HEIGHT,
+    zIndex: 999,
   },
   textMain: {
     fontSize: FONTSIZE.size_24,

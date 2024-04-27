@@ -122,7 +122,7 @@ const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
           renderItem={({ item, index }) => <Item />}
         />
       </View>
-      {isOpenModal && (
+      {/* {isOpenModal && (
         <CustomBottomSheet
           isOpen={true}
           closeModal={() => setIsOpenModal(false)}
@@ -132,6 +132,11 @@ const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
         >
           <AddPlaylist setAddPlaylist={setIsOpenModal} />
         </CustomBottomSheet>
+      )} */}
+      {isOpenModal && (
+        <Modal>
+          <AddPlaylist setAddPlaylist={setIsOpenModal} />
+        </Modal>
       )}
     </>
   );

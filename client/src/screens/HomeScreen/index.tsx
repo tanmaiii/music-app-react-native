@@ -76,38 +76,6 @@ const HomeScreen = ({ navigation }: any) => {
     if (!currentUser) return linkTo("/Login");
   });
 
-  // const getSongs = async () => {
-  //   const res = await songApi.getAll(1, 10);
-  //   return res.data;
-  // };
-
-  // const getPlaylists = async () => {
-  //   const res = await playlistApi.getAll(1, 10);
-  //   return res.data;
-  // };
-
-  // const getArtists = async () => {
-  //   const res = await userApi.getAll(1, 10);
-  //   return res.data;
-  // };
-
-  // const getPlaylistsFavorites = async () => {
-  //   const res = await playlistApi.getAllFavoritesByUser(token, 1, 10);
-  //   return res.data;
-  // };
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    console.log("Reload");
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["playlists"] });
-      queryClient.invalidateQueries({ queryKey: ["artists"] });
-      queryClient.invalidateQueries({ queryKey: ["songs"] });
-      queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
-      setRefreshing(false);
-    }, 2000);
-  }, []);
-
   const { data: playlists } = useQuery({
     queryKey: ["playlists"],
     queryFn: async () => {
@@ -120,6 +88,8 @@ const HomeScreen = ({ navigation }: any) => {
     queryKey: ["artists"],
     queryFn: async () => {
       const res = await userApi.getAll(1, 10);
+      console.log(res.data);
+
       return res.data;
     },
   });
@@ -139,6 +109,18 @@ const HomeScreen = ({ navigation }: any) => {
       return res.data;
     },
   });
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    console.log("Reload");
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["playlists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
+      queryClient.invalidateQueries({ queryKey: ["songs"] });
+      queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   return (
     <>
@@ -226,11 +208,14 @@ const HomeScreen = ({ navigation }: any) => {
                 showsHorizontalScrollIndicator={false}
                 decelerationRate={0}
                 style={{ gap: SPACING.space_12 }}
-                renderItem={({ item, index }) => (
-                  <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
-                    <ArtistCard artist={item} />
-                  </View>
-                )}
+                renderItem={({ item, index }) => {
+                  if (item.id === currentUser.id) return;
+                  return (
+                    <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
+                      <ArtistCard artist={item} />
+                    </View>
+                  );
+                }}
               />
             </View>
           </View>

@@ -1,4 +1,5 @@
 import { db, promiseDb } from "../config/connect.js";
+import { v4 as uuidv4 } from "uuid";
 
 const Playlist = (playlist) => {
   this.id = playlist.id;
@@ -10,15 +11,20 @@ const Playlist = (playlist) => {
 };
 
 Playlist.create = (userId, newPlaylist, result) => {
-  db.query(`insert into playlists set ? ,user_id = ${userId}`, newPlaylist, (err, res) => {
-    if (err) {
-      console.log("ERROR", err);
-      result(err, null);
-      return;
+  const uniqueId = uuidv4();
+  db.query(
+    `insert into playlists set ? ,user_id = '${userId}', id = '${uniqueId}'`,
+    newPlaylist,
+    (err, res) => {
+      if (err) {
+        console.log("ERROR", err);
+        result(err, null);
+        return;
+      }
+      console.log("CREATE : ", { res });
+      result(null, { id: res.insertId, ...newPlaylist });
     }
-    console.log("CREATE : ", { res });
-    result(null, { id: res.insertId, ...newPlaylist });
-  });
+  );
 };
 
 Playlist.update = (playlistId, userId, newPlaylist, result) => {
@@ -32,7 +38,7 @@ Playlist.update = (playlistId, userId, newPlaylist, result) => {
       result("Không có quyền sửa", null);
       return;
     }
-    db.query(`update playlists set ? where id = ${playlist.id}`, newPlaylist, (err, res) => {
+    db.query(`update playlists set ? where id = '${playlist.id}'`, newPlaylist, (err, res) => {
       if (err) {
         console.log("ERROR:", err);
         result(err, null);
@@ -45,7 +51,7 @@ Playlist.update = (playlistId, userId, newPlaylist, result) => {
 };
 
 Playlist.delete = (playlistId, result) => {
-  db.query(`UPDATE playlists SET is_deleted = 1 where id = ${playlistId}`, (err, res) => {
+  db.query(`UPDATE playlists SET is_deleted = 1 where id = '${playlistId}'`, (err, res) => {
     if (err) {
       console.log("ERROR", err);
       result(err, null);
@@ -91,8 +97,8 @@ Playlist.destroy = (playlistId, userId, result) => {
 
 Playlist.restore = (playlistId, userId, result) => {
   db.query(
-    "SELECT * FROM playlists WHERE id = ? AND is_deleted = 1",
-    [playlistId, userId],
+    "SELECT * FROM playlists WHERE id = '?' AND is_deleted = 1",
+    [playlistId],
     (err, playlist) => {
       if (err) {
         console.log("ERROR", err);
@@ -177,7 +183,7 @@ Playlist.getMe = async (userId, query, result) => {
       ` FROM playlists as p ` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` title like "%${q}%" and` : ""}` +
-      ` user_id = ${userId} AND is_deleted = 0 ` +
+      ` user_id = '${userId}' AND is_deleted = 0 ` +
       `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
@@ -185,7 +191,7 @@ Playlist.getMe = async (userId, query, result) => {
     `SELECT COUNT(*) AS totalCount FROM playlists as p ` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` title like "%${q}%" and` : ""} ` +
-      ` user_id = ${userId} AND is_deleted = 0 `
+      ` user_id = '${userId}' AND is_deleted = 0 `
   );
 
   if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
@@ -245,7 +251,7 @@ Playlist.findByUserId = async (userId, query, result) => {
     `SELECT p.*, u.name as author FROM playlists as p ` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` title like "%${q}%" and ` : ""} ` +
-      ` user_id = ${userId} and public = 1 AND is_deleted = 0` +
+      ` user_id = '${userId}' and public = 1 AND is_deleted = 0` +
       ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
@@ -253,7 +259,7 @@ Playlist.findByUserId = async (userId, query, result) => {
     `SELECT COUNT(*) AS totalCount FROM playlists as p ` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` title like "%${q}%" and ` : ""} ` +
-      ` user_id = ${userId} and public = 1 AND is_deleted = 0`
+      ` user_id = '${userId}' and public = 1 AND is_deleted = 0`
   );
 
   if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
@@ -288,7 +294,7 @@ Playlist.findByFavorite = async (userId, query, result) => {
       ` INNER JOIN playlists AS p ON fp.playlist_id = p.id` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` p.title LIKE "%${q}%" AND ` : ""} ` +
-      ` (p.public = 1 AND fp.user_id = ${userId} ) OR (fp.user_id = ${userId} AND p.user_id = fp.user_id) AND p.is_deleted = 0` +
+      ` (p.public = 1 AND fp.user_id = '${userId}' ) OR (fp.user_id = '${userId}' AND p.user_id = fp.user_id) AND p.is_deleted = 0` +
       ` ORDER BY fp.created_at ${sort === "new" ? "DESC" : "ASC"}` +
       ` LIMIT ${+limit} OFFSET ${+offset};`
   );
@@ -299,7 +305,7 @@ Playlist.findByFavorite = async (userId, query, result) => {
       ` INNER JOIN playlists AS p ON fp.playlist_id = p.id` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` p.title LIKE "%${q}%" AND ` : ""} ` +
-      ` (p.public = 1 AND fp.user_id = ${userId} ) OR (fp.user_id = ${userId} AND p.user_id = fp.user_id) AND p.is_deleted = 0`
+      ` (p.public = 1 AND fp.user_id = '${userId}' ) OR (fp.user_id = '${userId}' AND p.user_id = fp.user_id) AND p.is_deleted = 0`
   );
 
   if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
@@ -323,7 +329,7 @@ Playlist.findByFavorite = async (userId, query, result) => {
 
 Playlist.findUserLike = (playlistId, result) => {
   db.query(
-    `SELECT user_id FROM favourite_playlists as fs WHERE fs.playlist_id = ${playlistId}`,
+    `SELECT user_id FROM favourite_playlists as fs WHERE fs.playlist_id = ?`, [playlistId],
     (err, data) => {
       if (err) {
         result(err, null);

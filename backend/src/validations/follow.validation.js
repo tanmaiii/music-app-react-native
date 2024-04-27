@@ -23,20 +23,14 @@ const querySchema = {
 
 export default class followValidation {
   static addFollow = {
-    body: Joi.object().keys({
-      token: Joi.string().required(),
-    }),
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
 
   static removeFollow = {
-    body: Joi.object().keys({
-      token: Joi.string().required(),
-    }),
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
 
@@ -49,20 +43,17 @@ export default class followValidation {
 
   static getCountFollowers = {
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
   static getCountFollowing = {
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
   static checkFollowing = {
-    body: Joi.object().keys({
-      token: Joi.string().required(),
-    }),
     params: Joi.object().keys({
-      userId: Joi.number().integer().required(),
+      userId: Joi.string().min(0).max(36).required(),
     }),
   };
 }

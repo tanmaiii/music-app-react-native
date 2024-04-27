@@ -3,10 +3,10 @@ import jwtService from "../services/jwtService.js";
 
 export const updateUser = async (req, res) => {
   try {
-    const { token, ...newUser } = req.body;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
-    User.update(userInfo.id, newUser, (err, data) => {
+    User.update(userInfo.id, req.body, (err, data) => {
       if (!data) {
         const conflictError = err;
         return res.status(401).json({ conflictError });
@@ -37,9 +37,7 @@ export const getUser = (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    // const token = req.cookies?.accessToken;
-    const { token } = req.body;
-
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     User.findById(userInfo.id, (err, user) => {

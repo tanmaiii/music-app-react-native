@@ -18,7 +18,7 @@ const songApi = {
       },
     });
   },
-  getDetail(songId: number, token: string): Promise<TSong> {
+  getDetail(songId: string, token: string): Promise<TSong> {
     const url = "song/detail/";
     return axiosClient.get(url + songId, {
       headers: {
@@ -27,7 +27,7 @@ const songApi = {
     });
   },
   getAllByUserId(
-    userId: number,
+    userId: string,
     page: number,
     limit: number,
     q?: string,
@@ -44,7 +44,7 @@ const songApi = {
     });
   },
   getAllByPlaylistId(
-    playlistId: number,
+    playlistId: string,
     page: number,
     limit: number,
     q?: string,
@@ -61,7 +61,7 @@ const songApi = {
     });
   },
   getAllFavoritesByUser(
-    userId: number,
+    userId: string,
     page: number,
     limit: number,
     q?: string,
@@ -77,11 +77,11 @@ const songApi = {
       },
     });
   },
-  getAllArtistInSong(songId: number, token: string): Promise<TUser[]> {
+  getAllArtistInSong(songId: string, token: string): Promise<TUser[]> {
     const url = "userSong/";
     return axiosClient.post(url + songId, { token });
   },
-  checkLikedSong(songId: number, token: string): Promise<CheckLikedResponse> {
+  checkLikedSong(songId: string, token: string): Promise<CheckLikedResponse> {
     const url = "song/checkLiked/";
     return axiosClient.get(url + songId, {
       headers: {
@@ -89,7 +89,7 @@ const songApi = {
       },
     });
   },
-  likeSong(songId: number, token: string) {
+  likeSong(songId: string, token: string) {
     const url = "song/like/";
     return axiosClient.post(url + songId, undefined, {
       headers: {
@@ -97,7 +97,7 @@ const songApi = {
       },
     });
   },
-  unLikeSong(songId: number, token: string) {
+  unLikeSong(songId: string, token: string) {
     const url = "song/like/";
     return axiosClient.delete(url + songId, {
       headers: {

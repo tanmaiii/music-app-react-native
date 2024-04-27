@@ -177,13 +177,21 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   });
 
   const mutationFollow = useMutation({
-    mutationFn: (follow: boolean) => {
-      if (follow) return userApi.unFollow(userId, token);
-      return userApi.follow(userId, token);
+    mutationFn: async (follow: boolean) => {
+      try {
+        console.log("follow");
+        if (follow) return await userApi.unFollow(userId, token);
+        return await userApi.follow(userId, token);
+      } catch (err) {
+        console.log(err.response.data);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["follow", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["all-favorites"],
       });
       queryClient.invalidateQueries({
         queryKey: ["followers", userId],
@@ -453,6 +461,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                     style={{ gap: SPACING.space_12 }}
                     renderItem={({ item, index }) => {
                       if (item.id === userId) return;
+                      if (item.id === currentUser.id) return;
                       return (
                         <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
                           <ArtistCard loading={loading} artist={item} />
@@ -473,7 +482,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           height1={heightModal}
         >
           <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
-            <ModalArtist artist={artist}/>
+            <ModalArtist artist={artist} />
           </View>
         </CustomBottomSheet>
       )}
@@ -486,10 +495,10 @@ type TSongTop = {
 };
 
 export const SongTop = ({ song }: TSongTop) => {
-  const { setOpenBarSong, setSongPlaying, songPlaying } = usePlaying();
+  const { setOpenBarSong, setSongIdPlaying, songIdPlaying } = usePlaying();
 
   const handlePress = () => {
-    setSongPlaying(song.id);
+    setSongIdPlaying(song.id);
     setOpenBarSong(true);
   };
 

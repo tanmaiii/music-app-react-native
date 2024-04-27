@@ -83,7 +83,7 @@ export const COLORS: Color = {
 
   White1: "#FFFFFF",
   White2: "#b3b3b3",
-  White3: "#f5f5f5",
+  White3: "#cccccc",
   Black1: "#121212",
   Black2: "#1a1a1a",
   Black3: "#292929",

@@ -21,7 +21,7 @@ Follow.create = (userId, followedId, result) => {
 
 Follow.delete = (userId, followedId, result) => {
   db.query(
-    "DELETE FROM follows WHERE follower_user_id = ? AND followed_user_id= ?",
+    "DELETE FROM follows WHERE follower_user_id = ? AND followed_user_id = ?",
     [userId, followedId],
     (deleteErr, insertRes) => {
       if (deleteErr) {
@@ -36,7 +36,8 @@ Follow.delete = (userId, followedId, result) => {
 
 Follow.findFollowRelationship = (userId, followedId, result) => {
   db.query(
-    `SELECT * FROM follows WHERE follower_user_id = ${userId} AND followed_user_id= ${followedId}`,
+    `SELECT * FROM follows WHERE follower_user_id = ? AND followed_user_id= ?`,
+    [userId, followedId],
     (err, follow) => {
       if (err) {
         result(err, null);
@@ -64,16 +65,17 @@ Follow.findAllByFollowerId = async (userId, query, result) => {
 
   const [data] = await promiseDb.query(
     `SELECT id, name, verified, image_path ,is_admin, f.* ` +
-      ` FROM music.follows as f, music.users WHERE ` +
-      ` f.followed_user_id = users.id AND f.follower_user_id = ${userId}` +
+      ` FROM follows as f, users WHERE ` +
+      ` f.followed_user_id = users.id AND f.follower_user_id = '${userId}'` +
       ` ${q ? `AND users.name LIKE "%${q}%"` : ""}` +
       `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM follows as f where follower_user_id = ${userId} ${
-      q ? `AND title LIKE "%${q}%"` : ""
-    }`
+    `SELECT COUNT(*) AS totalCount` +
+      ` FROM follows as f, users WHERE ` +
+      ` f.followed_user_id = users.id AND f.follower_user_id = '${userId}'` +
+      ` ${q ? `AND users.name LIKE "%${q}%"` : ""}`
   );
 
   if (data && totalCount) {
@@ -106,16 +108,17 @@ Follow.findAllByFollowedId = async (userId, query, result) => {
 
   const [data] = await promiseDb.query(
     `SELECT id, name, verified, image_path ,is_admin, f.* ` +
-      ` FROM music.follows as f, music.users WHERE ` +
-      ` f.follower_user_id = users.id AND f.followed_user_id = ${userId}` +
+      ` FROM follows as f, users WHERE ` +
+      ` f.follower_user_id = users.id AND f.followed_user_id = '${userId}'` +
       ` ${q ? `AND users.name LIKE "%${q}%"` : ""}` +
       `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
-    `SELECT COUNT(*) AS totalCount FROM follows where followed_user_id = ${userId} ${
-      q ? `AND title LIKE "%${q}%"` : ""
-    }`
+    `SELECT COUNT(*) AS totalCount ` +
+      ` FROM follows as f, users WHERE ` +
+      ` f.follower_user_id = users.id AND f.followed_user_id = '${userId}'` +
+      ` ${q ? `AND users.name LIKE "%${q}%"` : ""}`
   );
 
   if (data && totalCount) {
@@ -140,7 +143,8 @@ Follow.findAllByFollowedId = async (userId, query, result) => {
 //Số lượng người đang theo dõi người dùng đó
 Follow.countFollowed = async (userId, result) => {
   const [count] = await promiseDb.query(
-    `SELECT COUNT(*) AS total  FROM follows where followed_user_id = ${userId} `
+    `SELECT COUNT(*) AS total  FROM follows where followed_user_id = ? `,
+    [userId]
   );
 
   if (count) {
@@ -153,7 +157,8 @@ Follow.countFollowed = async (userId, result) => {
 //Số lượng người dùng đang theo dõi
 Follow.countFollower = async (userId, result) => {
   const [count] = await promiseDb.query(
-    `SELECT COUNT(*) AS total FROM follows where follower_user_id = ${userId}`
+    `SELECT COUNT(*) AS total FROM follows where follower_user_id = ?`,
+    [userId]
   );
 
   if (count) {
@@ -165,7 +170,7 @@ Follow.countFollower = async (userId, result) => {
 
 Follow.checkFollowing = async (userId, followedId, result) => {
   const [count] = await promiseDb.query(
-    `SELECT COUNT(*) AS total FROM music.follows where follower_user_id = ? and followed_user_id = ?`,
+    `SELECT COUNT(*) AS total FROM follows where follower_user_id = ? and followed_user_id = ?`,
     [userId, followedId]
   );
   console.log(userId, followedId);

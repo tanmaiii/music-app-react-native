@@ -1,9 +1,9 @@
 export type TSong = {
-  id: number;
+  id: string;
   title: string;
   image_path: string;
   author: string;
-  user_id?: number;
+  user_id: string;
   genre_id?: string;
   song_path?: string;
   public?: number;
