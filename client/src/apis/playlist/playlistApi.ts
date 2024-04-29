@@ -32,10 +32,26 @@ const playlistApi = {
     limit: number,
     q?: string,
     sort?: string,
-    token?: string
   ): Promise<ListResponse<TPlaylist>> {
     const url = "playlist/user/";
     return axiosClient.get(url + userId, {
+      params: {
+        page: page,
+        limit: limit,
+        sortBy: sort,
+        q: q,
+      },
+    });
+  },
+  getMe(
+    token: string,
+    page: number,
+    limit: number,
+    q?: string,
+    sort?: string,
+  ): Promise<ListResponse<TPlaylist>> {
+    const url = "playlist/me";
+    return axiosClient.get(url, {
       params: {
         page: page,
         limit: limit,
@@ -86,6 +102,49 @@ const playlistApi = {
   unLikePlaylist(playlistId: string, token: string) {
     const url = "playlist/like/";
     return axiosClient.delete(url + playlistId, {
+      headers: {
+        authorization: token,
+      },
+    });
+  },
+  checkSongInPlaylist(
+    playlistId: string,
+    songId: string,
+    token: string
+  ): Promise<{ isAdd: boolean }> {
+    const url = "playlist/checkSong";
+    return axiosClient.post(
+      url,
+      { song_id: songId, playlist_id: playlistId },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+  },
+  addSong(playlistId: string, songId: string, token: string) {
+    const url = "playlist/song/";
+    return axiosClient.post(
+      url,
+      {
+        song_id: songId,
+        playlist_id: playlistId,
+      },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+  },
+  removeSong(playlistId: string, songId: string, token: string) {
+    const url = "playlist/song/";
+    return axiosClient.delete(url, {
+      data: {
+        song_id: songId,
+        playlist_id: playlistId,
+      },
       headers: {
         authorization: token,
       },

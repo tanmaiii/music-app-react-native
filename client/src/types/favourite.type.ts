@@ -1,6 +1,6 @@
 export type ResFavourite = {
   type: string;
-  id: number;
+  id: string;
   title?: string;
   author?: string;
   name?: string;

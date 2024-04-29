@@ -40,6 +40,7 @@ import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
 import { useQuery } from "@tanstack/react-query";
+import { RefreshControl } from "react-native-gesture-handler";
 
 interface ListSongScreenProps {}
 
@@ -150,8 +151,10 @@ const ListSongScreen = (props: ListSongScreenProps) => {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    setPage(1);
-    setRefreshing(false);
+    setTimeout(() => {
+      setPage(1);
+      setRefreshing(false);
+    }, 2000);
   };
 
   return (
@@ -187,7 +190,6 @@ const ListSongScreen = (props: ListSongScreenProps) => {
         <View style={styles.wrapper}>
           <View style={[styles.wrapperTop]}>
             <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
-              {" "}
               {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
             </Text>
             <Text style={styles.textExtra}>Not found</Text>
@@ -208,8 +210,13 @@ const ListSongScreen = (props: ListSongScreenProps) => {
             data={songs}
             ListFooterComponent={renderLoader}
             onEndReached={loadMore}
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={COLORS.White1}
+              />
+            }
             scrollEventThrottle={16}
             contentContainerStyle={{
               paddingBottom: HEIGHT.playingCard + 20,
@@ -217,7 +224,6 @@ const ListSongScreen = (props: ListSongScreenProps) => {
             ListHeaderComponent={
               <View style={[styles.wrapperTop]}>
                 <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
-                  {" "}
                   {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
                 </Text>
                 <Text style={styles.textExtra}>{totalCount} Songs</Text>
@@ -287,6 +293,7 @@ const styles = StyleSheet.create({
   wrapper: {
     gap: SPACING.space_18,
     marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+    height: WINDOW_HEIGHT,
   },
   wrapperTop: {
     gap: SPACING.space_12,

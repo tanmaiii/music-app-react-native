@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.space_12,
     display: "flex",
     flexDirection: "row",
-    backgroundColor: COLORS.Black1,
   },
   boxImage: {
     width: 70,

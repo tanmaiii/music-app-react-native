@@ -202,8 +202,8 @@ export const getAllFavoritesByUser = async (req, res) => {
     const { userId } = req.params;
 
     Song.findByFavorite(userId, req.query, (err, data) => {
-      if (!data) {
-        return res.status(401).json("Không tìm thấy");
+      if (err) {
+        return res.status(401).json({conflictError: err});
       } else {
         return res.json(data);
       }

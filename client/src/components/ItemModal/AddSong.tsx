@@ -15,62 +15,51 @@ import Constants from "expo-constants";
 import { IMAGES } from "../../constants";
 import CustomModal from "../CustomModal";
 import { TSong } from "../../types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { playlistApi, songApi } from "../../apis";
+import { apiConfig } from "../../configs";
+import { useAuth } from "../../context/AuthContext";
+import { Skeleton } from "moti/skeleton";
+import CustomInput from "../CustomInput";
+
 const statusBarHeight = Constants.statusBarHeight;
 
-const songs: TSong[] = [
-  {
-    id: 1,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
+const SkeletonCommonProps = {
+  colorMode: "dark",
+  transition: {
+    type: "timing",
+    duration: 1000,
   },
-  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 3,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 5,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 7,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-
-  {
-    id: 8,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 9, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 10,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-];
+  backgroundColor: COLORS.Black3,
+} as const;
 
 interface AddSongProps {
-  // setIsOpen: (boolean) => void;
+  id: string;
+  setIsOpen: (boolean) => void;
 }
 
-const AddSong = (props: AddSongProps) => {
+const AddSong = ({ setIsOpen, id }: AddSongProps) => {
   const textInputRef = React.useRef<TextInput>();
+  const [keyword, setKeyword] = React.useState<string>("");
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
-    textInputRef.current.focus();
+    // textInputRef.current.focus();
   }, []);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["all-songs", id],
+    queryFn: async () => {
+      const res = await songApi.getAll(1, 10, keyword && keyword);
+      return res.data;
+    },
+  });
+
+  React.useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["all-songs", id] });
+  }, [keyword]);
+
+  const handleSubmitTextChange = (text) => {};
 
   return (
     <View style={styles.container}>
@@ -86,23 +75,18 @@ const AddSong = (props: AddSongProps) => {
           <View>
             <Text style={styles.textMain}>Add song to playlist</Text>
           </View>
-          {/* <TouchableOpacity onPress={() => setIsOpen(false)}> */}
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setIsOpen(false)}>
             <FontAwesomeIcon icon={faXmark} size={24} color={COLORS.White2} />
           </TouchableOpacity>
         </View>
-
-        <View style={styles.boxInput}>
-          <FontAwesomeIcon icon={faMagnifyingGlass} size={20} color={COLORS.WhiteRGBA32} />
-          <BottomSheetTextInput
-            ref={textInputRef}
-            style={styles.textInput}
-            placeholder="Search for songs to add to playlist"
-            placeholderTextColor={COLORS.WhiteRGBA32}
-          />
-        </View>
+        <CustomInput onSubmit={(text) => setKeyword(text)} />
       </View>
-      <FlatList data={songs} renderItem={({ item, index }) => <SongItem song={item} />} />
+      <FlatList
+        data={data}
+        renderItem={({ item, index }) => (
+          <SongItem key={index} song={item} playlistId={id} loading={isLoading} />
+        )}
+      />
     </View>
   );
 };
@@ -111,53 +95,113 @@ export default AddSong;
 
 type TSongItem = {
   song: TSong;
+  playlistId: string;
+  loading?: boolean;
 };
 
-const SongItem = (props: TSongItem) => {
-  const { song } = props;
-  const [isAdd, setIsAdd] = React.useState<boolean>(false);
-  const [openModal, setOpenModal] = React.useState(false);
+const SongItem = ({ song, playlistId, loading = false }: TSongItem) => {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+
+  const { data: countSongs } = useQuery({
+    queryKey: ["count-songs", playlistId],
+    queryFn: async () => {
+      const res = await songApi.getAllByPlaylistId(playlistId, 1, 0);
+      return res.pagination.totalCount;
+    },
+  });
+
+  const { data: isAdd, isLoading } = useQuery({
+    queryKey: ["check-song", song.id, playlistId],
+    queryFn: async () => {
+      try {
+        const res = await playlistApi.checkSongInPlaylist(playlistId, song.id, token);
+        return res.isAdd;
+      } catch (error) {
+        console.log(error.response.data);
+        return false;
+      }
+    },
+  });
+
+  const mutationAdd = useMutation({
+    mutationFn: async (isAdd: boolean) => {
+      if (isAdd) return await playlistApi.removeSong(playlistId, song.id, token);
+      if (countSongs < 10) return await playlistApi.addSong(playlistId, song.id, token);
+      setOpenModal(true);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["check-song", song.id, playlistId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["count-songs", playlistId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs", playlistId],
+      });
+    },
+  });
 
   return (
     <>
-      <TouchableOpacity onPress={() => isAdd && setOpenModal(true)}>
+      <TouchableOpacity onPress={() => mutationAdd.mutate(isAdd)} >
         <View style={styles.card} onTouchStart={Keyboard.dismiss}>
           <View style={styles.cardImage}>
-            <Image source={IMAGES.POSTER} style={styles.image} />
+            {loading ? (
+              <Skeleton {...SkeletonCommonProps} height={"100%"} width={"100%"} />
+            ) : (
+              <Image
+                source={
+                  song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
+                }
+                style={styles.image}
+              />
+            )}
           </View>
           <View style={styles.cardBody}>
-            <View>
-              <Text numberOfLines={1} style={styles.textMain}>
-                {song.title}
-              </Text>
-              <Text numberOfLines={1} style={styles.textEtra}>
-                {song.author}
-              </Text>
+            <View style={{ gap: SPACING.space_4 }}>
+              {loading ? (
+                <Skeleton {...SkeletonCommonProps} radius={4} height={18} width={100} />
+              ) : (
+                <Text numberOfLines={1} style={styles.textMain}>
+                  {song.title}
+                </Text>
+              )}
+
+              {loading ? (
+                <Skeleton {...SkeletonCommonProps} radius={4} height={14} width={100} />
+              ) : (
+                <Text numberOfLines={1} style={styles.textEtra}>
+                  {song.author}
+                </Text>
+              )}
             </View>
           </View>
-          <TouchableOpacity
-            onPress={() => (!isAdd ? setIsAdd(true) : setOpenModal(true))}
-            style={styles.cardIcon}
-          >
-            {isAdd ? (
-              <FontAwesomeIcon icon={faCheckCircle} size={24} color={COLORS.Primary} />
-            ) : (
-              <FontAwesomeIcon icon={faPlusCircle} size={24} color={COLORS.White1} />
-            )}
-          </TouchableOpacity>
+          {loading ? (
+            <Skeleton {...SkeletonCommonProps} height={30} width={30} radius={"round"} />
+          ) : (
+            <TouchableOpacity onPress={() => mutationAdd.mutate(isAdd)} style={styles.cardIcon}>
+              {isAdd ? (
+                <FontAwesomeIcon icon={faCheckCircle} size={24} color={COLORS.Primary} />
+              ) : (
+                <FontAwesomeIcon icon={faPlusCircle} size={24} color={COLORS.White2} />
+              )}
+            </TouchableOpacity>
+          )}
         </View>
       </TouchableOpacity>
-      {isAdd && (
+      {openModal && (
         <CustomModal
-          withInput={true}
           isOpen={openModal}
           setIsOpen={setOpenModal}
-          header={song.title}
-          modalFunction={() => setIsAdd(false)}
+          header="Number of songs"
+          modalFunction={() => console.log("Xin chao")}
         >
-          <Text style={{ color: COLORS.White1, fontSize: FONTSIZE.size_16 }}>
-            Are you sure delete the song from the playlist ?
-          </Text>
+          <View>
+            <Text style={styles.textMain}>The maximum playlist can only be 50 songs !</Text>
+          </View>
         </CustomModal>
       )}
     </>
@@ -168,6 +212,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // paddingHorizontal: SPACING.space_8,
+    backgroundColor: COLORS.Black2,
   },
   textMain: {
     fontSize: FONTSIZE.size_16,
@@ -221,7 +266,9 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+    objectFit: "contain",
     borderRadius: BORDERRADIUS.radius_8,
+    backgroundColor: COLORS.Black3,
   },
   cardBody: {
     flex: 1,

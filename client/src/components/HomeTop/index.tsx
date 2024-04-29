@@ -9,12 +9,13 @@ import { NavigationProp } from "../../navigation/TStack";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../context/AuthContext";
-import { TPlaylist } from "../../types";
+import { ResFavourite, TPlaylist } from "../../types";
 import { playlistApi } from "../../apis";
 import apiConfig from "../../configs/axios/apiConfig";
 
 interface HomeTopProps {
-  data: TPlaylist[];
+  data: ResFavourite[];
+  loading: boolean;
 }
 
 const SkeletonCommonProps = {
@@ -26,30 +27,9 @@ const SkeletonCommonProps = {
   backgroundColor: COLORS.Black2,
 } as const;
 
-const HomeTop = ({ data }: HomeTopProps) => {
-  const linkTo = useLinkTo();
+const HomeTop = ({ data, loading }: HomeTopProps) => {
   const navigation = useNavigation<NavigationProp>();
   const { currentUser, token } = useAuth();
-  const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
-  const [loading, setLoading] = React.useState<boolean>(false);
-
-  // const getData = async () => {
-  //   setLoading(true);
-  //   try {
-  //     // const resArtist = await userApi.getFollowing(currentUser.id, page, 10, null, sort);
-  //     const resPlaylist = await playlistApi.getAllFavoritesByUser(token, 1, 10, null, "new");
-  //     setPlaylists(resPlaylist.data);
-  //     // setArtists(resArtist.data);
-  //     setLoading(false);
-  //   } catch (err) {
-  //     console.log(err.response.data.conflictError);
-  //   }
-  //   setLoading(false);
-  // };
-
-  // React.useEffect(() => {
-  //   getData();
-  // }, [currentUser]);
 
   if (loading)
     return (
@@ -98,20 +78,29 @@ const HomeTop = ({ data }: HomeTopProps) => {
         </View>
       </TouchableScale>
       {data &&
-        data?.slice(0, 5).map((item) => (
+        data?.slice(0, 5).map((item, index) => (
           <TouchableScale
+            key={index}
             style={styles.card}
-            onPress={() => navigation.navigate("Playlist", { playlistId: item.id })}
+            onPress={
+              item.type === "playlist"
+                ? () => navigation.navigate("Playlist", { playlistId: item.id })
+                : () => navigation.navigate("Artist", { userId: item.id })
+            }
           >
             <View style={[styles.wrapper]}>
               <Image
                 style={styles.cardImage}
                 source={
-                  item?.image_path ? { uri: apiConfig.imageURL(item.image_path) } : IMAGES.PLAYLIST
+                  item?.image_path
+                    ? { uri: apiConfig.imageURL(item.image_path) }
+                    : item.name
+                    ? IMAGES.AVATAR
+                    : IMAGES.PLAYLIST
                 }
               />
               <View style={styles.cardBody}>
-                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.title}>{item.title || item.name}</Text>
               </View>
             </View>
           </TouchableScale>

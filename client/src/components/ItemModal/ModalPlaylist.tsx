@@ -26,16 +26,16 @@ import AddSong from "./AddSong";
 interface ModalSongProps {
   playlist?: TPlaylist;
   setOpenModal: (boolean) => void;
-  // setIsOpenAddSong: (boolean) => void;
+  setIsOpenAddSong: (boolean) => void;
   setIsOpenEdit: (boolean) => void;
 }
 
-const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit }: ModalSongProps) => {
+const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: ModalSongProps) => {
   const queryClient = useQueryClient();
   const { token, currentUser } = useAuth();
   const navigation = useNavigation<NavigationProp>();
 
-  const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
+  // const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
 
   const handleShare = async () => {
     try {
@@ -120,7 +120,7 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit }: ModalSongProps) =>
           title={isLike ? "Remove to favorites" : "Add to favorites"}
           itemFunc={() => mutationLike.mutate(isLike)}
         />
-        <Item icon={faPlusSquare} title="Add song" itemFunc={() => setIsOpenModalAddSong(true)} />
+        <Item icon={faPlusSquare} title="Add song" itemFunc={() => setIsOpenAddSong(true)} />
         {playlist?.user_id === currentUser.id && (
           <Item icon={faPenToSquare} title="Edit playlist" itemFunc={() => setIsOpenEdit(true)} />
         )}
@@ -131,17 +131,16 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit }: ModalSongProps) =>
         <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
       </View>
 
-      {isOpenModalAddSong && (
+      {/* {isOpenModalAddSong && (
         <CustomBottomSheet
           isOpen={true}
           closeModal={() => setIsOpenModalAddSong(false)}
           height1={"100%"}
           border={false}
-          // enableClose={false}
         >
           <AddSong />
         </CustomBottomSheet>
-      )}
+      )} */}
     </View>
   );
 };

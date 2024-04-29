@@ -38,6 +38,7 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [loading, setLoding] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
+  const [heightModal, setHeightModal] = React.useState(200);
   const { token } = useAuth();
   const queryClient = useQueryClient();
 
@@ -71,6 +72,9 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
       });
       queryClient.invalidateQueries({
         queryKey: ["songs-favorites"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["count-songs-favorites"],
       });
     },
   });
@@ -173,13 +177,8 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
       </View>
 
       {isOpenModal && (
-        <CustomBottomSheet
-          isOpen={true}
-          closeModal={() => setIsOpenModal(false)}
-          height1={400}
-          height2={"100%"}
-        >
-          <AddSongToPlaylist />
+        <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={"90%"}>
+          <AddSongToPlaylist songId={song.id} />
         </CustomBottomSheet>
       )}
     </View>

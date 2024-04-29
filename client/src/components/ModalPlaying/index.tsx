@@ -45,6 +45,8 @@ import { BlurView } from "expo-blur";
 import { ScrollView } from "react-native-gesture-handler";
 import { opacity } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../navigation/TStack";
 
 interface TSongPlaying {}
 
@@ -57,6 +59,7 @@ const ModalPlaying = (props: TSongPlaying) => {
   const [sound, setSound] = useState(null);
   const [durationMillis, setDurationMillis] = useState(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const navigation = useNavigation<NavigationProp>();
 
   const handleShare = async () => {
     try {
@@ -212,13 +215,17 @@ const ModalPlaying = (props: TSongPlaying) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.BottomButton}
-              onPress={() => setIsOpenModal(!isOpenModal)}
+              onPress={() => {
+                // navigation.navigate("Song", { songId: song.id });
+                setIsOpenModal(!isOpenModal);
+              }}
             >
               <FontAwesomeIcon icon={faBars} size={20} color={COLORS.WhiteRGBA50} />
             </TouchableOpacity>
           </View>
         </View>
       </ImageBackground>
+
       {isOpenModal && (
         <CustomBottomSheet
           isOpen={isOpenModal}

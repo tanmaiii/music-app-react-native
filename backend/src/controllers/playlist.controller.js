@@ -153,11 +153,11 @@ export const getAllPlaylistByMe = async (req, res) => {
 
 export const getAllPlaylistByUser = (req, res) => {
   try {
-    Playlist.findByUserId(req.params.userId, req.query, (err, playlist) => {
-      if (!playlist) {
-        return res.status(401).json("Không tìm thấy");
+    Playlist.findByUserId(req.params.userId, req.query, (error, playlists) => {
+      if (error) {
+        return res.status(401).json({ conflictError: error });
       } else {
-        return res.json(playlist);
+        return res.json(playlists);
       }
     });
   } catch (error) {
@@ -246,6 +246,39 @@ export const unLikePlaylist = async (req, res) => {
   }
 };
 
+export const checkSongInPlaylist = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+
+    const songId = req.body.song_id;
+    const playlistId = req.body.playlist_id;
+
+    console.log(songId, playlistId);
+    
+    // Tìm bài hát trong database dựa trên songId
+    Playlist.findById(playlistId, userInfo.id, (err, song) => {
+      if (err || !song) {
+        return res.status(404).json({ conflictError: "Playlist not found" });
+      } else {
+        // Kiểm tra xem userId có tồn tại trong danh sách người thích của bài hát hay không
+        Playlist.findSongInPlaylist(playlistId, (err, data) => {
+          console.log("CHECK SONG", data);
+          if (data) {
+            const isAdd = data.includes(songId);
+            return res.status(200).json({ isAdd });
+          } else {
+            return res.status(200).json({ isAdd: false });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
+
 export const addSongPlaylist = async (req, res) => {
   try {
     const token = req.headers["authorization"];
@@ -256,6 +289,7 @@ export const addSongPlaylist = async (req, res) => {
         const conflictError = err;
         return res.status(401).json({ conflictError });
       } else {
+        console.log("ADD SONG", data);
         return res.json(data);
       }
     });
@@ -274,6 +308,7 @@ export const unAddSongPlaylist = async (req, res) => {
         const conflictError = err;
         return res.status(401).json({ conflictError });
       } else {
+        console.log("UN ADD SONG", data);
         return res.json(data);
       }
     });
@@ -298,6 +333,8 @@ export default {
   checkPlaylistLike,
   likePlaylist,
   unLikePlaylist,
+
+  checkSongInPlaylist,
   addSongPlaylist,
   unAddSongPlaylist,
 };

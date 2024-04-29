@@ -55,6 +55,7 @@ export default AddSongPlaylist;
 const styles = StyleSheet.create({
   container: {
     paddingBottom: SPACING.space_14,
+    backgroundColor: COLORS.Black2,
   },
   textMain: {
     fontSize: FONTSIZE.size_16,

@@ -134,6 +134,9 @@ const SongDetail = (props: SongDetailProps) => {
       queryClient.invalidateQueries({
         queryKey: ["songs-favorites"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["count-songs-favorites"],
+      });
     },
   });
 

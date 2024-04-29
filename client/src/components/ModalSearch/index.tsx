@@ -29,23 +29,23 @@ import HeaderSearch from "../HeaderSearch";
 import { TPlaylist } from "../../types";
 import { IMAGES } from "../../constants";
 
-const DATA: TPlaylist[] = [
-  { id: 1, title: "1 Front Left", desc: "Song", image_path: IMAGES.AI, author: "Joihn Cena" },
-  { id: 2, title: "2 Les", desc: "Song", image_path: IMAGES.AI, author: "Joihn Cena" },
-  { id: 3, title: "3 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
-  { id: 4, title: "4 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
-  { id: 5, title: "5 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
-  { id: 6, title: "6 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
-  { id: 6, title: "7 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
-  { id: 6, title: "8 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
-  {
-    id: 6,
-    title: "9 New jeans bottom",
-    desc: "Playlist",
-    image_path: IMAGES.AI,
-    author: "Joihn Cena",
-  },
-];
+// const DATA: TPlaylist[] = [
+//   { id: 1, title: "1 Front Left", desc: "Song", image_path: IMAGES.AI, author: "Joihn Cena" },
+//   { id: 2, title: "2 Les", desc: "Song", image_path: IMAGES.AI, author: "Joihn Cena" },
+//   { id: 3, title: "3 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
+//   { id: 4, title: "4 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
+//   { id: 5, title: "5 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
+//   { id: 6, title: "6 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
+//   { id: 6, title: "7 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
+//   { id: 6, title: "8 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
+//   {
+//     id: 6,
+//     title: "9 New jeans bottom",
+//     desc: "Playlist",
+//     image_path: IMAGES.AI,
+//     author: "Joihn Cena",
+//   },
+// ];
 
 interface ModalSearchProps {
   isOpen?: boolean;
@@ -76,18 +76,18 @@ const ModalSearch = ({ isOpen, setIsOpen }: ModalSearchProps) => {
             <Text style={styles.titleHeaderScroll}>Recent searches</Text>
           </View>
           <View style={styles.scrollViewContent}>
-            {DATA.map((item, index) => {
+            {/* {DATA.map((item, index) => {
               return (
-                <ItemHorizontal
-                  playlist={item}
-                  // id={item.id}
-                  // key={index}
-                  // title={item.title}
-                  // desc={item.desc}
-                  // type={item.type}
-                />
+                // <ItemHorizontal
+                //   playlist={item}
+                //   // id={item.id}
+                //   // key={index}
+                //   // title={item.title}
+                //   // desc={item.desc}
+                //   // type={item.type}
+                // />
               );
-            })}
+            })} */}
           </View>
         </ScrollView>
       </View>

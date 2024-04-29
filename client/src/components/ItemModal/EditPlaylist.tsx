@@ -14,57 +14,68 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import ButtonSwitch from "../ButtonSwitch/ButtonSwitch";
 import Modal from "../CustomModal";
-import { TSong } from "../../types";
+import { TPlaylist, TSong } from "../../types";
 import { IMAGES } from "../../constants";
 import Constants from "expo-constants";
+import { useQuery } from "@tanstack/react-query";
+import { songApi } from "../../apis";
+import { apiConfig } from "../../configs";
 const statusBarHeight = Constants.statusBarHeight;
 
-const songs: TSong[] = [
-  {
-    id: 1,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
-  },
-  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 3,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 5,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 7,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-  { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-  { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-  { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-];
+// const songs: TSong[] = [
+//   {
+//     id: 1,
+//     title: "Despacito, Despacito ,Despacito, Despacito",
+//     image_path: "despacito.jpg",
+//     author: "Luis Fonsi",
+//   },
+//   { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
+//   {
+//     id: 3,
+//     title: "Uptown Funk",
+//     image_path: "uptown_funk.jpg",
+//     author: "Mark Ronson ft. Bruno Mars",
+//   },
+//   { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
+//   {
+//     id: 5,
+//     title: "See You Again",
+//     image_path: "see_you_again.jpg",
+//     author: "Wiz Khalifa ft. Charlie Puth",
+//   },
+//   { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
+//   {
+//     id: 7,
+//     title: "Old Town Road",
+//     image_path: "old_town_road.jpg",
+//     author: "Lil Nas X ft. Billy Ray Cyrus",
+//   },
+//   { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
+//   { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
+//   { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
+// ];
 
 interface EditPlaylistProps {
   setIsOpen: (boolean) => void;
+  playlist: TPlaylist;
 }
 
-const EditPlaylist = ({ setIsOpen }: EditPlaylistProps) => {
-  const [name, setName] = React.useState<string>("");
-  const [isPrivate, setIsPrivate] = React.useState<boolean>(false);
+const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
+  const [name, setName] = React.useState<string>(playlist.title);
+  const [isPrivate, setIsPrivate] = React.useState<boolean>(playlist.public === 1 ? false : true);
 
   const handleCloseModal = () => {
-    console.log("Close edit playlist");
-
     setIsOpen(false);
   };
+
+  const { data: songs } = useQuery({
+    queryKey: ["songs", playlist.id],
+    queryFn: async () => {
+      const res = await songApi.getAllByPlaylistId(playlist.id, 1, 50);
+      // setTotalCount(res.pagination.totalCount);
+      return res.data;
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -139,7 +150,12 @@ const SongItem = (props: TSongItem) => {
           </View>
           <View style={styles.cardCenter}>
             <View style={styles.cardImage}>
-              <Image source={IMAGES.POSTER} style={styles.image} />
+              <Image
+                source={
+                  song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
+                }
+                style={styles.image}
+              />
             </View>
             <View style={styles.cardBody}>
               <View>

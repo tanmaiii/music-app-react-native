@@ -68,6 +68,11 @@ router.delete(
   playlistController.unLikePlaylist
 );
 
+router.post(
+  "/checkSong",
+  validate(playlistValidation.addSong),
+  playlistController.checkSongInPlaylist
+);
 router.post("/song", validate(playlistValidation.addSong), playlistController.addSongPlaylist);
 router.delete(
   "/song",

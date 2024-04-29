@@ -24,7 +24,9 @@ import {
   faChevronLeft,
   faCirclePlus,
   faEllipsis,
+  faGlobe,
   faHeart as faHeartSolid,
+  faLock,
   faPlay,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
@@ -37,7 +39,7 @@ import { RootRouteProps } from "../../navigation/TStack";
 import { playlistApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import apiConfig from "../../configs/axios/apiConfig";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, RefreshControl } from "react-native-gesture-handler";
 import CategoryHeader from "../../components/CategoryHeader";
 import PlaylistCard from "../../components/PlaylistCard";
 const statusBarHeight = Constants.statusBarHeight;
@@ -67,12 +69,12 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(400);
-  const [playlist, setPlaylist] = React.useState<TPlaylist>(null);
-  const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
-  const [songs, setSongs] = React.useState<TSong[]>(null);
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [refreshing, setRefreshing] = React.useState<boolean>(false);
+  // const [playlist, setPlaylist] = React.useState<TPlaylist>(null);
+  // const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
+  // const [songs, setSongs] = React.useState<TSong[]>(null);
   const [totalCount, setTotalCount] = React.useState<number>(0);
+  const [refreshing, setRefreshing] = React.useState<boolean>(false);
+
   const playlistId = route.params.playlistId;
   const { token, currentUser } = useAuth();
   const queryClient = useQueryClient();
@@ -155,26 +157,41 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     },
   });
 
-  const getPlaylist = async () => {
-    setLoading(true);
-    try {
+  const { data: playlist, isLoading: loading } = useQuery({
+    queryKey: ["playlist", playlistId],
+    queryFn: async () => {
       const res = await playlistApi.getDetail(playlistId, token);
-      const resSongs = await songApi.getAllByPlaylistId(playlistId, 1, 10);
-      const resPlaylists = await playlistApi.getAll(1, 6);
-      setPlaylist(res);
-      setSongs(resSongs.data);
-      setTotalCount(resSongs.pagination.totalCount);
-      setPlaylists(resPlaylists.data);
-      setLoading(false);
-    } catch (error) {
-      console.log(error.response.data);
-    }
-    setLoading(false);
+      return res;
+    },
+  });
+
+  const { data: songs } = useQuery({
+    queryKey: ["songs", playlistId],
+    queryFn: async () => {
+      const res = await songApi.getAllByPlaylistId(playlistId, 1, 50);
+      setTotalCount(res.pagination.totalCount);
+      return res.data;
+    },
+  });
+
+  const { data: playlists } = useQuery({
+    queryKey: ["playlists"],
+    queryFn: async () => {
+      const res = await playlistApi.getAll(1, 6);
+      return res.data;
+    },
+  });
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
   };
 
   React.useEffect(() => {
     flatListRef.current && flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
-    playlistId && getPlaylist();
+    // playlistId && getPlaylist();
   }, [playlistId]);
 
   return (
@@ -213,6 +230,13 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         <View style={styles.wrapper}>
           <FlatList
             ref={flatListRef}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={COLORS.White1}
+              />
+            }
             onScroll={(e) => {
               const offsetY = e.nativeEvent.contentOffset.y;
               animatedValue.setValue(offsetY);
@@ -260,8 +284,15 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                     </Text>
                   )}
                 </Skeleton>
+                <View style={{ flexDirection: "row", gap: SPACING.space_4, alignItems: "center" }}>
+                  {playlist?.public === 0 ? (
+                    <FontAwesomeIcon icon={faLock} color={COLORS.White2} size={12} />
+                  ) : (
+                    <FontAwesomeIcon icon={faGlobe} color={COLORS.White2} size={12} />
+                  )}
 
-                <Text style={styles.textExtra}>{totalCount} Songs</Text>
+                  <Text style={styles.textExtra}>{totalCount} Songs</Text>
+                </View>
 
                 <View style={styles.groupButton}>
                   <TouchableOpacity style={styles.buttonExtra}>
@@ -349,21 +380,22 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                     paddingHorizontal: SPACING.space_8,
                   }}
                 >
-                  {playlists?.map((playlist, index) => {
-                    if (playlist.id === playlistId) return <></>;
+                  {playlists &&
+                    playlists?.map((playlist, index) => {
+                      if (playlist.id === playlistId) return <></>;
 
-                    return (
-                      <View
-                        style={{
-                          width: WINDOW_WIDTH / 2 - SPACING.space_8,
-                          padding: SPACING.space_8,
-                          // backgroundColor: "pink",
-                        }}
-                      >
-                        <PlaylistCard playlist={playlist} />
-                      </View>
-                    );
-                  })}
+                      return (
+                        <View
+                          style={{
+                            width: WINDOW_WIDTH / 2 - SPACING.space_8,
+                            padding: SPACING.space_8,
+                            // backgroundColor: "pink",
+                          }}
+                        >
+                          <PlaylistCard playlist={playlist} />
+                        </View>
+                      );
+                    })}
                 </View>
               </View>
             }
@@ -381,24 +413,23 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             <ModalPlaylist
               setOpenModal={setIsOpenModal}
               playlist={playlist}
-              // setIsOpenAddSong={setIsOpenModalAddSong}
+              setIsOpenAddSong={setIsOpenModalAddSong}
               setIsOpenEdit={setIsOpenModalEdit}
             />
           </View>
         </CustomBottomSheet>
       )}
 
-      {/* {isOpenModalAddSong && (
+      {isOpenModalAddSong && (
         <CustomBottomSheet
           isOpen={true}
           closeModal={() => setIsOpenModalAddSong(false)}
           height1={"100%"}
           border={false}
-          enableClose={false}
         >
-          <AddSong setIsOpen={setIsOpenModalAddSong} />
+          <AddSong setIsOpen={setIsOpenModalAddSong} id={playlist.id} />
         </CustomBottomSheet>
-      )} */}
+      )}
 
       {isOpenModalEdit && (
         <CustomBottomSheet
@@ -408,7 +439,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
           border={false}
           enableClose={false}
         >
-          <EditPlaylist setIsOpen={setIsOpenModalEdit} />
+          <EditPlaylist setIsOpen={setIsOpenModalEdit} playlist={playlist} />
         </CustomBottomSheet>
       )}
     </View>

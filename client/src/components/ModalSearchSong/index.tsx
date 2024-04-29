@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, TextInput, FlatList, Keyboard } from "react-native";
+import { View, StyleSheet, TextInput, FlatList, Keyboard, Text } from "react-native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import { WINDOW_WIDTH } from "../../utils";
@@ -11,6 +11,9 @@ import { useAuth } from "../../context/AuthContext";
 import { useRoute } from "@react-navigation/native";
 import { RootRouteProps } from "../../navigation/TStack";
 import { useQuery } from "@tanstack/react-query";
+import CustomInput from "../CustomInput";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // const songs: TSong[] = [
 //   {
@@ -140,13 +143,32 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
   return (
     <View style={[styles.modal, isOpen ? { display: "flex" } : { display: "none" }]}>
       <View style={styles.container}>
-        <HeaderSearch
-          focus={focus}
+        {/* <HeaderSearch
+         
           setIsOpen={setIsOpen}
           isOpen={isOpen}
           setKeyword={setKeyword}
           keyword={keyword}
-        />
+        /> */}
+        <SafeAreaView>
+          <View style={styles.headerSearch}>
+            <View style={styles.headerSearchInput}>
+              <CustomInput onSubmit={(text) => setKeyword(text)} focus={focus} />
+            </View>
+            <TouchableOpacity onPress={() => setIsOpen(false)}>
+              <Text
+                style={{
+                  color: COLORS.White1,
+                  fontSize: FONTSIZE.size_14,
+                  fontFamily: FONTFAMILY.regular,
+                }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+
         <View style={[styles.scroll]} onTouchStart={Keyboard.dismiss}>
           <FlatList
             data={songs}
@@ -180,6 +202,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.Black1,
     maxHeight: WINDOW_HEIGHT,
+  },
+  headerSearch: {
+    width: "100%",
+    flexDirection: "row",
+    paddingHorizontal: SPACING.space_12,
+    paddingVertical: SPACING.space_12,
+    alignItems: "center",
+    gap: SPACING.space_8,
+  },
+  headerSearchInput: {
+    flex: 1,
   },
   scroll: {},
   titleHeaderScroll: {

@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { db } from "./src/config/connect.js";
 import routes from "./src/routes/index.js";
+import { Console } from "console";
 
 const app = express();
 
@@ -66,4 +67,3 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`✅ Backend run with port ${PORT}`);
 });
-                      

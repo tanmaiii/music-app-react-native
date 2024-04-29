@@ -13,56 +13,61 @@ import {
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  faGlassCheers,
-  faHeart,
-  faMagnifyingGlass,
-  faMusic,
+  faCheckCircle,
+  faGlobe,
+  faLock,
   faPlus,
-  faShare,
+  faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { FlatList, TextInput, TouchableHighlight } from "react-native-gesture-handler";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { TSong } from "../../types";
+import { TPlaylist, TSong } from "../../types";
 import CustomBottomSheet from "../CustomBottomSheet";
 import AddPlaylist from "./AddPlaylist";
 import Constants from "expo-constants";
+import { playlistApi, songApi } from "../../apis";
+import { useAuth } from "../../context/AuthContext";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiConfig } from "../../configs";
+import CustomInput from "../CustomInput";
+import ItemHorizontal from "../ItemHorizontal";
+import { Skeleton } from "moti/skeleton";
+import CustomModal from "../CustomModal";
+import { faCircle } from "@fortawesome/free-regular-svg-icons";
 const statusBarHeight = Constants.statusBarHeight;
 
-const songs: TSong[] = [
-  {
-    id: 1,
-    title: "Despacito, Despacito ,Despacito, Despacito",
-    image_path: "despacito.jpg",
-    author: "Luis Fonsi",
+const SkeletonCommonProps = {
+  colorMode: "dark",
+  transition: {
+    type: "timing",
+    duration: 1000,
   },
-  { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-  {
-    id: 3,
-    title: "Uptown Funk",
-    image_path: "uptown_funk.jpg",
-    author: "Mark Ronson ft. Bruno Mars",
-  },
-  { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-  {
-    id: 5,
-    title: "See You Again",
-    image_path: "see_you_again.jpg",
-    author: "Wiz Khalifa ft. Charlie Puth",
-  },
-  { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-  {
-    id: 7,
-    title: "Old Town Road",
-    image_path: "old_town_road.jpg",
-    author: "Lil Nas X ft. Billy Ray Cyrus",
-  },
-];
+  backgroundColor: COLORS.Black3,
+} as const;
 
-interface AddSongToPlaylistProps {}
+interface AddSongToPlaylistProps {
+  songId: string;
+}
 
-const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
+const AddSongToPlaylist = ({ songId }: AddSongToPlaylistProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const [keyword, setKeyword] = React.useState<string>("");
+  const { currentUser, token } = useAuth();
+  const queryClient = useQueryClient();
+
+  const { data: playlists, isLoading } = useQuery({
+    queryKey: ["playlists", currentUser.id],
+    queryFn: async () => {
+      const res = await playlistApi.getMe(token, 1, 10, keyword);
+      return res.data;
+    },
+  });
+
+  React.useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["playlists", currentUser.id],
+    });
+  }, [keyword]);
 
   return (
     <>
@@ -76,53 +81,42 @@ const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
           ]}
         >
           <View style={styles.header}>
-            <Text style={styles.textMain}>Add song to playlist</Text>
+            <Text style={styles.textMain}>Add to playlist</Text>
           </View>
         </SafeAreaView>
-        <View
-          style={{
-            width: "100%",
-            height: 0.6,
-            backgroundColor: COLORS.WhiteRGBA15,
-            marginBottom: SPACING.space_12,
-          }}
-        />
+
+        <View style={styles.headerSearch}>
+          <CustomInput onSubmit={(text) => setKeyword(text)} />
+        </View>
+
         <FlatList
-          data={songs}
+          data={playlists}
           style={styles.body}
+          contentContainerStyle={{
+            paddingBottom: SPACING.space_20,
+          }}
           ListHeaderComponent={
-            <>
-              <View style={{ paddingHorizontal: SPACING.space_4, marginBottom: SPACING.space_4 }}>
-                <View style={styles.inputBox}>
-                  <FontAwesomeIcon icon={faMagnifyingGlass} size={18} color={COLORS.White2} />
-                  <BottomSheetTextInput
-                    style={styles.textInput}
-                    placeholderTextColor={COLORS.WhiteRGBA32}
-                    placeholder="Search playlist ..."
-                  />
+            <TouchableHighlight
+              underlayColor={COLORS.Black3}
+              onPress={() => setIsOpenModal(true)}
+              style={{ borderRadius: BORDERRADIUS.radius_8 }}
+            >
+              <View style={styles.card}>
+                <View
+                  style={[styles.cardImage, { justifyContent: "center", alignItems: "center" }]}
+                >
+                  <FontAwesomeIcon icon={faPlus} size={30} color={COLORS.White2} />
+                </View>
+                <View style={styles.cardBody}>
+                  <Text style={styles.textMain}>Add playlist</Text>
                 </View>
               </View>
-
-              <TouchableHighlight
-                underlayColor={COLORS.Black3}
-                onPress={() => setIsOpenModal(true)}
-                style={{ borderRadius: BORDERRADIUS.radius_8 }}
-              >
-                <View style={styles.itemAdd}>
-                  <View style={styles.leftItem}>
-                    <FontAwesomeIcon icon={faPlus} size={30} color={COLORS.White2} />
-                  </View>
-                  <View style={styles.rightItem}>
-                    <Text style={styles.textMain}>Add playlist</Text>
-                  </View>
-                </View>
-              </TouchableHighlight>
-            </>
+            </TouchableHighlight>
           }
-          renderItem={({ item, index }) => <Item />}
+          renderItem={({ item, index }) => <Item key={index} playlist={item} songId={songId} />}
         />
       </View>
-      {/* {isOpenModal && (
+      {isOpenModal && (
         <CustomBottomSheet
           isOpen={true}
           closeModal={() => setIsOpenModal(false)}
@@ -132,39 +126,144 @@ const AddSongToPlaylist = (props: AddSongToPlaylistProps) => {
         >
           <AddPlaylist setAddPlaylist={setIsOpenModal} />
         </CustomBottomSheet>
-      )} */}
-      {isOpenModal && (
-        <Modal>
-          <AddPlaylist setAddPlaylist={setIsOpenModal} />
-        </Modal>
       )}
     </>
   );
 };
 
-const Item = () => {
+const Item = ({
+  playlist,
+  songId,
+  loading = false,
+}: {
+  playlist: TPlaylist;
+  songId: string;
+  loading?: boolean;
+}) => {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+
+  const { data: countSongs } = useQuery({
+    queryKey: ["count-songs", playlist.id],
+    queryFn: async () => {
+      const res = await songApi.getAllByPlaylistId(playlist.id, 1, 0);
+      return res.pagination.totalCount;
+    },
+  });
+
+  const { data: isAdd, isLoading } = useQuery({
+    queryKey: ["check-song", songId, playlist.id],
+    queryFn: async () => {
+      try {
+        const res = await playlistApi.checkSongInPlaylist(playlist.id, songId, token);
+        return res.isAdd;
+      } catch (error) {
+        console.log(error.response.data);
+        return false;
+      }
+    },
+  });
+
+  const mutationAdd = useMutation({
+    mutationFn: async (isAdd: boolean) => {
+      if (isAdd) return await playlistApi.removeSong(playlist.id, songId, token);
+      if (countSongs < 10) return await playlistApi.addSong(playlist.id, songId, token);
+      setOpenModal(true);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["check-song", songId, playlist.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["count-songs", playlist.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs", playlist.id],
+      });
+    },
+  });
+
   return (
-    <TouchableHighlight
-      underlayColor={COLORS.Black3}
-      onPress={() => console.log("press")}
-      style={{ borderRadius: BORDERRADIUS.radius_8 }}
-    >
-      <View style={styles.item}>
-        <View style={styles.leftItem}>
-          <Image style={styles.imageItem} source={IMAGES.POSTER} />
+    <>
+      <TouchableOpacity onPress={() => mutationAdd.mutate(isAdd)}>
+        <View style={styles.card} onTouchStart={Keyboard.dismiss}>
+          <View style={styles.cardImage}>
+            {loading ? (
+              <Skeleton {...SkeletonCommonProps} height={"100%"} width={"100%"} />
+            ) : (
+              <Image
+                source={
+                  playlist?.image_path
+                    ? { uri: apiConfig.imageURL(playlist.image_path) }
+                    : IMAGES.PLAYLIST
+                }
+                style={styles.image}
+              />
+            )}
+          </View>
+          <View style={styles.cardBody}>
+            <View style={{ gap: SPACING.space_4 }}>
+              {loading ? (
+                <Skeleton {...SkeletonCommonProps} radius={4} height={18} width={100} />
+              ) : (
+                <Text numberOfLines={1} style={styles.textMain}>
+                  {playlist.title}
+                </Text>
+              )}
+
+              {loading ? (
+                <Skeleton {...SkeletonCommonProps} radius={4} height={14} width={100} />
+              ) : (
+                <View style={{ flexDirection: "row", gap: SPACING.space_4, alignItems: "center" }}>
+                  {playlist?.public === 0 ? (
+                    <FontAwesomeIcon icon={faLock} color={COLORS.White2} size={10} />
+                  ) : (
+                    <FontAwesomeIcon icon={faGlobe} color={COLORS.White2} size={10} />
+                  )}
+                  <Text numberOfLines={1} style={styles.textEtra}>
+                    {`${countSongs} songs`}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+          {loading ? (
+            <Skeleton {...SkeletonCommonProps} height={30} width={30} radius={"round"} />
+          ) : (
+            <TouchableOpacity onPress={() => mutationAdd.mutate(isAdd)} style={styles.cardIcon}>
+              {isAdd ? (
+                <FontAwesomeIcon icon={faCheckCircle} size={24} color={COLORS.Primary} />
+              ) : (
+                <FontAwesomeIcon icon={faPlusCircle} size={24} color={COLORS.White2} />
+              )}
+            </TouchableOpacity>
+          )}
         </View>
-        <View style={styles.rightItem}>
-          <Text style={styles.textMain}>Netfix and chill</Text>
-        </View>
-      </View>
-    </TouchableHighlight>
+      </TouchableOpacity>
+      {openModal && (
+        <CustomModal
+          isOpen={openModal}
+          setIsOpen={setOpenModal}
+          header="Number of songs"
+          modalFunction={() => console.log("Xin chao")}
+        >
+          <View>
+            <Text style={styles.textMain}>The maximum playlist can only be 50 songs !</Text>
+          </View>
+        </CustomModal>
+      )}
+    </>
   );
 };
 
 export default AddSongToPlaylist;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.Black2,
+  },
   textMain: {
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
@@ -177,14 +276,21 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    padding: SPACING.space_12,
+    padding: SPACING.space_14,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: SPACING.space_8,
+    borderBottomColor: COLORS.WhiteRGBA15,
+    borderBottomWidth: 0.6,
+  },
+  headerSearch: {
+    paddingVertical: SPACING.space_12,
+    paddingHorizontal: SPACING.space_8,
   },
   body: {
     flexDirection: "column",
-    paddingVertical: SPACING.space_12,
-    gap: SPACING.space_8,
+    // paddingHorizontal: SPACING.space_8,
+    // gap: SPACING.space_12,
   },
   inputBox: {
     width: "100%",
@@ -202,33 +308,34 @@ const styles = StyleSheet.create({
     color: COLORS.White1,
     fontFamily: FONTFAMILY.regular,
   },
-  itemAdd: {
+  card: {
     flexDirection: "row",
-    alignItems: "center",
     gap: SPACING.space_12,
-    padding: SPACING.space_4,
-  },
-  leftItem: {
-    width: 70,
-    height: 70,
-    backgroundColor: COLORS.Black3,
-    justifyContent: "center",
+    width: "100%",
+    paddingHorizontal: SPACING.space_12,
+    paddingVertical: SPACING.space_8,
     alignItems: "center",
+  },
+  cardImage: {
+    width: 60,
+    height: 60,
+    backgroundColor: COLORS.Black3,
     borderRadius: BORDERRADIUS.radius_8,
     overflow: "hidden",
   },
-  rightItem: {
-    flex: 1,
-  },
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.space_12,
-    padding: SPACING.space_4,
-  },
-  imageItem: {
+  image: {
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    objectFit: "contain",
+    borderRadius: BORDERRADIUS.radius_8,
+    backgroundColor: COLORS.Black3,
+  },
+  cardBody: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  cardIcon: {
+    padding: SPACING.space_8,
   },
 });

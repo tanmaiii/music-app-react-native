@@ -31,7 +31,7 @@ import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
 import { TPlaylist, TUser } from "../../types";
-import { playlistApi, songApi, userApi } from "../../apis";
+import { favouriteApi, playlistApi, songApi, userApi } from "../../apis";
 import Slider from "../../components/Slider";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -102,10 +102,10 @@ const HomeScreen = ({ navigation }: any) => {
     },
   });
 
-  const { data: playlistFavourite } = useQuery({
-    queryKey: ["playlists-favorites"],
+  const { data: playlistFavourite, isLoading: loadingPlaylistFavourite } = useQuery({
+    queryKey: ["top-favorites"],
     queryFn: async () => {
-      const res = await playlistApi.getAllFavoritesByUser(token, 1, 10);
+      const res = await favouriteApi.getAll(token, 1, 10);
       return res.data;
     },
   });
@@ -117,7 +117,7 @@ const HomeScreen = ({ navigation }: any) => {
       queryClient.invalidateQueries({ queryKey: ["playlists"] });
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       queryClient.invalidateQueries({ queryKey: ["songs"] });
-      queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
+      queryClient.invalidateQueries({ queryKey: ["top-favorites"] });
       setRefreshing(false);
     }, 2000);
   }, []);
@@ -157,7 +157,7 @@ const HomeScreen = ({ navigation }: any) => {
           <View style={styles.scroll}>
             <Slider />
 
-            <HomeTop data={playlistFavourite} />
+            <HomeTop data={playlistFavourite} loading={loadingPlaylistFavourite} />
 
             <View style={{ paddingHorizontal: SPACING.space_10 }}>
               <CategoryHeader title={"Song popular"} />

@@ -24,7 +24,9 @@ Favourite.findAll = async (userId, query, result) => {
       ` LEFT JOIN users AS u ON u.id = fl.followed_user_id` +
       ` WHERE fl.follower_user_id = '${userId}'` +
       ` ${q ? `AND u.name LIKE "%${q}%" ` : ""} ` +
-      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"}` +
+      `  ${sort === "new" ? " ORDER BY created_at DESC " : ""}` +
+      `  ${sort === "old" ? " ORDER BY created_at ASC " : ""}` +
+      `  ${sort === "alpha" ? " ORDER BY SUBSTRING(LOWER(title), 1, 1), SUBSTRING(LOWER(name), 1, 1) " : ""}` +
       ` LIMIT ${+limit} OFFSET ${+offset}` +
       `) AS combined_result `
   );
@@ -70,7 +72,7 @@ Favourite.findSongs = async (userId, query, result) => {
   const q = query?.q;
   const page = query?.page;
   const limit = query?.limit;
-  const sort = query?.sort || "new";
+  const sort = query?.sortBy || "new";
 
   const offset = (page - 1) * limit;
 
@@ -81,7 +83,9 @@ Favourite.findSongs = async (userId, query, result) => {
       ` LEFT JOIN users AS u ON s.user_id = u.id ` +
       ` WHERE ((s.public = 1 AND fs.user_id = '${userId}' ) OR (fs.user_id = '${userId}' AND s.user_id = fs.user_id))` +
       ` AND s.is_deleted = 0 ${q ? `AND s.title LIKE "%${q}%"` : ""} ` +
-      ` ORDER BY fs.created_at ${sort === "new" ? "DESC" : "ASC"}` +
+      `  ${sort === "new" ? " ORDER BY fs.created_at DESC " : ""}` +
+      `  ${sort === "old" ? " ORDER BY fs.created_at ASC " : ""}` +
+      `  ${sort === "alpha" ? " ORDER BY SUBSTRING(LOWER(s.title), 1, 1) " : ""}` +
       ` LIMIT ${+limit} OFFSET ${+offset}`
   );
 
@@ -129,7 +133,9 @@ Favourite.findPlaylists = async (userId, query, result) => {
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` p.title LIKE "%${q}%" AND ` : ""} ` +
       ` ((p.public = 1 AND fp.user_id = '${userId}' ) OR (fp.user_id = '${userId}' AND p.user_id = fp.user_id)) AND p.is_deleted = 0` +
-      ` ORDER BY fp.created_at ${sort === "new" ? "DESC" : "ASC"}` +
+      `  ${sort === "new" ? " ORDER BY fp.created_at DESC " : ""}` +
+      `  ${sort === "old" ? " ORDER BY fp.created_at ASC " : ""}` +
+      `  ${sort === "alpha" ? " ORDER BY SUBSTRING(LOWER(p.title), 1, 1) " : ""}` +
       ` LIMIT ${+limit} OFFSET ${+offset} `
   );
 
@@ -172,16 +178,18 @@ Favourite.findArtists = async (userId, query, result) => {
   const [data] = await promiseDb.query(
     ` SELECT u.id, u.name, u.image_path, fl.created_at FROM follows as fl` +
       ` LEFT JOIN users as u on fl.followed_user_id = u.id` +
-      ` WHERE fl.follower_user_id = '${userId}' and u.is_admin = 0` +
+      ` WHERE fl.follower_user_id = '${userId}' and u.is_admin IS NULL` +
       ` ${q ? `AND u.name LIKE "%${q}%"` : ""}` +
-      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} ` +
+      `  ${sort === "new" ? " ORDER BY fl.created_at DESC " : ""}` +
+      `  ${sort === "old" ? " ORDER BY fl.created_at ASC " : ""}` +
+      `  ${sort === "alpha" ? " ORDER BY SUBSTRING(LOWER(u.name), 1, 1) " : ""}` +
       ` limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(
     `SELECT COUNT(*) AS totalCount FROM follows as fl ` +
       ` LEFT JOIN users as u on fl.followed_user_id = u.id ` +
-      ` WHERE fl.follower_user_id = '${userId}' and u.is_admin = 0` +
+      ` WHERE fl.follower_user_id = '${userId}' and u.is_admin IS NULL` +
       ` ${q ? `AND u.name LIKE "%${q}%"` : ""}`
   );
 

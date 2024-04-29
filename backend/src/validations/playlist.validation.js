@@ -89,6 +89,13 @@ export default class playlistValidator {
     }),
   };
 
+  static checkSong = {
+    body: Joi.object().keys({
+      playlist_id: Joi.string().min(0).max(36).required(),
+      song_id: Joi.string().min(0).max(36).required(),
+    }),
+  };
+
   static addSong = {
     body: Joi.object().keys({
       playlist_id: Joi.string().min(0).max(36).required(),

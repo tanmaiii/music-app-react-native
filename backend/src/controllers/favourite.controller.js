@@ -63,6 +63,7 @@ const getArtistsFavoritesByUser = async (req, res) => {
       if (!data) {
         return res.status(401).json({ conflictError: "Not found" });
       } else {
+        console.log("GET ARTIST FAVOURITE", data.data);
         return res.json(data);
       }
     });

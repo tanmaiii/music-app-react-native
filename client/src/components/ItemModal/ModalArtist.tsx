@@ -129,7 +129,7 @@ const ModalArtist = ({ artist }: ModalArtistProps) => {
           modalFunction={() => mutationFollow.mutate(follow)}
         >
           <Text style={{ color: COLORS.White1, fontSize: FONTSIZE.size_16 }}>
-            Are you sure unfollow artist Phuong Ly ?
+            {`  Are you sure unfollow artist ${artist.name}?`}
           </Text>
         </CustomModal>
       )}

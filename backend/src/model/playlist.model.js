@@ -179,7 +179,7 @@ Playlist.getMe = async (userId, query, result) => {
   const offset = (page - 1) * limit;
 
   const [data] = await promiseDb.query(
-    `SELECT p.*,  u.name as author ` +
+    `SELECT p.id, p.title, p.image_path, u.name as author, p.public, p.created_at ` +
       ` FROM playlists as p ` +
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` title like "%${q}%" and` : ""}` +
@@ -262,7 +262,7 @@ Playlist.findByUserId = async (userId, query, result) => {
       ` user_id = '${userId}' and public = 1 AND is_deleted = 0`
   );
 
-  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+  if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
@@ -275,6 +275,7 @@ Playlist.findByUserId = async (userId, query, result) => {
         sort,
       },
     });
+
     return;
   }
   result(null, null);
@@ -308,7 +309,7 @@ Playlist.findByFavorite = async (userId, query, result) => {
       ` (p.public = 1 AND fp.user_id = '${userId}' ) OR (fp.user_id = '${userId}' AND p.user_id = fp.user_id) AND p.is_deleted = 0`
   );
 
-  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+  if (data && totalCount && totalCount) {
     const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
@@ -329,7 +330,8 @@ Playlist.findByFavorite = async (userId, query, result) => {
 
 Playlist.findUserLike = (playlistId, result) => {
   db.query(
-    `SELECT user_id FROM favourite_playlists as fs WHERE fs.playlist_id = ?`, [playlistId],
+    `SELECT user_id FROM favourite_playlists as fs WHERE fs.playlist_id = ?`,
+    [playlistId],
     (err, data) => {
       if (err) {
         result(err, null);
@@ -438,8 +440,31 @@ Playlist.unlike = (playlistId, userId, result) => {
   );
 };
 
-Playlist.addSong = (playlistId, songId, userId, result) => {
-  Playlist.findById(playlistId, userId, (err, playlist) => {
+Playlist.findSongInPlaylist = (playlistId, result) => {
+  db.query(
+    `SELECT song_id FROM music.playlist_songs as ps  WHERE ps.playlist_id = ?`,
+    [playlistId],
+    (err, data) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+
+      if (data.length) {
+        result(
+          null,
+          data.map((song) => song.song_id)
+        );
+        return;
+      }
+
+      result(null, null);
+    }
+  );
+};
+
+Playlist.addSong = async (playlistId, songId, userId, result) => {
+  Playlist.findById(playlistId, userId, async (err, playlist) => {
     if (err) {
       console.log("ERROR", err);
       result(err, null);
@@ -459,7 +484,7 @@ Playlist.addSong = (playlistId, songId, userId, result) => {
     db.query(
       "SELECT * FROM playlist_songs WHERE song_id = ? AND playlist_id = ?",
       [songId, playlistId],
-      (queryErr, rows) => {
+      async (queryErr, rows) => {
         if (queryErr) {
           console.log("ERROR", queryErr);
           result(queryErr, null);
@@ -472,9 +497,16 @@ Playlist.addSong = (playlistId, songId, userId, result) => {
           return;
         }
 
+        const [num_song] = await promiseDb.query(
+          `SELECT ps.num_song FROM music.playlist_songs  as ps` +
+            ` WHERE ps.playlist_id = '${playlistId}'` +
+            ` ORDER BY ps.num_song DESC` +
+            ` limit 1`
+        );
+
         db.query(
-          "INSERT INTO playlist_songs SET `song_id` = ?, `playlist_id`= ?",
-          [songId, playlistId],
+          "INSERT INTO playlist_songs SET `song_id` = ?, `playlist_id`= ?, `num_song` = ?",
+          [songId, playlistId, num_song[0]?.num_song + 1 || 1],
           (insertErr, insertRes) => {
             if (insertErr) {
               console.log("ERROR", insertErr);

@@ -110,11 +110,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const [loading, setLoading] = React.useState(false);
   const [isOpenModal, setIsOpenMoal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(100);
-  // const [artist, setArtist] = React.useState<TUser>(null);
-  // const [artists, setArtists] = React.useState<TUser[]>(null);
-  // const [songs, setSongs] = React.useState<TSong[]>(null);
-  // const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
-  const [countFollowing, setCountFollowing] = React.useState<number>(0);
+  const [countFollower, setCountFollower] = React.useState<number>(0);
 
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const queryClient = useQueryClient();

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  TouchableHighlight,
   Alert,
 } from "react-native";
 
@@ -32,16 +31,13 @@ const SkeletonCommonProps = {
 } as const;
 
 interface ItemHorizontalProps {
-  artist?: TUser;
-  playlist?: TPlaylist;
   data?: ResFavourite;
   loading?: boolean;
   type?: string;
-  key: number;
 }
 
 const ItemHorizontal = (props: ItemHorizontalProps) => {
-  const { data, artist, playlist, loading = false, type, key } = props;
+  const { data, loading = false, type } = props;
   const navigation = useNavigation<NavigationProp>();
 
   const linkTo = useLinkTo();
@@ -49,11 +45,7 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
   return (
     <View>
       {type === "artist" && (
-        <TouchableHighlight
-          onPress={() => navigation.navigate("Artist", { userId: data.id })}
-          style={{ backgroundColor: COLORS.Black1 }}
-          underlayColor={COLORS.Black}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("Artist", { userId: data.id })}>
           <View style={styles.container}>
             <View style={styles.boxImage}>
               <Image
@@ -70,15 +62,11 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
               <Text style={styles.descText}>Artist</Text>
             </View>
           </View>
-        </TouchableHighlight>
+        </TouchableOpacity>
       )}
 
       {type === "playlist" && (
-        <TouchableHighlight
-          onPress={() => navigation.navigate("Playlist", { playlistId: data.id })}
-          style={{ backgroundColor: COLORS.Black1 }}
-          underlayColor={COLORS.Black}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("Playlist", { playlistId: data.id })}>
           <View style={styles.container}>
             <View style={styles.boxImage}>
               <Image
@@ -103,7 +91,7 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
               </View>
             </View>
           </View>
-        </TouchableHighlight>
+        </TouchableOpacity>
       )}
     </View>
   );
