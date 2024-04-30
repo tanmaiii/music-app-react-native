@@ -74,7 +74,6 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
       enablePanDownToClose={enableClose}
       handleComponent={() => null}
       keyboardBehavior={Platform.OS !== "ios" ? "interactive" : "extend"}
-      // //@ts-ignore
       keyboardBlurBehavior={Platform.OS !== "ios" ? "restore" : "none"}
       android_keyboardInputMode={Platform.OS !== "ios" ? "adjustResize" : "adjustPan"}
     >
@@ -90,7 +89,7 @@ const CustomBottomSheet = (props: CustomBottomSheetProps) => {
       >
         <View
           style={{
-            // backgroundColor: COLORS.Black2,
+            backgroundColor: COLORS.Black2,
             height: "100%",
           }}
         >

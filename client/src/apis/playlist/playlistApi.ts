@@ -7,6 +7,25 @@ interface CheckLikedResponse {
 }
 
 const playlistApi = {
+  createPlaylist(
+    token: string,
+    title: string,
+    isPublic: number
+  ): Promise<{ id: string; title: string; isPublic: number }> {
+    const url = "playlist";
+    return axiosClient.post(
+      url,
+      {
+        title: title,
+        public: isPublic,
+      },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+  },
   getAll(page: number, limit: number, q?: string, sort?: string): Promise<ListResponse<TPlaylist>> {
     const url = "playlist";
     return axiosClient.get(url, {
@@ -31,7 +50,7 @@ const playlistApi = {
     page: number,
     limit: number,
     q?: string,
-    sort?: string,
+    sort?: string
   ): Promise<ListResponse<TPlaylist>> {
     const url = "playlist/user/";
     return axiosClient.get(url + userId, {
@@ -48,7 +67,7 @@ const playlistApi = {
     page: number,
     limit: number,
     q?: string,
-    sort?: string,
+    sort?: string
   ): Promise<ListResponse<TPlaylist>> {
     const url = "playlist/me";
     return axiosClient.get(url, {

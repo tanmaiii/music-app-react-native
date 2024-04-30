@@ -2,14 +2,13 @@ import * as React from "react";
 import { Text, View, StyleSheet, Image, TouchableOpacity, Share, Modal } from "react-native";
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faHeart, faMusic, faPenToSquare, faShare } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faMusic, faPenToSquare, faPlusCircle, faShare } from "@fortawesome/free-solid-svg-icons";
 import {
   faFlag,
   faHeart as faHeartRegular,
-  faPlusSquare,
   faTrashCan,
   faUser,
-} from "@fortawesome/free-regular-svg-icons";
+} from "@fortawesome/free-solid-svg-icons";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -115,12 +114,16 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: 
         }}
       />
       <View style={styles.body}>
-        <Item
-          icon={isLike ? faHeart : faHeartRegular}
-          title={isLike ? "Remove to favorites" : "Add to favorites"}
-          itemFunc={() => mutationLike.mutate(isLike)}
-        />
-        <Item icon={faPlusSquare} title="Add song" itemFunc={() => setIsOpenAddSong(true)} />
+        {playlist?.user_id !== currentUser.id && (
+          <Item
+            icon={isLike ? faHeart : faHeartRegular}
+            title={isLike ? "Remove to favorites" : "Add to favorites"}
+            itemFunc={() => mutationLike.mutate(isLike)}
+          />
+        )}
+        {playlist?.user_id === currentUser.id && (
+          <Item icon={faPlusCircle} title="Add song" itemFunc={() => setIsOpenAddSong(true)} />
+        )}
         {playlist?.user_id === currentUser.id && (
           <Item icon={faPenToSquare} title="Edit playlist" itemFunc={() => setIsOpenEdit(true)} />
         )}

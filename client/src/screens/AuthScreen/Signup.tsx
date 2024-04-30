@@ -44,6 +44,7 @@ import { text } from "@fortawesome/fontawesome-svg-core";
 import { NavigationProp } from "../../navigation/TStack";
 import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
+import KeyboardAvoidingContainer from "../../components/KeyboardAvoidingContainer/KeyboardAvoidingContainer";
 
 interface SignupScreenProps {}
 
@@ -151,181 +152,194 @@ const SignupScreen = (props: SignupScreenProps) => {
   return (
     <View style={styles.container} onTouchStart={Keyboard.dismiss}>
       <ImageBackground source={IMAGES.GRADIENT} style={{ flex: 1 }} blurRadius={30}>
-        <View style={{ justifyContent: "center", flex: 1 }}>
-          <SafeAreaView style={{ zIndex: 100 }}>
-            <View
-              style={[
-                styles.header,
-                Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
-              ]}
+        <SafeAreaView style={{ zIndex: 100 }}>
+          <View
+            style={[
+              styles.header,
+              Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
+            ]}
+          >
+            <TouchableHighlight
+              underlayColor={COLORS.Black2}
+              style={[styles.buttonHeader]}
+              onPress={() => navigation.goBack()}
             >
-              <TouchableHighlight
-                underlayColor={COLORS.Black2}
-                style={[styles.buttonHeader]}
-                onPress={() => navigation.goBack()}
-              >
-                <FontAwesomeIcon icon={faChevronLeft} size={18} color={COLORS.White1} />
-              </TouchableHighlight>
-              <Text style={styles.titleHeader}>Create account</Text>
-              <View style={[styles.buttonHeader, { opacity: 0 }]}></View>
-            </View>
-          </SafeAreaView>
-          <View style={styles.body}>
-            <View style={styles.logo}>
-              <Image style={styles.image} source={IMAGES.LOGO} />
-            </View>
-
-            <View style={styles.bodyTop}>
-              <Text
-                style={{
-                  fontSize: FONTSIZE.size_30,
-                  fontFamily: FONTFAMILY.bold,
-                  color: COLORS.Primary,
-                }}
-              >
-                Create account
-              </Text>
-              <Text
-                style={{
-                  fontSize: FONTSIZE.size_16,
-                  fontFamily: FONTFAMILY.regular,
-                  color: COLORS.White2,
-                }}
-              >
-                Please fill the details and create account
-              </Text>
-            </View>
-
-            {success && (
-              <View style={styles.boxSucc}>
-                <FontAwesomeIcon icon={faCircleCheck} size={24} color={COLORS.White1} />
-                <Text style={styles.textSucc}>{success}</Text>
-              </View>
-            )}
-
-            {err && (
-              <View style={styles.boxErr}>
-                <FontAwesomeIcon icon={faCircleExclamation} size={24} color={COLORS.White1} />
-                <Text style={styles.textErr}>{err}</Text>
-              </View>
-            )}
-
-            <View style={styles.boxs}>
-              <View style={styles.box}>
-                <Pressable
-                  onPress={() => inputNameRef.current?.focus()}
-                  style={[styles.boxInput, errName && styles.boxInputErr]}
-                >
-                  <FontAwesomeIcon icon={faUser} size={20} color={COLORS.White2} />
-
-                  <TextInput
-                    ref={inputNameRef}
-                    style={styles.textInput}
-                    onFocus={() => setIsFocusedName(true)}
-                    onBlur={() => name.trim() === "" && setIsFocusedName(false)}
-                    onChangeText={(text) => handleChangeTextName(text)}
-                  />
-                  <Text style={[styles.titleBox, isFocusedName && styles.titleBoxMove]}>Name</Text>
-                </Pressable>
-                <Text numberOfLines={1} style={styles.descErr}>
-                  {errName && errName}
-                </Text>
-              </View>
-
-              <View style={styles.box}>
-                <Pressable
-                  onPress={() => inputEmailRef.current?.focus()}
-                  style={[styles.boxInput, errEmail && styles.boxInputErr]}
-                >
-                  <FontAwesomeIcon icon={faEnvelope} size={20} color={COLORS.White2} />
-                  <TextInput
-                    ref={inputEmailRef}
-                    style={styles.textInput}
-                    onFocus={() => setIsFocusedEmail(true)}
-                    onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
-                    onChangeText={(text) => handleChangeTextEmail(text)}
-                  />
-                  <Text style={[styles.titleBox, isFocusedEmail && styles.titleBoxMove]}>
-                    Email
-                  </Text>
-                </Pressable>
-                <Text numberOfLines={1} style={styles.descErr}>
-                  {errEmail && errEmail}
-                </Text>
-              </View>
-
-              <View style={styles.box}>
-                <Pressable
-                  onPress={() => inputPasswordRef.current?.focus()}
-                  style={[styles.boxInput, errPassword && styles.boxInputErr]}
-                >
-                  <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
-
-                  <TextInput
-                    secureTextEntry={viewPassword ? false : true} // Hiển thị dưới dạng mật khẩu
-                    ref={inputPasswordRef}
-                    passwordRules="*"
-                    style={styles.textInput}
-                    value={password}
-                    onFocus={() => setIsFocusedPassword(true)}
-                    onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
-                    onChangeText={(text) => handleChangeTextPassword(text)}
-                  />
-                  <Text style={[styles.titleBox, isFocusedPassword && styles.titleBoxMove]}>
-                    Password
-                  </Text>
-                  <TouchableOpacity onPress={() => setViewPassword(!viewPassword)}>
-                    {viewPassword ? (
-                      <FontAwesomeIcon
-                        icon={faEyeSlash}
-                        size={20}
-                        style={{ color: COLORS.White2 }}
-                      />
-                    ) : (
-                      <FontAwesomeIcon icon={faEye} size={20} style={{ color: COLORS.White2 }} />
-                    )}
-                  </TouchableOpacity>
-                </Pressable>
-                <Text numberOfLines={2} style={styles.descErr}>
-                  {errPassword && errPassword}
-                </Text>
-              </View>
-            </View>
-
-            <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
-
-            <TouchableOpacity
-              disabled={loading}
-              style={styles.button}
-              onPress={() => handlePress()}
-            >
-              {loading ? <ActivityIndicator /> : <Text style={styles.titleLogin}>Sign Up</Text>}
-            </TouchableOpacity>
-
-            <View style={styles.boxBottom}>
-              <Text
-                style={{
-                  fontSize: FONTSIZE.size_16,
-                  fontFamily: FONTFAMILY.regular,
-                  color: COLORS.White1,
-                }}
-              >
-                Already have an account?{" "}
-              </Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                <Text
-                  style={{
-                    fontSize: FONTSIZE.size_16,
-                    fontFamily: FONTFAMILY.regular,
-                    color: COLORS.Primary,
-                  }}
-                >
-                  Log In
-                </Text>
-              </TouchableOpacity>
-            </View>
+              <FontAwesomeIcon icon={faChevronLeft} size={18} color={COLORS.White1} />
+            </TouchableHighlight>
+            <Text style={styles.titleHeader}>Create account</Text>
+            <View style={[styles.buttonHeader, { opacity: 0 }]}></View>
           </View>
-        </View>
+        </SafeAreaView>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <ScrollView>
+            <View style={{ justifyContent: "center", flex: 1 }}>
+              <View style={styles.body}>
+                <View style={styles.logo}>
+                  <Image style={styles.image} source={IMAGES.LOGO} />
+                </View>
+
+                <View style={styles.bodyTop}>
+                  <Text
+                    style={{
+                      fontSize: FONTSIZE.size_30,
+                      fontFamily: FONTFAMILY.bold,
+                      color: COLORS.Primary,
+                    }}
+                  >
+                    Create account
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: FONTSIZE.size_16,
+                      fontFamily: FONTFAMILY.regular,
+                      color: COLORS.White2,
+                    }}
+                  >
+                    Please fill the details and create account
+                  </Text>
+                </View>
+
+                {success && (
+                  <View style={styles.boxSucc}>
+                    <FontAwesomeIcon icon={faCircleCheck} size={24} color={COLORS.White1} />
+                    <Text style={styles.textSucc}>{success}</Text>
+                  </View>
+                )}
+
+                {err && (
+                  <View style={styles.boxErr}>
+                    <FontAwesomeIcon icon={faCircleExclamation} size={24} color={COLORS.White1} />
+                    <Text style={styles.textErr}>{err}</Text>
+                  </View>
+                )}
+
+                <View style={styles.boxs}>
+                  <View style={styles.box}>
+                    <Pressable
+                      onPress={() => inputNameRef.current?.focus()}
+                      style={[styles.boxInput, errName && styles.boxInputErr]}
+                    >
+                      <FontAwesomeIcon icon={faUser} size={20} color={COLORS.White2} />
+
+                      <TextInput
+                        ref={inputNameRef}
+                        style={styles.textInput}
+                        onFocus={() => setIsFocusedName(true)}
+                        onBlur={() => name.trim() === "" && setIsFocusedName(false)}
+                        onChangeText={(text) => handleChangeTextName(text)}
+                      />
+                      <Text style={[styles.titleBox, isFocusedName && styles.titleBoxMove]}>
+                        Name
+                      </Text>
+                    </Pressable>
+                    <Text numberOfLines={1} style={styles.descErr}>
+                      {errName && errName}
+                    </Text>
+                  </View>
+
+                  <View style={styles.box}>
+                    <Pressable
+                      onPress={() => inputEmailRef.current?.focus()}
+                      style={[styles.boxInput, errEmail && styles.boxInputErr]}
+                    >
+                      <FontAwesomeIcon icon={faEnvelope} size={20} color={COLORS.White2} />
+                      <TextInput
+                        ref={inputEmailRef}
+                        style={styles.textInput}
+                        onFocus={() => setIsFocusedEmail(true)}
+                        onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
+                        onChangeText={(text) => handleChangeTextEmail(text)}
+                      />
+                      <Text style={[styles.titleBox, isFocusedEmail && styles.titleBoxMove]}>
+                        Email
+                      </Text>
+                    </Pressable>
+                    <Text numberOfLines={1} style={styles.descErr}>
+                      {errEmail && errEmail}
+                    </Text>
+                  </View>
+
+                  <View style={styles.box}>
+                    <Pressable
+                      onPress={() => inputPasswordRef.current?.focus()}
+                      style={[styles.boxInput, errPassword && styles.boxInputErr]}
+                    >
+                      <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
+
+                      <TextInput
+                        secureTextEntry={viewPassword ? false : true} // Hiển thị dưới dạng mật khẩu
+                        ref={inputPasswordRef}
+                        passwordRules="*"
+                        style={styles.textInput}
+                        value={password}
+                        onFocus={() => setIsFocusedPassword(true)}
+                        onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
+                        onChangeText={(text) => handleChangeTextPassword(text)}
+                      />
+                      <Text style={[styles.titleBox, isFocusedPassword && styles.titleBoxMove]}>
+                        Password
+                      </Text>
+                      <TouchableOpacity onPress={() => setViewPassword(!viewPassword)}>
+                        {viewPassword ? (
+                          <FontAwesomeIcon
+                            icon={faEyeSlash}
+                            size={20}
+                            style={{ color: COLORS.White2 }}
+                          />
+                        ) : (
+                          <FontAwesomeIcon
+                            icon={faEye}
+                            size={20}
+                            style={{ color: COLORS.White2 }}
+                          />
+                        )}
+                      </TouchableOpacity>
+                    </Pressable>
+                    <Text numberOfLines={2} style={styles.descErr}>
+                      {errPassword && errPassword}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
+
+                <TouchableOpacity
+                  disabled={loading}
+                  style={styles.button}
+                  onPress={() => handlePress()}
+                >
+                  {loading ? <ActivityIndicator /> : <Text style={styles.titleLogin}>Sign Up</Text>}
+                </TouchableOpacity>
+
+                <View style={styles.boxBottom}>
+                  <Text
+                    style={{
+                      fontSize: FONTSIZE.size_16,
+                      fontFamily: FONTFAMILY.regular,
+                      color: COLORS.White1,
+                    }}
+                  >
+                    Already have an account?{" "}
+                  </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                    <Text
+                      style={{
+                        fontSize: FONTSIZE.size_16,
+                        fontFamily: FONTFAMILY.regular,
+                        color: COLORS.Primary,
+                      }}
+                    >
+                      Log In
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </ImageBackground>
     </View>
   );

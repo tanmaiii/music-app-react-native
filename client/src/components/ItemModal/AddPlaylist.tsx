@@ -18,6 +18,13 @@ import { TSong } from "../../types";
 import ButtonSwitch from "../ButtonSwitch/ButtonSwitch";
 import Constants from "expo-constants";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { playlistApi } from "../../apis";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../navigation/TStack";
+import { useQueryClient } from "@tanstack/react-query";
+import ToastMessage from "../ToastMessage";
+import { useToast } from "../../context/ToastContext";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface AddPlaylistProps {
@@ -25,10 +32,15 @@ interface AddPlaylistProps {
   setAddPlaylist: (boolean) => void;
 }
 
-const AddPlaylist = ({ setAddPlaylist }: AddPlaylistProps) => {
+const AddPlaylist = ({ setAddPlaylist, closeModal }: AddPlaylistProps) => {
   const [name, setName] = React.useState<string>("");
-  const textInputRef = React.useRef<TextInput>();
   const [isPrivate, setIsPrivate] = React.useState<boolean>(false);
+  const textInputRef = React.useRef<TextInput>();
+  const { token } = useAuth();
+  const { setToastMessage } = useToast();
+  const navigation = useNavigation<NavigationProp>();
+  const queryClient = useQueryClient();
+  const toastRef = React.useRef(null);
 
   const handleFunc = () => {
     setAddPlaylist(false);
@@ -38,6 +50,22 @@ const AddPlaylist = ({ setAddPlaylist }: AddPlaylistProps) => {
   React.useEffect(() => {
     textInputRef.current?.focus();
   }, []);
+
+  const handleCreatePlaylist = async () => {
+    try {
+      const isPublic = isPrivate ? 0 : 1;
+      const res = await playlistApi.createPlaylist(token, name, isPublic);
+      console.log(res);
+      setAddPlaylist(false);
+      navigation.navigate("Playlist", { playlistId: res.id });
+      queryClient.invalidateQueries({ queryKey: ["all-favorites"] });
+      queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
+    } catch (err) {
+      console.log(err.response.data);
+      const messErr = err.response.data.conflictError;
+      messErr && setToastMessage(messErr);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -59,7 +87,9 @@ const AddPlaylist = ({ setAddPlaylist }: AddPlaylistProps) => {
             ref={textInputRef}
             value={name}
             style={styles.textInput}
-            onChangeText={(text) => setName(text)}
+            onChangeText={(text) => {
+              name.length < 255 && setName(text);
+            }}
           />
         </View>
 
@@ -78,6 +108,7 @@ const AddPlaylist = ({ setAddPlaylist }: AddPlaylistProps) => {
       </ScrollView>
       <View style={{ position: "absolute", bottom: 20, width: "100%", alignItems: "center" }}>
         <TouchableOpacity
+          onPress={handleCreatePlaylist}
           style={[styles.button, name.length <= 0 && { opacity: 0.8 }]}
           disabled={name.length <= 0 && true}
         >

@@ -29,18 +29,18 @@ const AddSongPlaylist = ({ setAddPlaylist }: AddSongPlaylistProps) => {
 
         <TouchableOpacity onPress={() => setAddPlaylist(true)}>
           <View style={styles.buttonItem}>
-            <FontAwesomeIcon icon={faMusic} size={30} color={COLORS.White2} />
+            <FontAwesomeIcon icon={faCompactDisc} size={30} color={COLORS.White2} />
             <View>
-              <Text style={styles.textMain}>Create playlists</Text>
+              <Text style={styles.textMain}>Create playlist</Text>
               <Text style={styles.textExtra}>Create a playlist of your favorite songs</Text>
             </View>
           </View>
         </TouchableOpacity>
         <TouchableOpacity>
           <View style={styles.buttonItem}>
-            <FontAwesomeIcon icon={faCompactDisc} size={30} color={COLORS.White2} />
+            <FontAwesomeIcon icon={faMusic} size={30} color={COLORS.White2} />
             <View>
-              <Text style={styles.textMain}>Create playlists</Text>
+              <Text style={styles.textMain}>Create song</Text>
               <Text style={styles.textExtra}>Create a playlist of your favorite songs</Text>
             </View>
           </View>

@@ -15,10 +15,12 @@ import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
 import { PlayingContextProvider } from "./src/context/PlayingContext";
 import { AuthContextProvider, useAuth } from "./src/context/AuthContext";
+import { ToastContextProvider } from "./src/context/ToastContext";
 import React, { useEffect } from "react";
 import LottieView from "lottie-react-native";
 import { RootStackParamList } from "./src/navigation/TStack";
 import { QueryClient, QueryClientProvider, focusManager } from "@tanstack/react-query";
+import ToastMessage from "./src/components/ToastMessage";
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -61,18 +63,20 @@ export default function App() {
   return (
     <QueryClientProvider client={client}>
       <NavigationContainer>
-        <AuthContextProvider>
-          <PlayingContextProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <BottomSheetModalProvider>
-                <View style={styles.container}>
-                  <PlayingCard />
-                  <Layout />
-                </View>
-              </BottomSheetModalProvider>
-            </GestureHandlerRootView>
-          </PlayingContextProvider>
-        </AuthContextProvider>
+        <ToastContextProvider>
+          <AuthContextProvider>
+            <PlayingContextProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <BottomSheetModalProvider>
+                  <View style={styles.container}>
+                    <PlayingCard />
+                    <Layout />
+                  </View>
+                </BottomSheetModalProvider>
+              </GestureHandlerRootView>
+            </PlayingContextProvider>
+          </AuthContextProvider>
+        </ToastContextProvider>
       </NavigationContainer>
     </QueryClientProvider>
   );

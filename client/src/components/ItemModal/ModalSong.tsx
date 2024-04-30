@@ -11,6 +11,7 @@ import {
   faPlusCircle,
   faUser,
   faFlag,
+  faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
@@ -22,7 +23,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import apiConfig from "../../configs/axios/apiConfig";
 import { NavigationProp } from "../../navigation/TStack";
 import { useNavigation } from "@react-navigation/native";
-import { songApi } from "../../apis";
+import { playlistApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
@@ -31,15 +32,15 @@ interface ModalSongProps {
   song: TSong;
   setOpenModal: (boolean) => void;
   size?: number;
-  inPlaylist?: boolean;
+  playlistId?: string;
 }
 
-const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSongProps) => {
+const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [loading, setLoding] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
   const [heightModal, setHeightModal] = React.useState(200);
-  const { token } = useAuth();
+  const { token, currentUser } = useAuth();
   const queryClient = useQueryClient();
 
   const handleShare = async () => {
@@ -88,6 +89,18 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
     setOpenModal(false);
     navigation.navigate("Artist", { userId: song?.user_id });
   };
+
+  const mutationRemoveSongFromPlaylist = useMutation({
+    mutationFn: async () => {
+      await playlistApi.removeSong(playlistId, song.id, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["songs", playlistId],
+      });
+      setOpenModal(false);
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -160,15 +173,18 @@ const ModalSong = ({ song, setOpenModal, size = 1, inPlaylist = false }: ModalSo
       <View style={styles.body}>
         <Item
           icon={isLike ? faHeart : faHeartRegular}
-          title={isLike ? "Remove to favorites" : "Add to favorites"}
+          title={isLike ? "Remove from favorites" : "Add to favorites"}
           itemFunc={() => mutationLike.mutate(isLike)}
         />
         <Item icon={faPlusCircle} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
-        {inPlaylist && (
+        {song?.user_id === currentUser.id && (
+          <Item icon={faPenToSquare} title="Edit song" itemFunc={() => console.log("edit song")} />
+        )}
+        {playlistId && (
           <Item
             icon={faMinusCircle}
-            title="Remove to playlist"
-            itemFunc={() => console.log("PRESS")}
+            title="Remove from playlist"
+            itemFunc={() => mutationRemoveSongFromPlaylist.mutate()}
           />
         )}
         <Item icon={faMusic} title="View detail" itemFunc={() => handleGoDetail()} />

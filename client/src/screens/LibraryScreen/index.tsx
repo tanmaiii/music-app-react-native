@@ -28,7 +28,8 @@ import { AddSongPlaylist, AddPlaylist } from "../../components/ItemModal";
 import { useAuth } from "../../context/AuthContext";
 import { ResFavourite, TPlaylist, TUser } from "../../types";
 import { favouriteApi, playlistApi, userApi } from "../../apis";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "../../context/ToastContext";
 
 interface LibraryScreenProps {}
 
@@ -39,13 +40,15 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [isOpenModalAddPlaylist, setIsOpenModalAddPlaylist] = React.useState<boolean>(false);
 
+  const {setToastMessage} = useToast()
+
   return (
     <>
       <View style={[styles.container]}>
         <SafeAreaView>
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => setToastMessage("xin chao")}>
                 <Image source={IMAGES.LOGO} style={styles.headerImage} />
               </TouchableOpacity>
               <Text style={styles.headerTitle}>Library</Text>
@@ -122,14 +125,25 @@ export default LibraryScreen;
 const AllFavorites = () => {
   const navigation = useNavigation<NavigationProp>();
   const { token, currentUser } = useAuth();
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [data, setData] = useState<ResFavourite[]>(null);
-  const [sort, setSort] = useState("new");
-
-  const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(6);
-  const [totalPage, setTotalPage] = useState<number>(1);
   const queryClient = useQueryClient();
+  const [data, setData] = useState<ResFavourite[]>(null);
+
+  const [state, setState] = React.useState({
+    page: 1,
+    limit: 10,
+    loading: false,
+    totalPages: 1,
+    totalCount: 0,
+    refreshing: false,
+    keyword: "",
+    sort: "new",
+  });
+
+  const { limit, page, loading, sort, totalPages, keyword, refreshing } = state;
+
+  const updateState = (newState) => {
+    setState((prevState) => ({ ...prevState, ...newState }));
+  };
 
   const { data: countSongs } = useQuery({
     queryKey: ["count-songs-favorites"],
@@ -146,7 +160,7 @@ const AllFavorites = () => {
 
     if (res.pagination.page === 1) {
       setData(null);
-      setTotalPage(res.pagination.totalPages);
+      updateState({ totalPages: res.pagination.totalPages });
       setData(res.data);
     } else {
       setData((pres) => [...pres, ...res.data]);
@@ -161,18 +175,18 @@ const AllFavorites = () => {
   });
 
   const handleRefresh = () => {
-    setRefreshing(true);
+    updateState({ refreshing: true });
     setTimeout(() => {
-      setPage(1);
+      updateState({ page: 1 });
       queryClient.invalidateQueries({
         queryKey: ["all-favorites"],
       });
-      setRefreshing(false);
+      updateState({ refreshing: false });
     }, 2000);
   };
 
   const loadMore = () => {
-    page < totalPage && setPage(page + 1);
+    page < totalPages && updateState({ page: page + 1 });
   };
 
   React.useEffect(() => {
@@ -180,7 +194,7 @@ const AllFavorites = () => {
   }, [page]);
 
   React.useEffect(() => {
-    setPage(1);
+    updateState({ page: 1 });
     queryClient.invalidateQueries({ queryKey: ["all-favorites"] });
   }, [sort]);
 
@@ -206,11 +220,19 @@ const AllFavorites = () => {
       ListHeaderComponent={
         <>
           <View style={styles.headerList}>
-            <TouchableOpacity onPress={() => setSort((sort) => (sort === "new" ? "old" : "new"))}>
+            <TouchableOpacity
+              onPress={() =>
+                updateState({ sort: sort === "new" ? "old" : sort === "old" ? "alpha" : "new" })
+              }
+            >
               <View style={styles.headerListLeft}>
                 <FontAwesomeIcon icon={faSort} size={16} color={COLORS.White2} />
                 <Text style={styles.headerListText}>
-                  {sort === "new" ? "Recently add" : "Oldest add"}
+                  {sort === "new"
+                    ? "Recently added"
+                    : sort === "old"
+                    ? "Oldest added"
+                    : "Alphabetical"}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -243,22 +265,31 @@ const AllFavorites = () => {
 const PlaylistFavourites = () => {
   const navigation = useNavigation<NavigationProp>();
   const { token, currentUser } = useAuth();
-  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [data, setData] = useState<ResFavourite[]>(null);
-  const [sort, setSort] = useState("new");
-
-  const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(6);
-  const [totalPage, setTotalPage] = useState<number>(1);
   const queryClient = useQueryClient();
+
+  const [state, setState] = React.useState({
+    page: 1,
+    limit: 10,
+    loading: false,
+    totalPages: 1,
+    totalCount: 0,
+    refreshing: false,
+    keyword: "",
+    sort: "new",
+  });
+
+  const { limit, page, loading, sort, totalPages, keyword, refreshing } = state;
+
+  const updateState = (newState) => {
+    setState((prevState) => ({ ...prevState, ...newState }));
+  };
 
   const getAllData = async () => {
     const res = await favouriteApi.getPlaylists(token, page, limit, sort);
-    console.log(data);
-
     if (res.pagination.page === 1) {
       setData(null);
-      setTotalPage(res.pagination.totalPages);
+      updateState({ totalPages: res.pagination.totalPages });
       setData(res.data);
     } else {
       setData((pres) => [...pres, ...res.data]);
@@ -273,18 +304,18 @@ const PlaylistFavourites = () => {
   });
 
   const handleRefresh = () => {
-    setRefreshing(true);
+    updateState({ refreshing: true });
     setTimeout(() => {
-      setPage(1);
+      updateState({ page: 1 });
       queryClient.invalidateQueries({
         queryKey: ["playlists-favorites"],
       });
-      setRefreshing(false);
+      updateState({ refreshing: false });
     }, 2000);
   };
 
   const loadMore = () => {
-    page < totalPage && setPage(page + 1);
+    page < totalPages && updateState({ page: true });
   };
 
   React.useEffect(() => {
@@ -292,7 +323,7 @@ const PlaylistFavourites = () => {
   }, [page]);
 
   React.useEffect(() => {
-    setPage(1);
+    updateState({ page: 1 });
     queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
   }, [sort]);
 
@@ -318,11 +349,19 @@ const PlaylistFavourites = () => {
       ListHeaderComponent={
         <>
           <View style={styles.headerList}>
-            <TouchableOpacity onPress={() => setSort((sort) => (sort === "new" ? "old" : "new"))}>
+            <TouchableOpacity
+              onPress={() =>
+                updateState({ sort: sort === "new" ? "old" : sort === "old" ? "alpha" : "new" })
+              }
+            >
               <View style={styles.headerListLeft}>
                 <FontAwesomeIcon icon={faSort} size={16} color={COLORS.White2} />
                 <Text style={styles.headerListText}>
-                  {sort === "new" ? "Recently add" : "Oldest add"}
+                  {sort === "new"
+                    ? "Recently added"
+                    : sort === "old"
+                    ? "Oldest added"
+                    : "Alphabetical"}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -337,14 +376,25 @@ const PlaylistFavourites = () => {
 const ArtistFavourites = () => {
   const navigation = useNavigation<NavigationProp>();
   const { token, currentUser } = useAuth();
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [data, setData] = useState<ResFavourite[]>(null);
-  const [sort, setSort] = useState("new");
-
-  const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(6);
-  const [totalPage, setTotalPage] = useState<number>(1);
   const queryClient = useQueryClient();
+  const [data, setData] = useState<ResFavourite[]>(null);
+
+  const [state, setState] = React.useState({
+    page: 1,
+    limit: 10,
+    loading: false,
+    totalPages: 1,
+    totalCount: 0,
+    refreshing: false,
+    keyword: "",
+    sort: "new",
+  });
+
+  const { limit, page, loading, sort, totalPages, keyword, refreshing } = state;
+
+  const updateState = (newState) => {
+    setState((prevState) => ({ ...prevState, ...newState }));
+  };
 
   const getAllData = async () => {
     const res = await favouriteApi.getArtists(token, page, limit, sort);
@@ -352,7 +402,7 @@ const ArtistFavourites = () => {
 
     if (res.pagination.page === 1) {
       setData(null);
-      setTotalPage(res.pagination.totalPages);
+      updateState({ totalPages: res.pagination.totalPages });
       setData(res.data);
     } else {
       setData((pres) => [...pres, ...res.data]);
@@ -367,18 +417,18 @@ const ArtistFavourites = () => {
   });
 
   const handleRefresh = () => {
-    setRefreshing(true);
+    updateState({ refreshing: true });
     setTimeout(() => {
-      setPage(1);
+      updateState({ page: 1 });
       queryClient.invalidateQueries({
         queryKey: ["artists-follow"],
       });
-      setRefreshing(false);
+      updateState({ refreshing: false });
     }, 2000);
   };
 
   const loadMore = () => {
-    page < totalPage && setPage(page + 1);
+    page < totalPages && updateState({ page: page + 1 });
   };
 
   React.useEffect(() => {
@@ -386,7 +436,7 @@ const ArtistFavourites = () => {
   }, [page]);
 
   React.useEffect(() => {
-    setPage(1);
+    updateState({ page: 1 });
     queryClient.invalidateQueries({ queryKey: ["artists-follow"] });
   }, [sort]);
 
@@ -412,11 +462,19 @@ const ArtistFavourites = () => {
       ListHeaderComponent={
         <>
           <View style={styles.headerList}>
-            <TouchableOpacity onPress={() => setSort((sort) => (sort === "new" ? "old" : "new"))}>
+            <TouchableOpacity
+              onPress={() =>
+                updateState({ sort: sort === "new" ? "old" : sort === "old" ? "alpha" : "new" })
+              }
+            >
               <View style={styles.headerListLeft}>
                 <FontAwesomeIcon icon={faSort} size={16} color={COLORS.White2} />
                 <Text style={styles.headerListText}>
-                  {sort === "new" ? "Recently add" : "Oldest add"}
+                  {sort === "new"
+                    ? "Recently added"
+                    : sort === "old"
+                    ? "Oldest added"
+                    : "Alphabetical"}
                 </Text>
               </View>
             </TouchableOpacity>

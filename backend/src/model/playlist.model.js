@@ -21,8 +21,16 @@ Playlist.create = (userId, newPlaylist, result) => {
         result(err, null);
         return;
       }
-      console.log("CREATE : ", { res });
-      result(null, { id: res.insertId, ...newPlaylist });
+      Playlist.like(uniqueId, userId, (err, res) => {
+        if (err) {
+          console.log("ERROR", err);
+          result(err, null);
+          return;
+        }
+        console.log("CREATE : ", { res });
+        result(null, { id: uniqueId, ...newPlaylist });
+      });
+      return;
     }
   );
 };
@@ -194,7 +202,7 @@ Playlist.getMe = async (userId, query, result) => {
       ` user_id = '${userId}' AND is_deleted = 0 `
   );
 
-  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+  if (data && totalCount && totalCount) {
     const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {

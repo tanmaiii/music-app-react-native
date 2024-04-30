@@ -8,10 +8,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import * as React from "react";
-import { Text, View, StyleSheet, Platform, SafeAreaView, Image, Keyboard } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Platform,
+  SafeAreaView,
+  Image,
+  Keyboard,
+  Animated,
+} from "react-native";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import { BottomSheetTextInput, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import ButtonSwitch from "../ButtonSwitch/ButtonSwitch";
 import Modal from "../CustomModal";
 import { TPlaylist, TSong } from "../../types";
@@ -80,12 +89,7 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ zIndex: 999 }}>
-        <View
-          style={[
-            styles.header,
-            Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_12 },
-          ]}
-        >
+        <View style={[styles.header]}>
           <TouchableOpacity style={[styles.buttonClose]} onPress={() => handleCloseModal()}>
             <FontAwesomeIcon icon={faXmark} size={20} color={COLORS.White1} />
           </TouchableOpacity>
@@ -101,8 +105,22 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
       <FlatList
         data={songs}
         style={styles.body}
+        contentContainerStyle={{
+          paddingBottom: SPACING.space_20,
+        }}
         ListHeaderComponent={
           <View style={styles.headerBody}>
+            <View style={styles.imageBox}>
+              <TouchableOpacity style={styles.imageBoxWrapper}>
+                <Image
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  source={IMAGES.PLAYLIST}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonChange}>
+                <Text style={styles.textExtra}>Change image</Text>
+              </TouchableOpacity>
+            </View>
             <View style={styles.inputBox}>
               <Text style={styles.textExtra}>Name playlist</Text>
               <BottomSheetTextInput
@@ -139,24 +157,49 @@ type TSongItem = {
 const SongItem = (props: TSongItem) => {
   const { song } = props;
   const [openModal, setOpenModal] = React.useState(false);
+
+  const [isDeleted, setIsDeleted] = React.useState(false);
+  const fadeAnim = new Animated.Value(1);
+  const slideAnim = new Animated.Value(1);
+
+  const handleDelete = () => {
+    // Kích hoạt hiệu ứng mờ dần và di chuyển khi xóa
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300, // Thời gian mờ dần
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: -100, // Di chuyển sang trái 100px
+        duration: 300, // Thời gian di chuyển
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setIsDeleted(true); // Đánh dấu là đã xóa
+    });
+  };
+
   return (
-    <>
-      <TouchableOpacity>
-        <View style={styles.card} onTouchStart={Keyboard.dismiss}>
+    <Animated.View
+      style={{ opacity: isDeleted ? 0 : fadeAnim, transform: [{ translateX: slideAnim }] }}
+    >
+      {!isDeleted && (
+        <View style={[styles.card, styles.cardDelete]} onTouchStart={Keyboard.dismiss}>
           <View style={styles.cardLeft}>
-            <TouchableOpacity style={styles.cardIcon}>
+            <TouchableOpacity style={styles.cardIcon} onPress={() => handleDelete()}>
               <FontAwesomeIcon icon={faMinusCircle} size={24} color={COLORS.WhiteRGBA32} />
             </TouchableOpacity>
           </View>
           <View style={styles.cardCenter}>
-            <View style={styles.cardImage}>
+            <TouchableOpacity style={styles.cardImage}>
               <Image
                 source={
                   song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
                 }
                 style={styles.image}
               />
-            </View>
+            </TouchableOpacity>
             <View style={styles.cardBody}>
               <View>
                 <Text numberOfLines={1} style={styles.textMain}>
@@ -175,8 +218,8 @@ const SongItem = (props: TSongItem) => {
             </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
-    </>
+      )}
+    </Animated.View>
   );
 };
 export default EditPlaylist;
@@ -187,18 +230,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Black1,
   },
   header: {
-    padding: SPACING.space_12,
+    paddingVertical: SPACING.space_18,
+    paddingHorizontal: SPACING.space_14,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.Black3,
-    // backgroundColor: 'pink',
-    zIndex: 999,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    // height: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+    backgroundColor: COLORS.Black2,
   },
   textMain: {
     fontSize: FONTSIZE.size_16,
@@ -212,12 +249,27 @@ const styles = StyleSheet.create({
   },
   buttonClose: {},
   body: {
-    marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+    paddingVertical: SPACING.space_12,
   },
   headerBody: {
     paddingHorizontal: SPACING.space_12,
     flexDirection: "column",
     marginBottom: SPACING.space_14,
+  },
+  imageBox: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageBoxWrapper: {
+    width: 140,
+    height: 140,
+    borderRadius: BORDERRADIUS.radius_8,
+    overflow: "hidden",
+  },
+  buttonChange: {
+    paddingHorizontal: SPACING.space_10,
+    paddingVertical: SPACING.space_16,
   },
   inputBox: {
     width: "100%",
@@ -239,8 +291,11 @@ const styles = StyleSheet.create({
     gap: SPACING.space_8,
     width: "100%",
     paddingHorizontal: SPACING.space_12,
-    paddingVertical: SPACING.space_8,
+    paddingVertical: SPACING.space_4,
     alignItems: "center",
+  },
+  cardDelete: {
+    // transform: [{ translateX: WINDOW_WIDTH }],
   },
   cardLeft: {},
   cardCenter: {

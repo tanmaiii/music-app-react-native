@@ -27,7 +27,7 @@ import AddPlaylist from "./AddPlaylist";
 import Constants from "expo-constants";
 import { playlistApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiConfig } from "../../configs";
 import CustomInput from "../CustomInput";
 import ItemHorizontal from "../ItemHorizontal";
@@ -51,47 +51,75 @@ interface AddSongToPlaylistProps {
 
 const AddSongToPlaylist = ({ songId }: AddSongToPlaylistProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
-  const [keyword, setKeyword] = React.useState<string>("");
   const { currentUser, token } = useAuth();
   const queryClient = useQueryClient();
+  const [playlists, setPlaylists] = React.useState(null);
 
-  const { data: playlists, isLoading } = useQuery({
-    queryKey: ["playlists", currentUser.id],
-    queryFn: async () => {
-      const res = await playlistApi.getMe(token, 1, 10, keyword);
-      return res.data;
-    },
+  const [state, setState] = React.useState({
+    page: 1,
+    limit: 7,
+    loading: false,
+    totalPages: 1,
+    totalCount: 0,
+    refreshing: false,
+    keyword: "",
   });
+
+  const { limit, page, loading, totalPages, keyword } = state;
+
+  const updateState = (newState) => {
+    setState((prevState) => ({ ...prevState, ...newState }));
+  };
+
+  const getPlaylists = async () => {
+    const res = await playlistApi.getMe(token, page, limit, keyword);
+    if (res.pagination.page === 1) {
+      setPlaylists(null);
+      updateState({ totalPages: res.pagination.totalPages });
+      setPlaylists(res.data);
+    } else {
+      setPlaylists((prev) => [...prev, ...res.data]);
+    }
+    return res;
+  };
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["playlists", currentUser.id],
+    queryFn: getPlaylists,
+  });
+
+  React.useEffect(() => {
+    updateState({ page: 1 });
+    queryClient.invalidateQueries({ queryKey: ["playlists", currentUser.id] });
+  }, [keyword]);
 
   React.useEffect(() => {
     queryClient.invalidateQueries({
       queryKey: ["playlists", currentUser.id],
     });
-  }, [keyword]);
+  }, [page]);
+
+  const loadMore = () => {
+    page < totalPages && updateState({ page: page + 1 });
+  };
 
   return (
     <>
       <View style={styles.container} onTouchStart={Keyboard.dismiss}>
-        <SafeAreaView
-          style={[
-            Platform.OS === "ios" && {
-              paddingTop: statusBarHeight + SPACING.space_12,
-              padding: SPACING.space_12,
-            },
-          ]}
-        >
+        <SafeAreaView>
           <View style={styles.header}>
             <Text style={styles.textMain}>Add to playlist</Text>
           </View>
         </SafeAreaView>
 
         <View style={styles.headerSearch}>
-          <CustomInput onSubmit={(text) => setKeyword(text)} />
+          <CustomInput onSubmit={(text) => updateState({ keyword: text })} />
         </View>
 
         <FlatList
           data={playlists}
           style={styles.body}
+          onEndReached={loadMore}
           contentContainerStyle={{
             paddingBottom: SPACING.space_20,
           }}
@@ -113,7 +141,9 @@ const AddSongToPlaylist = ({ songId }: AddSongToPlaylistProps) => {
               </View>
             </TouchableHighlight>
           }
-          renderItem={({ item, index }) => <Item key={index} playlist={item} songId={songId} />}
+          renderItem={({ item, index }) => (
+            <Item key={index} playlist={item} songId={songId} loading={isLoading} />
+          )}
         />
       </View>
       {isOpenModal && (
@@ -289,24 +319,6 @@ const styles = StyleSheet.create({
   },
   body: {
     flexDirection: "column",
-    // paddingHorizontal: SPACING.space_8,
-    // gap: SPACING.space_12,
-  },
-  inputBox: {
-    width: "100%",
-    backgroundColor: COLORS.Black3,
-    flexDirection: "row",
-    paddingVertical: SPACING.space_10,
-    paddingHorizontal: SPACING.space_12,
-    borderRadius: BORDERRADIUS.radius_20,
-    gap: SPACING.space_12,
-    alignItems: "center",
-  },
-  textInput: {
-    flex: 1,
-    fontSize: FONTSIZE.size_16,
-    color: COLORS.White1,
-    fontFamily: FONTFAMILY.regular,
   },
   card: {
     flexDirection: "row",
@@ -329,6 +341,8 @@ const styles = StyleSheet.create({
     objectFit: "contain",
     borderRadius: BORDERRADIUS.radius_8,
     backgroundColor: COLORS.Black3,
+    borderColor: COLORS.WhiteRGBA15,
+    borderWidth: 0.6,
   },
   cardBody: {
     flex: 1,

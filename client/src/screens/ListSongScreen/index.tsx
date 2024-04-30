@@ -219,7 +219,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
             }
             scrollEventThrottle={16}
             contentContainerStyle={{
-              paddingBottom: HEIGHT.playingCard + 20,
+              paddingBottom: HEIGHT.playingCard + HEIGHT.navigator + 100,
             }}
             ListHeaderComponent={
               <View style={[styles.wrapperTop]}>

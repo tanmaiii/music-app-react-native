@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     gap: SPACING.space_14,
     paddingHorizontal: SPACING.space_16,
     paddingVertical: SPACING.space_32,
+    marginTop: SPACING.space_24,
   },
   bodyTop: {
     justifyContent: "center",
@@ -124,6 +125,7 @@ const styles = StyleSheet.create({
     // padding: SPACING.space_4,
     paddingHorizontal: SPACING.space_4,
     borderRadius: BORDERRADIUS.radius_8,
+    overflow: "hidden",
     position: "absolute",
     left: 36,
   },

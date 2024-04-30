@@ -366,7 +366,13 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             }}
             style={{ width: "100%" }}
             data={songs}
-            renderItem={({ item, index }) => <SongItem song={item} inPlaylist={true} />}
+            renderItem={({ item, index }) => (
+              <SongItem
+                song={item}
+                playlistId={currentUser.id === playlist.user_id ? playlist.id : null}
+                // inPlaylist={currentUser.id === playlist.user_id ? true : false}
+              />
+            )}
             ListFooterComponent={
               <View style={styles.wrapperFooter}>
                 <CategoryHeader
@@ -389,7 +395,6 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                           style={{
                             width: WINDOW_WIDTH / 2 - SPACING.space_8,
                             padding: SPACING.space_8,
-                            // backgroundColor: "pink",
                           }}
                         >
                           <PlaylistCard playlist={playlist} />
@@ -424,8 +429,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         <CustomBottomSheet
           isOpen={true}
           closeModal={() => setIsOpenModalAddSong(false)}
-          height1={"100%"}
-          border={false}
+          height1={"94%"}
         >
           <AddSong setIsOpen={setIsOpenModalAddSong} id={playlist.id} />
         </CustomBottomSheet>
@@ -435,9 +439,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         <CustomBottomSheet
           isOpen={true}
           closeModal={() => setIsOpenModalEdit(false)}
-          height1={"100%"}
-          border={false}
-          enableClose={false}
+          height1={"94%"}
         >
           <EditPlaylist setIsOpen={setIsOpenModalEdit} playlist={playlist} />
         </CustomBottomSheet>

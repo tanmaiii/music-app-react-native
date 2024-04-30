@@ -7,7 +7,16 @@ import {
 import { faPlusSquare } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import * as React from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Platform, Image, Keyboard } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  Image,
+  Keyboard,
+  SafeAreaView,
+} from "react-native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { FlatList, TextInput } from "react-native-gesture-handler";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
@@ -40,54 +49,83 @@ interface AddSongProps {
 
 const AddSong = ({ setIsOpen, id }: AddSongProps) => {
   const textInputRef = React.useRef<TextInput>();
-  const [keyword, setKeyword] = React.useState<string>("");
   const queryClient = useQueryClient();
+  const [songs, setSongs] = React.useState<TSong[]>(null);
 
-  React.useEffect(() => {
-    // textInputRef.current.focus();
-  }, []);
+  const [state, setState] = React.useState({
+    page: 1,
+    limit: 7,
+    loading: false,
+    totalPages: 1,
+    totalCount: 0,
+    refreshing: false,
+    keyword: "",
+  });
+
+  const { limit, page, loading, totalPages, keyword } = state;
+
+  const updateState = (newState) => {
+    setState((prevState) => ({ ...prevState, ...newState }));
+  };
+
+  const handleGetData = async () => {
+    const res = await songApi.getAll(page, limit, keyword && keyword);
+    if (res.pagination.page === 1) {
+      setSongs(null);
+      updateState({ totalPages: res.pagination.totalPages });
+      setSongs(res.data);
+    } else {
+      setSongs((prev) => [...prev, ...res.data]);
+    }
+    return res;
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["all-songs", id],
-    queryFn: async () => {
-      const res = await songApi.getAll(1, 10, keyword && keyword);
-      return res.data;
-    },
+    queryFn: handleGetData,
   });
 
   React.useEffect(() => {
+    updateState({ page: 1 });
     queryClient.invalidateQueries({ queryKey: ["all-songs", id] });
   }, [keyword]);
 
-  const handleSubmitTextChange = (text) => {};
+  React.useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["all-songs", id],
+    });
+  }, [page]);
+
+  const loadMore = () => {
+    page < totalPages && updateState({ page: page + 1 });
+  };
 
   return (
-    <View style={styles.container}>
-      <View
-        style={[
-          styles.header,
-          Platform.OS === "ios" && {
-            paddingTop: statusBarHeight + SPACING.space_12,
-          },
-        ]}
-      >
-        <View style={styles.groupTitle}>
+    <>
+      <View style={styles.container}>
+        <SafeAreaView style={[styles.header]}>
           <View>
-            <Text style={styles.textMain}>Add song to playlist</Text>
+            <View style={styles.groupTitle}>
+              <TouchableOpacity style={styles.buttonClose} onPress={() => setIsOpen(false)}>
+                <FontAwesomeIcon icon={faXmark} size={24} color={COLORS.White2} />
+              </TouchableOpacity>
+              <View>
+                <Text style={styles.textMain}>Add song to playlist</Text>
+              </View>
+              <TouchableOpacity style={styles.buttonClose}></TouchableOpacity>
+            </View>
+            <CustomInput onSubmit={(text) => updateState({ keyword: text })} />
           </View>
-          <TouchableOpacity onPress={() => setIsOpen(false)}>
-            <FontAwesomeIcon icon={faXmark} size={24} color={COLORS.White2} />
-          </TouchableOpacity>
-        </View>
-        <CustomInput onSubmit={(text) => setKeyword(text)} />
+        </SafeAreaView>
+        <FlatList
+          data={songs}
+          onEndReached={loadMore}
+          renderItem={({ item, index }) => (
+            <SongItem key={index} song={item} playlistId={id} loading={isLoading} />
+          )}
+        />
       </View>
-      <FlatList
-        data={data}
-        renderItem={({ item, index }) => (
-          <SongItem key={index} song={item} playlistId={id} loading={isLoading} />
-        )}
-      />
-    </View>
+    </>
   );
 };
 
@@ -146,7 +184,7 @@ const SongItem = ({ song, playlistId, loading = false }: TSongItem) => {
 
   return (
     <>
-      <TouchableOpacity onPress={() => mutationAdd.mutate(isAdd)} >
+      <TouchableOpacity onPress={() => mutationAdd.mutate(isAdd)}>
         <View style={styles.card} onTouchStart={Keyboard.dismiss}>
           <View style={styles.cardImage}>
             {loading ? (
@@ -211,7 +249,6 @@ const SongItem = ({ song, playlistId, loading = false }: TSongItem) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // paddingHorizontal: SPACING.space_8,
     backgroundColor: COLORS.Black2,
   },
   textMain: {
@@ -225,13 +262,22 @@ const styles = StyleSheet.create({
     color: COLORS.White2,
   },
   header: {
-    padding: SPACING.space_12,
+    paddingHorizontal: SPACING.space_12,
+    paddingVertical: SPACING.space_16,
     gap: SPACING.space_12,
+  },
+  buttonClose: {
+    width: 28,
+    height: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 16,
   },
   groupTitle: {
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
+    marginBottom: SPACING.space_12,
   },
   boxInput: {
     backgroundColor: COLORS.Black3,
@@ -260,8 +306,6 @@ const styles = StyleSheet.create({
   cardImage: {
     width: 60,
     height: 60,
-    // borderRadius: BORDERRADIUS.radius_8,
-    // overflow: "hidden",
   },
   image: {
     width: "100%",
@@ -269,6 +313,8 @@ const styles = StyleSheet.create({
     objectFit: "contain",
     borderRadius: BORDERRADIUS.radius_8,
     backgroundColor: COLORS.Black3,
+    borderColor: COLORS.WhiteRGBA15,
+    borderWidth: 0.6,
   },
   cardBody: {
     flex: 1,
