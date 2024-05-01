@@ -10,7 +10,7 @@ export type RootStackParamList = {
   Library: undefined;
   User: undefined;
 
-  UserEditAccount: undefined;
+  UserEditProfile: undefined;
 
   Song: { songId: string };
   Playlist: { playlistId: string };

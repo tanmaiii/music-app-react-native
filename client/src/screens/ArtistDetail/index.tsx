@@ -217,7 +217,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const { data: songs } = useQuery({
     queryKey: ["songs", userId],
     queryFn: async () => {
-      const res = await songApi.getAllByUserId(userId, 1, 11);
+      const res = await songApi.getAllByUserId(token, userId, 1, 11);
       return res.data;
     },
   });
@@ -329,7 +329,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             <View style={[styles.body]}>
               <View>
                 <Text style={styles.countFollow}>
-                  {numeral(followers).format("0a").toUpperCase()} following
+                  {numeral(followers).format("0a").toUpperCase()} followers
                 </Text>
               </View>
 
@@ -341,7 +341,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                       onPress={() => mutationFollow.mutate(follow)}
                     >
                       <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
-                        {follow ? "Unfollow" : "Follow"}
+                        {follow ? "Following" : "Follow"}
                       </Text>
                     </TouchableOpacity>
                   )

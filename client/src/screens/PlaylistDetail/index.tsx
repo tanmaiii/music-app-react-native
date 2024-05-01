@@ -157,7 +157,11 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     },
   });
 
-  const { data: playlist, isLoading: loading } = useQuery({
+  const {
+    data: playlist,
+    isLoading: loading,
+    refetch: refetchPlaylist,
+  } = useQuery({
     queryKey: ["playlist", playlistId],
     queryFn: async () => {
       const res = await playlistApi.getDetail(playlistId, token);
@@ -165,7 +169,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     },
   });
 
-  const { data: songs } = useQuery({
+  const { data: songs, refetch: refetchSongs } = useQuery({
     queryKey: ["songs", playlistId],
     queryFn: async () => {
       const res = await songApi.getAllByPlaylistId(playlistId, 1, 50);
@@ -174,7 +178,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     },
   });
 
-  const { data: playlists } = useQuery({
+  const { data: playlists, refetch: refetchPlaylists } = useQuery({
     queryKey: ["playlists"],
     queryFn: async () => {
       const res = await playlistApi.getAll(1, 6);
@@ -185,13 +189,15 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const handleRefresh = async () => {
     setRefreshing(true);
     setTimeout(() => {
+      refetchSongs();
+      refetchPlaylists();
+      refetchPlaylist();
       setRefreshing(false);
     }, 2000);
   };
 
   React.useEffect(() => {
     flatListRef.current && flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
-    // playlistId && getPlaylist();
   }, [playlistId]);
 
   return (
@@ -220,7 +226,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             </Animated.Text>
             <TouchableOpacity
               style={[styles.buttonHeader]}
-              onPress={() => setIsOpenModal(!isOpenModal)}
+              onPress={() => playlist && setIsOpenModal(!isOpenModal)}
             >
               <FontAwesomeIcon icon={faEllipsis} size={24} style={{ color: COLORS.White1 }} />
             </TouchableOpacity>
@@ -322,7 +328,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                   {currentUser?.id == playlist?.user_id ? (
                     <TouchableOpacity
                       style={styles.buttonExtra}
-                      onPress={() => console.log("asdas")}
+                      onPress={() => setIsOpenModalAddSong(!isOpenModalAddSong)}
                     >
                       <FontAwesomeIcon icon={faPlus} size={18} color={COLORS.White2} />
                       <Text

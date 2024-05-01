@@ -36,7 +36,7 @@ import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 import ModalSearchSong from "../../components/ModalSearchSong";
-import { songApi } from "../../apis";
+import { favouriteApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
 import { useQuery } from "@tanstack/react-query";
@@ -50,7 +50,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const route = useRoute<RootRouteProps<"ListSong" | "ListSongLike">>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
-  const { currentUser } = useAuth();
+  const { currentUser, token } = useAuth();
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState(false);
@@ -99,7 +99,8 @@ const ListSongScreen = (props: ListSongScreenProps) => {
 
   const getLikeSongs = async () => {
     page === 1 && setLoading(true);
-    const res = await songApi.getAllFavoritesByUser(route.params.userId, page, limit);
+    const res = await favouriteApi.getSongs(token, page, limit);
+    // const res = await songApi.getAllFavoritesByUser(route.params.userId, page, limit);
     if (res.pagination.page === 1) {
       setSongs(res.data);
       setTotalPages(res.pagination.totalPages);
@@ -113,7 +114,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
 
   const getSongs = async () => {
     page === 1 && setLoading(true);
-    const res = await songApi.getAllByUserId(route.params.userId, page, limit);
+    const res = await songApi.getAllByUserId(token, route.params.userId, page, limit);
     if (res.pagination.page === 1) {
       setSongs(res.data);
       setTotalPages(res.pagination.totalPages);
@@ -126,7 +127,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
     return res;
   };
 
-  const {} = useQuery({
+  const { refetch } = useQuery({
     queryKey: route.name === "ListSongLike" ? ["songs-favorites"] : ["songs"],
     queryFn: () => {
       return route.name === "ListSongLike" ? getLikeSongs() : getSongs();
@@ -153,6 +154,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
     setRefreshing(true);
     setTimeout(() => {
       setPage(1);
+      refetch();
       setRefreshing(false);
     }, 2000);
   };

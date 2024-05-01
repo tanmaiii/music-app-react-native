@@ -5,44 +5,63 @@ import { ScrollView } from "react-native-gesture-handler";
 import { WINDOW_WIDTH } from "../../utils";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
+import { Skeleton } from "moti/skeleton";
+import { TSong } from "../../types";
+import { apiConfig } from "../../configs";
+
+const SkeletonCommonProps = {
+  colorMode: "dark",
+  transition: {
+    type: "timing",
+    duration: 1500,
+  },
+  backgroundColor: COLORS.Black2,
+} as const;
 
 const data = [
   {
     id: 1,
-    image: require("../../assets/images/banner1.jpg"),
+    image_path: require("../../assets/images/banner1.jpg"),
   },
   {
     id: 2,
-    image: require("../../assets/images/banner2.jpg"),
+    image_path: require("../../assets/images/banner2.jpg"),
   },
   {
     id: 3,
-    image: require("../../assets/images/banner3.jpg"),
+    image_path: require("../../assets/images/banner3.jpg"),
   },
 ];
 
 const width = WINDOW_WIDTH - SPACING.space_12 * 2;
 
-interface SliderProps {}
+interface SliderProps {
+  data?: TSong[];
+  loading?: boolean;
+}
 
-const Slider = (props: SliderProps) => {
+const Slider = ({ loading = true }: SliderProps) => {
   const [activeIndex, setActiveIndex] = React.useState<number>(1);
   const flatlistRef = React.useRef<FlatList>();
 
   React.useEffect(() => {
-    const autoPlay = setInterval(() => {
-      if (activeIndex === data.length - 1) {
-        flatlistRef.current.scrollToIndex({
-          index: 0,
-          animated: true,
-        });
-      } else {
-        flatlistRef.current.scrollToIndex({
-          index: activeIndex + 1,
-          animated: true,
-        });
-      }
-    }, 2000);
+    const autoPlay =
+      !loading &&
+      setInterval(() => {
+        if (activeIndex === data.length - 1) {
+          flatlistRef &&
+            flatlistRef.current.scrollToIndex({
+              index: 0,
+              animated: true,
+            });
+        } else {
+          flatlistRef &&
+            flatlistRef.current.scrollToIndex({
+              index: activeIndex + 1,
+              animated: true,
+            });
+        }
+      }, 2000);
     return () => clearInterval(autoPlay);
   });
 
@@ -59,6 +78,17 @@ const Slider = (props: SliderProps) => {
     setActiveIndex(roundedNumber);
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.wrapper}>
+          <View style={styles.item}>
+            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps} />
+          </View>
+        </View>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
@@ -73,18 +103,21 @@ const Slider = (props: SliderProps) => {
           // snapToInterval={WINDOW_WIDTH - SPACING.space_12 * 2}
           renderItem={({ item, index }) => (
             <View style={styles.item}>
-              <Image style={styles.item} source={item.image} />
+              <Image
+                style={styles.item}
+                // source={item.image_path ? { uri: apiConfig.imageURL(item.image_path) } : IMAGES.BG}
+                source={item.image_path}
+              />
             </View>
           )}
         />
       </View>
-      <RenderDots activeIndex={activeIndex} />
+      <RenderDots data={data} activeIndex={activeIndex} />
     </View>
   );
 };
 
-const RenderDots = (props: any) => {
-  const { activeIndex } = props;
+const RenderDots = ({ data, activeIndex }: { data: any; activeIndex: number }) => {
   return (
     <View
       style={{
@@ -97,21 +130,22 @@ const RenderDots = (props: any) => {
         gap: SPACING.space_8,
       }}
     >
-      {data.map((ite, index) => {
-        return (
-          <View
-            style={[
-              {
-                backgroundColor: COLORS.WhiteRGBA32,
-                height: 8,
-                width: 8,
-                borderRadius: 4,
-              },
-              activeIndex === index && { backgroundColor: COLORS.White1 },
-            ]}
-          ></View>
-        );
-      })}
+      {data &&
+        data?.map((ite, index) => {
+          return (
+            <View
+              style={[
+                {
+                  backgroundColor: COLORS.WhiteRGBA32,
+                  height: 8,
+                  width: 8,
+                  borderRadius: 4,
+                },
+                activeIndex === index && { backgroundColor: COLORS.White1 },
+              ]}
+            ></View>
+          );
+        })}
     </View>
   );
 };

@@ -27,6 +27,7 @@ const songApi = {
     });
   },
   getAllByUserId(
+    token: string,
     userId: string,
     page: number,
     limit: number,
@@ -40,6 +41,9 @@ const songApi = {
         limit: limit,
         sortBy: sort,
         q: q,
+      },
+      headers: {
+        authorization: token,
       },
     });
   },

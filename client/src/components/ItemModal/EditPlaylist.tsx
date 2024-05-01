@@ -31,38 +31,22 @@ import { songApi } from "../../apis";
 import { apiConfig } from "../../configs";
 const statusBarHeight = Constants.statusBarHeight;
 
-// const songs: TSong[] = [
-//   {
-//     id: 1,
-//     title: "Despacito, Despacito ,Despacito, Despacito",
-//     image_path: "despacito.jpg",
-//     author: "Luis Fonsi",
-//   },
-//   { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-//   {
-//     id: 3,
-//     title: "Uptown Funk",
-//     image_path: "uptown_funk.jpg",
-//     author: "Mark Ronson ft. Bruno Mars",
-//   },
-//   { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-//   {
-//     id: 5,
-//     title: "See You Again",
-//     image_path: "see_you_again.jpg",
-//     author: "Wiz Khalifa ft. Charlie Puth",
-//   },
-//   { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-//   {
-//     id: 7,
-//     title: "Old Town Road",
-//     image_path: "old_town_road.jpg",
-//     author: "Lil Nas X ft. Billy Ray Cyrus",
-//   },
-//   { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-//   { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-//   { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-// ];
+import {
+  cancelAnimation,
+  runOnJS,
+  scrollTo,
+  useAnimatedGestureHandler,
+  useAnimatedReaction,
+  useAnimatedRef,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+
+import { PanGestureHandler } from "react-native-gesture-handler";
+import { BlurView } from "expo-blur";
 
 interface EditPlaylistProps {
   setIsOpen: (boolean) => void;
@@ -94,7 +78,7 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
             <FontAwesomeIcon icon={faXmark} size={20} color={COLORS.White1} />
           </TouchableOpacity>
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={styles.textMain}>Edit playlist</Text>
+            <Text style={[styles.textMain]}>Edit playlist</Text>
           </View>
           <TouchableOpacity>
             <Text style={[styles.textExtra, { color: COLORS.Primary }]}>Save</Text>
@@ -118,7 +102,7 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
                 />
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonChange}>
-                <Text style={styles.textExtra}>Change image</Text>
+                <Text style={[styles.textExtra, { color: COLORS.Primary }]}>Change image</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.inputBox}>
@@ -149,6 +133,29 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
     </View>
   );
 };
+
+function MovableSong({ song, id, positions }: { song: TSong; id: string; positions: object }) {
+  const gestureHandler = useAnimatedGestureHandler({
+    onStart() {},
+    onActive() {},
+    onFinish() {},
+  });
+
+  console.log(positions);
+
+  return (
+    <View
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        // top: positions[id] * SONG_HEIGHT,
+      }}
+    >
+      <SongItem song={song} />
+    </View>
+  );
+}
 
 type TSongItem = {
   song: TSong;

@@ -40,7 +40,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [isOpenModalAddPlaylist, setIsOpenModalAddPlaylist] = React.useState<boolean>(false);
 
-  const {setToastMessage} = useToast()
+  const { setToastMessage } = useToast();
 
   return (
     <>
@@ -250,7 +250,7 @@ const AllFavorites = () => {
                 <Text style={styles.title}>Like Song</Text>
                 <View style={styles.desc}>
                   <FontAwesomeIcon icon={faThumbTack} size={14} color={COLORS.Primary} />
-                  <Text style={styles.descText}>{`Playlist - ${countSongs} songs`}</Text>
+                  <Text style={styles.descText}>{`Playlist - ${countSongs || 0} songs`}</Text>
                 </View>
               </View>
             </View>

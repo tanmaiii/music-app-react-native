@@ -76,7 +76,7 @@ const HomeScreen = ({ navigation }: any) => {
     if (!currentUser) return linkTo("/Login");
   });
 
-  const { data: playlists } = useQuery({
+  const { data: playlists, refetch: refetchPlaylists } = useQuery({
     queryKey: ["playlists"],
     queryFn: async () => {
       const res = await playlistApi.getAll(1, 10);
@@ -84,7 +84,7 @@ const HomeScreen = ({ navigation }: any) => {
     },
   });
 
-  const { data: artists } = useQuery({
+  const { data: artists, refetch: refetchArtist } = useQuery({
     queryKey: ["artists"],
     queryFn: async () => {
       const res = await userApi.getAll(1, 10);
@@ -94,15 +94,20 @@ const HomeScreen = ({ navigation }: any) => {
     },
   });
 
-  const { data: songs } = useQuery({
+  const { data: songs, isLoading: loadingSongs, refetch: refetchSongs } = useQuery({
     queryKey: ["songs"],
     queryFn: async () => {
       const res = await songApi.getAll(1, 10);
+      console.log("Reload");
       return res.data;
     },
   });
 
-  const { data: playlistFavourite, isLoading: loadingPlaylistFavourite } = useQuery({
+  const {
+    data: playlistFavourite,
+    isLoading: loadingPlaylistFavourite,
+    refetch: refetchPlaylistsFavourite,
+  } = useQuery({
     queryKey: ["top-favorites"],
     queryFn: async () => {
       const res = await favouriteApi.getAll(token, 1, 10);
@@ -112,13 +117,12 @@ const HomeScreen = ({ navigation }: any) => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    console.log("Reload");
     setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["playlists"] });
-      queryClient.invalidateQueries({ queryKey: ["artists"] });
-      queryClient.invalidateQueries({ queryKey: ["songs"] });
-      queryClient.invalidateQueries({ queryKey: ["top-favorites"] });
-      setRefreshing(false);
+      refetchPlaylistsFavourite(),
+        refetchArtist(),
+        refetchPlaylists(),
+        refetchSongs(),
+        setRefreshing(false);
     }, 2000);
   }, []);
 
@@ -155,7 +159,7 @@ const HomeScreen = ({ navigation }: any) => {
           scrollEventThrottle={16}
         >
           <View style={styles.scroll}>
-            <Slider />
+            <Slider data={songs} loading={loadingSongs} />
 
             <HomeTop data={playlistFavourite} loading={loadingPlaylistFavourite} />
 

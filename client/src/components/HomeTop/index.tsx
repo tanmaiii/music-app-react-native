@@ -36,22 +36,22 @@ const HomeTop = ({ data, loading }: HomeTopProps) => {
       <View style={[styles.container]}>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} {...SkeletonCommonProps}></Skeleton>
+            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} {...SkeletonCommonProps}></Skeleton>
+            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} {...SkeletonCommonProps}></Skeleton>
+            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} {...SkeletonCommonProps}></Skeleton>
+            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps}></Skeleton>
           </View>
         </View>
       </View>
@@ -128,14 +128,12 @@ const styles = StyleSheet.create({
     padding: SPACING.space_4,
   },
   wrapper: {
-    backgroundColor: COLORS.Black3,
     borderRadius: BORDERRADIUS.radius_4,
+    backgroundColor: COLORS.Black3,
     overflow: "hidden",
     flexDirection: "row",
     width: "100%",
     height: "100%",
-    // justifyContent: "center",
-    // alignItems: "center",
   },
   cardImage: {
     height: "100%",

@@ -253,11 +253,13 @@ Song.findByFavorite = async (userId, query, result) => {
   result(null, null);
 };
 
-Song.findByUserId = async (userId, query, result) => {
+Song.findByUserId = async (userId, userReqInfo, query, result) => {
   const q = query?.q;
   const page = query?.page;
   const limit = query?.limit;
   const sort = query?.sort || "new";
+
+  const userReqId = userReqInfo.id;
 
   const offset = (page - 1) * limit;
 
@@ -265,7 +267,8 @@ Song.findByUserId = async (userId, query, result) => {
     ` SELECT s.*, u.name as author FROM songs as s ` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""} ` +
-      ` user_id = '${userId}' AND public = 1 AND is_deleted = 0 ` +
+      ` ((s.public = 1 AND s.user_id = '${userId}' ) OR ('${userId}' = '${userReqId}' AND s.user_id = '${userId}')) ` +
+      ` AND is_deleted = 0 ` +
       ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
@@ -273,7 +276,8 @@ Song.findByUserId = async (userId, query, result) => {
     `SELECT COUNT(*) AS totalCount FROM songs as s ` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""}` +
-      ` user_id = '${userId}' AND public = 1 AND is_deleted = 0 `
+      ` ((s.public = 1 AND s.user_id = '${userId}' ) OR ('${userId}' = '${userReqId}' AND s.user_id = '${userId}')) ` +
+      ` AND is_deleted = 0 `
   );
 
   if (data && totalCount) {

@@ -8,4 +8,5 @@ export type TSong = {
   song_path?: string;
   public?: number;
   created_at?: string;
+  num_song?: number;
 };

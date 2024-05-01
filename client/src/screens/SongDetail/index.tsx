@@ -24,6 +24,7 @@ import {
   faChevronLeft,
   faEllipsis,
   faHeart as faHeartSolid,
+  faLock,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
@@ -43,6 +44,8 @@ import { Skeleton } from "moti/skeleton";
 import { usePlaying } from "../../context/PlayingContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ArtistItem from "../../components/ArtistItem";
+import moment from "moment";
+import SongDetailSkeleton from "./SongDetailSkeleton";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -62,11 +65,10 @@ const SongDetail = (props: SongDetailProps) => {
   const navigation = useNavigation();
   const route = useRoute<RootRouteProps<"Song">>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
-  // const [isLike, setIsLike] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(50);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
-  const [song, setSong] = React.useState<TSong>();
-  const [loading, setLoading] = React.useState<boolean>(false);
+  // const [song, setSong] = React.useState<TSong>();
+  // const [loading, setLoading] = React.useState<boolean>(false);
   const songId = route.params.songId;
   const { token } = useAuth();
   const { setOpenBarSong, setSongIdPlaying, songIdPlaying } = usePlaying();
@@ -140,15 +142,13 @@ const SongDetail = (props: SongDetailProps) => {
     },
   });
 
-  const getSong = async () => {
-    setLoading(true);
-    try {
+  const { data: song, isLoading: loading } = useQuery({
+    queryKey: ["song", songId],
+    queryFn: async () => {
       const res = await songApi.getDetail(songId, token);
-      setSong(res);
-      setLoading(false);
-    } catch (error) {}
-    setLoading(false);
-  };
+      return res;
+    },
+  });
 
   const handleShare = async () => {
     try {
@@ -164,10 +164,6 @@ const SongDetail = (props: SongDetailProps) => {
     song && setSongIdPlaying(song?.id);
     setOpenBarSong(true);
   };
-
-  React.useEffect(() => {
-    getSong();
-  }, [songId]);
 
   return (
     <>
@@ -216,103 +212,111 @@ const SongDetail = (props: SongDetailProps) => {
             }}
             scrollEventThrottle={16}
           >
-            <View style={styles.wrapper}>
-              <Animated.View style={[styles.wrapperImage, imageAnimation]}>
-                <Skeleton {...SkeletonCommonProps} width={300} height={300}>
-                  {loading ? null : (
-                    <Image
-                      style={[styles.image]}
-                      source={
-                        song?.image_path
-                          ? { uri: apiConfig.imageURL(song.image_path) }
-                          : IMAGES.SONG
-                      }
-                    />
+            {loading ? (
+              <SongDetailSkeleton />
+            ) : (
+              <View style={styles.wrapper}>
+                <Animated.View style={[styles.wrapperImage, imageAnimation]}>
+                  <Image
+                    style={[styles.image]}
+                    source={
+                      song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
+                    }
+                  />
+                </Animated.View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: SPACING.space_4,
+                  }}
+                >
+                  {song?.public === 0 && (
+                    <FontAwesomeIcon icon={faLock} size={16} color={COLORS.White1} />
                   )}
-                </Skeleton>
-              </Animated.View>
-              <Skeleton {...SkeletonCommonProps} width={"80%"}>
-                {loading ? null : (
                   <Text
                     numberOfLines={2}
                     style={[
                       styles.textMain,
-                      { fontSize: FONTSIZE.size_24, textAlign: "center", maxWidth: "80%" },
+                      {
+                        fontSize: FONTSIZE.size_24,
+                        textAlign: "center",
+                        maxWidth: "80%",
+                      },
                     ]}
                   >
                     {song?.title || "Unknown"}
                   </Text>
-                )}
-              </Skeleton>
+                </View>
 
-              <Skeleton {...SkeletonCommonProps} width={100} height={18}>
-                {loading ? null : (
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.textMain, { color: COLORS.Primary, textAlign: "center" }]}
-                  >
-                    {song?.author || "Unknown"}
-                  </Text>
-                )}
-              </Skeleton>
-
-              <View style={styles.groupButton}>
-                <TouchableOpacity style={styles.buttonExtra} onPress={() => handleShare()}>
-                  <FontAwesomeIcon
-                    icon={faArrowUpFromBracket}
-                    size={18}
-                    style={{ color: COLORS.White2 }}
-                  />
-
-                  <Text
-                    style={{
-                      fontSize: FONTSIZE.size_12,
-                      color: COLORS.White2,
-                      fontFamily: FONTFAMILY.regular,
-                    }}
-                  >
-                    Share
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.button} onPress={() => handlePlay()}>
-                  <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
-                  <Text style={styles.textButton}>Play</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.buttonExtra}
-                  onPress={() => mutationLike.mutate(isLike)}
+                <Text
+                  numberOfLines={1}
+                  style={[styles.textMain, { color: COLORS.Primary, textAlign: "center" }]}
                 >
-                  <FontAwesomeIcon
-                    icon={isLike ? faHeart : faHeartRegular}
-                    size={18}
-                    color={isLike ? COLORS.Red : COLORS.White2}
-                  />
-                  <Text
-                    style={{
-                      fontSize: FONTSIZE.size_12,
-                      color: COLORS.White2,
-                      fontFamily: FONTFAMILY.regular,
-                    }}
-                  >
-                    Like
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.info}>
-                <Text style={styles.textExtra}>Released: 2019</Text>
-                <Text style={styles.textExtra}>Duration: 4 minutes</Text>
-              </View>
-
-              <ScrollView style={styles.listArtist}>
-                <Text style={[styles.textMain, { marginBottom: SPACING.space_12 }]}>
-                  About artist
+                  {song?.author || "Unknown"}
                 </Text>
-                <ArtistItem userId={song?.user_id} />
-              </ScrollView>
-            </View>
+
+                <View style={styles.groupButton}>
+                  <TouchableOpacity style={styles.buttonExtra} onPress={() => handleShare()}>
+                    <FontAwesomeIcon
+                      icon={faArrowUpFromBracket}
+                      size={18}
+                      style={{ color: COLORS.White2 }}
+                    />
+
+                    <Text
+                      style={{
+                        fontSize: FONTSIZE.size_12,
+                        color: COLORS.White2,
+                        fontFamily: FONTFAMILY.regular,
+                      }}
+                    >
+                      Share
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.button} onPress={() => handlePlay()}>
+                    <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+                    <Text style={styles.textButton}>Play</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.buttonExtra}
+                    onPress={() => mutationLike.mutate(isLike)}
+                  >
+                    <FontAwesomeIcon
+                      icon={isLike ? faHeart : faHeartRegular}
+                      size={18}
+                      color={isLike ? COLORS.Red : COLORS.White2}
+                    />
+                    <Text
+                      style={{
+                        fontSize: FONTSIZE.size_12,
+                        color: COLORS.White2,
+                        fontFamily: FONTFAMILY.regular,
+                      }}
+                    >
+                      Like
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.info}>
+                  <Text style={styles.textExtra}>
+                    Released: {moment(song?.created_at).format("YYYY")}
+                  </Text>
+                  <Text style={styles.textExtra}>Duration: 4 minutes</Text>
+                </View>
+
+                <ScrollView style={styles.listArtist}>
+                  <Text style={[styles.textMain, { marginBottom: SPACING.space_12 }]}>
+                    About artist
+                  </Text>
+                  <ArtistItem userId={song?.user_id} />
+                </ScrollView>
+              </View>
+            )}
           </ScrollView>
         </ImageBackground>
       </View>

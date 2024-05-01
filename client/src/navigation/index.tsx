@@ -19,7 +19,7 @@ import HomeScreen from "../screens/HomeScreen";
 import SearchScreen from "../screens/SearchScreen";
 import LibraryScreen from "../screens/LibraryScreen";
 import UserAccount from "../screens/UserAccount";
-import Account from "../screens/UserAccount/Account";
+import EditProfile from "../screens/UserAccount/EditProfile";
 import ListSongScreen from "../screens/ListSongScreen";
 import ListPlaylistScreen from "../screens/ListPlaylistScreen";
 // import ListSongLikeScreen from "../screens/ListSongScreen";
@@ -109,7 +109,7 @@ const StackNavigatorUserAccount = () => {
       }}
     >
       <Stack.Screen name="User" component={UserAccount} />
-      <Stack.Screen name="UserEditAccount" component={Account} />
+      <Stack.Screen name="UserEditProfile" component={EditProfile} />
       <Stack.Screen name={"Artist"} component={ArtistDetail} />
       <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
       <Stack.Screen name={"ListSong"} component={ListSongScreen} />

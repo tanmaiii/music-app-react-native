@@ -1,10 +1,12 @@
 import { StyleSheet } from "react-native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
+import { WINDOW_HEIGHT } from "../../utils";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Black1,
+    // paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
   },
   textMain: {
     fontSize: FONTSIZE.size_16,
@@ -49,9 +51,9 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     alignItems: "center",
-    justifyContent: "center",
     paddingVertical: SPACING.space_12,
     gap: SPACING.space_8,
+    minHeight: WINDOW_HEIGHT,
     paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
     marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
   },

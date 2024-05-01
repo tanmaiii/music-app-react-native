@@ -12,7 +12,7 @@ import CustomBottomSheet from "../CustomBottomSheet";
 import apiConfig from "../../configs/axios/apiConfig";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCircle, faDotCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCircle, faDotCircle, faLock } from "@fortawesome/free-solid-svg-icons";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -33,7 +33,6 @@ const SongItem = (props: SongItemProps) => {
   const { setOpenBarSong, setSongIdPlaying, songIdPlaying } = usePlaying();
   const { song, loading = false } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
-  const [activeMore, setActiveMore] = React.useState(false);
   const [heightModal, setHeightModal] = React.useState(100);
   const navigation = useNavigation();
   const route = useRoute();
@@ -67,8 +66,13 @@ const SongItem = (props: SongItemProps) => {
             <View style={{ gap: SPACING.space_4, flex: 1 }}>
               <Skeleton radius={4} width={180} height={16} {...SkeletonCommonProps}>
                 {loading ? null : (
-                  <Text numberOfLines={1} style={styles.textMain}>
-                    {song.title}
+                  <Text numberOfLines={1} style={[styles.textMain]}>
+                    {song?.public === 0 && (
+                      <>
+                        <FontAwesomeIcon icon={faLock} size={12} color={COLORS.White1} />{" "}
+                      </>
+                    )}
+                    {song?.title}
                   </Text>
                 )}
               </Skeleton>
@@ -79,7 +83,7 @@ const SongItem = (props: SongItemProps) => {
                   >
                     <Text style={[styles.textEtra]}>{song.author}</Text>
                     <FontAwesomeIcon icon={faCircle} size={2} color={COLORS.White2} />
-                    <Text style={[styles.textEtra]}>{moment(song.created_at).format("YYYY")}</Text>
+                    <Text style={[styles.textEtra]}>{moment(song?.created_at).format("YYYY")}</Text>
                   </View>
                 )}
               </Skeleton>
@@ -160,7 +164,6 @@ const styles = StyleSheet.create({
   },
   buttonMore: {
     position: "relative",
-    // backgroundColor: COLORS.Black2,
     width: 38,
     height: 38,
     alignItems: "center",
@@ -171,8 +174,6 @@ const styles = StyleSheet.create({
     flex: 1,
     position: "absolute",
     flexDirection: "column",
-    // width: "100%",
-    // top: 0,
     right: 0,
     top: "100%",
     backgroundColor: COLORS.Black2,

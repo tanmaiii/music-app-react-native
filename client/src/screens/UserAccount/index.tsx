@@ -34,6 +34,7 @@ import { NavigationProp } from "../../navigation/TStack";
 import { userApi } from "../../apis";
 import numeral from "numeral";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface UserAccountProps {}
 
@@ -111,82 +112,38 @@ const UserAccount = (props: UserAccountProps) => {
             </View>
             <View style={styles.accountRight}>
               <View style={styles.flexCenter}>
-                <Text style={styles.textMain}>{numeral(following).format("0a").toUpperCase()}</Text>
-                <Text style={styles.textEtra}>Followers</Text>
+                <Text style={styles.textMain}>{numeral(followers).format("0a").toUpperCase()}</Text>
+                <Text style={styles.textEtra}>followers</Text>
               </View>
               <View style={styles.flexCenter}>
-                <Text style={styles.textMain}>
-                  {" "}
-                  {numeral(followers).format("0a").toUpperCase()}
-                </Text>
-                <Text style={styles.textEtra}>Followed</Text>
+                <Text style={styles.textMain}>{numeral(following).format("0a").toUpperCase()}</Text>
+                <Text style={styles.textEtra}>following</Text>
               </View>
             </View>
           </View>
         </TouchableHighlight>
 
         <View style={styles.line} />
-        <TouchableHighlight
-          underlayColor={COLORS.Black}
-          onPress={() => navigation.navigate("UserEditAccount")}
-        >
-          <View style={styles.box}>
-            <View style={styles.boxLeft}>
-              <View style={styles.boxIcon}>
-                <FontAwesomeIcon icon={faUser} size={20} style={{ color: COLORS.Primary }} />
-              </View>
-              <Text style={styles.textMain}>Account</Text>
-            </View>
-            <View>
-              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </View>
-          </View>
-        </TouchableHighlight>
 
-        <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
-          <View style={styles.box}>
-            <View style={styles.boxLeft}>
-              <View style={styles.boxIcon}>
-                <FontAwesomeIcon icon={faPenToSquare} size={20} style={{ color: COLORS.Primary }} />
-              </View>
-              <Text style={styles.textMain}>Edit Information</Text>
-            </View>
-            <View>
-              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </View>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
-          <View style={styles.box}>
-            <View style={styles.boxLeft}>
-              <View style={styles.boxIcon}>
-                <FontAwesomeIcon icon={faGear} size={20} style={{ color: COLORS.Primary }} />
-              </View>
-              <Text style={styles.textMain}>Settings</Text>
-            </View>
-            <View>
-              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </View>
-          </View>
-        </TouchableHighlight>
+        <Item
+          icon={faUser}
+          title="Edit profile"
+          func={() => navigation.navigate("UserEditProfile")}
+        />
 
-        <TouchableHighlight underlayColor={COLORS.Black} onPress={() => console.log("press")}>
-          <View style={styles.box}>
-            <View style={styles.boxLeft}>
-              <View style={styles.boxIcon}>
-                <FontAwesomeIcon
-                  icon={faCircleQuestion}
-                  size={20}
-                  style={{ color: COLORS.Primary }}
-                />
-              </View>
-              <Text style={styles.textMain}>Help & Support</Text>
-            </View>
-            <View>
-              <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
-            </View>
-          </View>
-        </TouchableHighlight>
+        <Item
+          icon={faPenToSquare}
+          title="Edit Information"
+          func={() => navigation.navigate("UserEditProfile")}
+        />
+
+        <Item icon={faGear} title="Settings" func={() => navigation.navigate("UserEditProfile")} />
+
+        <Item
+          icon={faCircleQuestion}
+          title="Help & Support"
+          func={() => navigation.navigate("UserEditProfile")}
+        />
 
         <View style={styles.line} />
 
@@ -226,6 +183,24 @@ const UserAccount = (props: UserAccountProps) => {
 };
 
 export default UserAccount;
+
+const Item = ({ icon, title, func }: { icon: IconProp; title: string; func: () => void }) => {
+  return (
+    <TouchableHighlight underlayColor={COLORS.Black} onPress={() => func()}>
+      <View style={styles.box}>
+        <View style={styles.boxLeft}>
+          <View style={styles.boxIcon}>
+            <FontAwesomeIcon icon={icon} size={20} style={{ color: COLORS.Primary }} />
+          </View>
+          <Text style={styles.textMain}>{title}</Text>
+        </View>
+        <View>
+          <FontAwesomeIcon icon={faAngleRight} size={20} style={{ color: COLORS.White2 }} />
+        </View>
+      </View>
+    </TouchableHighlight>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -1,4 +1,4 @@
-import { ListResponse, TSong, TPlaylist ,ResFavourite} from "../../types";
+import { ListResponse, TSong, TPlaylist, ResFavourite } from "../../types";
 import axiosClient from "../../configs/axios/axiosClient";
 
 const favouriteApi = {
@@ -69,7 +69,7 @@ const favouriteApi = {
     limit: number,
     sort?: string,
     q?: string
-  ): Promise<ListResponse<ResFavourite>> {
+  ): Promise<ListResponse<TSong>> {
     const url = "favourite/songs";
     return axiosClient.get(url, {
       params: {

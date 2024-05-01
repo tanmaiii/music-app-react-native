@@ -6,7 +6,7 @@ import { WINDOW_WIDTH } from "../../utils";
 import HeaderSearch from "../HeaderSearch";
 import SongItem from "../SongItem";
 import { TSong } from "../../types";
-import { songApi } from "../../apis";
+import { favouriteApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { useRoute } from "@react-navigation/native";
 import { RootRouteProps } from "../../navigation/TStack";
@@ -88,7 +88,7 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
   const [keyword, setKeyword] = useState<string>("");
   const [focus, setFocus] = useState<boolean>(false);
   const [songs, setSongs] = useState<TSong[]>(null);
-  const { currentUser } = useAuth();
+  const { currentUser, token } = useAuth();
   const route = useRoute<RootRouteProps<"ListSong" | "ListSongLike">>();
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState(false);
@@ -100,7 +100,8 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
 
   const getLikeSongs = async () => {
     page === 1 && setLoading(true);
-    const res = await songApi.getAllFavoritesByUser(route.params.userId, page, 20, keyword);
+    const res = await favouriteApi.getSongs(token, page, 20, "new", keyword);
+    // const res = await songApi.getAllFavoritesByUser(route.params.userId, page, 20, keyword);
     if (res.pagination.page === 1) {
       setSongs(res.data);
       setTotalPages(res.pagination.totalPages);
@@ -113,7 +114,7 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
 
   const getSongs = async () => {
     page === 1 && setLoading(true);
-    const res = await songApi.getAllByUserId(route.params.userId, page, 20, keyword);
+    const res = await songApi.getAllByUserId(token, route.params.userId, page, 20, keyword);
     if (res.pagination.page === 1) {
       setSongs(res.data);
       setTotalPages(res.pagination.totalPages);
@@ -143,13 +144,6 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
   return (
     <View style={[styles.modal, isOpen ? { display: "flex" } : { display: "none" }]}>
       <View style={styles.container}>
-        {/* <HeaderSearch
-         
-          setIsOpen={setIsOpen}
-          isOpen={isOpen}
-          setKeyword={setKeyword}
-          keyword={keyword}
-        /> */}
         <SafeAreaView>
           <View style={styles.headerSearch}>
             <View style={styles.headerSearchInput}>
