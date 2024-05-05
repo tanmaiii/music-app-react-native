@@ -1,11 +1,8 @@
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer, useLinkTo } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator, { StackAuth } from "./src/navigation";
-import { Skeleton } from "moti/skeleton";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider, WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 
@@ -13,14 +10,15 @@ import PlayingCard from "./src/components/PlayingCard";
 
 import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
-import { PlayingContextProvider } from "./src/context/PlayingContext";
-import { AuthContextProvider, useAuth } from "./src/context/AuthContext";
-import { ToastContextProvider } from "./src/context/ToastContext";
 import React, { useEffect } from "react";
 import LottieView from "lottie-react-native";
 import { RootStackParamList } from "./src/navigation/TStack";
 import { QueryClient, QueryClientProvider, focusManager } from "@tanstack/react-query";
-import ToastMessage from "./src/components/ToastMessage";
+
+import { PlayingContextProvider } from "./src/context/PlayingContext";
+import { AuthContextProvider, useAuth } from "./src/context/AuthContext";
+import { ToastContextProvider } from "./src/context/ToastContext";
+import { AudioContextProvider } from "./src/context/AudioContext";
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -66,14 +64,16 @@ export default function App() {
         <ToastContextProvider>
           <AuthContextProvider>
             <PlayingContextProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <BottomSheetModalProvider>
-                  <View style={styles.container}>
-                    <PlayingCard />
-                    <Layout />
-                  </View>
-                </BottomSheetModalProvider>
-              </GestureHandlerRootView>
+              <AudioContextProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <BottomSheetModalProvider>
+                    <View style={styles.container}>
+                      <PlayingCard />
+                      <Layout />
+                    </View>
+                  </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+              </AudioContextProvider>
             </PlayingContextProvider>
           </AuthContextProvider>
         </ToastContextProvider>

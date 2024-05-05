@@ -450,7 +450,7 @@ Playlist.unlike = (playlistId, userId, result) => {
 
 Playlist.findSongInPlaylist = (playlistId, result) => {
   db.query(
-    `SELECT song_id FROM music.playlist_songs as ps  WHERE ps.playlist_id = ?`,
+    `SELECT song_id FROM music.playlist_songs as ps WHERE ps.playlist_id = ?`,
     [playlistId],
     (err, data) => {
       if (err) {

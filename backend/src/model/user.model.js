@@ -39,7 +39,7 @@ User.update = (userId, newUser, result) => {
         return;
       }
       console.log("UPDATE USER : ", { res });
-      result(null, { id: res.insertId, ...newUser });
+      result(null, { id: userId, ...newUser });
     });
   });
 };

@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { SPACING, FONTSIZE, FONTFAMILY, COLORS, HEIGHT } from "../../theme/theme";
+import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 
 const styles = StyleSheet.create({
   container: {
@@ -49,6 +50,7 @@ const styles = StyleSheet.create({
   },
   scroll: {
     paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 40,
+    minHeight: WINDOW_HEIGHT,
   },
 });
 

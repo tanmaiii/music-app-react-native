@@ -19,15 +19,31 @@ router.post(
 );
 
 router.post(
-  "/send-verification-email",
-  validate(authValidation.sendVerificationEmail),
-  authController.sendVerificationEmail
+  "/send-verify-account",
+  validate(authValidation.sendVerify),
+  authController.sendVerifyAccount
 );
-router.post("/verify-email", validate(authValidation.verifyEmail), authController.verifyEmail);
+router.post(
+  "/verify-account",
+  validate(authValidation.verifyAccount),
+  authController.verifyAccount
+);
 router.post(
   "/change-password",
   validate(authValidation.changePassword),
   authController.changePassword
+);
+
+router.post(
+  "/send-verify-email",
+  validate(authValidation.sendVerify),
+  authController.sendVerifyEmail
+);
+
+router.post(
+  "/verify-email",
+  validate(authValidation.verifyEmail),
+  authController.verifyEmail
 );
 
 export default router;

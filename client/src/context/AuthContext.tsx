@@ -4,6 +4,7 @@ import { TUser } from "../types/index";
 import { authApi } from "../apis";
 import userApi from "../apis/user/userApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Khai báo kiểu dữ liệu cho AuthContext
 interface IAuthContext {
@@ -30,6 +31,7 @@ export const AuthContextProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<TUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loadingAuth, setLoadingAuth] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   const logout = async () => {
     setCurrentUser(null);
@@ -51,23 +53,37 @@ export const AuthContextProvider = ({ children }: Props) => {
     const res = await authApi.signup(name, email, password);
   };
 
-  useEffect(() => {
-    const getInfo = async () => {
-      setLoadingAuth(true);
-      try {
-        const res = await userApi.getMe(token);
-        setCurrentUser(res);
-        console.log("Get Me", res);
-        setLoadingAuth(false);
-      } catch (error) {
-        console.log("Get Me", error);
-        setCurrentUser(null);
-        setToken(null);
-      }
+  const getInfo = async () => {
+    setLoadingAuth(true);
+    try {
+      const res = await userApi.getMe(token);
+      res ? setCurrentUser(res) : setCurrentUser(null);
+      console.log("Get Me", res);
       setLoadingAuth(false);
-    };
-    token && getInfo();
-  }, []);
+      return res;
+    } catch (error) {
+      console.log("Get Me :", error.response.data);
+    }
+    setLoadingAuth(false);
+    return null;
+  };
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: getInfo,
+  });
+
+  // useEffect(() => {
+  //   if (token) {
+  //     getInfo(); // Gọi hàm getInfo khi token tồn tại
+  //     const intervalId = setInterval(() => {
+  //       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+  //     }, 60000); // 60 giây (đơn vị tính là mili giây)
+
+  //     // Return một hàm trong useEffect để xóa interval khi component unmount
+  //     return () => clearInterval(intervalId);
+  //   }
+  // }, [token]); // Thêm token vào dependency array của useEffect
 
   useEffect(() => {
     const getUserStorage = async () => {

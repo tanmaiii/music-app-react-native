@@ -25,7 +25,7 @@ import { songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import ModalPlaying from "../ModalPlaying";
 import apiConfig from "../../configs/axios/apiConfig";
-import { ScrollView } from "react-native-gesture-handler";
+import { useAudio } from "../../context/AudioContext";
 
 interface PlayingCardProps {}
 
@@ -34,10 +34,8 @@ const PlayingCard = (props: PlayingCardProps) => {
   const { token } = useAuth();
   const [song, setSong] = React.useState<TSong | null>(null);
   const [loading, setLoading] = React.useState(false);
-
+  const { playSound, stopSound, isPlaying } = useAudio();
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
-
-  const [play, setPlay] = React.useState(false);
 
   const getSongs = async () => {
     setLoading(true);
@@ -52,10 +50,13 @@ const PlayingCard = (props: PlayingCardProps) => {
     setLoading(false);
   };
 
+  const handlePlay = () => {
+    isPlaying ? stopSound() : playSound();
+  };
+
   React.useEffect(() => {
     songIdPlaying && getSongs();
   }, [songIdPlaying]);
-
 
   return openBarSong && song ? (
     <>
@@ -88,11 +89,11 @@ const PlayingCard = (props: PlayingCardProps) => {
               </View>
             </View>
             <View style={styles.right}>
-              <TouchableOpacity onPress={() => setPlay((play) => !play)} style={styles.iconPlay}>
-                {play ? (
-                  <FontAwesomeIcon icon={faPlay} size={24} color={COLORS.White1} />
-                ) : (
+              <TouchableOpacity onPress={() => handlePlay()} style={styles.iconPlay}>
+                {isPlaying ? (
                   <FontAwesomeIcon icon={faPause} size={24} color={COLORS.White1} />
+                ) : (
+                  <FontAwesomeIcon icon={faPlay} size={24} color={COLORS.White1} />
                 )}
               </TouchableOpacity>
               <TouchableOpacity

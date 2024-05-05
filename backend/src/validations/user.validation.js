@@ -27,8 +27,7 @@ export default class userValidation {
       userId: Joi.string().min(0).max(36).required(),
     }),
   };
-  static getMe = {
-  };
+  static getMe = {};
   static updateUser = {
     ...bodySchema,
   };
@@ -38,11 +37,11 @@ export default class userValidation {
   static findByEmail = {
     body: Joi.object().keys({
       email: Joi.string().email().max(255).empty().required().messages({
-        "string.string": `Email phải là một chuổi !`,
-        "string.email": `Email không hợp lệ !`,
-        "string.max": `Email quá dài !`,
-        "string.empty": `Email đang rỗng !`,
-        "any.required": `Email là trường bắt buộc !`,
+        "string.string": `Email must be a string!`,
+        "string.email": `Invalid email!`,
+        "string.max": `Email is too long!`,
+        "string.empty": `Email is empty!`,
+        "any.required": `Email is a required field!`,
       }),
     }),
   };

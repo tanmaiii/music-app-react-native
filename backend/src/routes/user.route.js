@@ -5,7 +5,7 @@ import userValidation from "../validations/user.validation.js";
 import validate from "../middlewares/validate.js";
 
 router.get("/", validate(userValidation.getAllUser), userController.getAllUser);
-router.post("/me", validate(userValidation.getMe), userController.getMe);
+router.get("/me", validate(userValidation.getMe), userController.getMe);
 router.post("/email", validate(userValidation.findByEmail),userController.findByEmail);
 router.get("/:userId", validate(userValidation.getUser), userController.getUser);
 router.put("/", validate(userValidation.updateUser), userController.updateUser);

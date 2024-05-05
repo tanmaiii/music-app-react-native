@@ -3,9 +3,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
-  ScrollView,
-  TouchableHighlight,
   TouchableOpacity,
   StatusBar,
   Animated,
@@ -16,13 +13,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { TPlaylist, TSong } from "../../types";
 import SongItem from "../../components/SongItem";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
   faChevronLeft,
-  faCirclePlus,
   faEllipsis,
   faGlobe,
   faHeart as faHeartSolid,
@@ -64,14 +59,10 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const route = useRoute<RootRouteProps<"Playlist">>();
   const flatListRef = React.useRef<FlatList>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
-  // const [isLike, setIsLike] = React.useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(400);
-  // const [playlist, setPlaylist] = React.useState<TPlaylist>(null);
-  // const [playlists, setPlaylists] = React.useState<TPlaylist[]>(null);
-  // const [songs, setSongs] = React.useState<TSong[]>(null);
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
 
@@ -154,6 +145,8 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
       queryClient.invalidateQueries({
         queryKey: ["playlists-favorites"],
       });
+      queryClient.invalidateQueries({ queryKey: ["all-favorites"] });
+      queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
     },
   });
 
@@ -172,7 +165,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const { data: songs, refetch: refetchSongs } = useQuery({
     queryKey: ["songs", playlistId],
     queryFn: async () => {
-      const res = await songApi.getAllByPlaylistId(playlistId, 1, 50);
+      const res = await songApi.getAllByPlaylistId(token, playlistId, 1, 50);
       setTotalCount(res.pagination.totalCount);
       return res.data;
     },
@@ -222,7 +215,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
               <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
             </TouchableOpacity>
             <Animated.Text numberOfLines={1} style={[styles.titleHeader, headerAnimation]}>
-              {playlist?.title || "Unknown"}
+              {playlist?.title || ""}
             </Animated.Text>
             <TouchableOpacity
               style={[styles.buttonHeader]}

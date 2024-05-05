@@ -1,5 +1,14 @@
 import * as React from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity, Share, Pressable } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Share,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -72,7 +81,7 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
         queryKey: ["like-song", song.id],
       });
       queryClient.invalidateQueries({
-        queryKey: ["songs-favorites"],
+        queryKey: ["songs-favorites", currentUser.id],
       });
       queryClient.invalidateQueries({
         queryKey: ["count-songs-favorites"],

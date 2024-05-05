@@ -5,7 +5,7 @@ import User from "./user.model.js";
 const VerifyCodes = () => {};
 
 VerifyCodes.create = (userId, code, result) => {
-  db.query(`SELECT * from verification_codes WHERE user_id = ${userId}`, (err, res) => {
+  db.query(`SELECT * from verification_codes WHERE user_id = ?`, [userId], (err, res) => {
     if (err) {
       console.log("ERROR", err);
       result(err, null);
@@ -44,7 +44,7 @@ VerifyCodes.create = (userId, code, result) => {
 };
 
 VerifyCodes.delete = (userId, result) => {
-  db.query(`DELETE FROM verification_codes WHERE user_id = ${userId}`, (err, res) => {
+  db.query(`DELETE FROM verification_codes WHERE user_id = ?`,[userId], (err, res) => {
     if (err) {
       console.log("ERROR", err);
       result(err, null);
@@ -55,7 +55,7 @@ VerifyCodes.delete = (userId, result) => {
 };
 
 VerifyCodes.find = (userId, result) => {
-  db.query(`SELECT * from verification_codes WHERE user_id = ${userId}`, (err, res) => {
+  db.query(`SELECT * from verification_codes WHERE user_id = ?`,[userId], (err, res) => {
     if (err) {
       result(err, null);
       return;

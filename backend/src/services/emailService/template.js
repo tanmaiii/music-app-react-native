@@ -1,4 +1,4 @@
-export const verifyEmail = (code, appName) => {
+export const verifyAccount = (code, appName) => {
   return `
 <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -538,4 +538,10 @@ export const resetPassword = (url, appName) => {
 `;
 };
 
-export default { verifyEmail, resetPassword };
+export const verifyEmail = (code, appName) => {
+  return `<h1>Verify your email address</h1>
+  <p>Thanks for signing up for ${appName}! We're excited to have you as an early user.</p>
+  <h1>Code : ${code}</h1>`;
+};
+
+export default { verifyAccount, verifyEmail, resetPassword };

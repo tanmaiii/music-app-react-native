@@ -128,7 +128,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   };
 
   const { refetch } = useQuery({
-    queryKey: route.name === "ListSongLike" ? ["songs-favorites"] : ["songs"],
+    queryKey: route.name === "ListSongLike" ? ["songs-favorites", currentUser.id] : ["songs"],
     queryFn: () => {
       return route.name === "ListSongLike" ? getLikeSongs() : getSongs();
     },

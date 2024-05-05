@@ -169,9 +169,12 @@ export const getAllSongByMe = async (req, res) => {
   }
 };
 
-export const getAllSongByPlaylist = (req, res) => {
+export const getAllSongByPlaylist = async (req, res) => {
+  const token = req.headers["authorization"];
+  const userReqInfo = await jwtService.verifyToken(token);
+
   try {
-    Song.findByPlaylistId(req.params.playlistId, req.query, (err, data) => {
+    Song.findByPlaylistId(userReqInfo.id, req.params.playlistId, req.query, (err, data) => {
       if (!data) {
         return res.status(401).json("Không tìm thấy");
       } else {
@@ -181,6 +184,7 @@ export const getAllSongByPlaylist = (req, res) => {
   } catch (error) {
     res.status(400).json(error);
   }
+  
 };
 
 export const getAllSongByUser = async (req, res) => {

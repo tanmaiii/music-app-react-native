@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Black1,
     // padding: SPACING.space_10,
     gap: SPACING.space_4,
+    width: "100%"
   },
   wrapperImage: {
     aspectRatio: 1,

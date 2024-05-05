@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   btnFollow: {
     borderRadius: BORDERRADIUS.radius_20,
     borderColor: COLORS.WhiteRGBA15,
-    borderWidth: 0.6,
+    borderWidth: 0.8,
     paddingHorizontal: SPACING.space_16,
     paddingVertical: SPACING.space_8,
   },

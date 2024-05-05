@@ -3,14 +3,20 @@ import { Text, View, StyleSheet, Pressable } from "react-native";
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import CategoryHeaderSkeleton from "./CategoryHeaderSkeleton";
 
 interface CategoryHeaderProps {
   title: string;
   PropFunction?: () => void;
   style?: any;
+  loading?: boolean;
 }
 
-const CategoryHeader = ({ title, PropFunction, style }: CategoryHeaderProps) => {
+const CategoryHeader = ({ title, PropFunction, style, loading = false }: CategoryHeaderProps) => {
+  if (loading) {
+    return <CategoryHeaderSkeleton />;
+  }
+
   if (PropFunction) {
     return (
       <Pressable style={[styles.container]} {...style} onPress={() => PropFunction()}>

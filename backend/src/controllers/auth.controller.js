@@ -5,6 +5,7 @@ import jwtService from "../services/jwtService.js";
 import emailService from "../services/emailService/index.js";
 import randomstring from "randomstring";
 import VerifyCodes from "../model/verifyCodes.js";
+import nodemailer from "nodemailer";
 
 export const signin = async (req, res) => {
   try {
@@ -97,7 +98,7 @@ export const signout = (req, res) => {
 };
 
 // Gửi xác thực tài khoản
-export const sendVerificationEmail = (req, res) => {
+export const sendVerifyAccount = (req, res) => {
   try {
     const email = req.body.email;
     User.findByEmail(email, async (err, user) => {
@@ -115,34 +116,33 @@ export const sendVerificationEmail = (req, res) => {
         charset: "numeric",
       });
 
-      await emailService.sendVerificationEmail(email, code);
+      await emailService.sendVerificationAccount(email, code);
 
       VerifyCodes.create(user.id, code, async (err, result) => {
         if (err) {
           return res.status(401).json({ conflictError: err });
         }
-      });
+        console.log("✉️ Send verification email : " + email + " - code : " + code);
 
-      console.log("✉️ Send verification email : " + email + " - code : " + code);
-
-      return res.json({
-        success: true,
-        data: "Email verification sent successfully !",
-        // code: code,
+        return res.json({
+          success: true,
+          data: "Email verification sent successfully !",
+          // code: code,
+        });
       });
     });
   } catch (error) {
-    return res.status(500).json({ error: "Error send email" });
+    return res.status(500).json({ conflictError: "Error send email" });
   }
 };
 
 // Xác thực tài khoản
-export const verifyEmail = async (req, res) => {
+export const verifyAccount = async (req, res) => {
   try {
     const { code, email } = req.body;
 
     User.findByEmail(email, (err, user) => {
-      if (err || !user) return res.status(500).json({ error: "User not found" });
+      if (err || !user) return res.status(500).json({ conflictError: "User not found" });
       if (user.email_verified_at !== null) {
         console.log(" Account has been verified! ");
         return res.json({
@@ -155,14 +155,15 @@ export const verifyEmail = async (req, res) => {
             return res.status(500).json({ conflictError: "Error during request processing" });
           }
 
-          const codeSql = parseInt(verify.code);
+          const codeSql = verify.code;
 
-          if (codeSql === code) {
+          if (parseInt(codeSql) === parseInt(code)) {
             // return res.json({ codeSql, code });
             User.verify(email, (err, result) => {
               if (err || !result) {
                 return res.status(401).json(err);
               } else {
+                VerifyCodes.delete(user.id, (err, result) => {});
                 return res.json({
                   success: true,
                   data: "Email authentication successful!",
@@ -170,7 +171,7 @@ export const verifyEmail = async (req, res) => {
               }
             });
           } else {
-            return res.status(500).json({ conflictError: "123 Code code does not match" });
+            return res.status(500).json({ conflictError: "Code does not match" });
           }
         });
       }
@@ -256,13 +257,92 @@ export const changePassword = async (req, res) => {
   }
 };
 
+export const sendVerifyEmail = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+    const email = req.body.email;
+
+    User.findById(userInfo.id, async (err, result) => {
+      if (!result || err) {
+        return res.status(404).json({ conflictError: "User not found !" });
+      } else {
+        const code = randomstring.generate({
+          length: 4,
+          charset: "numeric",
+        });
+
+        await emailService.sendVerificationEmail(email, code);
+
+        // var transporter = nodemailer.createTransport({
+        //   service: "gmail",
+        //   auth: {
+        //     user: `${process.env.MAIL_NAME}`,
+        //     pass: `${process.env.MAIL_PASSWORD}`,
+        //   },
+        // });
+
+        VerifyCodes.create(userInfo.id, code, (err, result) => {
+          if (err) {
+            return res.status(401).json({ conflictError: err });
+          }
+          console.log("✉️ Send verification email : " + email + " - code : " + code);
+
+          return res.json({
+            success: true,
+            data: "Email verification sent successfully !",
+            // code: code,
+          });
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+    const { code } = req.body;
+
+    User.findById(userInfo.id, async (err, user) => {
+      if (!user || err) {
+        return res.status(404).json({ conflictError: "User not found !" });
+      } else {
+        VerifyCodes.find(user.id, (err, verify) => {
+          if (err || !verify) {
+            return res.status(500).json({ conflictError: "Error during request processing" });
+          }
+
+          const codeSql = verify.code;
+
+          console.log(codeSql, parseInt(code));
+
+          if (parseInt(codeSql) === parseInt(code)) {
+            // return res.json({ codeSql, code });
+            return res.json({ success: true, data: "Verify email successful!" });
+          } else {
+            return res.status(500).json({ conflictError: "Code does not match" });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ conflictError: "Error during request processing" });
+  }
+};
+
 export default {
   signup,
   signin,
   signout,
   forgotPassword,
   resetPassword,
-  sendVerificationEmail,
-  verifyEmail,
+  sendVerifyAccount,
+  verifyAccount,
   changePassword,
+  sendVerifyEmail,
+  verifyEmail,
 };

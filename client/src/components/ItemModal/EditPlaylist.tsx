@@ -17,36 +17,23 @@ import {
   Image,
   Keyboard,
   Animated,
+  Alert,
 } from "react-native";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { BottomSheetTextInput, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import ButtonSwitch from "../ButtonSwitch/ButtonSwitch";
-import Modal from "../CustomModal";
 import { TPlaylist, TSong } from "../../types";
 import { IMAGES } from "../../constants";
 import Constants from "expo-constants";
 import { useQuery } from "@tanstack/react-query";
-import { songApi } from "../../apis";
+import { imageApi, songApi } from "../../apis";
 import { apiConfig } from "../../configs";
 const statusBarHeight = Constants.statusBarHeight;
+import * as ImagePicker from "expo-image-picker";
 
-import {
-  cancelAnimation,
-  runOnJS,
-  scrollTo,
-  useAnimatedGestureHandler,
-  useAnimatedReaction,
-  useAnimatedRef,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
-
-import { PanGestureHandler } from "react-native-gesture-handler";
-import { BlurView } from "expo-blur";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 interface EditPlaylistProps {
   setIsOpen: (boolean) => void;
@@ -55,7 +42,9 @@ interface EditPlaylistProps {
 
 const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
   const [name, setName] = React.useState<string>(playlist.title);
+  const [file, setFile] = React.useState<any>("");
   const [isPrivate, setIsPrivate] = React.useState<boolean>(playlist.public === 1 ? false : true);
+  const { token } = useAuth();
 
   const handleCloseModal = () => {
     setIsOpen(false);
@@ -64,11 +53,94 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
   const { data: songs } = useQuery({
     queryKey: ["songs", playlist.id],
     queryFn: async () => {
-      const res = await songApi.getAllByPlaylistId(playlist.id, 1, 50);
-      // setTotalCount(res.pagination.totalCount);
+      const res = await songApi.getAllByPlaylistId(token, playlist.id, 1, 50);
       return res.data;
     },
   });
+
+  React.useEffect(() => {
+    (async () => {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status: statusCamera } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Photo gallery access permission not granted!");
+      }
+      if (statusCamera !== "granted") {
+        Alert.alert("Camera access permission not granted!");
+      }
+    })();
+  }, []);
+
+  const pickImageFromLibrary = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const file = {
+        uri: result.assets[0].uri,
+        type: result.assets[0].type,
+        name: result.assets[0].fileName,
+      };
+      setFile(file);
+    }
+  };
+
+  const takePhoto = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const file = {
+        uri: result.assets[0].uri,
+        type: result.assets[0].type,
+        name: result.assets[0].fileName,
+      };
+      setFile(file);
+    }
+  };
+
+  const showOptions = () => {
+    Alert.alert(
+      "Chọn ảnh",
+      "Bạn muốn lấy ảnh từ thư viện hay chụp ảnh mới?",
+      Platform.OS === "ios"
+        ? [
+            { text: "Chụp ảnh", onPress: takePhoto },
+            { text: "Lấy ảnh từ thư viện", onPress: pickImageFromLibrary },
+            { text: "Hủy bỏ", onPress: () => console.log("Hủy bỏ") },
+          ]
+        : [
+            { text: "Hủy bỏ", onPress: () => console.log("Hủy bỏ") },
+            { text: "Lấy ảnh từ thư viện", onPress: pickImageFromLibrary },
+            { text: "Chụp ảnh", onPress: takePhoto },
+          ],
+      { cancelable: true }
+    );
+  };
+
+  const handleSave = async () => {
+    const formData = new FormData();
+
+    if (!file) return;
+
+    console.log(file);
+
+    formData.append("image", file);
+    try {
+      const res = await imageApi.upload(formData, token);
+      console.log(res);
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -80,7 +152,7 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
           <View style={{ flex: 1, alignItems: "center" }}>
             <Text style={[styles.textMain]}>Edit playlist</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleSave}>
             <Text style={[styles.textExtra, { color: COLORS.Primary }]}>Save</Text>
           </TouchableOpacity>
         </View>
@@ -98,10 +170,10 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
               <TouchableOpacity style={styles.imageBoxWrapper}>
                 <Image
                   style={{ width: "100%", height: "100%", objectFit: "contain" }}
-                  source={IMAGES.PLAYLIST}
+                  source={file ? { uri: file.uri } : IMAGES.PLAYLIST}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonChange}>
+              <TouchableOpacity style={styles.buttonChange} onPress={showOptions}>
                 <Text style={[styles.textExtra, { color: COLORS.Primary }]}>Change image</Text>
               </TouchableOpacity>
             </View>
@@ -135,11 +207,11 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
 };
 
 function MovableSong({ song, id, positions }: { song: TSong; id: string; positions: object }) {
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart() {},
-    onActive() {},
-    onFinish() {},
-  });
+  // const gestureHandler = useAnimatedGestureHandler({
+  //   onStart() {},
+  //   onActive() {},
+  //   onFinish() {},
+  // });
 
   console.log(positions);
 

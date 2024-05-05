@@ -1,13 +1,30 @@
-import fs from 'fs';
+import fs from "fs";
+import jwtService from "../services/jwtService.js";
+import User from "../model/user.model.js";
 
-export const uploadImage = (req, res) => {
-  if (!req.file) {
-    const conflictError = "Please provide an image";
-    res.status(401).json({ conflictError });
+export const uploadImage = async (req, res, next) => {
+  try {
+    const token = req.headers["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+
+    User.findById(userInfo.id, (err, user) => {
+      if (!user || err) {
+        const conflictError = "Không tìm thấy!";
+        return res.status(401).json({ conflictError });
+      } else {
+        if (!req.file) {
+          const conflictError = "Please provide an image";
+          return res.status(401).json({ conflictError });
+        }
+
+        const fileName = req.file.filename;
+        console.log("UPLOAD IMGAE: " , { image: fileName });
+        return res.json({ image: fileName });
+      }
+    });
+  } catch (error) {
+    res.status(400).json(error);
   }
-
-  const fileName = req.file.filename;
-  return res.json({ image: fileName });
 };
 
 export const deleteImage = (req, res) => {

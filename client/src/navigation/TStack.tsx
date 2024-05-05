@@ -11,6 +11,7 @@ export type RootStackParamList = {
   User: undefined;
 
   UserEditProfile: undefined;
+  UpdateItem: {type: string};
 
   Song: { songId: string };
   Playlist: { playlistId: string };

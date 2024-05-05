@@ -15,14 +15,10 @@ import {
 import IMAGES from "../../constants/images";
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import TouchableScale from "../TouchableScale";
 import { songApi } from "../../apis";
 import { TSong } from "../../types";
 import { useAuth } from "../../context/AuthContext";
-import Slider from "@react-native-community/slider";
-import { Audio } from "expo-av";
 import apiConfig from "../../configs/axios/apiConfig";
-import TrackPlayer, { State } from "react-native-track-player";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
@@ -47,19 +43,25 @@ import { opacity } from "react-native-reanimated/lib/typescript/reanimated2/Colo
 import { useQuery } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
+import { useAudio } from "../../context/AudioContext";
 
 interface TSongPlaying {}
 
 const ModalPlaying = (props: TSongPlaying) => {
   const { songIdPlaying } = usePlaying();
   const { token } = useAuth();
-  const [play, setPlay] = useState(false);
+  const [isPlay, setIsPlay] = useState(false);
   const [like, setLike] = useState(false);
   // const [song, setSong] = useState<TSong | null>(null);
   const [sound, setSound] = useState(null);
   const [durationMillis, setDurationMillis] = useState(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const navigation = useNavigation<NavigationProp>();
+  const { playSound, stopSound, isPlaying } = useAudio();
+
+  const handlePlay = () => {
+    isPlaying ? stopSound() : playSound();
+  };
 
   const handleShare = async () => {
     try {
@@ -71,13 +73,6 @@ const ModalPlaying = (props: TSongPlaying) => {
     }
   };
 
-  const loadSound = async () => {
-    const { sound, status: any } = await Audio.Sound.createAsync(
-      require("../../assets/mp3/song1.mp3")
-    );
-    setSound(sound);
-  };
-
   const { data: song } = useQuery({
     queryKey: ["song", songIdPlaying],
     queryFn: async () => {
@@ -86,10 +81,22 @@ const ModalPlaying = (props: TSongPlaying) => {
     },
   });
 
-  const handleClickPlay = () => {
-    setPlay((play) => !play);
-    play ? sound.playAsync() : sound.pauseAsync();
-  };
+  // const loadSound = async () => {
+  //   const { sound, status: any } = await Audio.Sound.createAsync(
+  //     require("../../assets/mp3/song2.mp3")
+  //   );
+  //   sound.setVolumeAsync(1);
+  //   setSound(sound);
+  // };
+
+  // React.useEffect(() => {
+  //   loadSound();
+  //   sound && sound.playAsync();
+  // }, []);
+
+  // React.useEffect(() => {
+  //   play ? sound && sound.pauseAsync() : sound && sound.playAsync();
+  // }, [play]);
 
   return (
     <View style={styles.container}>
@@ -186,8 +193,8 @@ const ModalPlaying = (props: TSongPlaying) => {
               <TouchableOpacity style={styles.actionButton}>
                 <FontAwesomeIcon icon={faStepBackward} size={28} color={COLORS.Primary} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButtonStart} onPress={handleClickPlay}>
-                {!play ? (
+              <TouchableOpacity style={styles.actionButtonStart} onPress={() => handlePlay()}>
+                {isPlaying ? (
                   <FontAwesomeIcon icon={faPause} size={28} color={COLORS.White1} />
                 ) : (
                   <FontAwesomeIcon icon={faPlay} size={28} color={COLORS.White1} />
@@ -200,7 +207,7 @@ const ModalPlaying = (props: TSongPlaying) => {
           </View>
 
           <View style={styles.playerControlsBottom}>
-            <TouchableOpacity style={styles.BottomButton} onPress={() => setLike((like) => !like)}>
+            <TouchableOpacity style={styles.BottomButton}>
               {like ? (
                 <FontAwesomeIcon icon={faHeart} size={20} color={COLORS.Red} />
               ) : (

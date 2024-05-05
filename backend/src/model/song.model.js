@@ -163,7 +163,7 @@ Song.findById = (songId, userId, result) => {
   );
 };
 
-Song.findByPlaylistId = async (playlistId, query, result) => {
+Song.findByPlaylistId = async (userId, playlistId, query, result) => {
   const q = query?.q;
   const page = query?.page;
   const limit = query?.limit;
@@ -177,7 +177,7 @@ Song.findByPlaylistId = async (playlistId, query, result) => {
       ` INNER JOIN songs AS s ON pvs.song_id = s.id` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""}` +
-      ` pvs.playlist_id = '${playlistId}' and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0 ` +
+      ` ((s.public = 1 AND pvs.playlist_id = '${playlistId}' ) OR (pvs.playlist_id = '${playlistId}' AND s.user_id = '${userId}')) AND is_deleted = 0 ` +
       ` ORDER BY pvs.num_song ${sort === "new" ? "ASC" : "DESC"} ` +
       ` limit ${+limit} offset ${+offset}`
   );
@@ -188,7 +188,7 @@ Song.findByPlaylistId = async (playlistId, query, result) => {
       ` INNER JOIN songs AS s ON pvs.song_id = s.id` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""}` +
-      ` pvs.playlist_id = '${playlistId}' and pvs.song_id = s.id and s.public = 1 AND is_deleted = 0`
+      ` ((s.public = 1 AND pvs.playlist_id = '${playlistId}' ) OR (pvs.playlist_id = '${playlistId}' AND s.user_id = '${userId}')) AND is_deleted = 0 `
   );
   if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0].totalCount / limit);

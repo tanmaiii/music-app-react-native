@@ -2,13 +2,17 @@ import * as React from "react";
 import { Text, View, StyleSheet, Image, TouchableOpacity, Share, Modal } from "react-native";
 import { IMAGES } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faHeart, faMusic, faPenToSquare, faPlusCircle, faShare } from "@fortawesome/free-solid-svg-icons";
 import {
-  faFlag,
-  faHeart as faHeartRegular,
+  faHeart,
+  faMusic,
+  faPenToSquare,
+  faPlusCircle,
+  faShare,
   faTrashCan,
+  faFlag,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";

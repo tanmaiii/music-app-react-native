@@ -177,7 +177,7 @@ const Item = ({
   const { data: countSongs } = useQuery({
     queryKey: ["count-songs", playlist.id],
     queryFn: async () => {
-      const res = await songApi.getAllByPlaylistId(playlist.id, 1, 0);
+      const res = await songApi.getAllByPlaylistId(token, playlist.id, 1, 0);
       return res.pagination.totalCount;
     },
   });

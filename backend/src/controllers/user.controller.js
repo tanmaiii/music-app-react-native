@@ -76,7 +76,7 @@ export const findByEmail = (req, res) => {
       console.log("FIND BY EMAIL: ", user);
 
       if (user) {
-        return res.status(401).json({ conflictError: "Email đã tồn tại" });
+        return res.status(401).json({ conflictError: "Email is already used on another account" });
       } else {
         return res.status(200).json({ message: "Email chưa tồn tại" });
       }
@@ -85,6 +85,8 @@ export const findByEmail = (req, res) => {
     res.status(400).json(error);
   }
 };
+
+
 
 export default {
   getUser,

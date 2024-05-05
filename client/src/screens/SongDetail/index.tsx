@@ -67,6 +67,7 @@ const SongDetail = (props: SongDetailProps) => {
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [heightModal, setHeightModal] = React.useState<number>(50);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const { currentUser } = useAuth();
   // const [song, setSong] = React.useState<TSong>();
   // const [loading, setLoading] = React.useState<boolean>(false);
   const songId = route.params.songId;
@@ -134,7 +135,7 @@ const SongDetail = (props: SongDetailProps) => {
         queryKey: ["like-song", songId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["songs-favorites"],
+        queryKey: ["songs-favorites", currentUser.id],
       });
       queryClient.invalidateQueries({
         queryKey: ["count-songs-favorites"],

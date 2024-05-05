@@ -23,7 +23,15 @@ const userApi = {
   },
   getMe(token: string): Promise<TUser> {
     const url = "user/me";
-    return axiosClient.post(url, {
+    return axiosClient.get(url, {
+      headers: {
+        authorization: token,
+      },
+    });
+  },
+  update: (token: string, body: any) => {
+    const url = "user";
+    return axiosClient.put(url, body, {
       headers: {
         authorization: token,
       },
@@ -31,7 +39,7 @@ const userApi = {
   },
   findByEmail(email: string) {
     const url = "user/email";
-    return axiosClient.post(url, { email });
+    return axiosClient.post(url, { email: email });
   },
   getCountFollowing(userId: string): Promise<number> {
     const url = `follow/following/${userId}/count`;

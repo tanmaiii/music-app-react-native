@@ -40,7 +40,9 @@ import {
   faPlay,
   faPlus,
   faRandom,
+  faHeart as faHeartSolid,
 } from "@fortawesome/free-solid-svg-icons";
+import { faHeart } from "@fortawesome/free-regular-svg-icons";
 const statusBarHeight = Constants.statusBarHeight;
 import { playlistApi, songApi, userApi } from "../../apis";
 import apiConfig from "../../configs/axios/apiConfig";
@@ -48,7 +50,6 @@ import numeral from "numeral";
 import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
 import { usePlaying } from "../../context/PlayingContext";
-import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const HEIGHT_AVATAR = 400;
@@ -492,10 +493,39 @@ type TSongTop = {
 
 export const SongTop = ({ song }: TSongTop) => {
   const { setOpenBarSong, setSongIdPlaying, songIdPlaying } = usePlaying();
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  const navigation = useNavigation<NavigationProp>();
+
+  const { data: isLike } = useQuery({
+    queryKey: ["like-song", song.id],
+
+    queryFn: async () => {
+      const res = await songApi.checkLikedSong(song.id, token);
+      return res.isLiked;
+    },
+  });
+
+  const mutationLike = useMutation({
+    mutationFn: (like: boolean) => {
+      if (like) return songApi.unLikeSong(song.id, token);
+      return songApi.likeSong(song.id, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["like-song", song.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs-favorites"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["count-songs-favorites"],
+      });
+    },
+  });
 
   const handlePress = () => {
-    setSongIdPlaying(song.id);
-    setOpenBarSong(true);
+    navigation.navigate("Song", { songId: song.id });
   };
 
   return (
@@ -521,8 +551,15 @@ export const SongTop = ({ song }: TSongTop) => {
               </Text>
             </View>
             <View>
-              <TouchableOpacity style={styles.songTopLike}>
-                <FontAwesomeIcon icon={faHeart} size={18} color={COLORS.Red} />
+              <TouchableOpacity
+                style={styles.songTopLike}
+                onPress={() => song && mutationLike.mutate(isLike)}
+              >
+                <FontAwesomeIcon
+                  icon={isLike ? faHeartSolid : faHeart}
+                  size={18}
+                  color={COLORS.Red}
+                />
                 <Text
                   style={[
                     {

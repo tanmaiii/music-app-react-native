@@ -48,6 +48,7 @@ const songApi = {
     });
   },
   getAllByPlaylistId(
+    token: string,
     playlistId: string,
     page: number,
     limit: number,
@@ -61,6 +62,9 @@ const songApi = {
         limit: limit,
         sortBy: sort,
         q: q,
+      },
+      headers: {
+        authorization: token,
       },
     });
   },

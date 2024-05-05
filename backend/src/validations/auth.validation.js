@@ -54,15 +54,20 @@ export default class authValidation {
       password: Joi.string().email().max(255).empty().required(),
     }),
   };
-  static sendVerificationEmail = {
+  static sendVerify = {
     body: Joi.object().keys({
       email: Joi.string().email().max(255).empty().required(),
     }),
   };
-  static verifyEmail = {
+  static verifyAccount = {
     body: Joi.object().keys({
       email: Joi.string().email().max(255).empty().required(),
       code: Joi.number().required()
+    }),
+  };
+  static verifyEmail = {
+    body: Joi.object().keys({
+      code: Joi.string().min(4).max(4).required(),
     }),
   };
   static changePassword = {

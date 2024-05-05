@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
@@ -19,16 +21,121 @@ import { useAuth } from "../../context/AuthContext";
 import Constants from "expo-constants";
 import { apiConfig } from "../../configs";
 const statusBarHeight = Constants.statusBarHeight;
+import * as ImagePicker from "expo-image-picker";
+import { imageApi, userApi } from "../../apis";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { NavigationProp } from "../../navigation/TStack";
 
 interface AccountProps {}
 
 const EditProfile = (props: AccountProps) => {
-  const { currentUser } = useAuth();
-  const navigation = useNavigation();
+  const { currentUser, token, loadingAuth } = useAuth();
+  // const [user, setUser] = React.useState();
+  const navigation = useNavigation<NavigationProp>();
+  const [file, setFile] = React.useState<any>("");
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    (async () => {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status: statusCamera } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Photo gallery access permission not granted!");
+      }
+      if (statusCamera !== "granted") {
+        Alert.alert("Camera access permission not granted!");
+      }
+    })();
+  }, []);
+
+  const pickImageFromLibrary = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const file = {
+        uri: result.assets[0].uri,
+        type: result.assets[0].type,
+        name: result.assets[0].fileName,
+      };
+      setFile(file);
+      mutationSaveImage.mutate();
+    }
+  };
+
+  const takePhoto = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const file = {
+        uri: result.assets[0].uri,
+        type: result.assets[0].type,
+        name: result.assets[0].fileName,
+      };
+      setFile(file);
+      mutationSaveImage.mutate();
+    }
+  };
+
+  const showOptions = () => {
+    Alert.alert(
+      "Chọn ảnh",
+      "Bạn muốn lấy ảnh từ thư viện hay chụp ảnh mới?",
+      Platform.OS === "ios"
+        ? [
+            { text: "Chụp ảnh", onPress: takePhoto },
+            { text: "Lấy ảnh từ thư viện", onPress: pickImageFromLibrary },
+            { text: "Hủy bỏ", onPress: () => console.log("Hủy bỏ") },
+          ]
+        : [
+            { text: "Hủy bỏ", onPress: () => console.log("Hủy bỏ") },
+            { text: "Lấy ảnh từ thư viện", onPress: pickImageFromLibrary },
+            { text: "Chụp ảnh", onPress: takePhoto },
+          ],
+      { cancelable: true }
+    );
+  };
+
+  const handleSaveImage = async () => {
+    try {
+      if (!file) return;
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await imageApi.upload(formData, token);
+      console.log(res.image);
+
+      const handleUpdate = async () => {
+        await userApi.update(token, {
+          image_path: res.image,
+        });
+      };
+      handleUpdate();
+    } catch (error) {
+      console.error("Lỗi khi tải ảnh lên server:", error);
+    }
+  };
+
+  const mutationSaveImage = useMutation({
+    mutationFn: async () => {
+      await handleSaveImage();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+    },
+  });
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.Black2} />
       <SafeAreaView style={{ zIndex: 99 }}>
         <View
           style={[
@@ -56,23 +163,42 @@ const EditProfile = (props: AccountProps) => {
       >
         <View style={styles.boxAvatar}>
           <View style={styles.wrapperImage}>
-            <Image
-              style={styles.image}
-              source={
-                currentUser.image_path
-                  ? { uri: apiConfig.imageURL(currentUser.image_path) }
-                  : IMAGES.AVATAR
-              }
-            />
+            {loadingAuth ? (
+              <ActivityIndicator />
+            ) : (
+              <Image
+                style={styles.image}
+                source={
+                  currentUser?.image_path
+                    ? { uri: apiConfig.imageURL(currentUser.image_path) }
+                    : IMAGES.AVATAR
+                }
+              />
+            )}
           </View>
-          <TouchableOpacity style={{ padding: SPACING.space_12 }}>
+          <TouchableOpacity style={{ padding: SPACING.space_12 }} onPress={showOptions}>
             <Text style={[styles.textMain, { color: COLORS.Primary }]}>Edit avatar</Text>
           </TouchableOpacity>
         </View>
-        <Item title="Name" desc={currentUser.name} />
-        <Item title="Email" desc={currentUser.email} />
-        <Item title="Genre" desc={currentUser?.gender} />
-        <Item title="Password" />
+        <Item
+          title="Name"
+          desc={currentUser?.name}
+          func={() => navigation.navigate("UpdateItem", { type: "name" })}
+        />
+        <Item
+          title="Email"
+          desc={currentUser?.email}
+          func={() => navigation.navigate("UpdateItem", { type: "email" })}
+        />
+        <Item
+          title="Gender"
+          desc={currentUser?.gender}
+          func={() => navigation.navigate("UpdateItem", { type: "gender" })}
+        />
+        <Item
+          title="Password"
+          func={() => navigation.navigate("UpdateItem", { type: "password" })}
+        />
       </ScrollView>
     </View>
   );
@@ -80,9 +206,9 @@ const EditProfile = (props: AccountProps) => {
 
 export default EditProfile;
 
-const Item = ({ title, desc }: { title: string; desc?: string }) => {
+const Item = ({ title, desc, func }: { title: string; desc?: string; func: () => void }) => {
   return (
-    <TouchableOpacity onPress={() => console.log("press")}>
+    <TouchableOpacity onPress={() => func()}>
       <View style={styles.box}>
         <View style={styles.boxLeft}>
           <View style={styles.title}>
@@ -119,7 +245,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
     paddingHorizontal: SPACING.space_8,
-    paddingVertical: SPACING.space_12,
+    paddingVertical: SPACING.space_8,
     backgroundColor: COLORS.Black2,
     position: "absolute",
     top: 0,
@@ -158,6 +284,9 @@ const styles = StyleSheet.create({
     height: 120,
     overflow: "hidden",
     borderRadius: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.Black2,
   },
   image: {
     width: "100%",

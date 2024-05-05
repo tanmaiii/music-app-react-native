@@ -76,7 +76,11 @@ const HomeScreen = ({ navigation }: any) => {
     if (!currentUser) return linkTo("/Login");
   });
 
-  const { data: playlists, refetch: refetchPlaylists } = useQuery({
+  const {
+    data: playlists,
+    isLoading: loadingPlaylists,
+    refetch: refetchPlaylists,
+  } = useQuery({
     queryKey: ["playlists"],
     queryFn: async () => {
       const res = await playlistApi.getAll(1, 10);
@@ -84,7 +88,11 @@ const HomeScreen = ({ navigation }: any) => {
     },
   });
 
-  const { data: artists, refetch: refetchArtist } = useQuery({
+  const {
+    data: artists,
+    isLoading: loadingArtists,
+    refetch: refetchArtist,
+  } = useQuery({
     queryKey: ["artists"],
     queryFn: async () => {
       const res = await userApi.getAll(1, 10);
@@ -94,7 +102,11 @@ const HomeScreen = ({ navigation }: any) => {
     },
   });
 
-  const { data: songs, isLoading: loadingSongs, refetch: refetchSongs } = useQuery({
+  const {
+    data: songs,
+    isLoading: loadingSongs,
+    refetch: refetchSongs,
+  } = useQuery({
     queryKey: ["songs"],
     queryFn: async () => {
       const res = await songApi.getAll(1, 10);
@@ -125,6 +137,27 @@ const HomeScreen = ({ navigation }: any) => {
         setRefreshing(false);
     }, 2000);
   }, []);
+
+  const LoadingView = [];
+
+  for (let i = 0; i < 3; i++) {
+    LoadingView.push(
+      <View style={{ paddingHorizontal: SPACING.space_10 }}>
+        <CategoryHeader title={"test"} loading={true} />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+            <SongCard song={null} loading={true} />
+          </View>
+          <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+            <SongCard song={null} loading={true} />
+          </View>
+          <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+            <SongCard song={null} loading={true} />
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -163,65 +196,73 @@ const HomeScreen = ({ navigation }: any) => {
 
             <HomeTop data={playlistFavourite} loading={loadingPlaylistFavourite} />
 
-            <View style={{ paddingHorizontal: SPACING.space_10 }}>
-              <CategoryHeader title={"Song popular"} />
-              <FlatList
-                data={songs}
-                keyExtractor={(item: any) => item.id}
-                bounces={false}
-                snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                decelerationRate={0}
-                style={{ gap: SPACING.space_12 }}
-                renderItem={({ item, index }) => (
-                  <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
-                    <SongCard song={item} />
-                  </View>
-                )}
-              />
-            </View>
+            {loadingSongs || loadingPlaylists || (loadingArtists && LoadingView)}
 
-            <View style={{ paddingHorizontal: SPACING.space_10 }}>
-              <CategoryHeader title={"Playlist popular"} />
-              <FlatList
-                data={playlists}
-                keyExtractor={(item: any) => item.id}
-                bounces={false}
-                snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                decelerationRate={0}
-                style={{ gap: SPACING.space_12 }}
-                renderItem={({ item, index }) => (
-                  <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
-                    <PlaylistCard playlist={item} />
-                  </View>
-                )}
-              />
-            </View>
-
-            <View style={{ paddingHorizontal: SPACING.space_10 }}>
-              <CategoryHeader title={"Artist song"} />
-              <FlatList
-                data={artists}
-                keyExtractor={(item: any) => item.id}
-                bounces={false}
-                snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                decelerationRate={0}
-                style={{ gap: SPACING.space_12 }}
-                renderItem={({ item, index }) => {
-                  if (item.id === currentUser.id) return;
-                  return (
-                    <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
-                      <ArtistCard artist={item} />
+            {songs && (
+              <View style={{ paddingHorizontal: SPACING.space_10 }}>
+                <CategoryHeader title={"Song popular"} loading={loadingSongs} />
+                <FlatList
+                  data={songs}
+                  keyExtractor={(item: any) => item.id}
+                  bounces={false}
+                  snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  decelerationRate={0}
+                  style={{ gap: SPACING.space_12 }}
+                  renderItem={({ item, index }) => (
+                    <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                      <SongCard song={item} loading={loadingSongs} />
                     </View>
-                  );
-                }}
-              />
-            </View>
+                  )}
+                />
+              </View>
+            )}
+
+            {playlists && (
+              <View style={{ paddingHorizontal: SPACING.space_10 }}>
+                <CategoryHeader title={"Playlist popular"} loading={loadingPlaylists} />
+                <FlatList
+                  data={playlists}
+                  keyExtractor={(item: any) => item.id}
+                  bounces={false}
+                  snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  decelerationRate={0}
+                  style={{ gap: SPACING.space_12 }}
+                  renderItem={({ item, index }) => (
+                    <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                      <PlaylistCard playlist={item} />
+                    </View>
+                  )}
+                />
+              </View>
+            )}
+
+            {artists && (
+              <View style={{ paddingHorizontal: SPACING.space_10 }}>
+                <CategoryHeader title={"Artist song"} loading={loadingArtists} />
+                <FlatList
+                  data={artists}
+                  keyExtractor={(item: any) => item.id}
+                  bounces={false}
+                  snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  decelerationRate={0}
+                  style={{ gap: SPACING.space_12 }}
+                  renderItem={({ item, index }) => {
+                    if (item.id === currentUser.id) return;
+                    return (
+                      <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
+                        <ArtistCard artist={item} />
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+            )}
           </View>
         </ScrollView>
       </View>

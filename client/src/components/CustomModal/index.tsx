@@ -31,15 +31,13 @@ const CustomModal = ({
   modalFunction,
   ...rest
 }: TModalProps) => {
-  const handlePressOk = () => {
-    modalFunction();
+  const handlePressOk = async () => {
+    await modalFunction();
     setIsOpen(false);
   };
 
   const content = withInput ? (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
       {children}
     </KeyboardAvoidingView>
   ) : (

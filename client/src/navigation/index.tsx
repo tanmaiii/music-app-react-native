@@ -28,6 +28,8 @@ import LoginScreen from "../screens/AuthScreen/Login";
 import SignupScreen from "../screens/AuthScreen/Signup";
 import WelcomeScreen from "../screens/AuthScreen/Welcome";
 import VeridyScreen from "../screens/AuthScreen/Verify";
+import UpdateItem from "../screens/UserAccount/UpdateItem";
+import { BlurView } from "expo-blur";
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -110,6 +112,8 @@ const StackNavigatorUserAccount = () => {
     >
       <Stack.Screen name="User" component={UserAccount} />
       <Stack.Screen name="UserEditProfile" component={EditProfile} />
+      <Stack.Screen name="UpdateItem" component={UpdateItem} />
+
       <Stack.Screen name={"Artist"} component={ArtistDetail} />
       <Stack.Screen name={"Playlist"} component={PlaylistDetail} />
       <Stack.Screen name={"ListSong"} component={ListSongScreen} />
@@ -130,9 +134,7 @@ const TabNavigator = () => {
           height: HEIGHT.navigator,
           borderTopWidth: 0,
           borderTopColor: COLORS.Black1,
-          // position: "absolute",
           zIndex: 9999,
-          // transform: [{translateY: HEIGHT.navigator}]
         },
       }}
     >

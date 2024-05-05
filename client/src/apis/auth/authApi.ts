@@ -11,17 +11,53 @@ const authApi = {
     const url = "auth/signup";
     return axiosClient.post(url, { name, email, password });
   },
-  sendVerificationEmail(email: string) {
-    const url = "auth/send-verification-email";
-    return axiosClient.post(url, { email });
+  sendVerifyAccount(token: string, email: string) {
+    const url = "auth/send-verify-account";
+    return axiosClient.post(
+      url,
+      { email },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
   },
-  verifyEmail(token: string | null) {
-    const url = "auth/verify-email?token=";
-    return axiosClient.post(url + token);
+  verifyAccount(email: string, code: string) {
+    const url = "auth/verify-account";
+    return axiosClient.post(url, { email, code });
   },
   signout() {
     const url = "auth/signout";
     return axiosClient.get(url);
+  },
+  checkEmail(email: string) {
+    const url = "user/email";
+    return axiosClient.post(url, { email });
+  },
+  sendVerifyEmail(token: string, email: string): Promise<{ success: boolean; data: string }> {
+    const url = "auth/send-verify-email";
+    return axiosClient.post(
+      url,
+      { email },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+  },
+  verifyEmail(token: string, code: string): Promise<{ success: boolean; data: string }> {
+    const url = "auth/verify-email";
+    return axiosClient.post(
+      url,
+      { code },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
   },
 };
 
