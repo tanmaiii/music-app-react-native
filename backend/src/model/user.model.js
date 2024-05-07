@@ -1,5 +1,4 @@
 import { db, promiseDb } from "../config/connect.js";
-import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 
 const User = function (user) {
@@ -44,6 +43,7 @@ User.update = (userId, newUser, result) => {
   });
 };
 
+//kiểm tra email đã được dùng chưa
 User.findByEmail = (email, result) => {
   db.query(`SELECT * from users WHERE email = ?`, email, (err, res) => {
     if (err) {
@@ -72,20 +72,20 @@ User.findById = (id, result) => {
   });
 };
 
-//kiểm tra email đã được dùng chưa
-User.isEmailAlreadyExists = (email, result) => {
-  db.query(`SELECT * from users WHERE email = '${email}'`, (err, res) => {
-    if (err) {
-      result(err, null);
-      return;
-    }
-    if (res.length) {
-      result(null, res[0]);
-      return;
-    }
-    result(null, null);
-  });
-};
+// //kiểm tra email đã được dùng chưa
+// User.isEmailAlreadyExists = (email, result) => {
+//   db.query(`SELECT * from users WHERE email = '${email}'`, (err, res) => {
+//     if (err) {
+//       result(err, null);
+//       return;
+//     }
+//     if (res.length) {
+//       result(null, res[0]);
+//       return;
+//     }
+//     result(null, null);
+//   });
+// };
 
 User.getAll = async (query, result) => {
   const q = query?.q;

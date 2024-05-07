@@ -85,10 +85,16 @@ const styles = StyleSheet.create({
     right: 0,
     borderRadius: 50,
   },
+  buttonEyePassword: {
+    padding: 2,
+    position: "absolute",
+    bottom: 8,
+    right: 0,
+  },
   boxOption: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: SPACING.space_12,
+    // paddingHorizontal: SPACING.space_12,
     paddingVertical: SPACING.space_12,
     alignItems: "center",
   },

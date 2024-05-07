@@ -11,11 +11,11 @@ const jwtService = {
   verifyToken: (token) => {
     return new Promise((resolve, reject) => {
       if (!token) {
-        reject({ conflictError: "Không tìm thấy token !" });
+        reject({ conflictError: "Can not find token !" });
       }
       jwt.verify(token, process.env.MY_SECRET, (err, decoded) => {
         if (err) {
-          reject({ conflictError: "Token không hợp lệ !" });
+          reject({ conflictError: "Invalid token!" });
         } else {
           resolve(decoded);
         }

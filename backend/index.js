@@ -6,7 +6,6 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { db } from "./src/config/connect.js";
 import routes from "./src/routes/index.js";
-import { Console } from "console";
 
 const app = express();
 

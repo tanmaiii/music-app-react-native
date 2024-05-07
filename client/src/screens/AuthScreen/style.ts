@@ -6,11 +6,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Black1,
-    // paddingHorizontal: SPACING.space_16,
-    // paddingVertical: SPACING.space_32,
     overflow: "hidden",
     gap: SPACING.space_16,
-    height: WINDOW_HEIGHT,
     justifyContent: "center",
   },
   header: {
@@ -32,10 +29,15 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 25,
   },
-  titleHeader: {
+  textMain: {
     fontSize: FONTSIZE.size_16,
     color: COLORS.White1,
     fontFamily: FONTFAMILY.medium,
+  },
+  textEtra: {
+    fontSize: FONTSIZE.size_16,
+    color: COLORS.White2,
+    fontFamily: FONTFAMILY.regular,
   },
   boxSucc: {
     backgroundColor: COLORS.Green,
@@ -82,7 +84,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: SPACING.space_14,
     paddingHorizontal: SPACING.space_16,
-    paddingVertical: SPACING.space_32,
     marginTop: SPACING.space_24,
   },
   bodyTop: {
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.space_4,
   },
   boxs: {
-    gap: SPACING.space_8,
+    gap: SPACING.space_14,
   },
   box: {
     flexDirection: "column",
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     gap: SPACING.space_4,
     alignItems: "center",
     height: 54,
-    paddingVertical: SPACING.space_4,
+    // paddingVertical: SPACING.space_4,
     paddingHorizontal: SPACING.space_12,
     backgroundColor: COLORS.Black1,
   },
@@ -135,6 +136,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontSize: FONTSIZE.size_16,
+    paddingVertical: SPACING.space_12,
     color: COLORS.White1,
     flex: 1,
   },
@@ -157,6 +159,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.space_16,
     alignItems: "center",
     height: 54,
+    width: "100%",
   },
   buttonLine: {
     // borderWidth: 1,

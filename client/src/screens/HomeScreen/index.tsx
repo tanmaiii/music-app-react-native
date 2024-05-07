@@ -196,7 +196,7 @@ const HomeScreen = ({ navigation }: any) => {
 
             <HomeTop data={playlistFavourite} loading={loadingPlaylistFavourite} />
 
-            {loadingSongs || loadingPlaylists || (loadingArtists && LoadingView)}
+            {(loadingSongs || loadingPlaylists || loadingArtists) && LoadingView}
 
             {songs && (
               <View style={{ paddingHorizontal: SPACING.space_10 }}>
@@ -211,7 +211,10 @@ const HomeScreen = ({ navigation }: any) => {
                   decelerationRate={0}
                   style={{ gap: SPACING.space_12 }}
                   renderItem={({ item, index }) => (
-                    <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                    <View
+                      key={index}
+                      style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                    >
                       <SongCard song={item} loading={loadingSongs} />
                     </View>
                   )}
@@ -232,7 +235,10 @@ const HomeScreen = ({ navigation }: any) => {
                   decelerationRate={0}
                   style={{ gap: SPACING.space_12 }}
                   renderItem={({ item, index }) => (
-                    <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                    <View
+                      key={index}
+                      style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                    >
                       <PlaylistCard playlist={item} />
                     </View>
                   )}
@@ -255,7 +261,10 @@ const HomeScreen = ({ navigation }: any) => {
                   renderItem={({ item, index }) => {
                     if (item.id === currentUser.id) return;
                     return (
-                      <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
+                      <View
+                        key={index}
+                        style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}
+                      >
                         <ArtistCard artist={item} />
                       </View>
                     );

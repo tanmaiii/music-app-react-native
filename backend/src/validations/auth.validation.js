@@ -19,11 +19,11 @@ export default class authValidation {
   static signin = {
     body: Joi.object().keys({
       email: Joi.string().email().max(255).empty().required().messages({
-        "string.string": `Email phải là một chuổi !`,
-        "string.email": `Email không hợp lệ !`,
-        "string.max": `Email quá dài !`,
-        "string.empty": `Email đang rỗng !`,
-        "any.required": `Email là trường bắt buộc !`,
+        "string.string": `Email must be a string!`,
+        "string.email": `Invalid email!`,
+        "string.max": `Email is too long!`,
+        "string.empty": `Email is empty!`,
+        "any.required": `Email is a required field!`,
       }),
       password: Joi.string()
         .min(6)
@@ -33,11 +33,11 @@ export default class authValidation {
         // )
         .required()
         .messages({
-          "string.string": `password phải là một chuổi !`,
-          "string.min": `password ít nhất 6 kí tự !`,
-          "string.max": `password tối đa 50 kí tự`,
-          "string.empty": `password đang rỗng !`,
-          "any.required": `password là trường bắt buộc !`,
+          "string.string": `Password must be a string!`,
+          "string.min": `Password at least 6 characters!`,
+          "string.max": `Password maximum 50 characters`,
+          "string.empty": `Password is empty!`,
+          "any.required": `Password is a required field!`,
         }),
     }),
   };
@@ -62,7 +62,7 @@ export default class authValidation {
   static verifyAccount = {
     body: Joi.object().keys({
       email: Joi.string().email().max(255).empty().required(),
-      code: Joi.number().required()
+      code: Joi.number().required(),
     }),
   };
   static verifyEmail = {
@@ -71,12 +71,6 @@ export default class authValidation {
     }),
   };
   static changePassword = {
-    cookies: Joi.object().keys({
-      accessToken: Joi.string().required().messages({
-        "string.all": `Người dùng chưa đăng nhập !`,
-        "any.required": `Người dùng chưa đăng nhập !`,
-      }),
-    }),
     body: Joi.object().keys({
       password: Joi.string()
         .min(6)
@@ -84,14 +78,28 @@ export default class authValidation {
         // .pattern(
         //   new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{3,30}$")
         // )
-        .required(),
+        .required()
+        .messages({
+          "string.string": `Password must be a string!`,
+          "string.min": `Password at least 6 characters!`,
+          "string.max": `Password maximum 50 characters`,
+          "string.empty": `Password is empty!`,
+          "any.required": `Password is a required field!`,
+        }),
       passwordOld: Joi.string()
         .min(6)
         .max(50)
         // .pattern(
         //   new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{3,30}$")
         // )
-        .required(),
+        .required()
+        .messages({
+          "string.string": `Password must be a string!`,
+          "string.min": `Password at least 6 characters!`,
+          "string.max": `Password maximum 50 characters`,
+          "string.empty": `Password is empty!`,
+          "any.required": `Password is a required field!`,
+        }),
     }),
   };
 }

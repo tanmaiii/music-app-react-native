@@ -89,161 +89,155 @@ const LoginScreen = (props: LoginScreenProps) => {
   return (
     <View style={styles.container} onTouchStart={Keyboard.dismiss}>
       <ImageBackground source={IMAGES.GRADIENT} style={{ flex: 1 }} blurRadius={30}>
-        <View style={{ justifyContent: "center", flex: 1 }}>
-          <SafeAreaView style={{ zIndex: 100 }}>
-            <View
-              style={[
-                styles.header,
-                Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
-              ]}
+        <View style={{ flex: 1 }}>
+          <View
+            style={[
+              styles.header,
+              { zIndex: 100 },
+              Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
+            ]}
+          >
+            <TouchableHighlight
+              underlayColor={COLORS.Black2}
+              style={[styles.buttonHeader]}
+              onPress={() => navigation.goBack()}
             >
-              <TouchableHighlight
-                underlayColor={COLORS.Black2}
-                style={[styles.buttonHeader]}
-                onPress={() => navigation.goBack()}
-              >
-                <FontAwesomeIcon icon={faChevronLeft} size={18} color={COLORS.White1} />
-              </TouchableHighlight>
-              <Text style={styles.titleHeader}>Login</Text>
-              <View style={[styles.buttonHeader, { opacity: 0 }]}></View>
-            </View>
-          </SafeAreaView>
+              <FontAwesomeIcon icon={faChevronLeft} size={18} color={COLORS.White1} />
+            </TouchableHighlight>
+            <Text style={styles.textMain}>Login</Text>
+            <View style={[styles.buttonHeader, { opacity: 0 }]}></View>
+          </View>
           <KeyboardAvoidingView
-            style={{ flex: 1, justifyContent: "center" }}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              height: WINDOW_HEIGHT,
+            }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <View style={{ justifyContent: "center", flex: 1 }}>
+            <View style={{ height: WINDOW_HEIGHT }}>
               <ScrollView>
-                <View style={styles.body}>
-                  <View style={styles.logo}>
-                    <Image style={styles.image} source={IMAGES.LOGO} />
-                  </View>
-                  <View style={styles.bodyTop}>
-                    <Text
-                      style={{
-                        fontSize: FONTSIZE.size_30,
-                        fontFamily: FONTFAMILY.bold,
-                        color: COLORS.Primary,
-                      }}
-                    >
-                      Log In
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: FONTSIZE.size_16,
-                        fontFamily: FONTFAMILY.regular,
-                        color: COLORS.White2,
-                      }}
-                    >
-                      Please login to continue using our app
-                    </Text>
-                  </View>
-
-                  {err && (
-                    <View style={styles.boxErr}>
-                      <FontAwesomeIcon icon={faCircleExclamation} size={24} color={COLORS.White1} />
-                      <Text style={styles.textErr}>{err}</Text>
+                <View style={{ height: WINDOW_HEIGHT }}>
+                  <View style={styles.body}>
+                    <View style={styles.logo}>
+                      <Image style={styles.image} source={IMAGES.LOGO} />
                     </View>
-                  )}
-
-                  <View style={styles.boxs}>
-                    <View style={styles.box}>
-                      <Pressable
-                        onPress={() => inputEmailRef.current?.focus()}
-                        style={styles.boxInput}
+                    <View style={styles.bodyTop}>
+                      <Text
+                        style={{
+                          fontSize: FONTSIZE.size_30,
+                          fontFamily: FONTFAMILY.bold,
+                          color: COLORS.Primary,
+                        }}
                       >
-                        <FontAwesomeIcon icon={faEnvelope} size={20} color={COLORS.White2} />
-                        <TextInput
-                          ref={inputEmailRef}
-                          style={styles.textInput}
-                          onFocus={() => setIsFocusedEmail(true)}
-                          onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
-                          value={email}
-                          onChangeText={(text) => setEmail(text.trim())}
-                        />
-                        <Text style={[styles.titleBox, isFocusedEmail && styles.titleBoxMove]}>
-                          Email
-                        </Text>
-                      </Pressable>
-                      <Text style={styles.descErr}></Text>
+                        Log In
+                      </Text>
+                      <Text style={styles.textEtra}>Please login to continue using our app</Text>
                     </View>
 
-                    <View style={styles.box}>
-                      <Pressable
-                        onPress={() => inputPasswordRef.current?.focus()}
-                        style={styles.boxInput}
-                      >
-                        <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
-
-                        <TextInput
-                          style={styles.textInput}
-                          secureTextEntry={viewPassword ? false : true} // Hiển thị dưới dạng mật khẩu
-                          ref={inputPasswordRef}
-                          onFocus={() => setIsFocusedPassword(true)}
-                          onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
-                          onChangeText={(text) => setPassword(text.trim())}
+                    {err && (
+                      <View style={styles.boxErr}>
+                        <FontAwesomeIcon
+                          icon={faCircleExclamation}
+                          size={24}
+                          color={COLORS.White1}
                         />
-                        <TouchableOpacity onPress={() => setViewPassword(!viewPassword)}>
-                          {viewPassword ? (
-                            <FontAwesomeIcon
-                              icon={faEyeSlash}
-                              size={20}
-                              style={{ color: COLORS.White2 }}
-                            />
-                          ) : (
-                            <FontAwesomeIcon
-                              icon={faEye}
-                              size={20}
-                              style={{ color: COLORS.White2 }}
-                            />
-                          )}
-                        </TouchableOpacity>
-                        <Text style={[styles.titleBox, isFocusedPassword && styles.titleBoxMove]}>
-                          Password
-                        </Text>
-                      </Pressable>
-                      <Text style={styles.descErr}></Text>
-                    </View>
-                  </View>
-
-                  <Pressable onPress={() => navigation.navigate("Welcome")}>
-                    <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
-                  </Pressable>
-
-                  <TouchableOpacity style={styles.button} onPress={HandlePress}>
-                    {loading ? (
-                      <ActivityIndicator />
-                    ) : (
-                      <Text style={styles.titleLogin}>Log In</Text>
+                        <Text style={styles.textErr}>{err}</Text>
+                      </View>
                     )}
-                  </TouchableOpacity>
 
-                  {/* <TouchableOpacity style={styles.buttonGoogle}>
-            <Image source={IMAGES.GOOGLE} style={{ width: 30, height: 30 }} />
-            <Text style={styles.titleGoogle}>Google</Text>
-          </TouchableOpacity> */}
+                    <View style={styles.boxs}>
+                      <View style={styles.box}>
+                        <Pressable
+                          onPress={() => inputEmailRef.current?.focus()}
+                          style={styles.boxInput}
+                        >
+                          <FontAwesomeIcon icon={faEnvelope} size={20} color={COLORS.White2} />
+                          <TextInput
+                            ref={inputEmailRef}
+                            style={styles.textInput}
+                            onFocus={() => setIsFocusedEmail(true)}
+                            onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
+                            value={email}
+                            onChangeText={(text) => setEmail(text.trim())}
+                          />
+                          <Text style={[styles.titleBox, isFocusedEmail && styles.titleBoxMove]}>
+                            Email
+                          </Text>
+                        </Pressable>
+                      </View>
 
-                  <View style={styles.boxBottom}>
-                    <Text
-                      style={{
-                        fontSize: FONTSIZE.size_16,
-                        fontFamily: FONTFAMILY.regular,
-                        color: COLORS.White1,
-                      }}
-                    >
-                      Don't have an account?{" "}
-                    </Text>
-                    <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                      <View style={styles.box}>
+                        <Pressable
+                          onPress={() => inputPasswordRef.current?.focus()}
+                          style={styles.boxInput}
+                        >
+                          <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
+
+                          <TextInput
+                            style={styles.textInput}
+                            secureTextEntry={viewPassword ? false : true} // Hiển thị dưới dạng mật khẩu
+                            ref={inputPasswordRef}
+                            onFocus={() => setIsFocusedPassword(true)}
+                            onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
+                            onChangeText={(text) => setPassword(text.trim())}
+                          />
+                          <TouchableOpacity onPress={() => setViewPassword(!viewPassword)}>
+                            {viewPassword ? (
+                              <FontAwesomeIcon
+                                icon={faEyeSlash}
+                                size={20}
+                                style={{ color: COLORS.White2 }}
+                              />
+                            ) : (
+                              <FontAwesomeIcon
+                                icon={faEye}
+                                size={20}
+                                style={{ color: COLORS.White2 }}
+                              />
+                            )}
+                          </TouchableOpacity>
+                          <Text style={[styles.titleBox, isFocusedPassword && styles.titleBoxMove]}>
+                            Password
+                          </Text>
+                        </Pressable>
+                      </View>
+                    </View>
+
+                    <Pressable onPress={() => navigation.navigate("Welcome")}>
+                      <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
+                    </Pressable>
+
+                    <TouchableOpacity style={styles.button} onPress={HandlePress}>
+                      {loading ? (
+                        <ActivityIndicator />
+                      ) : (
+                        <Text style={styles.titleLogin}>Log In</Text>
+                      )}
+                    </TouchableOpacity>
+
+                    <View style={styles.boxBottom}>
                       <Text
                         style={{
                           fontSize: FONTSIZE.size_16,
                           fontFamily: FONTFAMILY.regular,
-                          color: COLORS.Primary,
+                          color: COLORS.White1,
                         }}
                       >
-                        Sign up
+                        Don't have an account?{" "}
                       </Text>
-                    </TouchableOpacity>
+                      <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                        <Text
+                          style={{
+                            fontSize: FONTSIZE.size_16,
+                            fontFamily: FONTFAMILY.regular,
+                            color: COLORS.Primary,
+                          }}
+                        >
+                          Sign up
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               </ScrollView>

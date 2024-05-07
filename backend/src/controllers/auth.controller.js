@@ -75,7 +75,7 @@ export const signup = async (req, res) => {
           name: req.body.name,
           gender: req.body.gender,
           brithday: req.body.brithday,
-          email_verified_at: new Date(), // Xác thực
+          // email_verified_at: new Date(), // Xác thực
         });
 
         User.create(user, (err, result) => {
@@ -163,6 +163,7 @@ export const verifyAccount = async (req, res) => {
               if (err || !result) {
                 return res.status(401).json(err);
               } else {
+                console.log("Verify Account", email - code);
                 VerifyCodes.delete(user.id, (err, result) => {});
                 return res.json({
                   success: true,
@@ -228,7 +229,7 @@ export const resetPassword = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const { password, passwordOld } = req.body;
-    const token = req.cookies.accessToken;
+    const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
 
     User.findById(userInfo.id, (err, user) => {
@@ -241,7 +242,7 @@ export const changePassword = async (req, res) => {
       bcrypt.compare(passwordOld, user.password, (err, result) => {
         if (err) return res.status(401).json({ conflictError: err });
         if (result == false) {
-          return res.status(401).json({ conflictError: "Error password !" });
+          return res.status(401).json({ conflictError: "Wrong password!" });
         }
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(password, salt);
@@ -253,7 +254,7 @@ export const changePassword = async (req, res) => {
       });
     });
   } catch (error) {
-    res.status(401).json({ conflictError: error });
+    res.status(401).json(error);
   }
 };
 

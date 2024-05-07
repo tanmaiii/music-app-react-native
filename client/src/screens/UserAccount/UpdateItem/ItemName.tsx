@@ -62,8 +62,6 @@ const ItemName = (props: ItemNameProps) => {
     },
   });
 
-  
-
   return (
     <>
       <View style={styles.container}>

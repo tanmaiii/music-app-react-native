@@ -6,6 +6,7 @@ import styles from "./style";
 import ItemName from "./ItemName";
 import ItemEmail from "./ItemEmail";
 import ItemGender from "./ItemGender";
+import ItemPassowrd from "./ItemPassword";
 
 interface UpdateItemProps {}
 
@@ -16,11 +17,9 @@ const UpdateItem = (props: UpdateItemProps) => {
   return (
     <>
       {params && params?.type === "name" && <ItemName />}
-
-      {params && params?.type === "email" && (
-        <ItemEmail />
-      )}
-      {params && params?.type === "gender" && <ItemGender/>}
+      {params && params?.type === "email" && <ItemEmail />}
+      {params && params?.type === "gender" && <ItemGender />}
+      {params && params?.type === "password" && <ItemPassowrd />}
     </>
   );
 };

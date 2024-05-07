@@ -54,39 +54,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const HEIGHT_AVATAR = 400;
 
-// const songs: TSong[] = [
-//   {
-//     id: 1,
-//     title: "Despacito, Despacito ,Despacito, Despacito",
-//     image_path: "despacito.jpg",
-//     author: "Luis Fonsi",
-//   },
-//   { id: 2, title: "Shape of You", image_path: "shape_of_you.jpg", author: "Ed Sheeran" },
-//   {
-//     id: 3,
-//     title: "Uptown Funk",
-//     image_path: "uptown_funk.jpg",
-//     author: "Mark Ronson ft. Bruno Mars",
-//   },
-//   { id: 4, title: "Closer", image_path: "closer.jpg", author: "The Chainsmokers ft. Halsey" },
-//   {
-//     id: 5,
-//     title: "See You Again",
-//     image_path: "see_you_again.jpg",
-//     author: "Wiz Khalifa ft. Charlie Puth",
-//   },
-//   { id: 6, title: "God's Plan", image_path: "gods_plan.jpg", author: "Drake" },
-//   {
-//     id: 7,
-//     title: "Old Town Road",
-//     image_path: "old_town_road.jpg",
-//     author: "Lil Nas X ft. Billy Ray Cyrus",
-//   },
-//   { id: 8, title: "Shape of My Heart", image_path: "shape_of_my_heart.jpg", author: "Sting" },
-//   { id: 9, title: "Someone Like You", image_path: "someone_like_you.jpg", author: "Adele" },
-//   { id: 10, title: "Bohemian Rhapsody", image_path: "bohemian_rhapsody.jpg", author: "Queen" },
-// ];
-
 interface ArtistDetailProps {}
 
 const renderGroupOfSongs = (songs) => {
@@ -347,7 +314,10 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                     </TouchableOpacity>
                   )
                 ) : (
-                  <TouchableOpacity style={styles.buttonFollow}>
+                  <TouchableOpacity
+                    style={styles.buttonFollow}
+                    onPress={() => navigation.navigate("UserEditProfile")}
+                  >
                     <Text style={{ fontSize: FONTSIZE.size_16, color: COLORS.White1 }}>
                       Edit profile
                     </Text>

@@ -20,7 +20,7 @@ import { authApi, userApi } from "../../../apis";
 import { useAuth } from "../../../context/AuthContext";
 import CustomModal from "../../../components/CustomModal";
 import { OTPInput } from "../../../components/OTPInput/OTPInput";
-import { useQueryClient } from "@tanstack/react-query";
+import { Mutation, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../../../context/ToastContext";
 const statusBarHeight = Constants.statusBarHeight;
 
@@ -28,22 +28,21 @@ interface ItemNameProps {}
 
 const ItemEmail = (props: ItemNameProps) => {
   const navigation = useNavigation<NavigationProp>();
-  const [email, setEmail] = React.useState<string>("");
   const [err, serErr] = React.useState("");
   const [value, setValue] = React.useState<string>("");
   const { token } = useAuth();
   const [openModalBack, setOpenModalBack] = React.useState(false);
-  const [verify, setVerify] = React.useState(true);
-  const [loading, setLoading] = React.useState(true);
+  const [verify, setVerify] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    const getName = async () => {
-      const res = await userApi.getMe(token);
-      setEmail(res.email);
-      // setValue(res.email);
-    };
-    getName();
-  }, []);
+  // React.useEffect(() => {
+  //   const getName = async () => {
+  //     const res = await userApi.getMe(token);
+  //     setEmail(res.email);
+  //     // setValue(res.email);
+  //   };
+  //   getName();
+  // }, []);
 
   const handleNext = async () => {
     setLoading(true);
@@ -178,6 +177,15 @@ const VerifyEmail = ({ email }: { email: string }) => {
     setLoading(false);
   };
 
+  const mutationVerify = useMutation({
+    mutationFn: async () => {
+      await handleVerify();
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+    },
+  });
+
   return loading ? (
     <View style={{ justifyContent: "center", alignItems: "center", gap: SPACING.space_12 }}>
       <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>Verification</Text>
@@ -213,13 +221,13 @@ const VerifyEmail = ({ email }: { email: string }) => {
       </View>
       {err && <Text style={[styles.textError, { marginTop: SPACING.space_12 }]}>{err}</Text>}
       <TouchableOpacity
-        onPress={handleVerify}
+        onPress={() => mutationVerify.mutate()}
         style={{
           marginTop: SPACING.space_18,
           paddingHorizontal: SPACING.space_16,
-          paddingVertical: SPACING.space_24,
+          paddingVertical: SPACING.space_20,
           backgroundColor: COLORS.Primary,
-          borderRadius: BORDERRADIUS.radius_12,
+          borderRadius: 28,
           justifyContent: "center",
           alignItems: "center",
         }}

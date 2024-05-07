@@ -6,6 +6,7 @@ const bodySchema = {
     email: Joi.string().email().max(255),
     password: Joi.string().min(6).max(255),
     name: Joi.string().min(6).max(255),
+    gender: Joi.string().min(0).max(10).allow(null, ""),
     image_path: Joi.string().min(10).max(255),
     verified: Joi.number().valid(0, 1),
     is_admin: Joi.number().valid(0, 1),

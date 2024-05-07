@@ -11,22 +11,7 @@ const authApi = {
     const url = "auth/signup";
     return axiosClient.post(url, { name, email, password });
   },
-  sendVerifyAccount(token: string, email: string) {
-    const url = "auth/send-verify-account";
-    return axiosClient.post(
-      url,
-      { email },
-      {
-        headers: {
-          authorization: token,
-        },
-      }
-    );
-  },
-  verifyAccount(email: string, code: string) {
-    const url = "auth/verify-account";
-    return axiosClient.post(url, { email, code });
-  },
+
   signout() {
     const url = "auth/signout";
     return axiosClient.get(url);
@@ -52,6 +37,29 @@ const authApi = {
     return axiosClient.post(
       url,
       { code },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+  },
+  sendVerifyAccount(email: string) {
+    const url = "auth/send-verify-account";
+    return axiosClient.post(url, { email });
+  },
+  verifyAccount(email: string, code: string) {
+    const url = "auth/verify-account";
+    return axiosClient.post(url, { email, code });
+  },
+  changePassword(token: string, password: string, passwordOld: string) {
+    const url = "auth/change-password";
+    return axiosClient.post(
+      url,
+      {
+        password,
+        passwordOld,
+      },
       {
         headers: {
           authorization: token,
