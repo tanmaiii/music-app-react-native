@@ -1,10 +1,8 @@
 import { db, promiseDb } from "../config/connect.js";
-import moment from "moment";
-import User from "./user.model.js";
 
-const VerifyCodes = () => {};
+const VerifyCode = () => {};
 
-VerifyCodes.create = (userId, code, result) => {
+VerifyCode.create = (userId, code, result) => {
   db.query(`SELECT * from verification_codes WHERE user_id = ?`, [userId], (err, res) => {
     if (err) {
       console.log("ERROR", err);
@@ -43,8 +41,8 @@ VerifyCodes.create = (userId, code, result) => {
   });
 };
 
-VerifyCodes.delete = (userId, result) => {
-  db.query(`DELETE FROM verification_codes WHERE user_id = ?`,[userId], (err, res) => {
+VerifyCode.delete = (userId, result) => {
+  db.query(`DELETE FROM verification_codes WHERE user_id = ?`, [userId], (err, res) => {
     if (err) {
       console.log("ERROR", err);
       result(err, null);
@@ -54,8 +52,8 @@ VerifyCodes.delete = (userId, result) => {
   });
 };
 
-VerifyCodes.find = (userId, result) => {
-  db.query(`SELECT * from verification_codes WHERE user_id = ?`,[userId], (err, res) => {
+VerifyCode.find = (userId, result) => {
+  db.query(`SELECT * from verification_codes WHERE user_id = ?`, [userId], (err, res) => {
     if (err) {
       result(err, null);
       return;
@@ -75,4 +73,4 @@ VerifyCodes.find = (userId, result) => {
   });
 };
 
-export default VerifyCodes;
+export default VerifyCode;

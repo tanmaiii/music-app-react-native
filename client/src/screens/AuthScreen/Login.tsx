@@ -2,31 +2,23 @@ import * as React from "react";
 import {
   Text,
   View,
-  StyleSheet,
   Image,
   TextInput,
   ScrollView,
-  StatusBar,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback,
   TouchableOpacity,
   Pressable,
   ActivityIndicator,
   Keyboard,
   ImageBackground,
-  SafeAreaView,
   Platform,
 } from "react-native";
 import { usePlaying } from "../../context/PlayingContext";
 import IMAGES from "../../constants/images";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { WINDOW_WIDTH } from "../../utils";
-import { Feather } from "@expo/vector-icons";
-import TouchableScale from "../../components/TouchableScale";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
-import { useLinkTo, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useLinkTo, useNavigation } from "@react-navigation/native";
 import styles from "./style";
-import { authApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -46,9 +38,8 @@ interface LoginScreenProps {}
 
 const LoginScreen = (props: LoginScreenProps) => {
   const navigation = useNavigation<NavigationProp>();
-  const { openBarSong, setOpenBarSong } = usePlaying();
+  const { setOpenBarSong } = usePlaying();
   const [err, setErr] = React.useState<string | null>("");
-  const linkTo = useLinkTo();
   const [isFocusedEmail, setIsFocusedEmail] = React.useState<boolean>(false);
   const [isFocusedPassword, setIsFocusedPassword] = React.useState<boolean>(false);
   const inputEmailRef = React.useRef<TextInput>(null);
@@ -58,6 +49,12 @@ const LoginScreen = (props: LoginScreenProps) => {
   const { currentUser, setCurrentUser, login } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
   const [viewPassword, setViewPassword] = React.useState<boolean>(false);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: false, // Vô hiệu hóa các cử chỉ vuốt
+    });
+  }, [navigation]);
 
   React.useEffect(() => {
     setOpenBarSong(false);
@@ -204,9 +201,15 @@ const LoginScreen = (props: LoginScreenProps) => {
                       </View>
                     </View>
 
-                    <Pressable onPress={() => navigation.navigate("Welcome")}>
-                      <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
-                    </Pressable>
+                    <View
+                      style={[
+                        { alignItems: "flex-end", justifyContent: "flex-end", width: "100%" },
+                      ]}
+                    >
+                      <Pressable onPress={() => navigation.navigate("ForgetPassword")}>
+                        <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
+                      </Pressable>
+                    </View>
 
                     <TouchableOpacity style={styles.button} onPress={HandlePress}>
                       {loading ? (
@@ -217,13 +220,7 @@ const LoginScreen = (props: LoginScreenProps) => {
                     </TouchableOpacity>
 
                     <View style={styles.boxBottom}>
-                      <Text
-                        style={{
-                          fontSize: FONTSIZE.size_16,
-                          fontFamily: FONTFAMILY.regular,
-                          color: COLORS.White1,
-                        }}
-                      >
+                      <Text style={[styles.textEtra, { color: COLORS.White1 }]}>
                         Don't have an account?{" "}
                       </Text>
                       <TouchableOpacity onPress={() => navigation.navigate("Signup")}>

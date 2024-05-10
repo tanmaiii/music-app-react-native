@@ -27,9 +27,11 @@ import { RootStackParamList } from "./TStack";
 import LoginScreen from "../screens/AuthScreen/Login";
 import SignupScreen from "../screens/AuthScreen/Signup";
 import WelcomeScreen from "../screens/AuthScreen/Welcome";
-import VeridyScreen from "../screens/AuthScreen/Verify";
+import VerifyScreen from "../screens/AuthScreen/Verify";
+import ForgetPassword from "../screens/AuthScreen/ForgetPassword";
 import UpdateItem from "../screens/UserAccount/UpdateItem";
-import { BlurView } from "expo-blur";
+import ResetPassword from "../screens/AuthScreen/ResetPassword";
+
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,7 +46,9 @@ export const StackAuth = () => {
       <Stack.Screen name={"Welcome"} component={WelcomeScreen} />
       <Stack.Screen name={"Login"} component={LoginScreen} />
       <Stack.Screen name={"Signup"} component={SignupScreen} />
-      <Stack.Screen name={"Verify"} component={VeridyScreen} />
+      <Stack.Screen name={"Verify"} component={VerifyScreen} />
+      <Stack.Screen name={"ForgetPassword"} component={ForgetPassword} />
+      <Stack.Screen name={"ResetPassword"} component={ResetPassword} />
     </Stack.Navigator>
   );
 };

@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { db } from "./src/config/connect.js";
 import routes from "./src/routes/index.js";
+import nodemailer from "nodemailer";
+import { error } from "console";
 
 const app = express();
 
@@ -32,6 +34,41 @@ app.use(
 app.use(cookieParser());
 
 app.use(express.json());
+
+//
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  port: 587,
+  secure: false, // Use `true` for port 465, `false` for all other ports
+  auth: {
+    user: process.env.MAIL_NAME,
+    pass: process.env.MAIL_PASSWORD,
+  },
+});
+
+app.get("/mail/", async (req, res) => {
+  try {
+    await transporter.sendMail(
+      {
+        from: "Tan Mai", // sender address
+        to: "1@g.com", // list of receivers
+        subject: "Hello ✔", // Subject line
+        text: "Hello world ", // plain text body
+        html: "<b>Hello world </b>", // html body
+      },
+      (error, info) => {
+        if (error) {
+          return res.status(500).json({ error: "Failed to send email." });
+        }
+        return res.status(200).json({ error: "Successfully to send email." });
+      }
+    );
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return res.status(500).json({ error: "Failed to send email." });
+  }
+});
 
 app.use("/api/", routes);
 

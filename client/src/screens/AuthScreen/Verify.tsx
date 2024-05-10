@@ -4,6 +4,8 @@ import styles from "./style";
 import { IMAGES } from "../../constants";
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { OTPInput } from "../../components/OTPInput/OTPInput";
+import { authApi } from "../../apis";
+import { useNavigation } from "@react-navigation/native";
 
 interface VeridyScreenProps {
   email: string;
@@ -12,16 +14,43 @@ interface VeridyScreenProps {
 }
 
 const VerifyScreen = ({ email, err, onSubmit }: VeridyScreenProps) => {
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [code, setCode] = React.useState<Array<string>>(["0", "0", "0", "0"]);
+  const [loadingResend, setLoadingResend] = React.useState<boolean>(false);
+  const [loadingSubmit, setLoadingSubmit] = React.useState<boolean>(false);
+  const [errVerify, setErrVerify] = React.useState<string>(err);
+  const navigation = useNavigation()
+  const [code, setCode] = React.useState<Array<string>>(["", "", "", ""]);
 
-  const resendCode = () => {};
+  React.useEffect(() => {
+    setErrVerify(err);
+  }, [err]);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: false, // Vô hiệu hóa các cử chỉ vuốt
+    });
+  }, [navigation]);
+
+
+  const resendCode = async () => {
+    setLoadingResend(true);
+    setErrVerify("");
+    try {
+      await authApi.sendVerifyAccount(email);
+      setLoadingResend(false);
+    } catch (error) {
+      setErrVerify(error.response.data.conflictError);
+    }
+    setLoadingResend(false);
+  };
 
   const handleSubmit = async () => {
+    console.log(code.join("").trim().length);
     if (code.join("").trim().length < 4) return;
-    setLoading(true);
-    await onSubmit(code.join("").trim());
-    setLoading(false);
+    setLoadingSubmit(true);
+    setTimeout(async () => {
+      await onSubmit(code.join("").trim());
+      setLoadingSubmit(false);
+    }, 2000);
   };
 
   return (
@@ -41,32 +70,43 @@ const VerifyScreen = ({ email, err, onSubmit }: VeridyScreenProps) => {
           >
             Verifycation
           </Text>
-          <Text
-            style={{
-              fontSize: FONTSIZE.size_16,
-              fontFamily: FONTFAMILY.regular,
-              color: COLORS.White2,
-            }}
-          >
-            Enter the OTP sent to {email && email}
-          </Text>
         </View>
+        {loadingResend ? (
+          <>
+            <ActivityIndicator />
+            <Text style={styles.textEtra}>Loading resend the verify code via email</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.textEtra}>Enter the OTP sent to {email && email}</Text>
 
-        <View style={{ paddingVertical: SPACING.space_24 }}>
-          <OTPInput length={4} value={code} onChange={(value) => setCode(value)} disabled={false} />
-        </View>
-        {err && <Text style={[styles.textErr, { color: COLORS.Red }]}>{err}</Text>}
+            <View style={{ paddingVertical: SPACING.space_24 }}>
+              <OTPInput
+                length={4}
+                value={code}
+                onChange={(value) => setCode(value)}
+                disabled={false}
+              />
+            </View>
 
-        <TouchableOpacity disabled={loading} style={styles.button} onPress={handleSubmit}>
-          {loading ? <ActivityIndicator /> : <Text style={styles.titleLogin}>Submit</Text>}
-        </TouchableOpacity>
+            {errVerify && <Text style={[styles.textErr, { color: COLORS.Red }]}>{errVerify}</Text>}
 
-        <View style={{ flexDirection: "row", gap: 4 }}>
-          <Text style={styles.textEtra}>Didn't receive code ? </Text>
-          <TouchableOpacity onPress={() => resendCode()}>
-            <Text style={[styles.textEtra, { color: COLORS.Blue }]}>Click to resend</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity disabled={loadingSubmit} style={styles.button} onPress={handleSubmit}>
+              {loadingSubmit ? (
+                <ActivityIndicator />
+              ) : (
+                <Text style={styles.titleLogin}>Submit</Text>
+              )}
+            </TouchableOpacity>
+
+            <View style={{ flexDirection: "row", gap: 4 }}>
+              <Text style={styles.textEtra}>Didn't receive code ? </Text>
+              <TouchableOpacity onPress={() => resendCode()}>
+                <Text style={[styles.textEtra, { color: COLORS.Blue }]}>Click to resend</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
       </View>
     </View>
   );

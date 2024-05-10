@@ -73,17 +73,6 @@ export const AuthContextProvider = ({ children }: Props) => {
     queryFn: getInfo,
   });
 
-  // useEffect(() => {
-  //   if (token) {
-  //     getInfo(); // Gọi hàm getInfo khi token tồn tại
-  //     const intervalId = setInterval(() => {
-  //       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-  //     }, 60000); // 60 giây (đơn vị tính là mili giây)
-
-  //     // Return một hàm trong useEffect để xóa interval khi component unmount
-  //     return () => clearInterval(intervalId);
-  //   }
-  // }, [token]); // Thêm token vào dependency array của useEffect
 
   useEffect(() => {
     const getUserStorage = async () => {

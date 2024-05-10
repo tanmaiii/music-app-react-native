@@ -2,18 +2,14 @@ import * as React from "react";
 import {
   Text,
   View,
-  StyleSheet,
   Image,
   TouchableOpacity,
   TouchableHighlight,
   SafeAreaView,
-  StatusBar,
   ScrollView,
   Animated,
   FlatList,
   Platform,
-  Share,
-  Pressable,
   RefreshControl,
 } from "react-native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
@@ -38,7 +34,6 @@ import {
   faChevronLeft,
   faEllipsis,
   faPlay,
-  faPlus,
   faRandom,
   faHeart as faHeartSolid,
 } from "@fortawesome/free-solid-svg-icons";

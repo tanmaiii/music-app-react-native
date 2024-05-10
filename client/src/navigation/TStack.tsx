@@ -11,7 +11,7 @@ export type RootStackParamList = {
   User: undefined;
 
   UserEditProfile: undefined;
-  UpdateItem: {type: string};
+  UpdateItem: { type: string };
 
   Song: { songId: string };
   Playlist: { playlistId: string };
@@ -25,6 +25,8 @@ export type RootStackParamList = {
   Signup: undefined;
   Welcome: undefined;
   Verify: undefined;
+  ForgetPassword: undefined;
+  ResetPassword: { token: string };
 };
 
 export type NavigationProp = StackNavigationProp<RootStackParamList>;

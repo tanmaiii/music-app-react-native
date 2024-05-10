@@ -29,6 +29,11 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 25,
   },
+  titleLogo: {
+    fontSize: FONTSIZE.size_30,
+    fontFamily: FONTFAMILY.bold,
+    color: COLORS.Primary,
+  },
   textMain: {
     fontSize: FONTSIZE.size_16,
     color: COLORS.White1,
@@ -60,6 +65,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.space_8,
+    width: "100%",
   },
   textErr: {
     fontSize: FONTSIZE.size_16,
@@ -81,23 +87,28 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     flexDirection: "column",
     gap: SPACING.space_14,
     paddingHorizontal: SPACING.space_16,
     marginTop: SPACING.space_24,
+    width: "100%",
   },
   bodyTop: {
     justifyContent: "center",
     alignItems: "center",
     gap: SPACING.space_12,
     marginBottom: SPACING.space_4,
+    maxWidth: "90%",
   },
   boxs: {
     gap: SPACING.space_14,
+    width: "100%",
   },
   box: {
     flexDirection: "column",
     gap: SPACING.space_2,
+    width: "100%",
   },
   boxInput: {
     borderWidth: 1,
@@ -107,9 +118,9 @@ const styles = StyleSheet.create({
     gap: SPACING.space_4,
     alignItems: "center",
     height: 54,
-    // paddingVertical: SPACING.space_4,
     paddingHorizontal: SPACING.space_12,
     backgroundColor: COLORS.Black1,
+    width: "100%",
   },
   boxInputErr: {
     borderColor: COLORS.Red,
@@ -159,7 +170,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.space_16,
     alignItems: "center",
     height: 54,
-    width: "100%",
+    minWidth: "100%",
   },
   buttonLine: {
     // borderWidth: 1,
@@ -194,6 +205,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.space_16,
     alignItems: "center",
     height: 54,
+    minWidth: "100%",
   },
   titleGoogle: {
     fontSize: FONTSIZE.size_16,

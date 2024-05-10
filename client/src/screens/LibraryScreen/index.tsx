@@ -149,8 +149,6 @@ const AllFavorites = () => {
     queryKey: ["count-songs-favorites"],
     queryFn: async () => {
       const res = await favouriteApi.getSongs(token, 1, 0);
-      console.log(res.pagination.totalCount);
-
       return res.pagination.totalCount;
     },
   });
@@ -398,8 +396,6 @@ const ArtistFavourites = () => {
 
   const getAllData = async () => {
     const res = await favouriteApi.getArtists(token, page, limit, sort);
-    console.log(data);
-
     if (res.pagination.page === 1) {
       setData(null);
       updateState({ totalPages: res.pagination.totalPages });

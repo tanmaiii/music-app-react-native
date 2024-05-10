@@ -1,10 +1,10 @@
 import { useState, forwardRef, useImperativeHandle } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Modal } from "react-native";
 import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { useToast } from "../../context/ToastContext";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { WINDOW_WIDTH } from "../../utils";
 
 type props = {
   timeout?: number;
@@ -16,8 +16,6 @@ const ToastMessage = forwardRef(({ description, timeout = 2000 }: props, ref) =>
   const { setToastMessage } = useToast();
 
   const showToast = () => {
-    console.log("sHOW NE");
-
     setIsVisible(true);
     const timer = setTimeout(() => {
       setIsVisible(false);
@@ -33,11 +31,13 @@ const ToastMessage = forwardRef(({ description, timeout = 2000 }: props, ref) =>
   return (
     <>
       {isVisible && (
-        <Animated.View style={styles.wrapper} entering={FadeInUp.delay(200)} exiting={FadeOutUp}>
-          <View style={styles.wrapperToast}>
-            <Text style={styles.text}>{description}</Text>
-          </View>
-        </Animated.View>
+        <Modal transparent style={styles.container}>
+          <Animated.View style={styles.wrapper} entering={FadeInUp.delay(0)} exiting={FadeOutUp}>
+            <View style={styles.wrapperToast}>
+              <Text style={styles.text}>{description}</Text>
+            </View>
+          </Animated.View>
+        </Modal>
       )}
     </>
   );
@@ -46,6 +46,14 @@ const ToastMessage = forwardRef(({ description, timeout = 2000 }: props, ref) =>
 export default ToastMessage;
 
 const styles = StyleSheet.create({
+  container: {
+    position: "relative",
+    top: 0,
+    left: 0,
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
+    backgroundColor: "transparent",
+  },
   wrapper: {
     position: "absolute",
     top: WINDOW_HEIGHT / 2 - 100,
@@ -55,6 +63,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 999,
+    // backgroundColor: "pink",
   },
   wrapperToast: {
     paddingVertical: SPACING.space_10,
@@ -64,16 +73,16 @@ const styles = StyleSheet.create({
     minWidth: 200,
     maxWidth: "70%",
     shadowOffset: {
-        width: 0,
-        height: 2,
+      width: 0,
+      height: 2,
     },
     shadowColor: "#000",
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-},
-text: {
-      textAlign: "center",
+  },
+  text: {
+    textAlign: "center",
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.regular,
     color: COLORS.White1,

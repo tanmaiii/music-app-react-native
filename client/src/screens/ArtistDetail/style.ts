@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.space_12,
   },
   buttonFollow: {
-    paddingHorizontal: SPACING.space_12,
+    paddingHorizontal: SPACING.space_16,
+    paddingVertical: SPACING.space_8,
     borderRadius: BORDERRADIUS.radius_25,
-    borderWidth: 1.2,
-    borderColor: COLORS.White2,
+    borderWidth: 0.8,
+    borderColor: COLORS.WhiteRGBA32,
     justifyContent: "center",
     alignItems: "center",
-    height: 40,
   },
   buttonPlay: {
     width: 45,

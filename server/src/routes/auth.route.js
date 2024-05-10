@@ -7,17 +7,21 @@ import validate from "../middlewares/validate.js";
 router.post("/signin", validate(authValidation.signin), authController.signin);
 router.post("/signup", validate(authValidation.signup), authController.signup);
 router.get("/signout", authController.signout);
+// router.post(
+//   "/send-verify-forgot-password",
+//   // validate(authValidation.forgotPassword),
+//   authController.sendVerifyAccount
+// );
 router.post(
-  "/forgot-password",
-  validate(authValidation.forgotPassword),
-  authController.forgotPassword
+  "/verify-forgot-password",
+  // validate(authValidation.forgotPassword),
+  authController.verifyPassword
 );
 router.post(
   "/reset-password",
   validate(authValidation.resetPassword),
   authController.resetPassword
 );
-
 router.post(
   "/send-verify-account",
   validate(authValidation.sendVerify),
@@ -40,10 +44,6 @@ router.post(
   authController.sendVerifyEmail
 );
 
-router.post(
-  "/verify-email",
-  validate(authValidation.verifyEmail),
-  authController.verifyEmail
-);
+router.post("/verify-email", validate(authValidation.verifyEmail), authController.verifyEmail);
 
 export default router;

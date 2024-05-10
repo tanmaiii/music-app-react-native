@@ -42,15 +42,10 @@ const ArtistItem = ({ userId }: { userId: string }) => {
       return userApi.follow(userId, token);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["follow", userId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["followers", userId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["artists-follow"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["follow", userId] });
+      queryClient.invalidateQueries({ queryKey: ["followers", userId] });
+      queryClient.invalidateQueries({ queryKey: ["artists-follow"] });
+      queryClient.invalidateQueries({ queryKey: ["all-favorites"] });
     },
   });
 
@@ -60,7 +55,6 @@ const ArtistItem = ({ userId }: { userId: string }) => {
       setArtist(res);
     } catch (err) {
       console.log(err.response.data);
-      
     }
   };
 
@@ -96,7 +90,7 @@ const ArtistItem = ({ userId }: { userId: string }) => {
               style={[styles.btnFollow, follow && { borderColor: COLORS.White1 }]}
               onPress={() => mutationFollow.mutate(follow)}
             >
-              <Text style={styles.textExtra}>{follow ? "Unfollow" : "Follow"}</Text>
+              <Text style={styles.textExtra}>{follow ? "Following" : "Follow"}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -145,7 +139,7 @@ const styles = StyleSheet.create({
   rightBox: {},
   btnFollow: {
     borderRadius: BORDERRADIUS.radius_20,
-    borderColor: COLORS.WhiteRGBA15,
+    borderColor: COLORS.WhiteRGBA32,
     borderWidth: 0.8,
     paddingHorizontal: SPACING.space_16,
     paddingVertical: SPACING.space_8,

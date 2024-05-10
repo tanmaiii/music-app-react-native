@@ -51,22 +51,47 @@ export default class authValidation {
       token: Joi.string().required(),
     }),
     body: Joi.object().keys({
-      password: Joi.string().email().max(255).empty().required(),
+      password: Joi.string()
+      .min(6)
+      .max(50)
+      // .pattern(
+      //   new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{3,30}$")
+      // )
+      .required(),
     }),
   };
   static sendVerify = {
     body: Joi.object().keys({
-      email: Joi.string().email().max(255).empty().required(),
+      email: Joi.string().email().max(255).empty().required().messages({
+        "string.string": `Email must be a string!`,
+        "string.email": `Invalid email!`,
+        "string.max": `Email is too long!`,
+        "string.empty": `Email is empty!`,
+        "any.required": `Email is a required field!`,
+      }),
     }),
   };
   static verifyAccount = {
     body: Joi.object().keys({
-      email: Joi.string().email().max(255).empty().required(),
+      email: Joi.string().email().max(255).empty().required().messages({
+        "string.string": `Email must be a string!`,
+        "string.email": `Invalid email!`,
+        "string.max": `Email is too long!`,
+        "string.empty": `Email is empty!`,
+        "any.required": `Email is a required field!`,
+      }),
       code: Joi.number().required(),
     }),
   };
   static verifyEmail = {
     body: Joi.object().keys({
+      email: Joi.string().email().max(255).empty().required().messages({
+        "string.string": `Email must be a string!`,
+        "string.email": `Invalid email!`,
+        "string.max": `Email is too long!`,
+        "string.empty": `Email is empty!`,
+        "any.required": `Email is a required field!`,
+      }),
       code: Joi.string().min(4).max(4).required(),
     }),
   };

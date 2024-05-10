@@ -46,9 +46,9 @@ const ItemEmail = (props: ItemNameProps) => {
 
   const handleNext = async () => {
     setLoading(true);
+    serErr("");
     try {
       await authApi.checkEmail(value);
-
       await authApi.sendVerifyEmail(token, value);
       setVerify(true);
       setLoading(false);
@@ -100,7 +100,7 @@ const ItemEmail = (props: ItemNameProps) => {
                   placeholderTextColor={COLORS.WhiteRGBA15}
                   style={styles.textInput}
                   value={value}
-                  onChangeText={(text) => setValue(text)}
+                  onChangeText={(text) => setValue(text.trim())}
                 />
                 <TouchableOpacity style={styles.buttonClear} onPress={() => setValue("")}>
                   <FontAwesomeIcon icon={faXmark} size={14} color={COLORS.Black2} />
@@ -145,6 +145,12 @@ const VerifyEmail = ({ email }: { email: string }) => {
     console.log(code.join(""));
   }, [code]);
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: false, // Vô hiệu hóa các cử chỉ vuốt
+    });
+  }, [navigation]);
+
   const resendCode = async () => {
     setLoading(true);
     try {
@@ -160,7 +166,7 @@ const VerifyEmail = ({ email }: { email: string }) => {
     setLoading(true);
     try {
       if (code.join("").length > 4) return;
-      const res = await authApi.verifyEmail(token, code.join(""));
+      const res = await authApi.verifyEmail(token, email, code.join(""));
       if (res.success) {
         await userApi.update(token, {
           email: email,

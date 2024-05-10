@@ -4,13 +4,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator, { StackAuth } from "./src/navigation";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { BottomSheetModalProvider, WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import PlayingCard from "./src/components/PlayingCard";
 
 import { useFonts } from "expo-font";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import LottieView from "lottie-react-native";
 import { RootStackParamList } from "./src/navigation/TStack";
 import { QueryClient, QueryClientProvider, focusManager } from "@tanstack/react-query";
@@ -19,17 +19,17 @@ import { PlayingContextProvider } from "./src/context/PlayingContext";
 import { AuthContextProvider, useAuth } from "./src/context/AuthContext";
 import { ToastContextProvider } from "./src/context/ToastContext";
 import { AudioContextProvider } from "./src/context/AudioContext";
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from "./src/utils";
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-// Tạo một instance của QueryClient
 const client = new QueryClient();
 
 export default function App() {
-  const linkTo = useLinkTo();
+  const [fontLoaded, setFontLoaded] = useState(false);
 
-  let [fontLoaded] = useFonts({
+  let [fontsLoaded] = useFonts({
     "Roboto-Black": require("./src/assets/fonts/Roboto-Black.ttf"),
     "Roboto-Bold": require("./src/assets/fonts/Roboto-Bold.ttf"),
     "Roboto-Light": require("./src/assets/fonts/Roboto-Light.ttf"),
@@ -37,6 +37,14 @@ export default function App() {
     "Roboto-Regular": require("./src/assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Thin": require("./src/assets/fonts/Roboto-Thin.ttf"),
   });
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setFontLoaded(fontsLoaded);
+    }, 4000);
+
+    return () => clearTimeout(timeout);
+  }, [fontsLoaded]);
 
   if (!fontLoaded) {
     return (

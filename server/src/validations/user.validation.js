@@ -10,6 +10,7 @@ const bodySchema = {
     image_path: Joi.string().min(10).max(255),
     verified: Joi.number().valid(0, 1),
     is_admin: Joi.number().valid(0, 1),
+    email_verified_at: Joi.string().min(0).max(255),
   }),
 };
 

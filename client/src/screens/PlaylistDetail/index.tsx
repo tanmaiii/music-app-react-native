@@ -139,12 +139,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
       return playlistApi.likePlaylist(playlistId, token);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["like-playlist", playlistId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["playlists-favorites"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["like-playlist", playlistId] });
       queryClient.invalidateQueries({ queryKey: ["all-favorites"] });
       queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
     },

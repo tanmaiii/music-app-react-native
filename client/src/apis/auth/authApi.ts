@@ -1,3 +1,4 @@
+import { ResVerifyForgotPassword } from "./../../types/auth.type";
 import { TUser, ResLoginApi } from "./../../types";
 import axiosClient from "../../configs/axios/axiosClient";
 
@@ -32,11 +33,15 @@ const authApi = {
       }
     );
   },
-  verifyEmail(token: string, code: string): Promise<{ success: boolean; data: string }> {
+  verifyEmail(
+    token: string,
+    email: string,
+    code: string
+  ): Promise<{ success: boolean; data: string }> {
     const url = "auth/verify-email";
     return axiosClient.post(
       url,
-      { code },
+      { email, code },
       {
         headers: {
           authorization: token,
@@ -50,6 +55,10 @@ const authApi = {
   },
   verifyAccount(email: string, code: string) {
     const url = "auth/verify-account";
+    return axiosClient.post(url, { email, code });
+  },
+  verifyForgotPassword(email: string, code: string): Promise<ResVerifyForgotPassword> {
+    const url = "auth/verify-forgot-password";
     return axiosClient.post(url, { email, code });
   },
   changePassword(token: string, password: string, passwordOld: string) {
@@ -66,6 +75,12 @@ const authApi = {
         },
       }
     );
+  },
+  resetPassword(resetPasswordToken: string, password: string) {
+    const url = "auth/reset-password";
+    return axiosClient.post(`${url}?token=${resetPasswordToken}`, {
+      password,
+    });
   },
 };
 

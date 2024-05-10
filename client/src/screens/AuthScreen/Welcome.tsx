@@ -7,6 +7,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigation/TStack";
 import { usePlaying } from "../../context/PlayingContext";
+import { WINDOW_HEIGHT } from "../../utils";
 
 interface WelcomeScreenProps {}
 
@@ -22,11 +23,12 @@ const WelcomeScreen = (props: WelcomeScreenProps) => {
   return (
     <View style={styles.container}>
       <ImageBackground source={IMAGES.GRADIENT} style={{ flex: 1 }} blurRadius={30}>
-        <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>
-          <View style={styles.body}>
+        <View style={{ flex: 1, justifyContent: "center", height: WINDOW_HEIGHT }}>
+          <View style={[styles.body]}>
             <View style={styles.logo}>
               <Image style={styles.image} source={IMAGES.LOGO} />
             </View>
+
             <View style={styles.bodyTop}>
               <Text
                 style={{
@@ -50,10 +52,11 @@ const WelcomeScreen = (props: WelcomeScreenProps) => {
               </Text>
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigate.navigate("Login")}>
+            <TouchableOpacity style={[styles.button]} onPress={() => navigate.navigate("Login")}>
               <Text style={styles.titleLogin}>Login</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonGoogle}>
+
+            <TouchableOpacity style={styles.buttonGoogle} onPress={() => navigate.navigate("ResetPassword", {token: "123123"})}>
               <Image source={IMAGES.GOOGLE} style={{ width: 30, height: 30 }} />
               <Text style={styles.titleGoogle}>Google</Text>
             </TouchableOpacity>

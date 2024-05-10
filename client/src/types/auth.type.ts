@@ -9,3 +9,10 @@ export type ResLoginApi = {
   data: TUser;
   token: string;
 };
+
+export type ResVerifyForgotPassword = {
+  success: boolean;
+  data: {
+    resetPasswordToken: string;
+  };
+};

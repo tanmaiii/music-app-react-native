@@ -9,45 +9,30 @@ import { NavigationProp } from "../../navigation/TStack";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { TUser } from "../../types";
 import apiConfig from "../../configs/axios/apiConfig";
-import ArtistCardSkeleton from "./ArtistCardSkeleton";
 
-type TArtistCard = {
-  artist: TUser;
-  loading?: boolean;
-};
+const SkeletonCommonProps = {
+  colorMode: "dark",
+  //   transition: {
+  //     type: "timing",
+  //     duration: 1500,
+  //   },
+  backgroundColor: COLORS.Black2,
+} as const;
 
-const ArtistCard = (prop: TArtistCard) => {
-  const { artist, loading = false } = prop;
-  const navigation = useNavigation<NavigationProp>();
-
-  const handlePress = () => {
-    navigation.navigate("Artist", { userId: artist.id });
-  };
-
-  if (loading) {
-    return <ArtistCardSkeleton />;
-  }
-
+const ArtistCardSkeleton = (prop) => {
   return (
-    <TouchableOpacity onPress={handlePress}>
+    <TouchableOpacity>
       <View style={[styles.container]}>
         <View style={styles.wrapperImage}>
-          <Image
-            style={[styles.image]}
-            source={
-              artist?.image_path ? { uri: apiConfig.imageURL(artist.image_path) } : IMAGES.AVATAR
-            }
-          />
+          <Skeleton {...SkeletonCommonProps} radius="round" width={"100%"} height={170} />
         </View>
 
         <View style={{ gap: SPACING.space_4 }}>
-          <Text numberOfLines={1} style={styles.textTitle}>
-            {artist.name}
-          </Text>
+          <Skeleton height={20} width={"100%"} {...SkeletonCommonProps} radius={6} />
         </View>
       </View>
     </TouchableOpacity>
   );
 };
 
-export default ArtistCard;
+export default ArtistCardSkeleton;

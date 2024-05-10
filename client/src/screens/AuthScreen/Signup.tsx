@@ -2,37 +2,28 @@ import * as React from "react";
 import {
   Text,
   View,
-  StyleSheet,
   Image,
   TextInput,
   ScrollView,
-  Linking,
-  StatusBar,
   Pressable,
   KeyboardAvoidingView,
   Keyboard,
   ActivityIndicator,
   ImageBackground,
   Platform,
-  SafeAreaView,
 } from "react-native";
 import { usePlaying } from "../../context/PlayingContext";
 import IMAGES from "../../constants/images";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils";
-import { Feather, FontAwesome6 } from "@expo/vector-icons";
-import TouchableScale from "../../components/TouchableScale";
+import { REGEX, WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { TouchableHighlight } from "@gorhom/bottom-sheet";
-import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import styles from "./style";
-import { useAuth } from "../../context/AuthContext";
 import { authApi } from "../../apis";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faChevronLeft,
-  faCircleCheck,
   faCircleExclamation,
   faEnvelope,
   faEye,
@@ -46,7 +37,6 @@ import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
 import VerifyScreen from "./Verify";
 import { useToast } from "../../context/ToastContext";
-const TYPING_DELAY = 2000; // Hằng số thời gian chờ đợi
 
 interface SignupScreenProps {}
 
@@ -57,11 +47,11 @@ const SignupScreen = (props: SignupScreenProps) => {
   const inputNameRef = React.useRef<TextInput>(null);
   const inputEmailRef = React.useRef<TextInput>(null);
   const inputPasswordRef = React.useRef<TextInput>(null);
+  const [verify, setVerify] = React.useState<boolean>(false);
 
   const [errVerify, setErrVerify] = React.useState<string>("");
   const [err, setErr] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [success, setSuccess] = React.useState<string>("");
 
   const [viewPassword, setViewPassword] = React.useState<boolean>(false);
 
@@ -77,17 +67,31 @@ const SignupScreen = (props: SignupScreenProps) => {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,30}$/;
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      if (verify) {
+        e.preventDefault();
+        setToastMessage("You need to verify before exiting.");
+      } else {
+        return;
+      }
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   React.useEffect(() => {
     setOpenBarSong(false);
   }, []);
 
-  const handlePress = async () => {
-    setSuccess("");
-    setErr("");
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: false, // Vô hiệu hóa các cử chỉ vuốt
+    });
+  }, [navigation]);
 
+  const handlePress = async () => {
+    setErr("");
+    setVerify(false);
     if (name.trim().length === 0 || errName) return inputNameRef.current.focus();
     if (email.trim().length === 0 || errEmail) return inputEmailRef.current.focus();
     if (password.trim().length === 0 || errPassword) return inputPasswordRef.current.focus();
@@ -98,7 +102,7 @@ const SignupScreen = (props: SignupScreenProps) => {
       const res = await authApi.signup(name, email, password);
       if (res) {
         await authApi.sendVerifyAccount(email);
-        setSuccess("Account registration successful.");
+        setVerify(true);
       }
     } catch (err) {
       console.log("err", err.response?.data?.conflictError);
@@ -109,9 +113,14 @@ const SignupScreen = (props: SignupScreenProps) => {
   };
 
   const handleVerifyAccount = async (code: string) => {
+    setErrVerify("");
     try {
       const res = await authApi.verifyAccount(email, code);
       if (res) {
+        setVerify(false);
+        setEmail("");
+        setName("");
+        setPassword("");
         setToastMessage("Verification successfully !");
         navigation.navigate("Login");
       }
@@ -133,7 +142,7 @@ const SignupScreen = (props: SignupScreenProps) => {
   const validateEmail = (text: string) => {
     if (text.trim() === "") {
       setErrEmail("Email cannot be empty");
-    } else if (!emailRegex.test(text)) {
+    } else if (!REGEX.email.test(text)) {
       setErrEmail("Invalid email");
     }
   };
@@ -145,7 +154,7 @@ const SignupScreen = (props: SignupScreenProps) => {
       setErrPassword("Password must have at least 6 characters");
     } else if (text.trim().length > 30) {
       setErrPassword("Password must not exceed 30 characters");
-    } else if (!passwordRegex.test(text)) {
+    } else if (!REGEX.password.test(text)) {
       setErrPassword("At least one lowercase letter, uppercase letter, number, special character");
     }
   };
@@ -159,7 +168,6 @@ const SignupScreen = (props: SignupScreenProps) => {
   const handleChangeTextEmail = (text: string) => {
     setEmail(text.trim());
     setErrEmail("");
-
     validateEmail(text.trim());
   };
 
@@ -182,7 +190,8 @@ const SignupScreen = (props: SignupScreenProps) => {
           >
             <TouchableHighlight
               underlayColor={COLORS.Black2}
-              style={[styles.buttonHeader]}
+              disabled={verify}
+              style={[styles.buttonHeader, verify && { opacity: 0.6 }]}
               onPress={() => navigation.goBack()}
             >
               <FontAwesomeIcon icon={faChevronLeft} size={18} color={COLORS.White1} />
@@ -201,7 +210,7 @@ const SignupScreen = (props: SignupScreenProps) => {
             <View style={{ height: WINDOW_HEIGHT }}>
               <ScrollView>
                 <View style={{ height: WINDOW_HEIGHT }}>
-                  {!success ? (
+                  {!verify ? (
                     <View style={styles.body}>
                       <View style={styles.logo}>
                         <Image style={styles.image} source={IMAGES.LOGO} />
@@ -227,13 +236,6 @@ const SignupScreen = (props: SignupScreenProps) => {
                           Please fill the details and create account
                         </Text>
                       </View>
-
-                      {success && (
-                        <View style={styles.boxSucc}>
-                          <FontAwesomeIcon icon={faCircleCheck} size={24} color={COLORS.White1} />
-                          <Text style={styles.textSucc}>{success}</Text>
-                        </View>
-                      )}
 
                       {err && (
                         <View style={styles.boxErr}>
@@ -342,7 +344,15 @@ const SignupScreen = (props: SignupScreenProps) => {
                         </View>
                       </View>
 
-                      <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
+                      <View
+                        style={[
+                          { alignItems: "flex-end", justifyContent: "flex-end", width: "100%" },
+                        ]}
+                      >
+                        <Pressable onPress={() => navigation.navigate("ForgetPassword")}>
+                          <Text style={styles.titleForgetPassword}>Forget Password ?</Text>
+                        </Pressable>
+                      </View>
 
                       <TouchableOpacity
                         disabled={loading}
