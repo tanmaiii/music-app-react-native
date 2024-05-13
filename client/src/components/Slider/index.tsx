@@ -83,7 +83,7 @@ const Slider = ({ loading = true }: SliderProps) => {
       <View style={styles.container}>
         <View style={styles.wrapper}>
           <View style={styles.item}>
-            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps} />
+            <Skeleton height={"100%"} width={"100%"} radius={0} />
           </View>
         </View>
       </View>
@@ -131,9 +131,10 @@ const RenderDots = ({ data, activeIndex }: { data: any; activeIndex: number }) =
       }}
     >
       {data &&
-        data?.map((ite, index) => {
+        data?.map(({ item, index }) => {
           return (
             <View
+              key={index}
               style={[
                 {
                   backgroundColor: COLORS.WhiteRGBA32,
@@ -167,5 +168,6 @@ const styles = StyleSheet.create({
   item: {
     width: width,
     height: 200,
+    backgroundColor: COLORS.Black2,
   },
 });

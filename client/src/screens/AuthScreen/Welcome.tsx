@@ -5,7 +5,7 @@ import { IMAGES } from "../../constants";
 import styles from "./style";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import { usePlaying } from "../../context/PlayingContext";
 import { WINDOW_HEIGHT } from "../../utils";
 

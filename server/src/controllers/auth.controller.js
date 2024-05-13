@@ -13,9 +13,11 @@ export const signin = async (req, res) => {
 
     User.findByEmail(email, (err, user) => {
       if (err) return res.status(401).json({ conflictError: err });
+      
       if (!user) {
         return res.status(401).json({ conflictError: "User not found !" });
       }
+
       if (user.email_verified_at === null) {
         return res.status(401).json({ conflictError: "User is not authenticated!" });
       }

@@ -35,21 +35,22 @@ import {
   faEye,
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
 import { REGEX } from "../../utils/index";
 import { authApi } from "../../apis";
 import VerifyScreen from "./Verify";
-import ResetPassword from "./ResetPassword";
+import CustomModal from "../../components/CustomModal";
 
 interface ForgetPasswordProps {}
 
 const ForgetPassword = (props: ForgetPasswordProps) => {
   const navigation = useNavigation<NavigationProp>();
   const inputRef = React.useRef<TextInput>(null);
-  // const [focus, setFocus] = React.useState<boolean>(false);
+  const [isModal, setIsModal] = React.useState<boolean>(false);
+
   const [state, setState] = React.useState<{
     email: string;
     focus: boolean;
@@ -132,6 +133,14 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
     }
   };
 
+  const handleBlack = () => {
+    if (stateVerify.verify) {
+      setIsModal(true);
+    } else {
+      navigation.goBack();
+    }
+  };
+
   return (
     <View style={styles.container} onTouchStart={Keyboard.dismiss}>
       <ImageBackground source={IMAGES.GRADIENT} style={{ flex: 1 }} blurRadius={30}>
@@ -143,7 +152,11 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
               Platform.OS === "ios" && { paddingTop: statusBarHeight + SPACING.space_8 },
             ]}
           >
-            <TouchableHighlight underlayColor={COLORS.Black2} style={[styles.buttonHeader]}>
+            <TouchableHighlight
+              underlayColor={COLORS.Black2}
+              style={[styles.buttonHeader]}
+              onPress={() => handleBlack()}
+            >
               <FontAwesomeIcon icon={faChevronLeft} size={18} color={COLORS.White1} />
             </TouchableHighlight>
             <Text style={styles.textMain}>Forget Password</Text>
@@ -229,8 +242,6 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
                       onSubmit={(code) => handleVerify(code)}
                       err={stateVerify?.err}
                     />
-
-                    // <ResetPassword/>
                   )}
                 </View>
               </ScrollView>
@@ -238,6 +249,18 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
           </KeyboardAvoidingView>
         </View>
       </ImageBackground>
+      {isModal && (
+        <CustomModal
+          isOpen={isModal}
+          setIsOpen={() => setIsModal(false)}
+          modalFunction={() => navigation.goBack()}
+          header="Go back"
+        >
+          <Text style={styles.textMain}>
+            You haven't authenticated, do you really want to come back ?
+          </Text>
+        </CustomModal>
+      )}
     </View>
   );
 };

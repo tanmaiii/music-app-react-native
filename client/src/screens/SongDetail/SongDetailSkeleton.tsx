@@ -4,13 +4,12 @@ import { Text, View, TouchableOpacity } from "react-native";
 import { Skeleton } from "moti/skeleton";
 import { COLORS, SPACING } from "../../theme/theme";
 import { WINDOW_WIDTH } from "../../utils";
+import { duration } from "moment";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1500,
-  },
+  duration: 1500,
+  type: "timing",
   backgroundColor: COLORS.Black2,
 } as const;
 

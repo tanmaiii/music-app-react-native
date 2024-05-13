@@ -1,7 +1,7 @@
 import { useRoute } from "@react-navigation/native";
 import * as React from "react";
 import { Text, View, StyleSheet } from "react-native";
-import { RootRouteProps } from "../../../navigation/TStack";
+import { RootRouteProps } from "../../../navigators/TStack";
 import styles from "./style";
 import ItemName from "./ItemName";
 import ItemEmail from "./ItemEmail";

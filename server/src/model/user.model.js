@@ -31,7 +31,7 @@ User.update = (userId, newUser, result) => {
       result(err, null);
       return;
     }
-    db.query(`update users set ? where id = '${userId}'`, newUser, (err, res) => {
+    db.query(`update users set ? where id = ?`, [newUser, userId], (err, res) => {
       if (err) {
         console.log("ERROR", err);
         result(err, null);
@@ -59,7 +59,7 @@ User.findByEmail = (email, result) => {
 };
 
 User.findById = (id, result) => {
-  db.query(`SELECT * from users WHERE id = '${id}'`, (err, user) => {
+  db.query(`SELECT * from users WHERE id = ?`, id, (err, user) => {
     if (err) {
       result(err, null);
       return;
@@ -71,21 +71,6 @@ User.findById = (id, result) => {
     result(`Không tìm thấy người dùng có id là ${id}`, null);
   });
 };
-
-// //kiểm tra email đã được dùng chưa
-// User.isEmailAlreadyExists = (email, result) => {
-//   db.query(`SELECT * from users WHERE email = '${email}'`, (err, res) => {
-//     if (err) {
-//       result(err, null);
-//       return;
-//     }
-//     if (res.length) {
-//       result(null, res[0]);
-//       return;
-//     }
-//     result(null, null);
-//   });
-// };
 
 User.getAll = async (query, result) => {
   const q = query?.q;

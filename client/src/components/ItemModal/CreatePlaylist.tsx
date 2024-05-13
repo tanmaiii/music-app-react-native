@@ -21,29 +21,27 @@ import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { playlistApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
-import { useQueryClient } from "@tanstack/react-query";
+import { NavigationProp } from "../../navigators/TStack";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ToastMessage from "../ToastMessage";
 import { useToast } from "../../context/ToastContext";
 const statusBarHeight = Constants.statusBarHeight;
 
-interface AddPlaylistProps {
+interface CreatePlaylistProps {
   closeModal?: () => void;
-  setAddPlaylist: (boolean) => void;
+  setCreatePlaylist: (boolean) => void;
 }
 
-const AddPlaylist = ({ setAddPlaylist, closeModal }: AddPlaylistProps) => {
+const CreatePlaylist = ({ setCreatePlaylist, closeModal }: CreatePlaylistProps) => {
   const [name, setName] = React.useState<string>("");
   const [isPrivate, setIsPrivate] = React.useState<boolean>(false);
   const textInputRef = React.useRef<TextInput>();
-  const { token } = useAuth();
+  const { token, currentUser } = useAuth();
   const { setToastMessage } = useToast();
-  const navigation = useNavigation<NavigationProp>();
   const queryClient = useQueryClient();
-  const toastRef = React.useRef(null);
 
   const handleFunc = () => {
-    setAddPlaylist(false);
+    setCreatePlaylist(false);
     textInputRef.current?.blur();
   };
 
@@ -51,21 +49,26 @@ const AddPlaylist = ({ setAddPlaylist, closeModal }: AddPlaylistProps) => {
     textInputRef.current?.focus();
   }, []);
 
-  const handleCreatePlaylist = async () => {
+  const createPlaylist = async () => {
     try {
       const isPublic = isPrivate ? 0 : 1;
-      const res = await playlistApi.createPlaylist(token, name, isPublic);
-      console.log(res);
-      setAddPlaylist(false);
-      navigation.navigate("Playlist", { playlistId: res.id });
-      queryClient.invalidateQueries({ queryKey: ["all-favorites"] });
-      queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
+      await playlistApi.createPlaylist(token, name, isPublic);
+      setCreatePlaylist(false);
+      setToastMessage("Create playlist successfully");
     } catch (err) {
       console.log(err.response.data);
-      const messErr = err.response.data.conflictError;
-      messErr && setToastMessage(messErr);
+      setToastMessage(err.response.data.conflictError);
     }
   };
+
+  const mutation = useMutation({
+    mutationFn: createPlaylist,
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["playlists", currentUser.id] });
+      queryClient.invalidateQueries({ queryKey: ["all-favorites"] });
+      queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -108,7 +111,7 @@ const AddPlaylist = ({ setAddPlaylist, closeModal }: AddPlaylistProps) => {
       </ScrollView>
       <View style={{ position: "absolute", bottom: 20, width: "100%", alignItems: "center" }}>
         <TouchableOpacity
-          onPress={handleCreatePlaylist}
+          onPress={() => mutation.mutate()}
           style={[styles.button, name.length <= 0 && { opacity: 0.8 }]}
           disabled={name.length <= 0 && true}
         >
@@ -119,7 +122,7 @@ const AddPlaylist = ({ setAddPlaylist, closeModal }: AddPlaylistProps) => {
   );
 };
 
-export default AddPlaylist;
+export default CreatePlaylist;
 
 const styles = StyleSheet.create({
   container: {

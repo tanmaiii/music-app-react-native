@@ -24,13 +24,11 @@ import { TSong } from "../../types";
 import SongItem from "../../components/SongItem";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  faArrowUpFromBracket,
   faChevronLeft,
   faHeart as faHeartSolid,
   faMagnifyingGlass,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
@@ -38,9 +36,10 @@ const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 import ModalSearchSong from "../../components/ModalSearchSong";
 import { favouriteApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
-import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
 import { useQuery } from "@tanstack/react-query";
 import { RefreshControl } from "react-native-gesture-handler";
+import { Skeleton } from "moti/skeleton";
 
 interface ListSongScreenProps {}
 
@@ -100,7 +99,6 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const getLikeSongs = async () => {
     page === 1 && setLoading(true);
     const res = await favouriteApi.getSongs(token, page, limit);
-    // const res = await songApi.getAllFavoritesByUser(route.params.userId, page, limit);
     if (res.pagination.page === 1) {
       setSongs(res.data);
       setTotalPages(res.pagination.totalPages);
@@ -194,11 +192,17 @@ const ListSongScreen = (props: ListSongScreenProps) => {
             <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
               {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
             </Text>
-            <Text style={styles.textExtra}>Not found</Text>
+            <Text style={styles.textExtra}>{totalCount} Songs</Text>
+            <View style={styles.button}>
+              <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+              <Text style={styles.textButton}>Play</Text>
+            </View>
           </View>
           <View>
             {items.map((item, index) => (
-              <SongItem loading={true} />
+              <View key={index}>
+                <SongItem loading={true} />
+              </View>
             ))}
           </View>
         </View>
@@ -235,7 +239,11 @@ const ListSongScreen = (props: ListSongScreenProps) => {
                 </TouchableOpacity>
               </View>
             }
-            renderItem={({ item, index }) => <SongItem key={index} song={item} loading={loading} />}
+            renderItem={({ item, index }) => (
+              <View key={index}>
+                <SongItem song={item} loading={loading} />
+              </View>
+            )}
           />
         </View>
       )}
@@ -315,6 +323,7 @@ const styles = StyleSheet.create({
 
   button: {
     width: 160,
+    overflow: "hidden",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

@@ -11,6 +11,7 @@ import {
   Platform,
   ImageBackground,
   Share,
+  Pressable,
 } from "react-native";
 import IMAGES from "../../constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,6 +26,7 @@ import {
   faEllipsis,
   faHeart as faHeartSolid,
   faLock,
+  faPause,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
@@ -35,26 +37,16 @@ const statusBarHeight = Constants.statusBarHeight;
 import CustomBottomSheet from "../../components/CustomBottomSheet";
 
 import { AddSongToPlaylist, ModalSong } from "../../components/ItemModal";
-import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
 import apiConfig from "../../configs/axios/apiConfig";
 import { songApi, userApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
-import numeral from "numeral";
-import { Skeleton } from "moti/skeleton";
 import { usePlaying } from "../../context/PlayingContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ArtistItem from "../../components/ArtistItem";
 import moment from "moment";
 import SongDetailSkeleton from "./SongDetailSkeleton";
-
-const SkeletonCommonProps = {
-  colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1500,
-  },
-  backgroundColor: COLORS.Black2,
-} as const;
+import { useAudio } from "../../context/AudioContext";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
@@ -62,17 +54,16 @@ const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground
 interface SongDetailProps {}
 
 const SongDetail = (props: SongDetailProps) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RootRouteProps<"Song">>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [heightModal, setHeightModal] = React.useState<number>(50);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const { currentUser } = useAuth();
-  // const [song, setSong] = React.useState<TSong>();
-  // const [loading, setLoading] = React.useState<boolean>(false);
   const songId = route.params.songId;
   const { token } = useAuth();
-  const { setOpenBarSong, setSongIdPlaying, songIdPlaying } = usePlaying();
+  const { setOpenBarSong, changeSongPlaying, songIdPlaying } = usePlaying();
+  const { isPlaying, playSound, stopSound } = useAudio();
   const queryClient = useQueryClient();
 
   const headerAnimation = {
@@ -162,8 +153,13 @@ const SongDetail = (props: SongDetailProps) => {
   };
 
   const handlePlay = () => {
-    song && setSongIdPlaying(song?.id);
-    setOpenBarSong(true);
+    if (songId === songIdPlaying && isPlaying) {
+      stopSound();
+    } else {
+      song && changeSongPlaying(song?.id);
+      playSound();
+      setOpenBarSong(true);
+    }
   };
 
   return (
@@ -242,7 +238,6 @@ const SongDetail = (props: SongDetailProps) => {
                       styles.textMain,
                       {
                         fontSize: FONTSIZE.size_24,
-                        textAlign: "center",
                         maxWidth: "80%",
                       },
                     ]}
@@ -250,13 +245,11 @@ const SongDetail = (props: SongDetailProps) => {
                     {song?.title || "Unknown"}
                   </Text>
                 </View>
-
-                <Text
-                  numberOfLines={1}
-                  style={[styles.textMain, { color: COLORS.Primary, textAlign: "center" }]}
-                >
-                  {song?.author || "Unknown"}
-                </Text>
+                <Pressable onPress={() => navigation.navigate("Artist", { userId: song?.user_id })}>
+                  <Text numberOfLines={1} style={[styles.textMain, { color: COLORS.Primary }]}>
+                    {song?.author || "Unknown"}
+                  </Text>
+                </Pressable>
 
                 <View style={styles.groupButton}>
                   <TouchableOpacity style={styles.buttonExtra} onPress={() => handleShare()}>
@@ -278,8 +271,21 @@ const SongDetail = (props: SongDetailProps) => {
                   </TouchableOpacity>
 
                   <TouchableOpacity style={styles.button} onPress={() => handlePlay()}>
-                    <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
-                    <Text style={styles.textButton}>Play</Text>
+                    {isPlaying && songId === songIdPlaying ? (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faPause}
+                          size={26}
+                          style={{ color: COLORS.White1 }}
+                        />
+                        <Text style={styles.textButton}>Pause</Text>
+                      </>
+                    ) : (
+                      <>
+                        <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+                        <Text style={styles.textButton}>Play</Text>
+                      </>
+                    )}
                   </TouchableOpacity>
 
                   <TouchableOpacity

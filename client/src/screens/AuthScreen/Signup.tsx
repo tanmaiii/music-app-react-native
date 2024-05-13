@@ -32,11 +32,12 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { text } from "@fortawesome/fontawesome-svg-core";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import Constants from "expo-constants";
 const statusBarHeight = Constants.statusBarHeight;
 import VerifyScreen from "./Verify";
 import { useToast } from "../../context/ToastContext";
+import { TStateAuth } from "../../types";
 
 interface SignupScreenProps {}
 
@@ -47,25 +48,71 @@ const SignupScreen = (props: SignupScreenProps) => {
   const inputNameRef = React.useRef<TextInput>(null);
   const inputEmailRef = React.useRef<TextInput>(null);
   const inputPasswordRef = React.useRef<TextInput>(null);
+
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [err, setErr] = React.useState<string>("");
+
   const [verify, setVerify] = React.useState<boolean>(false);
 
-  const [errVerify, setErrVerify] = React.useState<string>("");
-  const [err, setErr] = React.useState<string>("");
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [stateVerify, setStateVerify] = React.useState<TStateAuth>({
+    value: "",
+    err: "",
+    loading: false,
+    focus: false,
+    view: false,
+  });
 
-  const [viewPassword, setViewPassword] = React.useState<boolean>(false);
+  const [stateName, setStateName] = React.useState<TStateAuth>({
+    value: "",
+    err: "",
+    loading: false,
+    focus: false,
+    view: false,
+  });
 
-  const [errName, setErrName] = React.useState<string>("");
-  const [errEmail, setErrEmail] = React.useState<string>("");
-  const [errPassword, setErrPassword] = React.useState<string>("");
+  const [stateEmail, setStateEmail] = React.useState<TStateAuth>({
+    value: "",
+    err: "",
+    loading: false,
+    focus: false,
+    view: false,
+  });
 
-  const [isFocusedEmail, setIsFocusedEmail] = React.useState<boolean>(false);
-  const [isFocusedPassword, setIsFocusedPassword] = React.useState<boolean>(false);
-  const [isFocusedName, setIsFocusedName] = React.useState<boolean>(false);
+  const [statePassword, setStatePassword] = React.useState<TStateAuth>({
+    value: "",
+    err: "",
+    loading: false,
+    focus: false,
+    view: false,
+  });
 
-  const [name, setName] = React.useState<string>("");
-  const [email, setEmail] = React.useState<string>("");
-  const [password, setPassword] = React.useState<string>("");
+  const updateStateVerify = (newValue: Partial<TStateAuth>) => {
+    setStateVerify((prevState) => ({
+      ...prevState,
+      ...newValue,
+    }));
+  };
+
+  const updateStateName = (newValue: Partial<TStateAuth>) => {
+    setStateName((prevState) => ({
+      ...prevState,
+      ...newValue,
+    }));
+  };
+
+  const updateStateEmail = (newValue: Partial<TStateAuth>) => {
+    setStateEmail((prevState) => ({
+      ...prevState,
+      ...newValue,
+    }));
+  };
+
+  const updateStatePassword = (newValue: Partial<TStateAuth>) => {
+    setStatePassword((prevState) => ({
+      ...prevState,
+      ...newValue,
+    }));
+  };
 
   React.useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
@@ -91,17 +138,22 @@ const SignupScreen = (props: SignupScreenProps) => {
 
   const handlePress = async () => {
     setErr("");
+    if (stateName.value.length === 0 || stateName.err) {
+      return inputNameRef.current.focus();
+    }
+    if (stateEmail.value.length === 0 || stateEmail.err) {
+      return inputEmailRef.current.focus();
+    }
+    if (statePassword.value.length === 0 || statePassword.err) {
+      return inputPasswordRef.current.focus();
+    }
+
     setVerify(false);
-    if (name.trim().length === 0 || errName) return inputNameRef.current.focus();
-    if (email.trim().length === 0 || errEmail) return inputEmailRef.current.focus();
-    if (password.trim().length === 0 || errPassword) return inputPasswordRef.current.focus();
-
     setLoading(true);
-
     try {
-      const res = await authApi.signup(name, email, password);
+      const res = await authApi.signup(stateName.value, stateEmail.value, statePassword.value);
       if (res) {
-        await authApi.sendVerifyAccount(email);
+        await authApi.sendVerifyAccount(stateEmail.value);
         setVerify(true);
       }
     } catch (err) {
@@ -113,69 +165,58 @@ const SignupScreen = (props: SignupScreenProps) => {
   };
 
   const handleVerifyAccount = async (code: string) => {
-    setErrVerify("");
+    updateStateVerify({ err: "" });
     try {
-      const res = await authApi.verifyAccount(email, code);
+      const res = await authApi.verifyAccount(stateEmail.value, code);
       if (res) {
         setVerify(false);
-        setEmail("");
-        setName("");
-        setPassword("");
         setToastMessage("Verification successfully !");
         navigation.navigate("Login");
       }
     } catch (error) {
       console.log(error.response.data.conflictError);
-      setErrVerify(error.response.data.conflictError);
+      updateStateVerify({ err: error.response.data.conflictError });
     }
   };
 
-  const validateName = (text: string) => {
-    console.log(text);
-    if (text.trim().length > 16) {
-      setErrName("Name must be 16 characters");
-    } else if (text.trim().length < 6) {
-      setErrName("Name must be at least 6 characters");
+  const validateName = () => {
+    if (stateName.value.length > 16) {
+      return updateStateName({ err: "Name must be 16 characters" });
+    } else if (stateName.value.length < 6) {
+      return updateStateName({ err: "Name must be at least 6 characters" });
     }
+    return updateStateName({ err: "" });
   };
 
-  const validateEmail = (text: string) => {
-    if (text.trim() === "") {
-      setErrEmail("Email cannot be empty");
-    } else if (!REGEX.email.test(text)) {
-      setErrEmail("Invalid email");
+  const validateEmail = () => {
+    if (stateEmail.value === "") {
+      return updateStateEmail({ err: "Email cannot be empty" });
+    } else if (!REGEX.email.test(stateEmail.value)) {
+      return updateStateEmail({ err: "Invalid email" });
     }
+    return updateStateEmail({ err: "" });
   };
 
-  const validatePassword = (text: string) => {
-    if (text.trim() === "") {
-      setErrPassword("Password cannot be empty");
-    } else if (text.trim().length < 6) {
-      setErrPassword("Password must have at least 6 characters");
-    } else if (text.trim().length > 30) {
-      setErrPassword("Password must not exceed 30 characters");
-    } else if (!REGEX.password.test(text)) {
-      setErrPassword("At least one lowercase letter, uppercase letter, number, special character");
+  const validatePassword = () => {
+    if (statePassword.value === "") {
+      return updateStatePassword({ err: "Password cannot be empty" });
+    } else if (statePassword.value.length < 6) {
+      return updateStatePassword({ err: "Password must have at least 6 characters" });
+    } else if (statePassword.value.length > 30) {
+      return updateStatePassword({ err: "Password must not exceed 30 characters" });
+    } else if (!REGEX.password.test(statePassword.value)) {
+      return updateStatePassword({
+        err: "At least one lowercase letter, uppercase letter, number, special character",
+      });
     }
+    return updateStatePassword({ err: "" });
   };
 
-  const handleChangeTextName = (text: string) => {
-    setName(text.trim());
-    setErrName("");
-    validateName(text.trim());
-  };
-
-  const handleChangeTextEmail = (text: string) => {
-    setEmail(text.trim());
-    setErrEmail("");
-    validateEmail(text.trim());
-  };
-
-  const handleChangeTextPassword = (text: string) => {
-    setPassword(text.trim());
-    setErrPassword("");
-    validatePassword(text.trim());
-  };
+  React.useEffect(() => {
+    stateEmail.value.length > 0 && validateEmail();
+    stateName.value.length > 0 && validateName();
+    statePassword.value.length > 0 && validatePassword();
+  }, [statePassword.value, stateEmail.value, stateName.value]);
 
   return (
     <View style={styles.container} onTouchStart={Keyboard.dismiss}>
@@ -252,24 +293,26 @@ const SignupScreen = (props: SignupScreenProps) => {
                         <View style={styles.box}>
                           <Pressable
                             onPress={() => inputNameRef.current?.focus()}
-                            style={[styles.boxInput, errName && styles.boxInputErr]}
+                            style={[styles.boxInput, stateName.err && styles.boxInputErr]}
                           >
                             <FontAwesomeIcon icon={faUser} size={20} color={COLORS.White2} />
 
                             <TextInput
                               ref={inputNameRef}
                               style={styles.textInput}
-                              onFocus={() => setIsFocusedName(true)}
-                              onBlur={() => name.trim() === "" && setIsFocusedName(false)}
-                              onChangeText={(text) => handleChangeTextName(text)}
+                              onFocus={() => updateStateName({ focus: true })}
+                              onBlur={() =>
+                                stateName.value === "" && updateStateName({ focus: false })
+                              }
+                              onChangeText={(text) => updateStateName({ value: text.trim() })}
                             />
-                            <Text style={[styles.titleBox, isFocusedName && styles.titleBoxMove]}>
+                            <Text style={[styles.titleBox, stateName.focus && styles.titleBoxMove]}>
                               Name
                             </Text>
                           </Pressable>
-                          {errName && (
+                          {stateName.err && (
                             <Text numberOfLines={1} style={styles.descErr}>
-                              {errName}
+                              {stateName.err}
                             </Text>
                           )}
                         </View>
@@ -277,23 +320,28 @@ const SignupScreen = (props: SignupScreenProps) => {
                         <View style={styles.box}>
                           <Pressable
                             onPress={() => inputEmailRef.current?.focus()}
-                            style={[styles.boxInput, errEmail && styles.boxInputErr]}
+                            style={[styles.boxInput, stateEmail.err && styles.boxInputErr]}
                           >
                             <FontAwesomeIcon icon={faEnvelope} size={20} color={COLORS.White2} />
                             <TextInput
                               ref={inputEmailRef}
                               style={styles.textInput}
-                              onFocus={() => setIsFocusedEmail(true)}
-                              onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
-                              onChangeText={(text) => handleChangeTextEmail(text)}
+                              value={stateEmail.value}
+                              onFocus={() => updateStateEmail({ focus: true })}
+                              onBlur={() =>
+                                stateEmail.value === "" && updateStateEmail({ focus: false })
+                              }
+                              onChangeText={(text) => updateStateEmail({ value: text.trim() })}
                             />
-                            <Text style={[styles.titleBox, isFocusedEmail && styles.titleBoxMove]}>
+                            <Text
+                              style={[styles.titleBox, stateEmail.focus && styles.titleBoxMove]}
+                            >
                               Email
                             </Text>
                           </Pressable>
-                          {errEmail && (
+                          {stateEmail.err && (
                             <Text numberOfLines={1} style={styles.descErr}>
-                              {errEmail}
+                              {stateEmail.err}
                             </Text>
                           )}
                         </View>
@@ -301,27 +349,32 @@ const SignupScreen = (props: SignupScreenProps) => {
                         <View style={styles.box}>
                           <Pressable
                             onPress={() => inputPasswordRef.current?.focus()}
-                            style={[styles.boxInput, errPassword && styles.boxInputErr]}
+                            style={[styles.boxInput, statePassword.err && styles.boxInputErr]}
                           >
                             <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
 
                             <TextInput
-                              secureTextEntry={viewPassword ? false : true} // Hiển thị dưới dạng mật khẩu
+                              secureTextEntry={statePassword.view ? false : true} // Hiển thị dưới dạng mật khẩu
                               ref={inputPasswordRef}
                               passwordRules="*"
                               style={styles.textInput}
-                              value={password}
-                              onFocus={() => setIsFocusedPassword(true)}
-                              onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
-                              onChangeText={(text) => handleChangeTextPassword(text)}
+                              value={statePassword.value}
+                              onFocus={() => updateStatePassword({ focus: true })}
+                              onBlur={() =>
+                                statePassword.value === "" && updateStatePassword({ focus: false })
+                              }
+                              onChangeText={(text) => updateStatePassword({ value: text.trim() })}
                             />
                             <Text
-                              style={[styles.titleBox, isFocusedPassword && styles.titleBoxMove]}
+                              style={[styles.titleBox, statePassword.focus && styles.titleBoxMove]}
                             >
                               Password
                             </Text>
-                            <TouchableOpacity onPress={() => setViewPassword(!viewPassword)}>
-                              {viewPassword ? (
+                            <TouchableOpacity
+                              style={styles.buttonView}
+                              onPress={() => updateStatePassword({ view: !statePassword.view })}
+                            >
+                              {statePassword.view ? (
                                 <FontAwesomeIcon
                                   icon={faEyeSlash}
                                   size={20}
@@ -336,9 +389,9 @@ const SignupScreen = (props: SignupScreenProps) => {
                               )}
                             </TouchableOpacity>
                           </Pressable>
-                          {errPassword && (
+                          {statePassword.err && (
                             <Text numberOfLines={2} style={styles.descErr}>
-                              {errPassword}
+                              {statePassword.err}
                             </Text>
                           )}
                         </View>
@@ -391,9 +444,9 @@ const SignupScreen = (props: SignupScreenProps) => {
                     </View>
                   ) : (
                     <VerifyScreen
-                      email={email && email}
+                      email={stateEmail?.value}
                       onSubmit={(code) => handleVerifyAccount(code)}
-                      err={errVerify && errVerify}
+                      err={stateVerify.err}
                     />
                   )}
                 </View>

@@ -1,41 +1,38 @@
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import {
+  faFlag,
+  faHeart,
+  faMinusCircle,
+  faMusic,
+  faPenToSquare,
+  faPlusCircle,
+  faShare,
+  faUser
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
   Image,
-  TouchableOpacity,
-  Share,
   Pressable,
-  ActivityIndicator,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
+import { TouchableHighlight } from "react-native-gesture-handler";
+import { playlistApi, songApi } from "../../apis";
+import apiConfig from "../../configs/axios/apiConfig";
 import { IMAGES } from "../../constants";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  faHeart,
-  faMinus,
-  faMusic,
-  faShare,
-  faMinusCircle,
-  faPlusCircle,
-  faUser,
-  faFlag,
-  faPenToSquare,
-} from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { useAuth } from "../../context/AuthContext";
+import { NavigationProp } from "../../navigators/TStack";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
+import { TSong } from "../../types";
 import CustomBottomSheet from "../CustomBottomSheet";
 import AddSongToPlaylist from "./AddSongToPlaylist";
-import { TSong } from "../../types";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import apiConfig from "../../configs/axios/apiConfig";
-import { NavigationProp } from "../../navigation/TStack";
-import { useNavigation } from "@react-navigation/native";
-import { playlistApi, songApi } from "../../apis";
-import { useAuth } from "../../context/AuthContext";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 
 interface ModalSongProps {
   song: TSong;

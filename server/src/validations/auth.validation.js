@@ -52,12 +52,12 @@ export default class authValidation {
     }),
     body: Joi.object().keys({
       password: Joi.string()
-      .min(6)
-      .max(50)
-      // .pattern(
-      //   new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{3,30}$")
-      // )
-      .required(),
+        .min(6)
+        .max(50)
+        // .pattern(
+        //   new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{3,30}$")
+        // )
+        .required(),
     }),
   };
   static sendVerify = {
@@ -72,6 +72,18 @@ export default class authValidation {
     }),
   };
   static verifyAccount = {
+    body: Joi.object().keys({
+      email: Joi.string().email().max(255).empty().required().messages({
+        "string.string": `Email must be a string!`,
+        "string.email": `Invalid email!`,
+        "string.max": `Email is too long!`,
+        "string.empty": `Email is empty!`,
+        "any.required": `Email is a required field!`,
+      }),
+      code: Joi.number().required(),
+    }),
+  };
+  static verifyForgotPassword = {
     body: Joi.object().keys({
       email: Joi.string().email().max(255).empty().required().messages({
         "string.string": `Email must be a string!`,

@@ -26,6 +26,18 @@ const playlistApi = {
       }
     );
   },
+  deletePlaylist(token: string, playlistId: string) {
+    const url = "playlist/delete/";
+    return axiosClient.patch(
+      url + playlistId,
+      {},
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+  },
   getAll(page: number, limit: number, q?: string, sort?: string): Promise<ListResponse<TPlaylist>> {
     const url = "playlist";
     return axiosClient.get(url, {
@@ -164,6 +176,14 @@ const playlistApi = {
         song_id: songId,
         playlist_id: playlistId,
       },
+      headers: {
+        authorization: token,
+      },
+    });
+  },
+  updatePlaylist(token: string, playlistId: string, body: TPlaylist) {
+    const url = "playlist/";
+    return axiosClient.put(url + playlistId, body, {
       headers: {
         authorization: token,
       },

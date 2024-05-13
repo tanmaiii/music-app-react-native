@@ -2,11 +2,11 @@ import * as React from "react";
 import {
   Text,
   View,
-  StyleSheet,
   TouchableOpacity,
   StatusBar,
   Animated,
   Platform,
+  Pressable,
 } from "react-native";
 import IMAGES from "../../constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -29,33 +29,26 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
-import { AddPlaylist, AddSong, ModalPlaylist, EditPlaylist } from "../../components/ItemModal";
-import { RootRouteProps } from "../../navigation/TStack";
-import { playlistApi, songApi } from "../../apis";
+import { AddSongFromPlaylist, ModalPlaylist, EditPlaylist } from "../../components/ItemModal";
+import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
+import { playlistApi, songApi, userApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import apiConfig from "../../configs/axios/apiConfig";
 import { FlatList, RefreshControl } from "react-native-gesture-handler";
 import CategoryHeader from "../../components/CategoryHeader";
 import PlaylistCard from "../../components/PlaylistCard";
 const statusBarHeight = Constants.statusBarHeight;
-import { Skeleton } from "moti/skeleton";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-const SkeletonCommonProps = {
-  colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1500,
-  },
-  backgroundColor: COLORS.Black2,
-} as const;
+import styles from "./style";
+import PlaylistDetailSkeleton from "./PlaylistDetailSkeleton";
+import ArtistItem from "../../components/ArtistItem";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 interface PlaylistDetailProps {}
 
 const PlaylistDetail = (props: PlaylistDetailProps) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RootRouteProps<"Playlist">>();
   const flatListRef = React.useRef<FlatList>();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
@@ -147,17 +140,27 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
 
   const {
     data: playlist,
-    isLoading: loading,
+    isLoading: loadingPlaylist,
     refetch: refetchPlaylist,
+    error: errorPlaylist,
   } = useQuery({
     queryKey: ["playlist", playlistId],
     queryFn: async () => {
-      const res = await playlistApi.getDetail(playlistId, token);
-      return res;
+      try {
+        const res = await playlistApi.getDetail(playlistId, token);
+        return res;
+      } catch (error) {
+        navigation.goBack();
+        return null;
+      }
     },
   });
 
-  const { data: songs, refetch: refetchSongs } = useQuery({
+  const {
+    data: songs,
+    refetch: refetchSongs,
+    isLoading: loadingSongs,
+  } = useQuery({
     queryKey: ["songs", playlistId],
     queryFn: async () => {
       const res = await songApi.getAllByPlaylistId(token, playlistId, 1, 50);
@@ -166,7 +169,11 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     },
   });
 
-  const { data: playlists, refetch: refetchPlaylists } = useQuery({
+  const {
+    data: playlists,
+    refetch: refetchPlaylists,
+    isLoading: loadingPlaylists,
+  } = useQuery({
     queryKey: ["playlists"],
     queryFn: async () => {
       const res = await playlistApi.getAll(1, 6);
@@ -222,123 +229,70 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         </SafeAreaView>
 
         <View style={styles.wrapper}>
-          <FlatList
-            ref={flatListRef}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                tintColor={COLORS.White1}
-              />
-            }
-            onScroll={(e) => {
-              const offsetY = e.nativeEvent.contentOffset.y;
-              animatedValue.setValue(offsetY);
-            }}
-            scrollEventThrottle={16}
-            ListHeaderComponent={
-              <View style={[styles.wrapperHeader]}>
-                <Animated.View style={[styles.wrapperImage, imageAnimation]}>
-                  <Skeleton {...SkeletonCommonProps} width={300} height={300}>
-                    {loading ? null : (
-                      <Animated.Image
-                        style={[styles.image]}
-                        source={
-                          playlist?.image_path
-                            ? { uri: apiConfig.imageURL(playlist.image_path) }
-                            : IMAGES.PLAYLIST
-                        }
-                      />
-                    )}
-                  </Skeleton>
-                </Animated.View>
+          {loadingPlaylist || loadingPlaylists || loadingSongs ? (
+            <PlaylistDetailSkeleton />
+          ) : (
+            <FlatList
+              ref={flatListRef}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={handleRefresh}
+                  tintColor={COLORS.White1}
+                />
+              }
+              onScroll={(e) => {
+                const offsetY = e.nativeEvent.contentOffset.y;
+                animatedValue.setValue(offsetY);
+              }}
+              scrollEventThrottle={16}
+              ListHeaderComponent={
+                <View style={[styles.wrapperHeader]}>
+                  <Animated.View style={[styles.wrapperImage, imageAnimation]}>
+                    <Animated.Image
+                      style={[styles.image]}
+                      source={
+                        playlist?.image_path
+                          ? { uri: apiConfig.imageURL(playlist.image_path) }
+                          : IMAGES.PLAYLIST
+                      }
+                    />
+                  </Animated.View>
+                  <Text
+                    numberOfLines={2}
+                    style={[styles.textMain, { fontSize: FONTSIZE.size_24, maxWidth: "80%" }]}
+                  >
+                    {playlist?.title || "Unknown"}
+                  </Text>
 
-                <Skeleton {...SkeletonCommonProps} width={"80%"}>
-                  {loading ? null : (
-                    <Text
-                      numberOfLines={2}
-                      style={[styles.textMain, { fontSize: FONTSIZE.size_24, maxWidth: "80%" }]}
-                    >
-                      {playlist?.title || "Unknown"}
-                    </Text>
-                  )}
-                </Skeleton>
-                <Skeleton {...SkeletonCommonProps} width={100} height={18}>
-                  {loading ? null : (
-                    <Text
-                      numberOfLines={1}
-                      style={{
-                        textAlign: "center",
-                        fontSize: FONTSIZE.size_16,
-                        color: COLORS.Primary,
-                        fontFamily: FONTFAMILY.regular,
-                      }}
-                    >
+                  <Pressable
+                    onPress={() => navigation.navigate("Artist", { userId: playlist.user_id })}
+                  >
+                    <Text numberOfLines={1} style={[styles.textMain, { color: COLORS.Primary }]}>
                       {playlist?.author || "Unknown"}
                     </Text>
-                  )}
-                </Skeleton>
-                <View style={{ flexDirection: "row", gap: SPACING.space_4, alignItems: "center" }}>
-                  {playlist?.public === 0 ? (
-                    <FontAwesomeIcon icon={faLock} color={COLORS.White2} size={12} />
-                  ) : (
-                    <FontAwesomeIcon icon={faGlobe} color={COLORS.White2} size={12} />
-                  )}
+                  </Pressable>
 
-                  <Text style={styles.textExtra}>{totalCount} Songs</Text>
-                </View>
+                  <View
+                    style={{ flexDirection: "row", gap: SPACING.space_4, alignItems: "center" }}
+                  >
+                    {playlist?.public === 0 ? (
+                      <FontAwesomeIcon icon={faLock} color={COLORS.White2} size={12} />
+                    ) : (
+                      <FontAwesomeIcon icon={faGlobe} color={COLORS.White2} size={12} />
+                    )}
 
-                <View style={styles.groupButton}>
-                  <TouchableOpacity style={styles.buttonExtra}>
-                    <FontAwesomeIcon
-                      icon={faArrowUpFromBracket}
-                      size={18}
-                      style={{ color: COLORS.White2 }}
-                    />
+                    <Text style={styles.textExtra}>{totalCount} Songs</Text>
+                  </View>
 
-                    <Text
-                      style={{
-                        fontSize: FONTSIZE.size_12,
-                        color: COLORS.White2,
-                        fontFamily: FONTFAMILY.regular,
-                      }}
-                    >
-                      Share
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.button}>
-                    <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
-
-                    <Text style={styles.textButton}>Play</Text>
-                  </TouchableOpacity>
-
-                  {currentUser?.id == playlist?.user_id ? (
-                    <TouchableOpacity
-                      style={styles.buttonExtra}
-                      onPress={() => setIsOpenModalAddSong(!isOpenModalAddSong)}
-                    >
-                      <FontAwesomeIcon icon={faPlus} size={18} color={COLORS.White2} />
-                      <Text
-                        style={{
-                          fontSize: FONTSIZE.size_12,
-                          color: COLORS.White2,
-                          fontFamily: FONTFAMILY.regular,
-                        }}
-                      >
-                        Add
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={styles.buttonExtra}
-                      onPress={() => mutationLike.mutate(isLike)}
-                    >
+                  <View style={styles.groupButton}>
+                    <TouchableOpacity style={styles.buttonExtra}>
                       <FontAwesomeIcon
-                        icon={isLike ? faHeartSolid : faHeart}
+                        icon={faArrowUpFromBracket}
                         size={18}
-                        color={isLike ? COLORS.Red : COLORS.White2}
+                        style={{ color: COLORS.White2 }}
                       />
+
                       <Text
                         style={{
                           fontSize: FONTSIZE.size_12,
@@ -346,59 +300,117 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                           fontFamily: FONTFAMILY.regular,
                         }}
                       >
-                        Like
+                        Share
                       </Text>
                     </TouchableOpacity>
-                  )}
-                </View>
 
-                <Text style={styles.textDesc}>{playlist?.desc}</Text>
-              </View>
-            }
-            contentContainerStyle={{
-              paddingBottom: HEIGHT.playingCard + 50,
-            }}
-            style={{ width: "100%" }}
-            data={songs}
-            renderItem={({ item, index }) => (
-              <SongItem
-                song={item}
-                playlistId={currentUser.id === playlist.user_id ? playlist.id : null}
-                // inPlaylist={currentUser.id === playlist.user_id ? true : false}
-              />
-            )}
-            ListFooterComponent={
-              <View style={styles.wrapperFooter}>
-                <CategoryHeader
-                  title={"Related playlists"}
-                  style={{ paddingHorizontal: SPACING.space_10 }}
-                />
-                <View
-                  style={{
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    paddingHorizontal: SPACING.space_8,
-                  }}
-                >
-                  {playlists &&
-                    playlists?.map((playlist, index) => {
-                      if (playlist.id === playlistId) return <></>;
+                    <TouchableOpacity style={styles.button}>
+                      <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
+                      <Text style={styles.textButton}>Play</Text>
+                    </TouchableOpacity>
 
-                      return (
-                        <View
+                    {currentUser?.id == playlist?.user_id ? (
+                      <TouchableOpacity
+                        style={styles.buttonExtra}
+                        onPress={() => setIsOpenModalAddSong(!isOpenModalAddSong)}
+                      >
+                        <FontAwesomeIcon icon={faPlus} size={18} color={COLORS.White2} />
+                        <Text
                           style={{
-                            width: WINDOW_WIDTH / 2 - SPACING.space_8,
-                            padding: SPACING.space_8,
+                            fontSize: FONTSIZE.size_12,
+                            color: COLORS.White2,
+                            fontFamily: FONTFAMILY.regular,
                           }}
                         >
-                          <PlaylistCard playlist={playlist} />
-                        </View>
-                      );
-                    })}
+                          Add
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={styles.buttonExtra}
+                        onPress={() => mutationLike.mutate(isLike)}
+                      >
+                        <FontAwesomeIcon
+                          icon={isLike ? faHeartSolid : faHeart}
+                          size={18}
+                          color={isLike ? COLORS.Red : COLORS.White2}
+                        />
+                        <Text
+                          style={{
+                            fontSize: FONTSIZE.size_12,
+                            color: COLORS.White2,
+                            fontFamily: FONTFAMILY.regular,
+                          }}
+                        >
+                          Like
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  <Text style={styles.textDesc}>{playlist?.desc}</Text>
                 </View>
-              </View>
-            }
-          />
+              }
+              contentContainerStyle={{
+                paddingBottom: HEIGHT.playingCard + 50,
+              }}
+              style={{ width: "100%" }}
+              data={songs}
+              renderItem={({ item, index }) => (
+                <View key={index}>
+                  <SongItem
+                    song={item}
+                    loading={loadingSongs}
+                    playlistId={currentUser.id === playlist.user_id ? playlist.id : null}
+                  />
+                </View>
+              )}
+              ListFooterComponent={
+                <View style={styles.wrapperFooter}>
+                  <View
+                    style={{
+                      width: "100%",
+                      paddingHorizontal: SPACING.space_12,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: SPACING.space_8,
+                    }}
+                  >
+                    <Text style={[styles.textMain]}>About artist</Text>
+                    <ArtistItem userId={playlist?.user_id} />
+                  </View>
+                  <CategoryHeader
+                    title={"Related playlists"}
+                    style={{ paddingHorizontal: SPACING.space_10 }}
+                  />
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      paddingHorizontal: SPACING.space_8,
+                    }}
+                  >
+                    {playlists &&
+                      playlists?.map((playlist, index) => {
+                        if (playlist.id === playlistId) return <View key={index}></View>;
+
+                        return (
+                          <View
+                            key={index}
+                            style={{
+                              width: WINDOW_WIDTH / 2 - SPACING.space_8,
+                              padding: SPACING.space_8,
+                            }}
+                          >
+                            <PlaylistCard playlist={playlist} />
+                          </View>
+                        );
+                      })}
+                  </View>
+                </View>
+              }
+            />
+          )}
         </View>
       </View>
 
@@ -425,7 +437,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
           closeModal={() => setIsOpenModalAddSong(false)}
           height1={"94%"}
         >
-          <AddSong setIsOpen={setIsOpenModalAddSong} id={playlist.id} />
+          <AddSongFromPlaylist setIsOpen={setIsOpenModalAddSong} id={playlist.id} />
         </CustomBottomSheet>
       )}
 
@@ -443,121 +455,3 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
 };
 
 export default PlaylistDetail;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.Black1,
-  },
-  textMain: {
-    fontSize: FONTSIZE.size_16,
-    fontFamily: FONTFAMILY.medium,
-    textAlign: "center",
-    color: COLORS.White1,
-  },
-  textExtra: {
-    fontSize: FONTSIZE.size_14,
-    fontFamily: FONTFAMILY.regular,
-    color: COLORS.White2,
-  },
-  header: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    paddingHorizontal: SPACING.space_8,
-    paddingVertical: SPACING.space_8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "none",
-  },
-  buttonHeader: {
-    // backgroundColor: COLORS.Black2,
-    justifyContent: "center",
-    alignItems: "center",
-    width: 34,
-    height: 34,
-    borderRadius: 25,
-  },
-  iconButtonHeader: {
-    color: COLORS.White1,
-    fontSize: FONTSIZE.size_24,
-  },
-  titleHeader: {
-    fontSize: FONTSIZE.size_16,
-    fontFamily: FONTFAMILY.medium,
-    textAlign: "center",
-    color: COLORS.White1,
-    transform: [{ translateY: 20 }],
-  },
-  wrapper: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: SPACING.space_12,
-    gap: SPACING.space_8,
-    // paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
-  },
-  wrapperHeader: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: SPACING.space_12,
-    gap: SPACING.space_8,
-    marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
-  },
-  wrapperImage: {
-    width: 300,
-    height: 300,
-    overflow: "hidden",
-    borderRadius: BORDERRADIUS.radius_8,
-  },
-  image: {
-    width: 300,
-    height: 300,
-    aspectRatio: 1,
-    objectFit: "cover",
-    transformOrigin: "bottom",
-    backgroundColor: COLORS.Black2,
-  },
-  groupButton: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: SPACING.space_24,
-  },
-  button: {
-    width: 160,
-    // flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.Primary,
-    paddingHorizontal: SPACING.space_14,
-    paddingVertical: SPACING.space_8,
-    borderRadius: 25,
-    gap: SPACING.space_8,
-  },
-  buttonExtra: {
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 2,
-    width: 40,
-  },
-  textButton: {
-    color: COLORS.White1,
-    fontSize: FONTSIZE.size_16,
-    fontFamily: FONTFAMILY.medium,
-  },
-  textDesc: {
-    fontSize: FONTSIZE.size_14,
-    fontFamily: FONTFAMILY.regular,
-    paddingHorizontal: SPACING.space_12,
-    color: COLORS.White2,
-    width: "100%",
-    marginBottom: SPACING.space_12,
-  },
-  wrapperFooter: {
-    // paddingHorizontal: SPACING.space_10,
-  },
-});

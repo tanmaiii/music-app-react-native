@@ -24,7 +24,7 @@ const statusBarHeight = Constants.statusBarHeight;
 import * as ImagePicker from "expo-image-picker";
 import { imageApi, userApi } from "../../apis";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 
 interface AccountProps {}
 
@@ -112,14 +112,10 @@ const EditProfile = (props: AccountProps) => {
       formData.append("image", file);
 
       const res = await imageApi.upload(formData, token);
-      console.log(res.image);
-
-      const handleUpdate = async () => {
+      if (res.image)
         await userApi.update(token, {
           image_path: res.image,
         });
-      };
-      handleUpdate();
     } catch (error) {
       console.error("Lỗi khi tải ảnh lên server:", error);
     }

@@ -11,7 +11,7 @@ import {
   Keyboard,
   ActivityIndicator,
 } from "react-native";
-import { NavigationProp } from "../../../navigation/TStack";
+import { NavigationProp } from "../../../navigators/TStack";
 import { Platform } from "react-native";
 import styles from "./style";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -141,7 +141,7 @@ const ItemPassowrd = (props: ItemNameProps) => {
   };
 
   const handleSubmit = async () => {
-    if (stateNewPass.err !== "" || stateReNewPass.err !== "") return;
+    if (stateNewPass.err !== "" || stateReNewPass.err !== "" || stateNewPass.err !== "") return;
     if (stateOldPass.value === "")
       return setStateOldPass((prevState) => ({
         ...prevState,

@@ -6,7 +6,7 @@ import IMAGES from "../../constants/images";
 import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import apiConfig from "../../configs/axios/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
@@ -19,7 +19,6 @@ interface SongCardProps {
 
 const SongCard = (props: SongCardProps) => {
   const { song, loading = false } = props;
-  const linkTo = useLinkTo();
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {

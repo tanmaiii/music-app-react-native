@@ -4,15 +4,12 @@ import { Text, View, StyleSheet, Modal } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { faCompactDisc, faMusic } from "@fortawesome/free-solid-svg-icons";
-import CustomBottomSheet from "../CustomBottomSheet";
-import AddPlaylist from "./AddPlaylist";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
-interface AddSongPlaylistProps {
+interface CreateSongPlaylistProps {
   setAddPlaylist: (boolean) => void;
 }
 
-const AddSongPlaylist = ({ setAddPlaylist }: AddSongPlaylistProps) => {
+const CreateSongPlaylist = ({ setAddPlaylist }: CreateSongPlaylistProps) => {
   return (
     <>
       <View style={styles.container}>
@@ -50,7 +47,7 @@ const AddSongPlaylist = ({ setAddPlaylist }: AddSongPlaylistProps) => {
   );
 };
 
-export default AddSongPlaylist;
+export default CreateSongPlaylist;
 
 const styles = StyleSheet.create({
   container: {

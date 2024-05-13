@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as React from "react";
 import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from "react-native";
-import { NavigationProp, RootRouteProps } from "../../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../../navigators/TStack";
 import { Platform } from "react-native";
 import styles from "./style";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -22,21 +22,16 @@ const ItemName = (props: ItemNameProps) => {
   const [openModal, setOpenModal] = React.useState(false);
   const [name, setName] = React.useState<string>("");
   const [value, setValue] = React.useState<string>("");
-  const { token } = useAuth();
+  const { token, currentUser } = useAuth();
   const { setToastMessage } = useToast();
   const route = useRoute<RootRouteProps<"UpdateItem">>();
   const params = route.params;
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
-    const getName = async () => {
-      const res = await userApi.getMe(token);
-      setName(res.name);
-      setValue(res.name);
-    };
-    console.log("get", name);
-    getName();
-  }, [params.type]);
+    setName(currentUser.name);
+    setValue(currentUser.name);
+  }, [currentUser]);
 
   const handleOpenModal = () => {
     if (value.trim().length > 255) {

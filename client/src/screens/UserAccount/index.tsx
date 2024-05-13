@@ -30,7 +30,7 @@ import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import IMAGES from "../../constants/images";
 import CustomModal from "../../components/CustomModal";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import { userApi } from "../../apis";
 import numeral from "numeral";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

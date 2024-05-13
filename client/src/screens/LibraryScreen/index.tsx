@@ -14,17 +14,14 @@ import styles from "./style";
 import { Ionicons } from "@expo/vector-icons";
 import IMAGES from "../../constants/images";
 import ItemHorizontal from "../../components/ItemHorizontal";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { COLORS, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ArtistCard from "../../components/ArtistCard";
-import { WINDOW_WIDTH } from "../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart, faMusic, faPlus, faSort, faThumbTack } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
-import { AddSongPlaylist, AddPlaylist } from "../../components/ItemModal";
+import { CreateSongPlaylist, CreatePlaylist } from "../../components/ItemModal";
 import { useAuth } from "../../context/AuthContext";
 import { ResFavourite, TPlaylist, TUser } from "../../types";
 import { favouriteApi, playlistApi, userApi } from "../../apis";
@@ -100,7 +97,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           height1={heightModal}
         >
           <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
-            <AddSongPlaylist setAddPlaylist={setIsOpenModalAddPlaylist} />
+            <CreateSongPlaylist setAddPlaylist={setIsOpenModalAddPlaylist} />
           </View>
         </CustomBottomSheet>
       )}
@@ -113,7 +110,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           enableClose={false}
           border={false}
         >
-          <AddPlaylist setAddPlaylist={setIsOpenModalAddPlaylist} />
+          <CreatePlaylist setCreatePlaylist={setIsOpenModalAddPlaylist} />
         </CustomBottomSheet>
       )}
     </>

@@ -9,7 +9,6 @@ interface ButtonSwitchProps {
 }
 
 const ButtonSwitch = ({ isOn, setIsOn }: ButtonSwitchProps) => {
-  // const [isOn, setIsOn] = React.useState(false);
 
   return (
     <View style={styles.container}>

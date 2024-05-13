@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     height: WINDOW_HEIGHT,
   },
   opacity: {
-    backgroundColor: COLORS.WhiteRGBA15,
+    backgroundColor: "rgba(0,0,0,0.6)",
     justifyContent: "center",
     alignItems: "center",
     width: "100%",

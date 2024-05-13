@@ -24,7 +24,7 @@ import { TSong, TUser, TPlaylist } from "../../types";
 import { Skeleton } from "moti/skeleton";
 import ArtistCard from "../../components/ArtistCard";
 import PlaylistCard from "../../components/PlaylistCard";
-import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Constants from "expo-constants";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
@@ -46,6 +46,7 @@ import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
 import { usePlaying } from "../../context/PlayingContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { LinearGradient } from "expo-linear-gradient";
 
 const HEIGHT_AVATAR = 400;
 
@@ -248,23 +249,12 @@ const ArtistDetail = (props: ArtistDetailProps) => {
 
         <View>
           <Animated.View style={[styles.avatar, { height: HEIGHT_AVATAR }, opacityAnimation]}>
-            <Skeleton
-              height={"100%"}
-              width={"100%"}
-              colorMode="dark"
-              backgroundColor={COLORS.Black2}
-            >
-              {loading ? null : (
-                <Image
-                  style={styles.imageAvatar}
-                  source={
-                    artist?.image_path
-                      ? { uri: apiConfig.imageURL(artist.image_path) }
-                      : IMAGES.AVATAR
-                  }
-                />
-              )}
-            </Skeleton>
+            <Image
+              style={styles.imageAvatar}
+              source={
+                artist?.image_path ? { uri: apiConfig.imageURL(artist.image_path) } : IMAGES.AVATAR
+              }
+            />
           </Animated.View>
 
           <ScrollView
@@ -283,10 +273,18 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             scrollEventThrottle={16}
             style={{}}
           >
-            <View style={[{ height: HEIGHT_AVATAR }]}>
+            {/* <View style={[{ height: HEIGHT_AVATAR }]}>
               <Text numberOfLines={1} style={styles.avatarTitle}>
                 {artist?.name}
               </Text>
+            </View> */}
+
+            <View style={[{ height: HEIGHT_AVATAR }]}>
+              <LinearGradient colors={["transparent", "rgba(0,0,0,0.4)"]} style={[{ height: "100%" }]}>
+                <Text numberOfLines={1} style={styles.avatarTitle}>
+                  {artist?.name}
+                </Text>
+              </LinearGradient>
             </View>
 
             <View style={[styles.body]}>
@@ -437,6 +435,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
           </ScrollView>
         </View>
       </View>
+
       {isOpenModal && (
         <CustomBottomSheet
           isOpen={isOpenModal}

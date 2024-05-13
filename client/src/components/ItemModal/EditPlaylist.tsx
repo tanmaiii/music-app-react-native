@@ -26,14 +26,14 @@ import ButtonSwitch from "../ButtonSwitch/ButtonSwitch";
 import { TPlaylist, TSong } from "../../types";
 import { IMAGES } from "../../constants";
 import Constants from "expo-constants";
-import { useQuery } from "@tanstack/react-query";
-import { imageApi, songApi } from "../../apis";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { imageApi, playlistApi, songApi } from "../../apis";
 import { apiConfig } from "../../configs";
 const statusBarHeight = Constants.statusBarHeight;
 import * as ImagePicker from "expo-image-picker";
 
 import { useAuth } from "../../context/AuthContext";
-import axios from "axios";
+import { useToast } from "../../context/ToastContext";
 
 interface EditPlaylistProps {
   setIsOpen: (boolean) => void;
@@ -41,10 +41,23 @@ interface EditPlaylistProps {
 }
 
 const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
-  const [name, setName] = React.useState<string>(playlist.title);
+  const { setToastMessage } = useToast();
   const [file, setFile] = React.useState<any>("");
   const [isPrivate, setIsPrivate] = React.useState<boolean>(playlist.public === 1 ? false : true);
   const { token } = useAuth();
+  const queryClient = useQueryClient();
+  const [newPlaylist, setNewPlaylist] = React.useState<TPlaylist>({
+    title: playlist.title,
+    public: playlist.public,
+  });
+
+  const updatePlaylist = (newValue: Partial<TPlaylist>) => {
+    setNewPlaylist((prevState) => ({
+      ...prevState,
+      ...newValue,
+    }));
+    console.log(newPlaylist);
+  };
 
   const handleCloseModal = () => {
     setIsOpen(false);
@@ -128,19 +141,34 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
 
   const handleSave = async () => {
     const formData = new FormData();
-
-    if (!file) return;
-
-    console.log(file);
-
-    formData.append("image", file);
     try {
-      const res = await imageApi.upload(formData, token);
-      console.log(res);
+      if (file) {
+        const uploadImage = async () => {
+          formData.append("image", file);
+          const res = await imageApi.upload(formData, token);
+          if (res.image) {
+            await playlistApi.updatePlaylist(token, playlist.id, { image_path: res.image });
+          }
+        };
+        uploadImage();
+      }
+
+      await playlistApi.updatePlaylist(token, playlist.id, newPlaylist);
+      setToastMessage("Update playlist successfully");
+      setIsOpen(false);
     } catch (error) {
       console.log(error.response.data);
     }
   };
+
+  const mutation = useMutation({
+    mutationFn: handleSave,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["playlist", playlist.id] }),
+  });
+
+  React.useEffect(() => {
+    updatePlaylist({ public: isPrivate ? 0 : 1 });
+  }, [isPrivate]);
 
   return (
     <View style={styles.container}>
@@ -152,7 +180,7 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
           <View style={{ flex: 1, alignItems: "center" }}>
             <Text style={[styles.textMain]}>Edit playlist</Text>
           </View>
-          <TouchableOpacity onPress={handleSave}>
+          <TouchableOpacity onPress={() => mutation.mutate()}>
             <Text style={[styles.textExtra, { color: COLORS.Primary }]}>Save</Text>
           </TouchableOpacity>
         </View>
@@ -169,8 +197,14 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
             <View style={styles.imageBox}>
               <TouchableOpacity style={styles.imageBoxWrapper}>
                 <Image
-                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
-                  source={file ? { uri: file.uri } : IMAGES.PLAYLIST}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  source={
+                    file
+                      ? { uri: file.uri }
+                      : playlist?.image_path
+                      ? { uri: apiConfig.imageURL(playlist.image_path) }
+                      : IMAGES.PLAYLIST
+                  }
                 />
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonChange} onPress={showOptions}>
@@ -180,10 +214,10 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
             <View style={styles.inputBox}>
               <Text style={styles.textExtra}>Name playlist</Text>
               <BottomSheetTextInput
-                // ref={textInputRef}
-                value={name}
+                defaultValue={playlist.title}
+                value={newPlaylist.title}
                 style={styles.textInput}
-                onChangeText={(text) => setName(text)}
+                onChangeText={(text) => updatePlaylist({ title: text })}
               />
             </View>
             <View
@@ -206,37 +240,12 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
   );
 };
 
-function MovableSong({ song, id, positions }: { song: TSong; id: string; positions: object }) {
-  // const gestureHandler = useAnimatedGestureHandler({
-  //   onStart() {},
-  //   onActive() {},
-  //   onFinish() {},
-  // });
-
-  console.log(positions);
-
-  return (
-    <View
-      style={{
-        position: "absolute",
-        left: 0,
-        right: 0,
-        // top: positions[id] * SONG_HEIGHT,
-      }}
-    >
-      <SongItem song={song} />
-    </View>
-  );
-}
-
 type TSongItem = {
   song: TSong;
 };
 
 const SongItem = (props: TSongItem) => {
   const { song } = props;
-  const [openModal, setOpenModal] = React.useState(false);
-
   const [isDeleted, setIsDeleted] = React.useState(false);
   const fadeAnim = new Animated.Value(1);
   const slideAnim = new Animated.Value(1);
@@ -345,6 +354,7 @@ const styles = StyleSheet.create({
     height: 140,
     borderRadius: BORDERRADIUS.radius_8,
     overflow: "hidden",
+    backgroundColor: COLORS.Black2,
   },
   buttonChange: {
     paddingHorizontal: SPACING.space_10,

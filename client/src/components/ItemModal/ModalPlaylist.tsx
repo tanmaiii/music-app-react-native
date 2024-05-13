@@ -1,30 +1,28 @@
-import * as React from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity, Share, Modal } from "react-native";
-import { IMAGES } from "../../constants";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import {
+  faFlag,
   faHeart,
-  faMusic,
   faPenToSquare,
   faPlusCircle,
   faShare,
   faTrashCan,
-  faFlag,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { TPlaylist } from "../../types";
-import apiConfig from "../../configs/axios/apiConfig";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { playlistApi } from "../../apis";
-import { useAuth } from "../../context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
-import CustomBottomSheet from "../CustomBottomSheet";
-import AddSong from "./AddSong";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as React from "react";
+import { Image, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { TouchableHighlight } from "react-native-gesture-handler";
+import { playlistApi } from "../../apis";
+import apiConfig from "../../configs/axios/apiConfig";
+import { IMAGES } from "../../constants";
+import { useAuth } from "../../context/AuthContext";
+import { NavigationProp } from "../../navigators/TStack";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { TPlaylist } from "../../types";
+import CustomModal from "../CustomModal";
 
 interface ModalSongProps {
   playlist?: TPlaylist;
@@ -37,8 +35,7 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: 
   const queryClient = useQueryClient();
   const { token, currentUser } = useAuth();
   const navigation = useNavigation<NavigationProp>();
-
-  // const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
+  const [isModalDeleted, setIsModalDeleted] = React.useState<boolean>(false);
 
   const handleShare = async () => {
     try {
@@ -76,6 +73,34 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: 
     },
   });
 
+  const mutationDelete = useMutation({
+    mutationFn: async () => {
+      try {
+        await playlistApi.deletePlaylist(token, playlist.id);
+      } catch (error) {
+        console.log(error.response.data);
+      }
+    },
+    onSuccess: () => {
+      setOpenModal(false);
+      queryClient.invalidateQueries({
+        queryKey: ["playlist", playlist.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["playlists", currentUser.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["all-favorites"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["like-playlist", playlist.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["playlists-favorites"],
+      });
+    },
+  });
+
   const handleGoArtist = () => {
     setOpenModal(false);
     navigation.navigate("Artist", { userId: playlist?.user_id });
@@ -91,14 +116,7 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: 
                 ? { uri: apiConfig.imageURL(playlist.image_path) }
                 : IMAGES.PLAYLIST
             }
-            style={{
-              height: 50,
-              width: 50,
-              aspectRatio: 1,
-              objectFit: "cover",
-              overflow: "hidden",
-              borderRadius: BORDERRADIUS.radius_4,
-            }}
+            style={styles.headerImage}
           />
           <View style={styles.headerDesc}>
             <Text style={styles.textMain}>{playlist.title}</Text>
@@ -132,22 +150,28 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: 
           <Item icon={faPenToSquare} title="Edit playlist" itemFunc={() => setIsOpenEdit(true)} />
         )}
         {playlist?.user_id === currentUser.id && (
-          <Item icon={faTrashCan} title="Delete playlist" itemFunc={() => console.log("PRESS")} />
+          <Item
+            icon={faTrashCan}
+            title="Delete playlist"
+            itemFunc={() => setIsModalDeleted(true)}
+          />
         )}
         <Item icon={faUser} title="View artist" itemFunc={() => handleGoArtist()} />
         <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
       </View>
 
-      {/* {isOpenModalAddSong && (
-        <CustomBottomSheet
-          isOpen={true}
-          closeModal={() => setIsOpenModalAddSong(false)}
-          height1={"100%"}
-          border={false}
+      {isModalDeleted && (
+        <CustomModal
+          isOpen={isModalDeleted}
+          setIsOpen={() => setIsModalDeleted(false)}
+          modalFunction={() => mutationDelete.mutate()}
+          header="Delete playlist"
         >
-          <AddSong />
-        </CustomBottomSheet>
-      )} */}
+          <Text
+            style={styles.textMain}
+          >{`Are you sure you want to delete this playlist ${playlist.title}?`}</Text>
+        </CustomModal>
+      )}
     </View>
   );
 };
@@ -199,6 +223,16 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: "row",
     gap: SPACING.space_8,
+  },
+  headerImage: {
+    height: 50,
+    width: 50,
+    aspectRatio: 1,
+    objectFit: "cover",
+    overflow: "hidden",
+    borderRadius: BORDERRADIUS.radius_4,
+    borderWidth: 0.6,
+    borderColor: COLORS.WhiteRGBA15,
   },
   headerDesc: {
     justifyContent: "center",

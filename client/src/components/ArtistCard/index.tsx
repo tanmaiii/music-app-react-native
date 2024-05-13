@@ -5,7 +5,7 @@ import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
 import { Skeleton } from "moti/skeleton";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { TUser } from "../../types";
 import apiConfig from "../../configs/axios/apiConfig";

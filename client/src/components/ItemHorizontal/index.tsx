@@ -15,7 +15,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import TouchableScale from "../TouchableScale";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import { ResFavourite, TPlaylist, TUser } from "../../types";
 import apiConfig from "../../configs/axios/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";

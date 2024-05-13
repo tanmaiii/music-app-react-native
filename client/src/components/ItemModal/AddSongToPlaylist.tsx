@@ -23,7 +23,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { FlatList, TextInput, TouchableHighlight } from "react-native-gesture-handler";
 import { TPlaylist, TSong } from "../../types";
 import CustomBottomSheet from "../CustomBottomSheet";
-import AddPlaylist from "./AddPlaylist";
+import CreatePlaylist from "./CreatePlaylist";
 import Constants from "expo-constants";
 import { playlistApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
@@ -38,10 +38,8 @@ const statusBarHeight = Constants.statusBarHeight;
 
 const SkeletonCommonProps = {
   colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1000,
-  },
+  type: "timing",
+  duration: 1000,
   backgroundColor: COLORS.Black3,
 } as const;
 
@@ -154,7 +152,7 @@ const AddSongToPlaylist = ({ songId }: AddSongToPlaylistProps) => {
           enableClose={false}
           border={false}
         >
-          <AddPlaylist setAddPlaylist={setIsOpenModal} />
+          <CreatePlaylist setCreatePlaylist={setIsOpenModal} />
         </CustomBottomSheet>
       )}
     </>
@@ -338,7 +336,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    objectFit: "contain",
+    objectFit: "cover",
     borderRadius: BORDERRADIUS.radius_8,
     backgroundColor: COLORS.Black3,
     borderColor: COLORS.WhiteRGBA15,

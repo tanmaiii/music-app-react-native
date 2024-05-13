@@ -9,7 +9,7 @@ import { TSong } from "../../types";
 import { favouriteApi, songApi } from "../../apis";
 import { useAuth } from "../../context/AuthContext";
 import { useRoute } from "@react-navigation/native";
-import { RootRouteProps } from "../../navigation/TStack";
+import { RootRouteProps } from "../../navigators/TStack";
 import { useQuery } from "@tanstack/react-query";
 import CustomInput from "../CustomInput";
 import { TouchableOpacity } from "react-native-gesture-handler";

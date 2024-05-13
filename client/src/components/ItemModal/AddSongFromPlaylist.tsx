@@ -35,19 +35,17 @@ const statusBarHeight = Constants.statusBarHeight;
 
 const SkeletonCommonProps = {
   colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1000,
-  },
+  type: "timing",
+  duration: 1000,
   backgroundColor: COLORS.Black3,
 } as const;
 
-interface AddSongProps {
+interface AddSongFromPlaylistProps {
   id: string;
   setIsOpen: (boolean) => void;
 }
 
-const AddSong = ({ setIsOpen, id }: AddSongProps) => {
+const AddSongFromPlaylist = ({ setIsOpen, id }: AddSongFromPlaylistProps) => {
   const textInputRef = React.useRef<TextInput>();
   const queryClient = useQueryClient();
   const [songs, setSongs] = React.useState<TSong[]>(null);
@@ -129,7 +127,7 @@ const AddSong = ({ setIsOpen, id }: AddSongProps) => {
   );
 };
 
-export default AddSong;
+export default AddSongFromPlaylist;
 
 type TSongItem = {
   song: TSong;

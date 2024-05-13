@@ -15,9 +15,9 @@ import {
 } from "react-native";
 import { usePlaying } from "../../context/PlayingContext";
 import IMAGES from "../../constants/images";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
-import { useFocusEffect, useLinkTo, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import styles from "./style";
 import { useAuth } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -29,26 +29,53 @@ import {
   faEye,
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Constants from "expo-constants";
+import { TStateAuth } from "../../types";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface LoginScreenProps {}
 
 const LoginScreen = (props: LoginScreenProps) => {
   const navigation = useNavigation<NavigationProp>();
+  const { currentUser, login } = useAuth();
   const { setOpenBarSong } = usePlaying();
-  const [err, setErr] = React.useState<string | null>("");
-  const [isFocusedEmail, setIsFocusedEmail] = React.useState<boolean>(false);
-  const [isFocusedPassword, setIsFocusedPassword] = React.useState<boolean>(false);
   const inputEmailRef = React.useRef<TextInput>(null);
   const inputPasswordRef = React.useRef<TextInput>(null);
-  const [email, setEmail] = React.useState<string>("");
-  const [password, setPassword] = React.useState<string>("");
-  const { currentUser, setCurrentUser, login } = useAuth();
+
+  const [err, setErr] = React.useState<string | null>("");
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [viewPassword, setViewPassword] = React.useState<boolean>(false);
+
+  const [stateEmail, setStateEmail] = React.useState<TStateAuth>({
+    value: "",
+    err: "",
+    loading: false,
+    focus: false,
+    view: false,
+  });
+
+  const [statePassword, setStatePassword] = React.useState<TStateAuth>({
+    value: "",
+    err: "",
+    loading: false,
+    focus: false,
+    view: false,
+  });
+
+  const updateStateEmail = (newValue: Partial<TStateAuth>) => {
+    setStateEmail((prevState) => ({
+      ...prevState,
+      ...newValue,
+    }));
+  };
+
+  const updateStatePassword = (newValue: Partial<TStateAuth>) => {
+    setStatePassword((prevState) => ({
+      ...prevState,
+      ...newValue,
+    }));
+  };
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -63,9 +90,9 @@ const LoginScreen = (props: LoginScreenProps) => {
   const HandlePress = async () => {
     setErr("");
     setLoading(true);
-    if (email.trim() !== "" && password.trim() !== "") {
+    if (stateEmail.value !== "" && statePassword.value !== "") {
       try {
-        await login(email, password);
+        await login(stateEmail.value, statePassword.value);
         setLoading(false);
       } catch (err: any) {
         console.log(err.response.data.conflictError);
@@ -153,12 +180,14 @@ const LoginScreen = (props: LoginScreenProps) => {
                           <TextInput
                             ref={inputEmailRef}
                             style={styles.textInput}
-                            onFocus={() => setIsFocusedEmail(true)}
-                            onBlur={() => email.trim() === "" && setIsFocusedEmail(false)}
-                            value={email}
-                            onChangeText={(text) => setEmail(text.trim())}
+                            onFocus={() => updateStateEmail({ focus: true })}
+                            onBlur={() =>
+                              stateEmail.value === "" && updateStateEmail({ focus: false })
+                            }
+                            value={stateEmail.value}
+                            onChangeText={(text) => updateStateEmail({ value: text.trim() })}
                           />
-                          <Text style={[styles.titleBox, isFocusedEmail && styles.titleBoxMove]}>
+                          <Text style={[styles.titleBox, stateEmail.focus && styles.titleBoxMove]}>
                             Email
                           </Text>
                         </Pressable>
@@ -173,14 +202,19 @@ const LoginScreen = (props: LoginScreenProps) => {
 
                           <TextInput
                             style={styles.textInput}
-                            secureTextEntry={viewPassword ? false : true} // Hiển thị dưới dạng mật khẩu
+                            value={statePassword.value}
+                            secureTextEntry={statePassword.view ? false : true} // Hiển thị dưới dạng mật khẩu
                             ref={inputPasswordRef}
-                            onFocus={() => setIsFocusedPassword(true)}
-                            onBlur={() => password.trim() === "" && setIsFocusedPassword(false)}
-                            onChangeText={(text) => setPassword(text.trim())}
+                            onFocus={() => updateStatePassword({ focus: true })}
+                            onBlur={() =>
+                              statePassword.value === "" && updateStatePassword({ focus: false })
+                            }
+                            onChangeText={(text) => updateStatePassword({ value: text.trim() })}
                           />
-                          <TouchableOpacity onPress={() => setViewPassword(!viewPassword)}>
-                            {viewPassword ? (
+                          <TouchableOpacity
+                            onPress={() => updateStatePassword({ view: !statePassword.view })}
+                          >
+                            {statePassword.view ? (
                               <FontAwesomeIcon
                                 icon={faEyeSlash}
                                 size={20}
@@ -194,7 +228,9 @@ const LoginScreen = (props: LoginScreenProps) => {
                               />
                             )}
                           </TouchableOpacity>
-                          <Text style={[styles.titleBox, isFocusedPassword && styles.titleBoxMove]}>
+                          <Text
+                            style={[styles.titleBox, statePassword.focus && styles.titleBoxMove]}
+                          >
                             Password
                           </Text>
                         </Pressable>

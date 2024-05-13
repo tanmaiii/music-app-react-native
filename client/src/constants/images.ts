@@ -8,6 +8,7 @@ const google = require("../assets/images/google.png");
 const song = require("../assets/images/song2.png");
 const playlist = require("../assets/images/playlist2.png");
 const gradient = require("../assets/images/gradient-black.png");
+const splash = require("../assets/images/Animation.json");
 
 const IMAGES = {
   POSTER: poster,
@@ -19,7 +20,8 @@ const IMAGES = {
   BG: background,
   AI: ai,
   GOOGLE: google,
-  GRADIENT: gradient
+  GRADIENT: gradient,
+  SPLASH: splash,
 };
 
 export default IMAGES;

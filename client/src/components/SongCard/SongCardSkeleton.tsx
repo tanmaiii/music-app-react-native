@@ -1,16 +1,13 @@
 import * as React from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { TSong } from "../../types/song.type";
 import { Skeleton } from "moti/skeleton";
 import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1500,
-  },
+  duration: 1500,
+  type: "timing",
   backgroundColor: COLORS.Black2,
 } as const;
 
@@ -23,8 +20,8 @@ const SongCardSkeleton = () => {
         </View>
 
         <View style={{ gap: SPACING.space_4 }}>
-          <Skeleton height={18} width={"100%"} {...SkeletonCommonProps} radius={4} />
-          <Skeleton height={14} width={"100%"} {...SkeletonCommonProps} radius={4} />
+          <Skeleton {...SkeletonCommonProps} height={18} width={"100%"} />
+          <Skeleton {...SkeletonCommonProps} height={14} width={"100%"} />
         </View>
       </View>
     </TouchableOpacity>

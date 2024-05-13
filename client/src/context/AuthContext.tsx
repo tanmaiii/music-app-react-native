@@ -12,6 +12,7 @@ interface IAuthContext {
   setCurrentUser: (user: TUser) => void;
   logout: () => void;
   login: (email: string, password: string) => void;
+  signup: (name: string, email: string, password: string) => void;
   token: string | null;
   loadingAuth: boolean;
 }
@@ -31,7 +32,6 @@ export const AuthContextProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<TUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loadingAuth, setLoadingAuth] = useState<boolean>(false);
-  const queryClient = useQueryClient();
 
   const logout = async () => {
     setCurrentUser(null);
@@ -40,9 +40,7 @@ export const AuthContextProvider = ({ children }: Props) => {
   };
 
   const login = async (email: string, password: string) => {
-    setLoadingAuth(true);
     const res = await authApi.signin(email, password);
-    setLoadingAuth(false);
     if (res) {
       setCurrentUser(res.data);
       setToken(res.token);
@@ -51,6 +49,7 @@ export const AuthContextProvider = ({ children }: Props) => {
 
   const signup = async (name: string, email: string, password: string) => {
     const res = await authApi.signup(name, email, password);
+    return res;
   };
 
   const getInfo = async () => {
@@ -72,7 +71,6 @@ export const AuthContextProvider = ({ children }: Props) => {
     queryKey: ["currentUser"],
     queryFn: getInfo,
   });
-
 
   useEffect(() => {
     const getUserStorage = async () => {
@@ -116,6 +114,7 @@ export const AuthContextProvider = ({ children }: Props) => {
     token,
     logout,
     login,
+    signup,
     loadingAuth,
   };
 

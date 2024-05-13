@@ -9,7 +9,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from "react-native";
-import { NavigationProp } from "../../../navigation/TStack";
+import { NavigationProp } from "../../../navigators/TStack";
 import { Platform } from "react-native";
 import styles from "./style";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";

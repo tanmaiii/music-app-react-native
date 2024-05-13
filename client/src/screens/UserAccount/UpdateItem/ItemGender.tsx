@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as React from "react";
 import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from "react-native";
-import { NavigationProp, RootRouteProps } from "../../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../../navigators/TStack";
 import { Platform } from "react-native";
 import styles from "./style";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -18,25 +18,17 @@ const statusBarHeight = Constants.statusBarHeight;
 
 const ItemGender = () => {
   const { setToastMessage } = useToast();
-  const { token } = useAuth();
+  const { token, currentUser } = useAuth();
   const navigation = useNavigation<NavigationProp>();
   const queryClient = useQueryClient();
   const route = useRoute<RootRouteProps<"UpdateItem">>();
-  const params = route.params;
-
   const [selected, setSelected] = React.useState("");
   const [openModal, setOpenModal] = React.useState<boolean>(false);
-  const [gender, setGender] = React.useState<string>("");
   const dataGender = ["Male", "Female", ""];
 
   React.useEffect(() => {
-    const get = async () => {
-      const res = await userApi.getMe(token);
-      setGender(res.gender);
-      setSelected(res.gender);
-    };
-    get();
-  }, [params.type]);
+    setSelected(currentUser.gender ? currentUser.gender : "");
+  }, [currentUser]);
 
   const updateUser = async () => {
     try {
@@ -74,8 +66,8 @@ const ItemGender = () => {
             <Text style={[styles.titleHeader]}>Gender</Text>
 
             <TouchableOpacity
-              style={[styles.buttonHeader, gender.trim() == selected.trim() && { opacity: 0.6 }]}
-              disabled={gender.trim() == selected.trim()}
+              style={[styles.buttonHeader, currentUser?.gender == selected && { opacity: 0.6 }]}
+              disabled={currentUser.gender === selected}
               onPress={() => setOpenModal(!openModal)}
             >
               <Text style={[styles.textSave]}>Save</Text>

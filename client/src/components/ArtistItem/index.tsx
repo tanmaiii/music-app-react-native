@@ -3,7 +3,7 @@ import * as React from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import { TUser } from "../../types";
 import { userApi } from "../../apis";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";

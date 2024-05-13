@@ -161,6 +161,10 @@ const styles = StyleSheet.create({
     color: COLORS.Primary,
     textAlign: "right",
   },
+  buttonView: {
+    // backgroundColor: COLORS.Primary,
+    padding: SPACING.space_4,
+  },
   button: {
     backgroundColor: COLORS.Primary,
     borderRadius: BORDERRADIUS.radius_14,

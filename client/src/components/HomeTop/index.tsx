@@ -5,7 +5,7 @@ import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import TouchableScale from "../TouchableScale";
 import { Skeleton } from "moti/skeleton";
-import { NavigationProp } from "../../navigation/TStack";
+import { NavigationProp } from "../../navigators/TStack";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../context/AuthContext";
@@ -36,22 +36,22 @@ const HomeTop = ({ data, loading }: HomeTopProps) => {
       <View style={[styles.container]}>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps}></Skeleton>
+            <Skeleton height={"100%"} width={"100%"} radius={0}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps}></Skeleton>
+            <Skeleton height={"100%"} width={"100%"} radius={0}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps}></Skeleton>
+            <Skeleton height={"100%"} width={"100%"} radius={0}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} radius={0} {...SkeletonCommonProps}></Skeleton>
+            <Skeleton height={"100%"} width={"100%"} radius={0}></Skeleton>
           </View>
         </View>
       </View>

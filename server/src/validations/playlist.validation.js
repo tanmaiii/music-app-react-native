@@ -2,10 +2,9 @@ import Joi from "joi";
 
 const bodySchema = {
   body: Joi.object().keys({
-    title: Joi.string().min(0).max(255).required().messages({
+    title: Joi.string().min(0).max(255).messages({
       "string.base": "Title is error",
       "string.max": "Title must be less than or equal to 255 characters long",
-      "any.required": "Title is required",
     }),
     desc: Joi.string().min(0).max(500),
     genre_id: Joi.number(),

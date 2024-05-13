@@ -1,28 +1,23 @@
-import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer, useLinkTo } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import TabNavigator, { StackAuth } from "./src/navigation";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { NavigationContainer } from "@react-navigation/native";
+import { StatusBar, StyleSheet, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import PlayingCard from "./src/components/PlayingCard";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "./src/theme/theme";
 import React, { useEffect, useState } from "react";
-import LottieView from "lottie-react-native";
-import { RootStackParamList } from "./src/navigation/TStack";
-import { QueryClient, QueryClientProvider, focusManager } from "@tanstack/react-query";
+import { COLORS, FONTFAMILY } from "./src/theme/theme";
 
-import { PlayingContextProvider } from "./src/context/PlayingContext";
-import { AuthContextProvider, useAuth } from "./src/context/AuthContext";
-import { ToastContextProvider } from "./src/context/ToastContext";
 import { AudioContextProvider } from "./src/context/AudioContext";
+import { AuthContextProvider } from "./src/context/AuthContext";
+import { PlayingContextProvider } from "./src/context/PlayingContext";
+import { ToastContextProvider } from "./src/context/ToastContext";
+import AppRouter from "./src/navigators/AppRouter";
+import SplashScreen from "./src/screens/SplashScreen";
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from "./src/utils";
 
-const Tab = createBottomTabNavigator<RootStackParamList>();
-const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const client = new QueryClient();
 
@@ -47,27 +42,12 @@ export default function App() {
   }, [fontsLoaded]);
 
   if (!fontLoaded) {
-    return (
-      <View
-        style={{
-          backgroundColor: COLORS.Black1,
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <LottieView
-          source={require("./src/assets/images/Animation.json")}
-          style={{ width: "60%", height: "60%" }}
-          autoPlay
-          loop
-        />
-      </View>
-    );
+    return <SplashScreen />;
   }
 
   return (
     <QueryClientProvider client={client}>
+      <StatusBar barStyle="dark-content" />
       <NavigationContainer>
         <ToastContextProvider>
           <AuthContextProvider>
@@ -77,7 +57,7 @@ export default function App() {
                   <BottomSheetModalProvider>
                     <View style={styles.container}>
                       <PlayingCard />
-                      <Layout />
+                      <AppRouter />
                     </View>
                   </BottomSheetModalProvider>
                 </GestureHandlerRootView>
@@ -90,42 +70,6 @@ export default function App() {
   );
 }
 
-export const Layout = () => {
-  const { currentUser, loadingAuth } = useAuth();
-
-  useEffect(() => {
-    console.log("loadingAuth", loadingAuth);
-  }, [loadingAuth]);
-
-  loadingAuth && (
-    <View
-      style={{
-        backgroundColor: COLORS.Black1,
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <LottieView
-        source={require("./src/assets/images/Animation.json")}
-        style={{ width: "60%", height: "60%" }}
-        autoPlay
-        loop
-      />
-    </View>
-  );
-
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {currentUser ? (
-        <Stack.Screen name="Home" component={TabNavigator} />
-      ) : (
-        <Stack.Screen name="Auth" component={StackAuth} />
-      )}
-    </Stack.Navigator>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -134,11 +78,5 @@ const styles = StyleSheet.create({
     position: "relative",
     height: WINDOW_HEIGHT,
     width: WINDOW_WIDTH,
-  },
-  playingCard: {
-    position: "absolute",
-    left: 0,
-    bottom: HEIGHT.navigator + SPACING.space_4,
-    zIndex: 1,
   },
 });

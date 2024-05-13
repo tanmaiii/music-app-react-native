@@ -7,14 +7,9 @@ import validate from "../middlewares/validate.js";
 router.post("/signin", validate(authValidation.signin), authController.signin);
 router.post("/signup", validate(authValidation.signup), authController.signup);
 router.get("/signout", authController.signout);
-// router.post(
-//   "/send-verify-forgot-password",
-//   // validate(authValidation.forgotPassword),
-//   authController.sendVerifyAccount
-// );
 router.post(
   "/verify-forgot-password",
-  // validate(authValidation.forgotPassword),
+  validate(authValidation.verifyForgotPassword),
   authController.verifyPassword
 );
 router.post(

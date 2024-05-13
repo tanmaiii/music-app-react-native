@@ -78,6 +78,7 @@ export const deletePlaylist = async (req, res) => {
         if (err) {
           return res.status(400).json({ conflictError: err });
         } else {
+          console.log("DELETE PLAYLIST:" + playlist.id);
           return res.json(data);
         }
       });
@@ -255,7 +256,7 @@ export const checkSongInPlaylist = async (req, res) => {
     const playlistId = req.body.playlist_id;
 
     console.log(songId, playlistId);
-    
+
     // Tìm bài hát trong database dựa trên songId
     Playlist.findById(playlistId, userInfo.id, (err, song) => {
       if (err || !song) {

@@ -22,7 +22,7 @@ import SongItem from "../../components/SongItem";
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import PlaylistCard from "../../components/PlaylistCard";
 import IMAGES from "../../constants/images";
-import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
 import Constants from "expo-constants";
 import { playlistApi } from "../../apis";
 import apiConfig from "../../configs/axios/apiConfig";

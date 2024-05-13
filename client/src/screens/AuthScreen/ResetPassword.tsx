@@ -27,11 +27,12 @@ import {
   faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { NavigationProp, RootRouteProps } from "../../navigation/TStack";
+import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
 import { REGEX, WINDOW_HEIGHT } from "../../utils";
 import Constants from "expo-constants";
 import { authApi } from "../../apis";
 import { useToast } from "../../context/ToastContext";
+import { TStateAuth } from "../../types";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface ResetPasswordProps {}
@@ -46,13 +47,7 @@ const ResetPassword = (props: ResetPasswordProps) => {
   const route = useRoute<RootRouteProps<"ResetPassword">>();
   const token = route.params.token;
 
-  const [statePassword, setStatePassword] = React.useState<{
-    value: string;
-    err: string;
-    loading: boolean;
-    focus: boolean;
-    view: boolean;
-  }>({
+  const [statePassword, setStatePassword] = React.useState<TStateAuth>({
     value: "",
     err: "",
     loading: false,
@@ -60,13 +55,7 @@ const ResetPassword = (props: ResetPasswordProps) => {
     view: false,
   });
 
-  const [stateRePassword, setStateRePassword] = React.useState<{
-    value: string;
-    err: string;
-    loading: boolean;
-    focus: boolean;
-    view: boolean;
-  }>({
+  const [stateRePassword, setStateRePassword] = React.useState<TStateAuth>({
     value: "",
     err: "",
     loading: false,
@@ -74,14 +63,14 @@ const ResetPassword = (props: ResetPasswordProps) => {
     view: false,
   });
 
-  const updateStatePassword = (newValue) => {
+  const updateStatePassword = (newValue: Partial<TStateAuth>) => {
     setStatePassword((prevState) => ({
       ...prevState,
       ...newValue,
     }));
   };
 
-  const updateStateRePassword = (newValue) => {
+  const updateStateRePassword = (newValue: Partial<TStateAuth>) => {
     setStateRePassword((prevState) => ({
       ...prevState,
       ...newValue,
@@ -106,14 +95,12 @@ const ResetPassword = (props: ResetPasswordProps) => {
   const validateRePassword = () => {
     if (stateRePassword.value !== statePassword.value)
       return updateStateRePassword({ err: "Re passsword not match !" });
-
     updateStateRePassword({ err: "" });
   };
 
   const handleSubmit = async () => {
     setErr("");
     if (statePassword.value.length === 0 || statePassword.err) {
-      console.log("Loi passsword");
       return inputPasswordRef.current.focus();
     }
     if (stateRePassword.value.length === 0 || stateRePassword.err) {
@@ -123,7 +110,6 @@ const ResetPassword = (props: ResetPasswordProps) => {
     setLoading(true);
 
     try {
-      console.log("Vao roi ne");
       const res = token && (await authApi.resetPassword(token, stateRePassword.value));
 
       res && setToastMessage("Refresh password successfully");
@@ -208,7 +194,7 @@ const ResetPassword = (props: ResetPasswordProps) => {
                       <View style={styles.box}>
                         <Pressable
                           onPress={() => inputPasswordRef.current?.focus()}
-                          style={styles.boxInput}
+                          style={[styles.boxInput, statePassword.err && styles.boxInputErr]}
                         >
                           <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
                           <TextInput
@@ -256,7 +242,7 @@ const ResetPassword = (props: ResetPasswordProps) => {
                       <View style={styles.box}>
                         <Pressable
                           onPress={() => inputRePasswordRef.current?.focus()}
-                          style={styles.boxInput}
+                          style={[styles.boxInput, stateRePassword.err && styles.boxInputErr]}
                         >
                           <FontAwesomeIcon icon={faLock} size={20} color={COLORS.White2} />
                           <TextInput
