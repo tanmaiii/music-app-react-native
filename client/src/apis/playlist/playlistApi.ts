@@ -1,6 +1,5 @@
-import { TUser } from "./../../types/user.type";
-import { ListResponse, TSong, TPlaylist } from "../../types";
 import axiosClient from "../../configs/axios/axiosClient";
+import { ListResponse, TPlaylist } from "../../types";
 
 interface CheckLikedResponse {
   isLiked: boolean;

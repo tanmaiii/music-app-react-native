@@ -1,41 +1,32 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  FlatList,
-  StatusBar,
-  Dimensions,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
-  ActivityIndicator,
   Animated,
+  FlatList,
+  Image,
   RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import styles from "./style";
-import IMAGES from "../../constants/images";
-import { TSong } from "../../types/song.type";
-import { COLORS, SPACING } from "../../theme/theme";
-import SongCard from "../../components/SongCard";
 import CategoryHeader from "../../components/CategoryHeader";
 import HomeTop from "../../components/HomeTop";
+import SongCard from "../../components/SongCard";
+import IMAGES from "../../constants/images";
+import { COLORS, HEIGHT, SPACING } from "../../theme/theme";
+import styles from "./style";
 
-import { Ionicons } from "@expo/vector-icons";
-import { useLinkTo } from "@react-navigation/native";
-import { useAuth } from "../../context/AuthContext";
-import apiConfig from "../../configs/axios/apiConfig";
-import ArtistCard from "../../components/ArtistCard";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
-import PlaylistCard from "../../components/PlaylistCard";
-import { TPlaylist, TUser } from "../../types";
-import { favouriteApi, playlistApi, songApi, userApi } from "../../apis";
-import Slider from "../../components/Slider";
+import { useLinkTo } from "@react-navigation/native";
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { axiosClient } from "../../configs";
+import { favouriteApi, playlistApi, songApi, userApi } from "../../apis";
+import ArtistCard from "../../components/ArtistCard";
+import PlaylistCard from "../../components/PlaylistCard";
+import Slider from "../../components/Slider";
+import { useAuth } from "../../context/AuthContext";
 
 interface HomeScreenProps {}
 
@@ -45,7 +36,6 @@ const HomeScreen = ({ navigation }: any) => {
   const linkTo = useLinkTo();
   const { currentUser, setCurrentUser, logout, token } = useAuth();
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
-  const queryClient = new QueryClient();
 
   useEffect(() => {
     const date = new Date();
@@ -178,6 +168,7 @@ const HomeScreen = ({ navigation }: any) => {
         <ScrollView
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
+          // style={{ paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 40 }}
           onScroll={(e) => {
             const offsetY = e.nativeEvent.contentOffset.y;
             animatedValue.setValue(offsetY);

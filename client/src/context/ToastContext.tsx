@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import ToastMessage from "../components/ToastMessage";
-import { SafeAreaView, Text, View } from "react-native";
 
 interface IToastContext {
   toastMessage: string;

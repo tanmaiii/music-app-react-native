@@ -38,10 +38,6 @@ const TabNavigator = (props: TabNavigatorProps) => {
           borderTopWidth: 0,
           borderTopColor: COLORS.Black1,
           zIndex: 9999,
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: WINDOW_WIDTH,
         },
       }}
     >

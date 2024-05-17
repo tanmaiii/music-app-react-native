@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: SPACING.space_10,
     alignItems: "center",
+    gap: SPACING.space_10,
   },
   bodyTopRight: {
     flexDirection: "row",
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
   },
   bodyBottom: {
     marginTop: SPACING.space_8,
-    backgroundColor: COLORS.Black2,
+    // backgroundColor: COLORS.Black3,
     paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
   },
 });

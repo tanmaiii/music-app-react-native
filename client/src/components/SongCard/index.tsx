@@ -42,7 +42,7 @@ const SongCard = (props: SongCardProps) => {
           </View>
         </View>
 
-        <View style={{ gap: SPACING.space_4 }}>
+        <View style={{ gap: 2 }}>
           <Text numberOfLines={1} style={styles.textTitle}>
             {song?.title}
           </Text>

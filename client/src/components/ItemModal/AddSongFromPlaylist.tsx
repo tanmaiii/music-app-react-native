@@ -1,37 +1,30 @@
 import {
-  faMagnifyingGlass,
-  faXmark,
-  faPlusCircle,
   faCheckCircle,
+  faPlusCircle,
+  faXmark
 } from "@fortawesome/free-solid-svg-icons";
-import { faPlusSquare } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Skeleton } from "moti/skeleton";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
   Image,
   Keyboard,
   SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { FlatList, TextInput } from "react-native-gesture-handler";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import Constants from "expo-constants";
-import { IMAGES } from "../../constants";
-import CustomModal from "../CustomModal";
-import { TSong } from "../../types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FlatList } from "react-native-gesture-handler";
 import { playlistApi, songApi } from "../../apis";
 import { apiConfig } from "../../configs";
+import { IMAGES } from "../../constants";
 import { useAuth } from "../../context/AuthContext";
-import { Skeleton } from "moti/skeleton";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { TSong } from "../../types";
 import CustomInput from "../CustomInput";
-
-const statusBarHeight = Constants.statusBarHeight;
+import CustomModal from "../CustomModal";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -46,13 +39,12 @@ interface AddSongFromPlaylistProps {
 }
 
 const AddSongFromPlaylist = ({ setIsOpen, id }: AddSongFromPlaylistProps) => {
-  const textInputRef = React.useRef<TextInput>();
   const queryClient = useQueryClient();
   const [songs, setSongs] = React.useState<TSong[]>(null);
 
   const [state, setState] = React.useState({
     page: 1,
-    limit: 7,
+    limit: 10,
     loading: false,
     totalPages: 1,
     totalCount: 0,

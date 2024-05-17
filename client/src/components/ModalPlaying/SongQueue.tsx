@@ -34,6 +34,8 @@ const SongQueue = (props: SongQueueProps) => {
         1,
         50
       );
+      console.log(res.data);
+
       return res.data;
     },
   });
@@ -46,13 +48,24 @@ const SongQueue = (props: SongQueueProps) => {
       <View style={{ paddingVertical: SPACING.space_8 }}>
         <Text style={[styles.textMain]}>Song next</Text>
       </View>
-      <FlatList
+
+      <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+        {songs &&
+          songs?.map((item, index) => {
+            if (songIdPlaying === item.id) return <View key={index}></View>;
+            return <Song key={index} songId={item.id} />;
+          })}
+      </ScrollView>
+      {/* <FlatList
         style={styles.listSongs}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         data={songs}
-        renderItem={({ item, index }) => <Song songId={item.id} />}
-      />
+        renderItem={({ item, index }) => {
+          if (songIdPlaying === item.id) return <View key={index}></View>;
+          return <Song key={index} songId={item.id} />;
+        }}
+      /> */}
     </View>
   );
 };
@@ -63,6 +76,7 @@ const Song = ({ play = false, songId }: { play?: boolean; songId: string }) => {
   const { token } = useAuth();
   const { songIdPlaying, changeSongPlaying, setOpenBarSong } = usePlaying();
   const { stopSound, playSound, isPlaying } = useAudio();
+  // const [song, setSong] = React.useState<TSong>(null);
 
   const handlePlay = () => {
     if (songId === songIdPlaying && isPlaying) {
@@ -73,17 +87,26 @@ const Song = ({ play = false, songId }: { play?: boolean; songId: string }) => {
     }
   };
 
+  // const handleGetDetails = async () => {
+  //   try {
+  //     const res = await songApi.getDetail(songId, token);
+  //     setSong(res);
+  //   } catch (error) {
+  //     console.log(error.response.data);
+  //   }
+  // };
+
   const { data: song } = useQuery({
-    queryKey: ["song"],
+    queryKey: ["song", songId],
     queryFn: async () => {
-      try {
-        const res = await songApi.getDetail(songId, token);
-        return res;
-      } catch (error) {
-        console.log(error.response.data);
-      }
+      const res = await songApi.getDetail(songId, token);
+      return res;
     },
   });
+
+  // React.useEffect(() => {
+  //   handleGetDetails();
+  // }, [songId]);
 
   return (
     song && (
@@ -117,7 +140,7 @@ const Song = ({ play = false, songId }: { play?: boolean; songId: string }) => {
 
             <View style={styles.cardRight}>
               <TouchableOpacity style={styles.cardIcon}>
-                {songIdPlaying === songId ? (
+                {songIdPlaying === songId && isPlaying ? (
                   <LottieView
                     source={require("../../assets/images/music.json")}
                     style={{
@@ -191,6 +214,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: BORDERRADIUS.radius_8,
+    backgroundColor: COLORS.Black2,
   },
   cardBody: {
     flex: 1,

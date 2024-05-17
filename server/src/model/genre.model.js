@@ -1,4 +1,5 @@
 import { db, promiseDb } from "../config/connect.js";
+import { v4 as uuidv4 } from "uuid";
 
 const Genre = (genre) => {
   this.id = genre.id;
@@ -7,7 +8,7 @@ const Genre = (genre) => {
 };
 
 Genre.findById = (id, result) => {
-  db.query(`SELECT * from genre WHERE id = '${id}'`, (err, genre) => {
+  db.query(`SELECT * from genre WHERE id = ?`, [id], (err, genre) => {
     if (err) {
       result(err, null);
       return;
@@ -23,7 +24,7 @@ Genre.findById = (id, result) => {
 };
 
 Genre.create = (newGenre, result) => {
-  db.query(`insert into genre set ? `, newGenre, (err, res) => {
+  db.query(`insert into genre set ? , id = ? `, [newGenre, uuidv4()], (err, res) => {
     if (err) {
       console.log("ERROR", err);
       result(err, null);
@@ -35,7 +36,7 @@ Genre.create = (newGenre, result) => {
 };
 
 Genre.update = (id, newGenre, result) => {
-  db.query(`update genre set ? where id = ${id}`, newGenre, (err, res) => {
+  db.query(`update genre set ? where id = ?`, [newGenre, id], (err, res) => {
     if (err) {
       console.log("ERROR:", err);
       result(err, null);
@@ -47,7 +48,7 @@ Genre.update = (id, newGenre, result) => {
 };
 
 Genre.delete = (id, result) => {
-  db.query("DELETE FROM genre WHERE id = ?", id, (deleteErr, deleteRes) => {
+  db.query("DELETE FROM genre WHERE id = ? ", [id], (deleteErr, deleteRes) => {
     if (deleteErr) {
       console.log("ERROR", deleteErr);
       result(deleteErr, null);
@@ -67,7 +68,8 @@ Genre.findAll = async (query, result) => {
 
   const [data] = await promiseDb.query(
     `SELECT * FROM genre ${q ? `WHERE title LIKE "%${q}%" ` : ""} ` +
-      `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} ` +
+      ` ${limit ? ` limit ${limit} offset ${+offset}` : ""} `
   );
 
   const [totalCount] = await promiseDb.query(

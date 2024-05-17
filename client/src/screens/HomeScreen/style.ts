@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     color: COLORS.White2,
   },
   scroll: {
-    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 40,
+    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 60,
     minHeight: WINDOW_HEIGHT,
   },
 });

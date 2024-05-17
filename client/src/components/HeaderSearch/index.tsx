@@ -67,7 +67,7 @@ const HeaderSearch = ({ focus, isOpen, setIsOpen, keyword, setKeyword }: HeaderS
   );
 };
 
-export default HeaderSearch;
+// export default HeaderSearch;
 
 const styles = StyleSheet.create({
   container: {

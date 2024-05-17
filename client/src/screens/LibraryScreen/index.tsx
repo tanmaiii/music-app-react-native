@@ -23,7 +23,7 @@ import { NavigationProp } from "../../navigators/TStack";
 import CustomBottomSheet from "../../components/CustomBottomSheet";
 import { CreateSongPlaylist, CreatePlaylist } from "../../components/ItemModal";
 import { useAuth } from "../../context/AuthContext";
-import { ResFavourite, TPlaylist, TUser } from "../../types";
+import { ResFavourite, ResSoPaAr, TPlaylist, TUser } from "../../types";
 import { favouriteApi, playlistApi, userApi } from "../../apis";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../../context/ToastContext";
@@ -260,7 +260,7 @@ const AllFavorites = () => {
 const PlaylistFavourites = () => {
   const navigation = useNavigation<NavigationProp>();
   const { token, currentUser } = useAuth();
-  const [data, setData] = useState<ResFavourite[]>(null);
+  const [data, setData] = useState<ResSoPaAr[]>(null);
   const queryClient = useQueryClient();
 
   const [state, setState] = React.useState({

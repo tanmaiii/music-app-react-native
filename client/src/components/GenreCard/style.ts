@@ -15,8 +15,8 @@ const styles = StyleSheet.create({
   },
   title: {
     color: COLORS.White,
-    fontSize: FONTSIZE.size_18,
-    fontFamily: FONTFAMILY.medium,
+    fontSize: FONTSIZE.size_16,
+    fontFamily: FONTFAMILY.bold,
   },
   image: {
     position: "absolute",

@@ -176,8 +176,9 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   } = useQuery({
     queryKey: ["playlists"],
     queryFn: async () => {
-      const res = await playlistApi.getAll(1, 6);
-      return res.data;
+      const res = await playlistApi.getAll(1, 7);
+      const filteredPlaylists = res.data?.filter((playlist) => playlist.id !== playlistId) || [];
+      return filteredPlaylists.slice(0, 6);
     },
   });
 
@@ -252,9 +253,9 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                     <Animated.Image
                       style={[styles.image]}
                       source={
-                        playlist?.image_path
-                          ? { uri: apiConfig.imageURL(playlist.image_path) }
-                          : IMAGES.PLAYLIST
+                        !playlist?.image_path
+                          ? IMAGES.PLAYLIST
+                          : { uri: apiConfig.imageURL(playlist.image_path) }
                       }
                     />
                   </Animated.View>
@@ -392,7 +393,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                   >
                     {playlists &&
                       playlists?.map((playlist, index) => {
-                        if (playlist.id === playlistId) return <View key={index}></View>;
+                        // if (playlist.id === playlistId) return <View key={index}></View>;
 
                         return (
                           <View

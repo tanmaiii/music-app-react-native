@@ -1,28 +1,26 @@
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import { useRef } from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  TouchableOpacity,
-  Pressable,
-  Image,
-  FlatList,
-  StatusBar,
-  SafeAreaView,
   Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import styles from "./style";
+import { genreApi } from "../../apis";
 import GenreCard from "../../components/GenreCard";
-import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import IMAGES from "../../constants/images";
-import GridView from "../../components/GridView";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faMagnifyingGlass, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { useLinkTo } from "@react-navigation/native";
 import ModalSearch from "../../components/ModalSearch";
+import IMAGES from "../../constants/images";
+import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
+import { TGenre } from "../../types/genre.type";
+import { WINDOW_WIDTH } from "../../utils";
+import styles from "./style";
 const { width, height } = Dimensions.get("window");
 
 const DATA = [
@@ -93,8 +91,8 @@ interface SearchScreenProps {}
 
 const SearchScreen = (props: SearchScreenProps) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
-  const linkTo = useLinkTo();
   const [openModal, setOpenModal] = React.useState(false);
+  const [genres, setGenres] = React.useState<TGenre[]>(null);
 
   const headerAnimation = {
     transform: [
@@ -115,6 +113,22 @@ const SearchScreen = (props: SearchScreenProps) => {
       extrapolate: "clamp",
     }),
   };
+
+  const getAllGenre = async () => {
+    try {
+      const res = await genreApi.getAll();
+      res && setGenres(res.data);
+      return res.data;
+    } catch (error) {
+      console.log(error.response.data);
+    }
+    return;
+  };
+
+  const {} = useQuery({
+    queryKey: ["genres"],
+    queryFn: getAllGenre,
+  });
 
   return (
     <View style={styles.container}>
@@ -145,24 +159,44 @@ const SearchScreen = (props: SearchScreenProps) => {
         </View>
       </AnimatedSafeAreaView>
 
-      <ScrollView
+      <FlatList
+        data={genres}
         onScroll={(e) => {
           const offsetY = e.nativeEvent.contentOffset.y;
           animatedValue.setValue(offsetY);
         }}
-        scrollEventThrottle={16}
-      >
-        <View style={styles.paddingForHeader} />
-        <View style={styles.scrollViewContent}>
-          <GridView
-            data={DATA}
-            renderItem={(item) => {
-              return <GenreCard />;
+        ListHeaderComponent={
+          <Text
+            style={{
+              paddingHorizontal: SPACING.space_12,
+              fontSize: FONTSIZE.size_14,
+              color: COLORS.White2,
+              fontFamily: FONTFAMILY.regular,
             }}
-          />
-        </View>
-      </ScrollView>
-
+          >
+            Browse by genre
+          </Text>
+        }
+        scrollEventThrottle={16}
+        keyExtractor={(item: any) => item.id}
+        // style={styles.flatlist}
+        numColumns={2}
+        contentContainerStyle={{
+          paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+          paddingBottom: HEIGHT.playingCard + 20,
+        }}
+        renderItem={({ item, index }) => (
+          <View
+            key={index}
+            style={{
+              width: WINDOW_WIDTH / 2,
+              padding: SPACING.space_10,
+            }}
+          >
+            <GenreCard genre={item} />
+          </View>
+        )}
+      />
       <ModalSearch isOpen={openModal} setIsOpen={setOpenModal} />
     </View>
   );

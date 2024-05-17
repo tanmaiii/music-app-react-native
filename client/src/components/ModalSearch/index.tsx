@@ -1,51 +1,27 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
+import styles from "./style";
 import {
-  faGlassCheers,
-  faMagnifyingGlass,
-  faMagnifyingGlassPlus,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  Text,
-  View,
-  StyleSheet,
-  StatusBar,
-  SafeAreaView,
-  Pressable,
-  Modal,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  FlatList,
-  TouchableWithoutFeedback,
   Keyboard,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
+import { FlatList } from "react-native-gesture-handler";
+import { searchApi } from "../../apis";
+import { useAuth } from "../../context/AuthContext";
+import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT } from "../../theme/theme";
+import { ResSoPaAr, TStateParams } from "../../types";
+import CustomInput from "../CustomInput";
 import ItemHorizontal from "../ItemHorizontal";
-import { WINDOW_WIDTH } from "../../utils";
-import HeaderSearch from "../HeaderSearch";
-import { TPlaylist } from "../../types";
-import { IMAGES } from "../../constants";
-
-// const DATA: TPlaylist[] = [
-//   { id: 1, title: "1 Front Left", desc: "Song", image_path: IMAGES.AI, author: "Joihn Cena" },
-//   { id: 2, title: "2 Les", desc: "Song", image_path: IMAGES.AI, author: "Joihn Cena" },
-//   { id: 3, title: "3 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
-//   { id: 4, title: "4 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
-//   { id: 5, title: "5 New jeans", desc: "Artist", image_path: IMAGES.AI, author: "Joihn Cena" },
-//   { id: 6, title: "6 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
-//   { id: 6, title: "7 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
-//   { id: 6, title: "8 New jeans", desc: "Playlist", image_path: IMAGES.AI, author: "Joihn Cena" },
-//   {
-//     id: 6,
-//     title: "9 New jeans bottom",
-//     desc: "Playlist",
-//     image_path: IMAGES.AI,
-//     author: "Joihn Cena",
-//   },
-// ];
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../navigators/TStack";
 
 interface ModalSearchProps {
   isOpen?: boolean;
@@ -53,76 +29,177 @@ interface ModalSearchProps {
 }
 
 const ModalSearch = ({ isOpen, setIsOpen }: ModalSearchProps) => {
-  const textInputRef = useRef<TextInput>(null);
-  const [keyword, setKeyword] = useState<string>(null);
+  const navigation = useNavigation<NavigationProp>();
   const [focus, setFocus] = useState<boolean>(false);
+  const { token } = useAuth();
+  const [data, setData] = useState<ResSoPaAr[]>();
+  const [historySearch, setHistorySearch] = useState<string[]>([
+    "Ai",
+    "Son tung",
+    "Sau tat ca",
+    "history13",
+  ]);
+  const [state, setState] = React.useState<TStateParams>({
+    page: 1,
+    limit: 10,
+    loading: false,
+    totalPages: 1,
+    totalCount: 0,
+    refreshing: false,
+    keyword: "",
+    sort: "new",
+  });
+
+  const { limit, page, loading, sort, totalPages, keyword, refreshing } = state;
+
+  const updateState = (newValue: Partial<TStateParams>) => {
+    setState((prevState) => ({ ...prevState, ...newValue }));
+  };
 
   useEffect(() => {
     isOpen ? setFocus(true) : setFocus(false);
   }, [isOpen]);
 
+  const handleSearch = async () => {
+    const res = await searchApi.getAll(token, page, limit, keyword, sort);
+
+    if (res.pagination.page === 1) {
+      setData(null);
+      updateState({ totalPages: res.pagination.totalPages });
+      setData(res.data);
+    } else {
+      setData((pres) => [...pres, ...res.data]);
+    }
+
+    return res;
+  };
+
+  const {} = useQuery({
+    queryKey: ["search"],
+    queryFn: handleSearch,
+  });
+
+  useEffect(() => {
+    handleSearch();
+  }, [keyword, page]);
+
+  useEffect(() => {
+    const getStorage = async () => {
+      try {
+        const storage = await AsyncStorage.getItem("historySearch");
+        storage ? setHistorySearch(JSON.parse(storage)) : setHistorySearch(null);
+      } catch (error) {
+        console.error("Error getting user from AsyncStorage:", error);
+        return null;
+      }
+    };
+    getStorage();
+  }, []);
+
+  React.useEffect(() => {
+    const historySearchJSON = JSON.stringify(historySearch);
+
+    // Lưu vào AsyncStorage với các key tương ứng
+    AsyncStorage.setItem("historySearch", historySearchJSON);
+    console.log(historySearch);
+  }, [historySearch]);
+
+  const handleSubmitEditing = () => {
+    if (!historySearch.includes(keyword.trim())) {
+      const updateHistory = [keyword.trim(), ...historySearch];
+      setHistorySearch(updateHistory?.slice(0, 8));
+    }
+    console.log("End");
+  };
+
   return (
-    <View style={[styles.modal, isOpen ? { display: "flex" } : { display: "none" }]}>
+    // <View style={[styles.modal, isOpen ? { display: "flex" } : { display: "none" }]}>
+    <Modal visible={isOpen}>
       <View style={styles.container}>
-        <HeaderSearch
-          focus={focus}
-          setIsOpen={setIsOpen}
-          isOpen={isOpen}
-          setKeyword={setKeyword}
-          keyword={keyword}
-        />
-        <ScrollView style={styles.scroll} onTouchStart={Keyboard.dismiss}>
-          <View>
-            <Text style={styles.titleHeaderScroll}>Recent searches</Text>
+        <SafeAreaView>
+          <View style={styles.headerSearch}>
+            <View style={styles.headerSearchInput}>
+              <View style={{ flex: 1 }}>
+                <CustomInput
+                  onSubmitEditing={handleSubmitEditing}
+                  clearValue={state.keyword ? false : true}
+                  value={state.keyword}
+                  // setKeyword={(text) => updateState({ keyword: text })}
+                  onSubmit={(text) => updateState({ keyword: text.trim() })}
+                  focus={focus}
+                />
+              </View>
+              {state.keyword.length > 0 && (
+                <TouchableOpacity
+                  style={styles.buttonClear}
+                  onPress={() => updateState({ keyword: "" })}
+                >
+                  <FontAwesomeIcon icon={faXmark} size={14} color={COLORS.Black2} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <TouchableOpacity style={styles.buttonCancel} onPress={() => setIsOpen(false)}>
+              <Text
+                style={{
+                  color: COLORS.White1,
+                  fontSize: FONTSIZE.size_14,
+                  fontFamily: FONTFAMILY.regular,
+                }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.scrollViewContent}>
-            {/* {DATA.map((item, index) => {
-              return (
-                // <ItemHorizontal
-                //   playlist={item}
-                //   // id={item.id}
-                //   // key={index}
-                //   // title={item.title}
-                //   // desc={item.desc}
-                //   // type={item.type}
-                // />
-              );
-            })} */}
-          </View>
-        </ScrollView>
+        </SafeAreaView>
+
+        <View style={styles.scroll} onTouchStart={Keyboard.dismiss}>
+          {keyword ? (
+            <FlatList
+              contentContainerStyle={{ paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 100 }}
+              // ListHeaderComponent={<Text style={styles.titleHeaderScroll}>Recent searches</Text>}
+              data={data}
+              renderItem={({ item, index }) => {
+                return <ItemHorizontal type={item.type} data={item} key={index} />;
+              }}
+              ListFooterComponent={
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("SearchResultScreen", { keyword: keyword });
+                    setIsOpen(false);
+                  }}
+                >
+                  <Text
+                    style={[styles.titleViewAll]}
+                  >{`See all results for keyword "${keyword}"`}</Text>
+                </TouchableOpacity>
+              }
+            />
+          ) : (
+            <View style={styles.wrapperHistory}>
+              <ScrollView style={{ height: "100%" }}>
+                <Text style={styles.titleHeaderScroll}>Search history</Text>
+                <View style={styles.groupListHistory}>
+                  {historySearch && historySearch?.map((item) => (
+                    <TouchableOpacity
+                      onPress={() => updateState({ keyword: item })}
+                      style={styles.itemHistory}
+                    >
+                      <FontAwesomeIcon icon={faMagnifyingGlass} color={COLORS.White2} size={16} />
+                      <Text numberOfLines={1} style={styles.titleHistory}>
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          )}
+        </View>
       </View>
-    </View>
+    </Modal>
+    //</View>
   );
 };
 
 export default ModalSearch;
-
-const styles = StyleSheet.create({
-  modal: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    backgroundColor: COLORS.Black1,
-    flex: 1,
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-    zIndex: 99,
-    display: "none",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.Black1,
-  },
-  scroll: {
-    height: "100%",
-    paddingHorizontal: SPACING.space_12,
-  },
-  titleHeaderScroll: {
-    fontSize: FONTSIZE.size_16,
-    color: COLORS.White1,
-    fontFamily: FONTFAMILY.medium,
-  },
-  scrollViewContent: {
-    paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 20,
-  },
-});

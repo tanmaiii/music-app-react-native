@@ -139,23 +139,43 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
     );
   };
 
+  // const handleSave = async () => {
+  //   const formData = new FormData();
+  //   try {
+  //     if (file) {
+  //       console.log(file);
+  //       const uploadImage = async () => {
+  //         formData.append("image", file);
+  //         const res = await imageApi.upload(formData, token);
+  //         console.log(res);
+  //         if (res.image) {
+  //           await playlistApi.updatePlaylist(token, playlist.id, { image_path: res.image });
+  //         } else {
+  //           setToastMessage("Update image unsuccessful");
+  //         }
+  //       };
+  //       uploadImage();
+  //     }
+
+  //     await playlistApi.updatePlaylist(token, playlist.id, newPlaylist);
+  //     setToastMessage("Update playlist successfully");
+  //     setIsOpen(false);
+  //   } catch (error) {
+  //     console.log(error.response.data);
+  //   }
+  // };
+
   const handleSave = async () => {
     const formData = new FormData();
+    formData.append("image", file);
+    
     try {
-      if (file) {
-        const uploadImage = async () => {
-          formData.append("image", file);
-          const res = await imageApi.upload(formData, token);
-          if (res.image) {
-            await playlistApi.updatePlaylist(token, playlist.id, { image_path: res.image });
-          }
-        };
-        uploadImage();
-      }
-
-      await playlistApi.updatePlaylist(token, playlist.id, newPlaylist);
-      setToastMessage("Update playlist successfully");
-      setIsOpen(false);
+      // if (file) {
+      //   // console.log(file);
+      //   formData.append("image", file);
+      await imageApi.upload(formData, token);
+      // console.log('XIN CHAO', res);
+      // }
     } catch (error) {
       console.log(error.response.data);
     }

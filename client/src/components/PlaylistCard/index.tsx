@@ -19,10 +19,8 @@ import moment from "moment";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1500,
-  },
+  type: "timing",
+  duration: 1500,
   backgroundColor: COLORS.Black2,
 } as const;
 
@@ -34,11 +32,8 @@ interface PlaylistCardProps {
 const PlaylistCard = (props: PlaylistCardProps) => {
   const { playlist, loading = false } = props;
 
-  const { setOpenBarSong, setSongIdPlaying } = usePlaying();
   const linkTo = useLinkTo();
   const navigation = useNavigation<NavigationProp>();
-
-  const goToScreen = () => {};
 
   const handlePress = () => {
     playlist && navigation.navigate("Playlist", { playlistId: playlist.id });
@@ -72,7 +67,7 @@ const PlaylistCard = (props: PlaylistCardProps) => {
           </Skeleton>
           <Skeleton height={14} width={80} {...SkeletonCommonProps}>
             {loading ? null : (
-              <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.space_4 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
                 <Text numberOfLines={1} style={[styles.textDes]}>
                   {playlist.author}
                 </Text>

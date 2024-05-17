@@ -256,7 +256,7 @@ export const unLikeSong = async (req, res) => {
   }
 };
 
-const checkSongLiked = async (req, res) => {
+export const checkSongLiked = async (req, res) => {
   try {
     const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);

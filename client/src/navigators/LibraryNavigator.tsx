@@ -1,9 +1,9 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { RootStackParamList } from './TStack';
-import SearchScreen from '../screens/SearchScreen';
-import LibraryScreen from '../screens/LibraryScreen';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as React from "react";
+import { Text, View, StyleSheet } from "react-native";
+import { RootStackParamList } from "./TStack";
+import SearchScreen from "../screens/SearchScreen";
+import LibraryScreen from "../screens/LibraryScreen";
 
 import PlaylistDetail from "../screens/PlaylistDetail";
 import SongDetail from "../screens/SongDetail";
@@ -42,5 +42,5 @@ const LibraryNavigator = (props: LibraryNavigatorProps) => {
 export default LibraryNavigator;
 
 const styles = StyleSheet.create({
-  container: {}
+  container: {},
 });

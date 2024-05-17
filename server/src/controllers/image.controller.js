@@ -14,11 +14,12 @@ export const uploadImage = async (req, res, next) => {
       } else {
         if (!req.file) {
           const conflictError = "Please provide an image";
+          console.log("ERROR UPLOAD IMGAE: ", conflictError);
           return res.status(401).json({ conflictError });
         }
 
         const fileName = req.file.filename;
-        console.log("UPLOAD IMGAE: " , { image: fileName });
+        console.log("UPLOAD IMGAE: ", { image: fileName });
         return res.json({ image: fileName });
       }
     });
@@ -29,8 +30,9 @@ export const uploadImage = async (req, res, next) => {
 
 export const deleteImage = (req, res) => {
   const fileName = req.body.fileName;
-  console.log(fileName);
   const filePath = `src/data/images/${fileName}`;
+  
+  console.log(fileName);
 
   fs.access(filePath, fs.constants.F_OK, (err) => {
     if (err) {

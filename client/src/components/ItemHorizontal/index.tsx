@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
 
 import styles from "./style";
 import IMAGES from "../../constants/images";
@@ -16,7 +9,7 @@ import { Skeleton } from "moti/skeleton";
 import TouchableScale from "../TouchableScale";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigators/TStack";
-import { ResFavourite, TPlaylist, TUser } from "../../types";
+import { ResFavourite, ResSoPaAr, TPlaylist, TUser } from "../../types";
 import apiConfig from "../../configs/axios/apiConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
@@ -31,7 +24,7 @@ const SkeletonCommonProps = {
 } as const;
 
 interface ItemHorizontalProps {
-  data?: ResFavourite;
+  data?: ResSoPaAr;
   loading?: boolean;
   type?: string;
 }
@@ -83,6 +76,35 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
               <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.space_4 }}>
                 <Text numberOfLines={1} style={[styles.descText]}>
                   Playlist
+                </Text>
+                <FontAwesomeIcon icon={faCircle} size={2} color={COLORS.White2} />
+                <Text numberOfLines={1} style={[styles.descText]}>
+                  {data.author}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )}
+
+      {type === "song" && (
+        <TouchableOpacity onPress={() => navigation.navigate("Song", { songId: data.id })}>
+          <View style={styles.container}>
+            <View style={styles.boxImage}>
+              <Image
+                style={[styles.image, { borderRadius: BORDERRADIUS.radius_8 }]}
+                source={
+                  data?.image_path ? { uri: apiConfig.imageURL(data.image_path) } : IMAGES.PLAYLIST
+                }
+              />
+            </View>
+            <View style={styles.body}>
+              <Text style={styles.title} numberOfLines={1}>
+                {data?.title}
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.space_4 }}>
+                <Text numberOfLines={1} style={[styles.descText]}>
+                  song
                 </Text>
                 <FontAwesomeIcon icon={faCircle} size={2} color={COLORS.White2} />
                 <Text numberOfLines={1} style={[styles.descText]}>

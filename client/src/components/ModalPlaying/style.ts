@@ -37,7 +37,9 @@ const styles = StyleSheet.create({
   wrapperImage: {
     flex: 1,
     maxWidth: WINDOW_WIDTH,
+    maxHeight: WINDOW_HEIGHT,
     paddingHorizontal: SPACING.space_18,
+    // paddingVertical: SPACING.space_18,
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",

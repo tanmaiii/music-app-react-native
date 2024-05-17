@@ -7,9 +7,11 @@ export type RootStackParamList = {
   Auth: undefined;
 
   Home: undefined;
-  Search: undefined;
   Library: undefined;
   User: undefined;
+
+  Search: undefined;
+  SearchResultScreen: { keyword: string };
 
   UserEditProfile: undefined;
   UpdateItem: { type: string };

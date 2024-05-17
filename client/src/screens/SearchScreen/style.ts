@@ -52,8 +52,8 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   text: {
-    color: COLORS.Black1,
-    fontFamily: FONTFAMILY.regular,
+    color: COLORS.Black3,
+    fontFamily: FONTFAMILY.medium,
     fontSize: FONTSIZE.size_14,
   },
   scrollViewContent: {

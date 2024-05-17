@@ -1,20 +1,21 @@
-import * as React from "react";
-import { Text, View, StyleSheet, TextInput } from "react-native";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { text } from "@fortawesome/fontawesome-svg-core";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { BottomSheetTextInputProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetTextInput";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import * as React from "react";
+import { StyleSheet, TextInput, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface CustomInputProps {
   onSubmit: (string) => void;
   focus?: boolean;
+  clearValue: boolean;
+  value: string;
+  onSubmitEditing?: (string) => void;
 }
 
 const CustomInput = (props: CustomInputProps) => {
-  const { onSubmit, focus = false } = props;
+  const { onSubmit, focus = false, clearValue, value, onSubmitEditing } = props;
   const [keyword, setKeyword] = React.useState<string>("");
   const typingTimeoutRef = React.useRef(null);
   const textInputRef = React.useRef<TextInput>(null);
@@ -45,12 +46,22 @@ const CustomInput = (props: CustomInputProps) => {
     return () => clearTimeout(focusTextInput);
   }, [focus]);
 
+  React.useEffect(() => {
+    if (clearValue) setKeyword("");
+  }, [clearValue]);
+
+  React.useEffect(() => {
+    setKeyword(value);
+  }, [value]);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => textInputRef.current.focus()}>
         <FontAwesomeIcon icon={faMagnifyingGlass} size={18} color={COLORS.White2} />
       </TouchableOpacity>
       <TextInput
+        onSubmitEditing={onSubmitEditing}
+        value={keyword}
         ref={textInputRef}
         placeholder="Search input"
         placeholderTextColor={COLORS.White2}

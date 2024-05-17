@@ -150,7 +150,7 @@ Playlist.getAll = async (query, result) => {
       ` LEFT JOIN users AS u ON p.user_id = u.id` +
       ` WHERE ${q ? ` title like "%${q}%" and` : ""} ` +
       ` public = 1 AND is_deleted = 0 ` +
-      `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
   );
 
   const [totalCount] = await promiseDb.query(

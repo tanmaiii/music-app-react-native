@@ -41,7 +41,7 @@ const SongPlaying = ({}: SongPlayingProps) => {
   return (
     <View style={styles.wrapperSong}>
       <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View style={styles.wrapperImage}>
+        <View style={[styles.wrapperImage]}>
           <Image
             style={[styles.image, { zIndex: 99 }]}
             source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}

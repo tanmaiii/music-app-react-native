@@ -26,7 +26,11 @@ Favourite.findAll = async (userId, query, result) => {
       ` ${q ? `AND u.name LIKE "%${q}%" ` : ""} ` +
       `  ${sort === "new" ? " ORDER BY created_at DESC " : ""}` +
       `  ${sort === "old" ? " ORDER BY created_at ASC " : ""}` +
-      `  ${sort === "alpha" ? " ORDER BY SUBSTRING(LOWER(title), 1, 1), SUBSTRING(LOWER(name), 1, 1) " : ""}` +
+      `  ${
+        sort === "alpha"
+          ? " ORDER BY SUBSTRING(LOWER(title), 1, 1), SUBSTRING(LOWER(name), 1, 1) "
+          : ""
+      }` +
       ` LIMIT ${+limit} OFFSET ${+offset}` +
       `) AS combined_result `
   );
@@ -213,3 +217,4 @@ Favourite.findArtists = async (userId, query, result) => {
 };
 
 export default Favourite;
+
