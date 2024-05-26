@@ -13,13 +13,13 @@ import {
   ImageBackground,
   Platform,
 } from "react-native";
-import { usePlaying } from "../../context/PlayingContext";
-import IMAGES from "../../constants/images";
-import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { usePlaying } from "@/context/PlayingContext";
+import IMAGES from "@/constants/images";
+import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./style";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faLock,
@@ -29,10 +29,10 @@ import {
   faEye,
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import { NavigationProp } from "../../navigators/TStack";
+import { NavigationProp } from "@/navigators/TStack";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Constants from "expo-constants";
-import { TStateAuth } from "../../types";
+import { TStateAuth } from "@/types";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface LoginScreenProps {}

@@ -7,10 +7,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.Black1,
     // padding: SPACING.space_10,
+    overflow: "hidden",
+    borderRadius: BORDERRADIUS.radius_8,
     gap: SPACING.space_4,
-    width: "100%"
+    width: "100%",
   },
   wrapperImage: {
+    overflow: "hidden",
     aspectRatio: 1,
   },
   image: {

@@ -1,11 +1,9 @@
 import { useRoute } from "@react-navigation/native";
 import * as React from "react";
-import { Text, View, StyleSheet } from "react-native";
-import { RootRouteProps } from "../../../navigators/TStack";
-import styles from "./style";
-import ItemName from "./ItemName";
+import { RootRouteProps } from "@/navigators/TStack";
 import ItemEmail from "./ItemEmail";
 import ItemGender from "./ItemGender";
+import ItemName from "./ItemName";
 import ItemPassowrd from "./ItemPassword";
 
 interface UpdateItemProps {}

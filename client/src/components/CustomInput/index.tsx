@@ -9,16 +9,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 interface CustomInputProps {
   onSubmit: (string) => void;
   focus?: boolean;
-  clearValue: boolean;
+  clearValue?: boolean;
   value: string;
   onSubmitEditing?: (string) => void;
+  textInputRef: React.RefObject<TextInput>;
 }
 
 const CustomInput = (props: CustomInputProps) => {
-  const { onSubmit, focus = false, clearValue, value, onSubmitEditing } = props;
+  const { onSubmit, focus = false, clearValue, value, onSubmitEditing, textInputRef } = props;
   const [keyword, setKeyword] = React.useState<string>("");
   const typingTimeoutRef = React.useRef(null);
-  const textInputRef = React.useRef<TextInput>(null);
+
+  // const textInputRef = React.useRef<TextInput>(null);
 
   function handleSearchInput(text) {
     setKeyword(text);

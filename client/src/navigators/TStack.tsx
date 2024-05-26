@@ -11,7 +11,7 @@ export type RootStackParamList = {
   User: undefined;
 
   Search: undefined;
-  SearchResultScreen: { keyword: string };
+  Genre: { genreId: string };
 
   UserEditProfile: undefined;
   UpdateItem: { type: string };
@@ -38,10 +38,3 @@ export type RootRouteProps<RouteName extends keyof RootStackParamList> = RoutePr
   RootStackParamList,
   RouteName
 >;
-
-// export {
-//   PlaylistNavigationProp,
-//   ArtistNavigationProp,
-//   SongListNavigationProp,
-//   UserEditAccountNavigationProp,
-// };

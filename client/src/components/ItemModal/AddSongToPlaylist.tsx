@@ -52,6 +52,7 @@ const AddSongToPlaylist = ({ songId }: AddSongToPlaylistProps) => {
   const { currentUser, token } = useAuth();
   const queryClient = useQueryClient();
   const [playlists, setPlaylists] = React.useState(null);
+  const textInputRef = React.useRef<TextInput>(null);
 
   const [state, setState] = React.useState({
     page: 1,
@@ -111,7 +112,11 @@ const AddSongToPlaylist = ({ songId }: AddSongToPlaylistProps) => {
         </SafeAreaView>
 
         <View style={styles.headerSearch}>
-          <CustomInput onSubmit={(text) => updateState({ keyword: text })} />
+          <CustomInput
+            textInputRef={textInputRef}
+            value={undefined}
+            onSubmit={(text) => updateState({ keyword: text })}
+          />
         </View>
 
         <FlatList

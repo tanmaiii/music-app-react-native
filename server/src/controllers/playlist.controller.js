@@ -318,6 +318,25 @@ export const unAddSongPlaylist = async (req, res) => {
   }
 };
 
+export const updateSongPlaylist = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+
+    Playlist.updateSong(req.params.playlistId, userInfo.id, req.body.songs, (err, data) => {
+      if (err || !data) {
+        const conflictError = err;
+        console.log(err);
+        return res.status(401).json({ conflictError });
+      }
+      console.log(req.body.songs);
+      return res.json("Update successful !");
+    });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
 export default {
   getPlaylist,
   createPlaylist,
@@ -338,4 +357,5 @@ export default {
   checkSongInPlaylist,
   addSongPlaylist,
   unAddSongPlaylist,
+  updateSongPlaylist,
 };

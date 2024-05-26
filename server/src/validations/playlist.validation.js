@@ -112,4 +112,18 @@ export default class playlistValidator {
       song_id: Joi.string().min(0).max(36).required(),
     }),
   };
+
+  static updateSong = {
+    params: Joi.object().keys({
+      playlistId: Joi.string().min(0).max(36).required(),
+    }),
+    body: Joi.object().keys({
+      songs: Joi.array().items(
+        Joi.object().keys({
+          id: Joi.string().required(),
+          num_song: Joi.number().required(),
+        })
+      ).required(),
+    }),
+  };
 }

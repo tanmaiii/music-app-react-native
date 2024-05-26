@@ -1,23 +1,35 @@
-import * as React from "react";
-import { Text, View, StyleSheet, ImageBackground, Image } from "react-native";
-import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { IMAGES } from "../../constants";
-import styles from "./style";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { IMAGES } from "@/constants";
+import { useAuth } from "@/context/AuthContext";
+import { usePlaying } from "@/context/PlayingContext";
+import { NavigationProp } from "@/navigators/TStack";
+import { COLORS, FONTFAMILY, FONTSIZE } from "@/theme/theme";
+import { WINDOW_HEIGHT } from "@/utils";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
-import { usePlaying } from "../../context/PlayingContext";
-import { WINDOW_HEIGHT } from "../../utils";
+import { useQueryClient } from "@tanstack/react-query";
+import * as React from "react";
+import { Image, ImageBackground, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import styles from "./style";
 
 interface WelcomeScreenProps {}
 
 const WelcomeScreen = (props: WelcomeScreenProps) => {
   const { setOpenBarSong } = usePlaying();
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
 
   const navigate = useNavigation<NavigationProp>();
 
   React.useEffect(() => {
     setOpenBarSong(false);
+  }, []);
+
+  const handleGetToken = () => {
+    console.log("token", token);
+  };
+
+  React.useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["currentUser"] });
   }, []);
 
   return (
@@ -56,7 +68,7 @@ const WelcomeScreen = (props: WelcomeScreenProps) => {
               <Text style={styles.titleLogin}>Login</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonGoogle} onPress={() => navigate.navigate("ResetPassword", {token: "123123"})}>
+            <TouchableOpacity style={styles.buttonGoogle} onPress={() => handleGetToken()}>
               <Image source={IMAGES.GOOGLE} style={{ width: 30, height: 30 }} />
               <Text style={styles.titleGoogle}>Google</Text>
             </TouchableOpacity>

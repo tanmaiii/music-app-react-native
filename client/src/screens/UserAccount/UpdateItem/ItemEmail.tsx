@@ -1,27 +1,26 @@
+import { authApi, userApi } from "@/apis";
+import CustomModal from "@/components/CustomModal";
+import { OTPInput } from "@/components/OTPInput";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import { NavigationProp } from "@/navigators/TStack";
+import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
+import { faChevronLeft, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Constants from "expo-constants";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  TextInput,
   ActivityIndicator,
+  Platform,
+  SafeAreaView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
-import { NavigationProp } from "../../../navigators/TStack";
-import { Platform } from "react-native";
 import styles from "./style";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faChevronLeft, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../../theme/theme";
-import Constants from "expo-constants";
-import { authApi, userApi } from "../../../apis";
-import { useAuth } from "../../../context/AuthContext";
-import CustomModal from "../../../components/CustomModal";
-import { OTPInput } from "../../../components/OTPInput/OTPInput";
-import { Mutation, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "../../../context/ToastContext";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface ItemNameProps {}

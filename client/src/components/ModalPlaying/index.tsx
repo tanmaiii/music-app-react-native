@@ -46,17 +46,6 @@ import SongPlaying from "./SongPlaying";
 
 interface TSongPlaying {}
 
-const data = [
-  {
-    id: 1,
-    item: <SongPlaying />,
-  },
-  {
-    id: 2,
-    item: <SongQueue />,
-  },
-];
-
 const ModalPlaying = (props: TSongPlaying) => {
   const { songIdPlaying } = usePlaying();
   const { token } = useAuth();
@@ -64,6 +53,7 @@ const ModalPlaying = (props: TSongPlaying) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const flatListRef = React.useRef<FlatList<any>>(null); // Sử dụng any nếu không biết kiểu dữ liệu của mục trong danh sách
   const navigation = useNavigation<NavigationProp>();
+  const [isOpenQueue, setIsOpenQueue] = useState<boolean>(false);
 
   const handleShare = async () => {
     try {
@@ -95,26 +85,25 @@ const ModalPlaying = (props: TSongPlaying) => {
         ></LinearGradient>
 
         <View style={styles.wrapper}>
-          <View
-            style={{
-              width: 48,
-              height: 6,
-              backgroundColor: COLORS.WhiteRGBA50,
-              borderRadius: BORDERRADIUS.radius_14,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: SPACING.space_36,
-            }}
-          />
-          <FlatList
+          {/* <FlatList
             showsHorizontalScrollIndicator={false}
             data={data}
             ref={flatListRef} // Sử dụng useRef đã khai báo ở trên
             horizontal
+            decelerationRate={0.5}
             scrollEventThrottle={100} // Đặt độ nhạy của sự kiện cuộn
             snapToInterval={WINDOW_WIDTH}
             renderItem={({ item, index }) => <View key={index}>{item.item}</View>}
-          />
+          /> */}
+
+          <View style={{ flex: 1 }}>
+            <View style={[!isOpenQueue ? { display: "none" } : { display: "flex" }]}>
+              <SongQueue setIsOpen={setIsOpenQueue} />
+            </View>
+            <View style={[isOpenQueue ? { display: "none" } : { display: "flex" }]}>
+              <SongPlaying  />
+            </View>
+          </View>
 
           <View style={[styles.playerControlsBottom]}>
             <TouchableOpacity style={styles.BottomButton}>
@@ -131,8 +120,8 @@ const ModalPlaying = (props: TSongPlaying) => {
               <FontAwesomeIcon icon={faArrowUpFromBracket} size={20} color={COLORS.WhiteRGBA50} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.BottomButton}
-              onPress={() => flatListRef.current.scrollToIndex({ index: 1 })}
+              style={[styles.BottomButton, isOpenQueue && { backgroundColor: COLORS.WhiteRGBA15 }]}
+              onPress={() => setIsOpenQueue(!isOpenQueue)}
             >
               <FontAwesomeIcon icon={faBars} size={20} color={COLORS.WhiteRGBA50} />
             </TouchableOpacity>

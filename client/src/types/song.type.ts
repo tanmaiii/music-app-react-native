@@ -9,4 +9,5 @@ export type TSong = {
   public?: number;
   created_at?: string;
   num_song?: number;
+  count?: number;
 };

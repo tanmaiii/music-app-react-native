@@ -1,32 +1,31 @@
+import { faHeart, faPlus, faSort, faThumbTack } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 import { useState } from "react";
 import {
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  TouchableHighlight,
   FlatList,
+  Image,
   RefreshControl,
+  ScrollView,
+  Text,
+  TouchableHighlight,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import styles from "./style";
-import { Ionicons } from "@expo/vector-icons";
-import IMAGES from "../../constants/images";
-import ItemHorizontal from "../../components/ItemHorizontal";
-import { COLORS, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faHeart, faMusic, faPlus, faSort, faThumbTack } from "@fortawesome/free-solid-svg-icons";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
-import CustomBottomSheet from "../../components/CustomBottomSheet";
-import { CreateSongPlaylist, CreatePlaylist } from "../../components/ItemModal";
-import { useAuth } from "../../context/AuthContext";
-import { ResFavourite, ResSoPaAr, TPlaylist, TUser } from "../../types";
-import { favouriteApi, playlistApi, userApi } from "../../apis";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "../../context/ToastContext";
+import { favouriteApi } from "@/apis";
+import CustomBottomSheet from "@/components/CustomBottomSheet";
+import ItemHorizontal from "@/components/ItemHorizontal";
+import { CreatePlaylist, CreateSongPlaylist } from "@/components/ItemModal";
+import IMAGES from "@/constants/images";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import { NavigationProp } from "@/navigators/TStack";
+import { COLORS, HEIGHT } from "@/theme/theme";
+import { ResFavourite, ResSoPaAr } from "@/types";
+import styles from "./style";
 
 interface LibraryScreenProps {}
 

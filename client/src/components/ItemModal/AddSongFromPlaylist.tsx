@@ -1,8 +1,4 @@
-import {
-  faCheckCircle,
-  faPlusCircle,
-  faXmark
-} from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faPlusCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "moti/skeleton";
@@ -14,9 +10,9 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, TextInput } from "react-native-gesture-handler";
 import { playlistApi, songApi } from "../../apis";
 import { apiConfig } from "../../configs";
 import { IMAGES } from "../../constants";
@@ -41,7 +37,7 @@ interface AddSongFromPlaylistProps {
 const AddSongFromPlaylist = ({ setIsOpen, id }: AddSongFromPlaylistProps) => {
   const queryClient = useQueryClient();
   const [songs, setSongs] = React.useState<TSong[]>(null);
-
+  const textInputRef = React.useRef<TextInput>(null);
   const [state, setState] = React.useState({
     page: 1,
     limit: 10,
@@ -104,7 +100,11 @@ const AddSongFromPlaylist = ({ setIsOpen, id }: AddSongFromPlaylistProps) => {
               </View>
               <TouchableOpacity style={styles.buttonClose}></TouchableOpacity>
             </View>
-            <CustomInput onSubmit={(text) => updateState({ keyword: text })} />
+            <CustomInput
+              textInputRef={textInputRef}
+              value={undefined}
+              onSubmit={(text) => updateState({ keyword: text })}
+            />
           </View>
         </SafeAreaView>
         <FlatList
@@ -166,9 +166,7 @@ const SongItem = ({ song, playlistId, loading = false }: TSongItem) => {
       queryClient.invalidateQueries({
         queryKey: ["count-songs", playlistId],
       });
-      queryClient.invalidateQueries({
-        queryKey: ["songs", playlistId],
-      });
+      queryClient.invalidateQueries({ queryKey: ["playlist-songs", playlistId] });
     },
   });
 

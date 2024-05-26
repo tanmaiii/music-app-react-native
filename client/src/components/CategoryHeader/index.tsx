@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   textMain: {
-    fontSize: FONTSIZE.size_24,
+    fontSize: FONTSIZE.size_20,
     fontFamily: FONTFAMILY.bold,
     color: COLORS.White,
   },

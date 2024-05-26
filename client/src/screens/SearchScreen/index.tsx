@@ -5,7 +5,6 @@ import * as React from "react";
 import { useRef } from "react";
 import {
   Animated,
-  Dimensions,
   FlatList,
   Image,
   SafeAreaView,
@@ -21,70 +20,7 @@ import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme
 import { TGenre } from "../../types/genre.type";
 import { WINDOW_WIDTH } from "../../utils";
 import styles from "./style";
-const { width, height } = Dimensions.get("window");
 
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "First Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-];
 const AnimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
 
 interface SearchScreenProps {}
@@ -93,6 +29,8 @@ const SearchScreen = (props: SearchScreenProps) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
   const [openModal, setOpenModal] = React.useState(false);
   const [genres, setGenres] = React.useState<TGenre[]>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const items = Array.from({ length: 10 }, (_, index) => index);
 
   const headerAnimation = {
     transform: [
@@ -116,7 +54,7 @@ const SearchScreen = (props: SearchScreenProps) => {
 
   const getAllGenre = async () => {
     try {
-      const res = await genreApi.getAll();
+      const res = await genreApi.getAll(1, 100);
       res && setGenres(res.data);
       return res.data;
     } catch (error) {
@@ -125,10 +63,17 @@ const SearchScreen = (props: SearchScreenProps) => {
     return;
   };
 
-  const {} = useQuery({
+  const { refetch: refetchGenres } = useQuery({
     queryKey: ["genres"],
     queryFn: getAllGenre,
   });
+
+  React.useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -159,44 +104,71 @@ const SearchScreen = (props: SearchScreenProps) => {
         </View>
       </AnimatedSafeAreaView>
 
-      <FlatList
-        data={genres}
-        onScroll={(e) => {
-          const offsetY = e.nativeEvent.contentOffset.y;
-          animatedValue.setValue(offsetY);
-        }}
-        ListHeaderComponent={
-          <Text
-            style={{
-              paddingHorizontal: SPACING.space_12,
-              fontSize: FONTSIZE.size_14,
-              color: COLORS.White2,
-              fontFamily: FONTFAMILY.regular,
+      <View style={{}}></View>
+
+      {loading ? (
+        <>
+          <FlatList
+            scrollEnabled={false}
+            data={items}
+            contentContainerStyle={{
+              paddingBottom: HEIGHT.playingCard + 20,
+              paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
             }}
-          >
-            Browse by genre
-          </Text>
-        }
-        scrollEventThrottle={16}
-        keyExtractor={(item: any) => item.id}
-        // style={styles.flatlist}
-        numColumns={2}
-        contentContainerStyle={{
-          paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
-          paddingBottom: HEIGHT.playingCard + 20,
-        }}
-        renderItem={({ item, index }) => (
-          <View
-            key={index}
-            style={{
-              width: WINDOW_WIDTH / 2,
-              padding: SPACING.space_10,
-            }}
-          >
-            <GenreCard genre={item} />
-          </View>
-        )}
-      />
+            numColumns={2}
+            renderItem={({ item, index }) => (
+              <View
+                key={index}
+                style={{
+                  width: WINDOW_WIDTH / 2,
+                  padding: SPACING.space_10,
+                }}
+              >
+                <GenreCard genre={null} loading={true} />
+              </View>
+            )}
+          />
+        </>
+      ) : (
+        <FlatList
+          data={genres}
+          onScroll={(e) => {
+            const offsetY = e.nativeEvent.contentOffset.y;
+            animatedValue.setValue(offsetY);
+          }}
+          ListHeaderComponent={
+            <Text
+              style={{
+                paddingHorizontal: SPACING.space_12,
+                fontSize: FONTSIZE.size_14,
+                color: COLORS.White2,
+                fontFamily: FONTFAMILY.regular,
+              }}
+            >
+              Browse by genre
+            </Text>
+          }
+          scrollEventThrottle={16}
+          keyExtractor={(item: any) => item.id}
+          numColumns={2}
+          contentContainerStyle={{
+            paddingBottom: HEIGHT.playingCard + 20,
+            paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+          }}
+          renderItem={({ item, index }) => (
+            <View
+              key={index}
+              style={{
+                width: WINDOW_WIDTH / 2,
+                padding: SPACING.space_10,
+              }}
+            >
+              <GenreCard genre={item} />
+            </View>
+          )}
+        />
+      )}
+
       <ModalSearch isOpen={openModal} setIsOpen={setOpenModal} />
     </View>
   );

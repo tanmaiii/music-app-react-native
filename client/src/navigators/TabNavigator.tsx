@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   faHouse,
   faMagnifyingGlass,
@@ -8,17 +7,13 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import HomeScreen from "../screens/HomeScreen";
-import LibraryScreen from "../screens/LibraryScreen";
-import SearchScreen from "../screens/SearchScreen";
 import { COLORS, FONTFAMILY, HEIGHT, SPACING } from "../theme/theme";
-import { RootStackParamList } from "./TStack";
-import UserAccount from "../screens/UserAccount";
-import { WINDOW_WIDTH } from "../utils";
 import HomeNavigator from "./HomeNavigator";
-import SearchNavigator from "./SearchNavigator";
 import LibraryNavigator from "./LibraryNavigator";
+import SearchNavigator from "./SearchNavigator";
+import { RootStackParamList } from "./TStack";
 import UserNavigator from "./UserNavigator";
 
 interface TabNavigatorProps {}

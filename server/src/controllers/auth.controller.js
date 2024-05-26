@@ -55,6 +55,7 @@ export const signin = async (req, res) => {
         }
       });
     });
+    
   } catch (error) {
     const conflictError = "User credentials are not valid.";
     res.status(401).json({ conflictError });

@@ -2,10 +2,9 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import * as React from "react";
 import { Text, View, StyleSheet, Image, Share } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { IMAGES } from "../../constants";
-import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import { IMAGES } from "@/constants";
 import {
   faPenToSquare,
   faShare,
@@ -13,23 +12,26 @@ import {
   faUserXmark,
   faFlag,
 } from "@fortawesome/free-solid-svg-icons";
-import CustomModal from "../CustomModal";
-import { TUser } from "../../types";
-import apiConfig from "../../configs/axios/apiConfig";
+import CustomModal from "@/components/CustomModal";
+import { TUser } from "@/types";
+import apiConfig from "@/configs/axios/apiConfig";
 import numeral from "numeral";
-import { useAuth } from "../../context/AuthContext";
-import { userApi } from "../../apis";
+import { useAuth } from "@/context/AuthContext";
+import { userApi } from "@/apis";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "@/navigators/TStack";
 
 type ModalArtistProps = {
   artist: TUser;
+  setIsOpen: (value: boolean) => void;
 };
 
-const ModalArtist = ({ artist }: ModalArtistProps) => {
-  const [isFollow, setIsFollow] = React.useState<boolean>(false);
+const ModalArtist = ({ artist, setIsOpen }: ModalArtistProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const { currentUser, token } = useAuth();
   const queryClient = useQueryClient();
+  const navigation = useNavigation<NavigationProp>();
 
   const { data: follow, isLoading: loadingFollow } = useQuery({
     queryKey: ["follow", artist.id],
@@ -53,6 +55,9 @@ const ModalArtist = ({ artist }: ModalArtistProps) => {
       return userApi.follow(artist.id, token);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["following"],
+      });
       queryClient.invalidateQueries({
         queryKey: ["follow", artist.id],
       });
@@ -116,7 +121,14 @@ const ModalArtist = ({ artist }: ModalArtistProps) => {
               itemFunc={() => (follow ? setIsOpenModal(true) : mutationFollow.mutate(follow))}
             />
           )}
-          <Item icon={faPenToSquare} title="Edit profile" itemFunc={() => console.log("PRESS")} />
+          <Item
+            icon={faPenToSquare}
+            title="Edit profile"
+            itemFunc={() => {
+              setIsOpen(false);
+              navigation.navigate("UserEditProfile");
+            }}
+          />
           <Item icon={faShare} title="Share" itemFunc={() => handleShare()} />
           <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
         </View>

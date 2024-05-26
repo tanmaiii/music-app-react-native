@@ -1,23 +1,11 @@
-import * as React from "react";
-import { useCallback, useRef, useMemo } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  ScrollView,
-  Button,
-  SafeAreaView,
-  TouchableOpacity,
-  StatusBar,
-  TouchableHighlight,
-  TextInput,
-  RefreshControl,
-} from "react-native";
-import { useAuth } from "../../context/AuthContext";
-import apiConfig from "../../configs/axios/apiConfig";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
+import { userApi } from "@/apis";
+import CustomModal from "@/components/CustomModal";
+import apiConfig from "@/configs/axios/apiConfig";
+import IMAGES from "@/constants/images";
+import { useAuth } from "@/context/AuthContext";
+import { NavigationProp } from "@/navigators/TStack";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faAngleRight,
   faArrowRightFromBracket,
@@ -26,15 +14,25 @@ import {
   faPenToSquare,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
-import IMAGES from "../../constants/images";
-import CustomModal from "../../components/CustomModal";
-import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
-import { userApi } from "../../apis";
-import numeral from "numeral";
+import { useNavigation } from "@react-navigation/native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import numeral from "numeral";
+import * as React from "react";
+import {
+  Image,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  TouchableOpacity,
+  View
+} from "react-native";
 
 interface UserAccountProps {}
 

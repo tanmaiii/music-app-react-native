@@ -1,25 +1,17 @@
-import * as React from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
-import IMAGES from "../../constants/images";
-import styles from "./style";
-import { COLORS, SPACING } from "../../theme/theme";
 import { Skeleton } from "moti/skeleton";
-import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { TUser } from "../../types";
-import apiConfig from "../../configs/axios/apiConfig";
+import * as React from "react";
+import { TouchableOpacity, View } from "react-native";
+import { COLORS, SPACING } from "@/theme/theme";
+import styles from "./style";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
-  //   transition: {
-  //     type: "timing",
-  //     duration: 1500,
-  //   },
+  type: "timing",
+  duration: 1500,
   backgroundColor: COLORS.Black2,
 } as const;
 
-const ArtistCardSkeleton = (prop) => {
+const ArtistCardSkeleton = () => {
   return (
     <TouchableOpacity>
       <View style={[styles.container]}>

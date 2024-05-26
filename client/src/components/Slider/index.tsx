@@ -9,15 +9,6 @@ import { Skeleton } from "moti/skeleton";
 import { TSong } from "../../types";
 import { apiConfig } from "../../configs";
 
-const SkeletonCommonProps = {
-  colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1500,
-  },
-  backgroundColor: COLORS.Black2,
-} as const;
-
 const data = [
   {
     id: 1,
@@ -41,7 +32,7 @@ interface SliderProps {
 }
 
 const Slider = ({ loading = true }: SliderProps) => {
-  const [activeIndex, setActiveIndex] = React.useState<number>(1);
+  const [activeIndex, setActiveIndex] = React.useState<number>(0);
   const flatlistRef = React.useRef<FlatList>();
 
   React.useEffect(() => {
@@ -75,6 +66,8 @@ const Slider = ({ loading = true }: SliderProps) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
     const index = scrollPosition / width;
     let roundedNumber = Math.round(index);
+    // console.log(roundedNumber);
+
     setActiveIndex(roundedNumber);
   };
 
@@ -131,10 +124,10 @@ const RenderDots = ({ data, activeIndex }: { data: any; activeIndex: number }) =
       }}
     >
       {data &&
-        data?.map(({ item, index }) => {
+        data?.map((item) => {
           return (
             <View
-              key={index}
+              key={item.id}
               style={[
                 {
                   backgroundColor: COLORS.WhiteRGBA32,
@@ -142,7 +135,7 @@ const RenderDots = ({ data, activeIndex }: { data: any; activeIndex: number }) =
                   width: 8,
                   borderRadius: 4,
                 },
-                activeIndex === index && { backgroundColor: COLORS.White1 },
+                activeIndex === item.id - 1 && { backgroundColor: COLORS.White1 },
               ]}
             ></View>
           );

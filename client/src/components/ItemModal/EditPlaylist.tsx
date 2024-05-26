@@ -1,39 +1,30 @@
-import {
-  faBars,
-  faCheckCircle,
-  faMagnifyingGlass,
-  faMinusCircle,
-  faPlusCircle,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBars, faMinusCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  Platform,
-  SafeAreaView,
+  Alert,
+  Animated,
   Image,
   Keyboard,
-  Animated,
-  Alert,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { BottomSheetTextInput, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
+import { imageApi, playlistApi, songApi } from "@/apis";
+import { apiConfig } from "@/configs";
+import { IMAGES } from "@/constants";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import { TPlaylist, TSong } from "@/types";
 import ButtonSwitch from "../ButtonSwitch/ButtonSwitch";
-import { TPlaylist, TSong } from "../../types";
-import { IMAGES } from "../../constants";
-import Constants from "expo-constants";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { imageApi, playlistApi, songApi } from "../../apis";
-import { apiConfig } from "../../configs";
-const statusBarHeight = Constants.statusBarHeight;
-import * as ImagePicker from "expo-image-picker";
 
-import { useAuth } from "../../context/AuthContext";
-import { useToast } from "../../context/ToastContext";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 interface EditPlaylistProps {
   setIsOpen: (boolean) => void;
@@ -43,6 +34,7 @@ interface EditPlaylistProps {
 const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
   const { setToastMessage } = useToast();
   const [file, setFile] = React.useState<any>("");
+  const [songsNew, setSongsNew] = React.useState<{ id: string; num_song: number }[]>([]);
   const [isPrivate, setIsPrivate] = React.useState<boolean>(playlist.public === 1 ? false : true);
   const { token } = useAuth();
   const queryClient = useQueryClient();
@@ -67,6 +59,9 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
     queryKey: ["songs", playlist.id],
     queryFn: async () => {
       const res = await songApi.getAllByPlaylistId(token, playlist.id, 1, 50);
+      res.data.map((item) => {
+        setSongsNew((prev) => [...prev, { id: item.id, num_song: item.num_song }]);
+      });
       return res.data;
     },
   });
@@ -113,8 +108,8 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
     if (!result.canceled) {
       const file = {
         uri: result.assets[0].uri,
-        type: result.assets[0].type,
-        name: result.assets[0].fileName,
+        type: "image/jpeg",
+        name: "photo.jpg",
       };
       setFile(file);
     }
@@ -122,60 +117,40 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
 
   const showOptions = () => {
     Alert.alert(
-      "Chọn ảnh",
-      "Bạn muốn lấy ảnh từ thư viện hay chụp ảnh mới?",
+      "Select Image",
+      "Do you want to choose an image from the library or take a new photo?",
       Platform.OS === "ios"
         ? [
-            { text: "Chụp ảnh", onPress: takePhoto },
-            { text: "Lấy ảnh từ thư viện", onPress: pickImageFromLibrary },
-            { text: "Hủy bỏ", onPress: () => console.log("Hủy bỏ") },
+            { text: "Take Photo", onPress: takePhoto },
+            { text: "Choose from Library", onPress: pickImageFromLibrary },
+            { text: "Cancel", onPress: () => console.log("Cancel") },
           ]
         : [
-            { text: "Hủy bỏ", onPress: () => console.log("Hủy bỏ") },
-            { text: "Lấy ảnh từ thư viện", onPress: pickImageFromLibrary },
-            { text: "Chụp ảnh", onPress: takePhoto },
+            { text: "Cancel", onPress: () => console.log("Cancel") },
+            { text: "Choose from Library", onPress: pickImageFromLibrary },
+            { text: "Take Photo", onPress: takePhoto },
           ],
       { cancelable: true }
     );
   };
 
-  // const handleSave = async () => {
-  //   const formData = new FormData();
-  //   try {
-  //     if (file) {
-  //       console.log(file);
-  //       const uploadImage = async () => {
-  //         formData.append("image", file);
-  //         const res = await imageApi.upload(formData, token);
-  //         console.log(res);
-  //         if (res.image) {
-  //           await playlistApi.updatePlaylist(token, playlist.id, { image_path: res.image });
-  //         } else {
-  //           setToastMessage("Update image unsuccessful");
-  //         }
-  //       };
-  //       uploadImage();
-  //     }
-
-  //     await playlistApi.updatePlaylist(token, playlist.id, newPlaylist);
-  //     setToastMessage("Update playlist successfully");
-  //     setIsOpen(false);
-  //   } catch (error) {
-  //     console.log(error.response.data);
-  //   }
-  // };
-
   const handleSave = async () => {
     const formData = new FormData();
-    formData.append("image", file);
-    
     try {
-      // if (file) {
-      //   // console.log(file);
-      //   formData.append("image", file);
-      await imageApi.upload(formData, token);
-      // console.log('XIN CHAO', res);
-      // }
+      if (file) {
+        formData.append("image", file);
+        const res = await imageApi.upload(formData, token);
+        if (res.image) {
+          await playlistApi.updatePlaylist(token, playlist.id, { image_path: res.image });
+        } else {
+          setToastMessage("Update image unsuccessful");
+        }
+      }
+
+      await playlistApi.updatePlaylist(token, playlist.id, newPlaylist);
+      await playlistApi.updateSong(token, playlist.id, songsNew);
+      setToastMessage("Update playlist successfully");
+      setIsOpen(false);
     } catch (error) {
       console.log(error.response.data);
     }
@@ -183,7 +158,10 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
 
   const mutation = useMutation({
     mutationFn: handleSave,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["playlist", playlist.id] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["playlist", playlist.id] });
+      queryClient.invalidateQueries({ queryKey: ["playlist-songs", playlist.id] });
+    },
   });
 
   React.useEffect(() => {
@@ -254,7 +232,9 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
             </View>
           </View>
         }
-        renderItem={({ item, index }) => <SongItem song={item} />}
+        renderItem={({ item, index }) => (
+          <SongItem setSongsNew={setSongsNew} songsNew={songsNew} song={item} />
+        )}
       />
     </View>
   );
@@ -262,10 +242,12 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
 
 type TSongItem = {
   song: TSong;
+  setSongsNew?: (value: { id: string; num_song: number }[]) => void;
+  songsNew?: { id: string; num_song: number }[];
 };
 
 const SongItem = (props: TSongItem) => {
-  const { song } = props;
+  const { song, setSongsNew, songsNew } = props;
   const [isDeleted, setIsDeleted] = React.useState(false);
   const fadeAnim = new Animated.Value(1);
   const slideAnim = new Animated.Value(1);
@@ -287,6 +269,14 @@ const SongItem = (props: TSongItem) => {
       setIsDeleted(true); // Đánh dấu là đã xóa
     });
   };
+
+  React.useEffect(() => {
+    if (isDeleted) {
+      // Xóa phần tử khỏi danh sách
+      setSongsNew(songsNew.filter((item) => item.id !== song.id));
+      console.log(songsNew.filter((item) => item.id !== song.id));
+    }
+  }, [isDeleted]);
 
   return (
     <Animated.View
@@ -330,6 +320,7 @@ const SongItem = (props: TSongItem) => {
     </Animated.View>
   );
 };
+
 export default EditPlaylist;
 
 const styles = StyleSheet.create({

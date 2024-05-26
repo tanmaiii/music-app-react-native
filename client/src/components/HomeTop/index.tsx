@@ -1,17 +1,16 @@
-import * as React from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity, Animated } from "react-native";
-import IMAGES from "../../constants/images";
-import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import TouchableScale from "../TouchableScale";
-import { Skeleton } from "moti/skeleton";
-import { NavigationProp } from "../../navigators/TStack";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../../context/AuthContext";
-import { ResFavourite, TPlaylist } from "../../types";
-import { playlistApi } from "../../apis";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
+import { Skeleton } from "moti/skeleton";
+import * as React from "react";
+import { Image, StyleSheet, Text, View } from "react-native";
 import apiConfig from "../../configs/axios/apiConfig";
+import IMAGES from "../../constants/images";
+import { useAuth } from "../../context/AuthContext";
+import { NavigationProp } from "../../navigators/TStack";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
+import { ResFavourite } from "../../types";
+import TouchableScale from "../TouchableScale";
 
 interface HomeTopProps {
   data: ResFavourite[];
@@ -20,10 +19,8 @@ interface HomeTopProps {
 
 const SkeletonCommonProps = {
   colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1500,
-  },
+  type: "timing",
+  duration: 1500,
   backgroundColor: COLORS.Black2,
 } as const;
 
@@ -36,22 +33,22 @@ const HomeTop = ({ data, loading }: HomeTopProps) => {
       <View style={[styles.container]}>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} radius={0}></Skeleton>
+            <Skeleton {...SkeletonCommonProps} height={"100%"} width={"100%"} radius={0}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} radius={0}></Skeleton>
+            <Skeleton {...SkeletonCommonProps} height={"100%"} width={"100%"} radius={0}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} radius={0}></Skeleton>
+            <Skeleton {...SkeletonCommonProps} height={"100%"} width={"100%"} radius={0}></Skeleton>
           </View>
         </View>
         <View style={styles.card}>
           <View style={[styles.wrapper]}>
-            <Skeleton height={"100%"} width={"100%"} radius={0}></Skeleton>
+            <Skeleton {...SkeletonCommonProps} height={"100%"} width={"100%"} radius={0}></Skeleton>
           </View>
         </View>
       </View>

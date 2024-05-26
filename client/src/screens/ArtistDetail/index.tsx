@@ -43,6 +43,7 @@ import { TSong } from "../../types";
 import { WINDOW_WIDTH } from "../../utils";
 import styles from "./style";
 import ArtistDetailSkeleton from "./ArtistDetailSkeleton";
+import SectionCard from "@/components/SectionCard";
 const statusBarHeight = Constants.statusBarHeight;
 
 const HEIGHT_AVATAR = 400;
@@ -144,6 +145,9 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["follow", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["following"],
       });
       queryClient.invalidateQueries({
         queryKey: ["all-favorites"],
@@ -386,92 +390,50 @@ const ArtistDetail = (props: ArtistDetailProps) => {
                 )}
 
                 {playlists?.length > 0 && (
-                  <View
-                    style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}
-                  >
-                    <CategoryHeader
-                      title={"Playlist popular"}
-                      PropFunction={
-                        playlists?.length > 1
-                          ? () => navigation.navigate("ListPlaylist", { userId: artist?.id })
-                          : null
-                      }
-                    />
-                    <FlatList
-                      data={playlists}
-                      keyExtractor={(item: any) => item.id}
-                      bounces={false}
-                      snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      decelerationRate={0}
-                      style={{ gap: SPACING.space_12 }}
-                      renderItem={({ item, index }) => (
-                        <View
-                          style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
-                        >
-                          <PlaylistCard playlist={item} />
-                        </View>
-                      )}
-                    />
-                  </View>
+                  <SectionCard
+                    functionProp={() => navigation.navigate("ListPlaylist", { userId: artist?.id })}
+                    data={playlists}
+                    title={"Playlist popular"}
+                    loading={false}
+                    numItem={3}
+                    renderItem={({ item, index }) => (
+                      <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                        <PlaylistCard playlist={item} />
+                      </View>
+                    )}
+                  />
                 )}
 
                 {playlistsSuggest?.length > 0 && (
-                  <View
-                    style={{ paddingHorizontal: SPACING.space_10, marginBottom: SPACING.space_24 }}
-                  >
-                    <CategoryHeader
-                      title={"Recommend playlist"}
-                      PropFunction={
-                        playlists?.length > 1
-                          ? () => navigation.navigate("ListPlaylist", { userId: artist?.id })
-                          : null
-                      }
-                    />
-                    <FlatList
-                      data={playlistsSuggest}
-                      keyExtractor={(item: any) => item.id}
-                      bounces={false}
-                      snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      decelerationRate={0}
-                      style={{ gap: SPACING.space_12 }}
-                      renderItem={({ item, index }) => (
-                        <View
-                          style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
-                        >
-                          <PlaylistCard playlist={item} />
-                        </View>
-                      )}
-                    />
-                  </View>
+                  <SectionCard
+                    data={playlistsSuggest}
+                    title={"Recommend playlist"}
+                    loading={false}
+                    numItem={3}
+                    renderItem={({ item, index }) => (
+                      <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
+                        <PlaylistCard playlist={item} />
+                      </View>
+                    )}
+                  />
                 )}
 
                 <View style={styles.bodyBottom}>
-                  <View style={{ paddingHorizontal: SPACING.space_10 }}>
-                    <CategoryHeader title={"Related artists"} />
-                    <FlatList
-                      data={artists}
-                      keyExtractor={(item: any) => item.id}
-                      bounces={false}
-                      snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      decelerationRate={0}
-                      style={{ gap: SPACING.space_12 }}
-                      renderItem={({ item, index }) => {
-                        if (item.id === userId) return;
-                        if (item.id === currentUser.id) return;
-                        return (
-                          <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
-                            <ArtistCard loading={loadingArtists} artist={item} />
-                          </View>
-                        );
-                      }}
-                    />
-                  </View>
+                  <SectionCard
+                    data={artists}
+                    title={"Related artists"}
+                    loading={false}
+                    numItem={3}
+                    renderItem={({ item, index }) => {
+                      if (item.id === userId) return;
+                      if (item.id === currentUser.id) return;
+                      return (
+                        <View style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}>
+                          <ArtistCard loading={loadingArtists} artist={item} />
+                        </View>
+                      );
+                    }}
+                  />
                 </View>
               </View>
             </ScrollView>
@@ -485,7 +447,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
             height1={heightModal}
           >
             <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
-              <ModalArtist artist={artist} />
+              <ModalArtist setIsOpen={setIsOpenMoal} artist={artist} />
             </View>
           </CustomBottomSheet>
         )}

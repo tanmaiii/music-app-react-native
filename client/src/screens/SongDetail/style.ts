@@ -1,12 +1,11 @@
 import { StyleSheet } from "react-native";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { WINDOW_HEIGHT } from "../../utils";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
+import { WINDOW_HEIGHT } from "@/utils";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Black1,
-    // paddingBottom: HEIGHT.navigator + HEIGHT.playingCard,
   },
   textMain: {
     fontSize: FONTSIZE.size_16,
@@ -31,7 +30,6 @@ const styles = StyleSheet.create({
     backgroundColor: "none",
   },
   buttonHeader: {
-    // backgroundColor: COLORS.Black2,
     justifyContent: "center",
     alignItems: "center",
     width: 34,

@@ -5,6 +5,14 @@ import playlistValidation from "../validations/playlist.validation.js";
 
 import validate from "../middlewares/validate.js";
 
+router.put("/song/:playlistId", validate(playlistValidation.updateSong), playlistController.updateSongPlaylist);
+router.post("/song", validate(playlistValidation.addSong), playlistController.addSongPlaylist);
+router.delete(
+  "/song",
+  validate(playlistValidation.unAddSong),
+  playlistController.unAddSongPlaylist
+);
+
 router.get(
   "/detail/:playlistId",
   validate(playlistValidation.getPlaylist),
@@ -72,12 +80,6 @@ router.post(
   "/checkSong",
   validate(playlistValidation.addSong),
   playlistController.checkSongInPlaylist
-);
-router.post("/song", validate(playlistValidation.addSong), playlistController.addSongPlaylist);
-router.delete(
-  "/song",
-  validate(playlistValidation.unAddSong),
-  playlistController.unAddSongPlaylist
 );
 
 export default router;

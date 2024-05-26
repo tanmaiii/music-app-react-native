@@ -15,8 +15,8 @@ import {
   Alert,
 } from "react-native";
 import styles from "./style";
-import { IMAGES } from "../../constants";
-import { COLORS, FONTSIZE, SPACING } from "../../theme/theme";
+import { IMAGES } from "@/constants";
+import { COLORS, FONTSIZE, SPACING } from "@/theme/theme";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import {
@@ -27,12 +27,12 @@ import {
   faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
-import { REGEX, WINDOW_HEIGHT } from "../../utils";
+import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
+import { REGEX, WINDOW_HEIGHT } from "@/utils";
 import Constants from "expo-constants";
-import { authApi } from "../../apis";
-import { useToast } from "../../context/ToastContext";
-import { TStateAuth } from "../../types";
+import { authApi } from "@/apis";
+import { useToast } from "@/context/ToastContext";
+import { TStateAuth } from "@/types";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface ResetPasswordProps {}

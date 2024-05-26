@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
     color: COLORS.White1,
+    maxWidth: 200,
   },
   desc: {
     display: "flex",

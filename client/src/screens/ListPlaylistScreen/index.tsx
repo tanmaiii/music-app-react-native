@@ -1,32 +1,26 @@
+import { playlistApi } from "@/apis";
+import PlaylistCard from "@/components/PlaylistCard";
+import { useAuth } from "@/context/AuthContext";
+import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
+import { TPlaylist } from "@/types";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import Constants from "expo-constants";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableHighlight,
-  TouchableOpacity,
-  Image,
+  ActivityIndicator,
   Animated,
   Platform,
-  StatusBar,
-  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View
 } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { TPlaylist, TSong } from "../../types";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
-import SongItem from "../../components/SongItem";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
-import PlaylistCard from "../../components/PlaylistCard";
-import IMAGES from "../../constants/images";
-import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
-import Constants from "expo-constants";
-import { playlistApi } from "../../apis";
-import apiConfig from "../../configs/axios/apiConfig";
-import { useAuth } from "../../context/AuthContext";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface ListPlaylistScreenProps {}
@@ -40,7 +34,6 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
   const userId = route.params.userId;
   const [limit, setLimit] = React.useState(10);
   const [page, setPage] = React.useState(1);
-  const { currentUser, token } = useAuth();
   const items = Array.from({ length: 10 }, (_, index) => index);
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const [totalPages, setTotalPages] = React.useState<number>(1);
@@ -205,16 +198,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: FONTSIZE.size_18,
+    fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.medium,
     color: COLORS.White1,
     width: "100%",
     textAlign: "center",
   },
-  scroll: {
-  },
-  flatlist: {
-  },
+  scroll: {},
+  flatlist: {},
   card: {
     display: "flex",
     justifyContent: "center",

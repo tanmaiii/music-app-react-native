@@ -3,7 +3,7 @@ import * as React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { RootStackParamList } from "./TStack";
 import SearchScreen from "../screens/SearchScreen";
-import SearchResultsScreen from "../screens/SearchScreen/SearchResultsScreen";
+import GenreScreen from "../screens/GenreScreen";
 import PlaylistDetail from "../screens/PlaylistDetail";
 import SongDetail from "../screens/SongDetail";
 import ArtistDetail from "../screens/ArtistDetail";
@@ -24,7 +24,7 @@ const SearchNavigator = (props: SearchNavigatorProps) => {
       }}
     >
       <Stack.Screen name="Search" component={SearchScreen} />
-      <Stack.Screen name="SearchResultScreen" component={SearchResultsScreen} />
+      <Stack.Screen name="Genre" component={GenreScreen} />
 
       <Stack.Screen name="Artist" component={ArtistDetail} />
       <Stack.Screen name="Song" component={SongDetail} />

@@ -11,7 +11,7 @@ const bodySchema = {
 const querySchema = {
   query: Joi.object().keys({
     q: Joi.string().allow(null, "").optional(),
-    sort: Joi.string().valid("old", "new").default("new"),
+    sortBy: Joi.string().valid("old", "new", 'count').default("count"),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
   }),
@@ -50,6 +50,13 @@ export default class genreValidation {
   };
 
   static getAllGenres = {
+    ...querySchema,
+  };
+
+  static getAllSongsGenre = {
+    params: Joi.object().keys({
+      genreId: Joi.number().integer().required(),
+    }),
     ...querySchema,
   };
 }

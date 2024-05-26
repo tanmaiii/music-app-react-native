@@ -1,7 +1,5 @@
 import { StyleSheet } from "react-native";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { WINDOW_WIDTH } from "../../utils";
-import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
 
 const styles = StyleSheet.create({
   container: {

@@ -4,15 +4,25 @@ import styles from "./style";
 import IMAGES from "../../constants/images";
 import { TGenre } from "../../types/genre.type";
 import { apiConfig } from "../../configs";
-const { width, height } = Dimensions.get("window");
+import GenreCardSkeleton from "./GenreCardSkeleton";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../navigators/TStack";
 
 interface GenreCardProps {
   genre: TGenre;
+  loading?: boolean;
 }
 
-const GenreCard = ({ genre }: GenreCardProps) => {
+const GenreCard = ({ genre, loading = false }: GenreCardProps) => {
+  const navigation = useNavigation<NavigationProp>();
+
+  if (loading) return <GenreCardSkeleton />;
+
   return (
-    <TouchableOpacity style={[styles.container]}>
+    <TouchableOpacity
+      style={[styles.container]}
+      onPress={() => navigation.navigate("Genre", { genreId: genre.id })}
+    >
       <View style={[styles.wrapper, { backgroundColor: `${genre.color}` }]}>
         <Text style={styles.title}>{genre.title}</Text>
         <Image

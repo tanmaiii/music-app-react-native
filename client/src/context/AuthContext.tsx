@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-// import { authApi, useApi } from "../apis";
-import { TUser } from "../types/index";
-import { authApi } from "../apis";
-import userApi from "../apis/user/userApi";
+import { TUser } from "@/types/index";
+import { authApi, userApi } from "@/apis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -55,13 +53,14 @@ export const AuthContextProvider = ({ children }: Props) => {
   const getInfo = async () => {
     setLoadingAuth(true);
     try {
-      const res = await userApi.getMe(token);
-      res ? setCurrentUser(res) : setCurrentUser(null);
+      const res = token && (await userApi.getMe(token));
+      res && setCurrentUser(res);
       console.log("Get Me", res);
       setLoadingAuth(false);
       return res;
     } catch (error) {
-      console.log("Get Me :", error.response.data);
+      setCurrentUser(null);
+      console.log("ERROR GET ME  :", error.response.data);
     }
     setLoadingAuth(false);
     return null;

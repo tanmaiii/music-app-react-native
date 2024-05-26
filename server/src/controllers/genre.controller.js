@@ -112,10 +112,40 @@ export const getAllGenres = (req, res) => {
   }
 };
 
+export const getAllSongsGenre = (req, res) => {
+  try {
+    Genre.findSongsByGenreId(req.params.genreId, req.query, (err, data) => {
+      if (err) {
+        return res.status(401).json({ conflictError: err });
+      } else {
+        return res.json(data);
+      }
+    });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+export const getAllPlaylistsGenre = (req, res) => {
+  try {
+    Genre.findPlaylistsByGenreId(req.params.genreId, req.query, (err, data) => {
+      if (err) {
+        return res.status(401).json({ conflictError: err });
+      } else {
+        return res.json(data);
+      }
+    });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
 export default {
   getGenre,
   createGenre,
   updateGenre,
   deleteGenre,
   getAllGenres,
+  getAllSongsGenre,
+  getAllPlaylistsGenre,
 };

@@ -1,48 +1,37 @@
+import {
+  faChevronLeft,
+  faCircleExclamation,
+  faEnvelope
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
+import { useNavigation } from "@react-navigation/native";
+import Constants from "expo-constants";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TextInput,
-  ScrollView,
-  StatusBar,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  Pressable,
   ActivityIndicator,
-  Keyboard,
+  Image,
   ImageBackground,
-  SafeAreaView,
+  Keyboard,
+  KeyboardAvoidingView,
   Platform,
-  BackHandler,
-  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
-import { usePlaying } from "../../context/PlayingContext";
-import IMAGES from "../../constants/images";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
-import { useFocusEffect, useLinkTo, useNavigation } from "@react-navigation/native";
-import styles from "./style";
-import { useAuth } from "../../context/AuthContext";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  faLock,
-  faEnvelope,
-  faCircleExclamation,
-  faEyeSlash,
-  faEye,
-  faChevronLeft,
-} from "@fortawesome/free-solid-svg-icons";
-import { NavigationProp } from "../../navigators/TStack";
 import { TouchableHighlight } from "react-native-gesture-handler";
-import Constants from "expo-constants";
-const statusBarHeight = Constants.statusBarHeight;
-import { REGEX } from "../../utils/index";
-import { authApi } from "../../apis";
+import { authApi } from "@/apis";
+import CustomModal from "@/components/CustomModal";
+import IMAGES from "@/constants/images";
+import { NavigationProp } from "@/navigators/TStack";
+import { COLORS, SPACING } from "@/theme/theme";
+import { REGEX } from "@/utils/index";
 import VerifyScreen from "./Verify";
-import CustomModal from "../../components/CustomModal";
+import styles from "./style";
+const statusBarHeight = Constants.statusBarHeight;
 
 interface ForgetPasswordProps {}
 

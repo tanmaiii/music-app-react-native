@@ -12,19 +12,19 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import IMAGES from "../../constants/images";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
+import IMAGES from "@/constants/images";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faAngleRight, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import Constants from "expo-constants";
-import { apiConfig } from "../../configs";
+import { apiConfig } from "@/configs";
 const statusBarHeight = Constants.statusBarHeight;
 import * as ImagePicker from "expo-image-picker";
-import { imageApi, userApi } from "../../apis";
+import { imageApi, userApi } from "@/apis";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { NavigationProp } from "../../navigators/TStack";
+import { NavigationProp } from "@/navigators/TStack";
 
 interface AccountProps {}
 
@@ -78,8 +78,8 @@ const EditProfile = (props: AccountProps) => {
     if (!result.canceled) {
       const file = {
         uri: result.assets[0].uri,
-        type: result.assets[0].type,
-        name: result.assets[0].fileName,
+        type: "image/jpeg",
+        name: "photo.jpg",
       };
       setFile(file);
       mutationSaveImage.mutate();
@@ -88,18 +88,18 @@ const EditProfile = (props: AccountProps) => {
 
   const showOptions = () => {
     Alert.alert(
-      "Chọn ảnh",
-      "Bạn muốn lấy ảnh từ thư viện hay chụp ảnh mới?",
+      "Select Image",
+      "Do you want to choose an image from the library or take a new photo?",
       Platform.OS === "ios"
         ? [
-            { text: "Chụp ảnh", onPress: takePhoto },
-            { text: "Lấy ảnh từ thư viện", onPress: pickImageFromLibrary },
-            { text: "Hủy bỏ", onPress: () => console.log("Hủy bỏ") },
+            { text: "Take Photo", onPress: takePhoto },
+            { text: "Choose from Library", onPress: pickImageFromLibrary },
+            { text: "Cancel", onPress: () => console.log("Cancel") },
           ]
         : [
-            { text: "Hủy bỏ", onPress: () => console.log("Hủy bỏ") },
-            { text: "Lấy ảnh từ thư viện", onPress: pickImageFromLibrary },
-            { text: "Chụp ảnh", onPress: takePhoto },
+            { text: "Cancel", onPress: () => console.log("Cancel") },
+            { text: "Choose from Library", onPress: pickImageFromLibrary },
+            { text: "Take Photo", onPress: takePhoto },
           ],
       { cancelable: true }
     );
@@ -117,7 +117,7 @@ const EditProfile = (props: AccountProps) => {
           image_path: res.image,
         });
     } catch (error) {
-      console.error("Lỗi khi tải ảnh lên server:", error);
+      console.error("Lỗi khi tải ảnh lên server:", error.response.data);
     }
   };
 

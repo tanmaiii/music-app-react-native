@@ -60,8 +60,8 @@ Genre.delete = (id, result) => {
 
 Genre.findAll = async (query, result) => {
   const q = query?.q;
-  const page = query?.page;
-  const limit = query?.limit;
+  const page = query?.page || 1;
+  const limit = query?.limit || 10;
   const sort = query?.sortBy || "new";
 
   const offset = (page - 1) * limit;
@@ -91,6 +91,108 @@ Genre.findAll = async (query, result) => {
 
     return;
   }
+  result(null, null);
+};
+
+Genre.findSongsByGenreId = async (genreId, query, result) => {
+  const q = query?.q;
+  const page = query?.page || 1;
+  const limit = query?.limit || 10;
+  const sort = query?.sortBy || "count";
+
+  const offset = (page - 1) * limit;
+
+  const [data] = await promiseDb.query(
+    `SELECT s.*, u.name as author, fsc.count ` +
+      ` FROM genre as g` +
+      ` LEFT JOIN songs as s on s.genre_id = g.id` +
+      ` LEFT JOIN users as u on u.id = s.user_id` +
+      ` LEFT JOIN favourite_songs_count as fsc on fsc.song_id = s.id` +
+      ` WHERE g.id = '${genreId}' and s.public = 1 and s.is_deleted = 0` +
+      ` ${q ? ` AND s.title LIKE "%${q}%" ` : ""} ` +
+      `  ${sort === "new" ? " ORDER BY created_at DESC " : ""}` +
+      `  ${sort === "old" ? " ORDER BY created_at ASC " : ""}` +
+      `  ${sort === "count" ? " ORDER BY count DESC " : ""}` +
+      ` LIMIT ${+limit} OFFSET ${+offset}`
+  );
+
+  const [totalCount] = await promiseDb.query(
+    `SELECT COUNT(*) AS totalCount ` +
+      ` FROM genre as g` +
+      ` LEFT JOIN songs as s on s.genre_id = g.id` +
+      ` LEFT JOIN users as u on u.id = s.user_id` +
+      ` LEFT JOIN favourite_songs_count as fsc on fsc.song_id = s.id` +
+      ` WHERE g.id = '${genreId}' and s.public = 1 and s.is_deleted = 0` +
+      ` ${q ? ` AND s.title LIKE "%${q}%" ` : ""} `
+  );
+
+  if (data && totalCount) {
+    const totalPages = Math.ceil(totalCount[0].totalCount / limit);
+
+    result(null, {
+      data,
+      pagination: {
+        page: +page,
+        limit: +limit,
+        totalCount: totalCount[0].totalCount,
+        totalPages,
+      },
+    });
+
+    return;
+  }
+
+  result(null, null);
+};
+
+Genre.findPlaylistsByGenreId = async (genreId, query, result) => {
+  const q = query?.q;
+  const page = query?.page || 1;
+  const limit = query?.limit || 10;
+  const sort = query?.sortBy || "count";
+
+  const offset = (page - 1) * limit;
+
+  const [data] = await promiseDb.query(
+    ` SELECT p.*, u.name as author, fpc.count ` +
+      ` FROM genre as g ` +
+      ` LEFT JOIN playlists as p on p.genre_id = g.id` +
+      ` LEFT JOIN users as u on u.id = p.user_id` +
+      ` LEFT JOIN favourite_playlists_count as fpc on fpc.playlist_id = p.id` +
+      ` WHERE g.id = '${genreId}' and p.public = 1 and p.is_deleted = 0` +
+      ` ${q ? ` AND p.title LIKE "%${q}%" ` : ""} ` +
+      ` ${sort === "new" ? " ORDER BY created_at DESC " : ""}` +
+      ` ${sort === "old" ? " ORDER BY created_at ASC " : ""}` +
+      ` ${sort === "count" ? " ORDER BY count DESC " : ""}` +
+      ` LIMIT ${+limit} OFFSET ${+offset}`
+  );
+
+  const [totalCount] = await promiseDb.query(
+    ` SELECT COUNT(*) AS totalCount ` +
+      ` FROM genre as g ` +
+      ` LEFT JOIN playlists as p on p.genre_id = g.id` +
+      ` LEFT JOIN users as u on u.id = p.user_id` +
+      ` LEFT JOIN favourite_playlists_count as fpc on fpc.playlist_id = p.id` +
+      ` WHERE g.id = '${genreId}' and p.public = 1 and p.is_deleted = 0` +
+      ` ${q ? ` AND p.title LIKE "%${q}%" ` : ""} `
+  );
+
+  if (data && totalCount) {
+    const totalPages = Math.ceil(totalCount[0].totalCount / limit);
+
+    result(null, {
+      data,
+      pagination: {
+        page: +page,
+        limit: +limit,
+        totalCount: totalCount[0].totalCount,
+        totalPages,
+      },
+    });
+
+    return;
+  }
+
   result(null, null);
 };
 

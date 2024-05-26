@@ -1,21 +1,21 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as React from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
-import { TUser } from "../../types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import numeral from "numeral";
+import * as React from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { userApi } from "../../apis";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
 import { apiConfig } from "../../configs";
 import { IMAGES } from "../../constants";
-import numeral from "numeral";
+import { useAuth } from "../../context/AuthContext";
+import { NavigationProp } from "../../navigators/TStack";
+import { COLORS } from "../../theme/theme";
+import { TUser } from "../../types";
+import styles from "./style";
 
 interface ArtistItemProps {}
 
 const ArtistItem = ({ userId }: { userId: string }) => {
   const [artist, setArtist] = React.useState<TUser>();
-  const [followersCount, setFollowersCount] = React.useState<number>(0);
   const navigate = useNavigation<NavigationProp>();
   const { token, currentUser } = useAuth();
   const queryClient = useQueryClient();
@@ -100,48 +100,3 @@ const ArtistItem = ({ userId }: { userId: string }) => {
 };
 
 export default ArtistItem;
-
-const styles = StyleSheet.create({
-  textMain: {
-    fontSize: FONTSIZE.size_16,
-    fontFamily: FONTFAMILY.medium,
-    color: COLORS.White1,
-  },
-  textExtra: {
-    fontSize: FONTSIZE.size_14,
-    fontFamily: FONTFAMILY.regular,
-    color: COLORS.White2,
-  },
-  boxArtist: {
-    width: "100%",
-    paddingHorizontal: SPACING.space_12,
-    paddingVertical: SPACING.space_12,
-    backgroundColor: COLORS.Black2,
-    borderRadius: BORDERRADIUS.radius_14,
-    justifyContent: "space-between",
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: SPACING.space_12,
-  },
-  leftBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.space_12,
-  },
-  boxImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-  },
-  boxDesc: {
-    gap: SPACING.space_4,
-  },
-  rightBox: {},
-  btnFollow: {
-    borderRadius: BORDERRADIUS.radius_20,
-    borderColor: COLORS.WhiteRGBA32,
-    borderWidth: 0.8,
-    paddingHorizontal: SPACING.space_16,
-    paddingVertical: SPACING.space_8,
-  },
-});

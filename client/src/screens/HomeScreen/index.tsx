@@ -12,21 +12,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import CategoryHeader from "../../components/CategoryHeader";
-import HomeTop from "../../components/HomeTop";
-import SongCard from "../../components/SongCard";
-import IMAGES from "../../constants/images";
-import { COLORS, HEIGHT, SPACING } from "../../theme/theme";
+import CategoryHeader from "@/components/CategoryHeader";
+import HomeTop from "@/components/HomeTop";
+import SongCard from "@/components/SongCard";
+import IMAGES from "@/constants/images";
+import { COLORS, SPACING } from "@/theme/theme";
 import styles from "./style";
 
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { useLinkTo } from "@react-navigation/native";
-import { QueryClient, useQuery } from "@tanstack/react-query";
-import { favouriteApi, playlistApi, songApi, userApi } from "../../apis";
-import ArtistCard from "../../components/ArtistCard";
-import PlaylistCard from "../../components/PlaylistCard";
-import Slider from "../../components/Slider";
-import { useAuth } from "../../context/AuthContext";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { favouriteApi, playlistApi, searchApi, songApi, userApi } from "@/apis";
+import ArtistCard from "@/components/ArtistCard";
+import PlaylistCard from "@/components/PlaylistCard";
+import SectionCard from "@/components/SectionCard";
+import Slider from "@/components/Slider";
+import { useAuth } from "@/context/AuthContext";
 
 interface HomeScreenProps {}
 
@@ -36,6 +37,7 @@ const HomeScreen = ({ navigation }: any) => {
   const linkTo = useLinkTo();
   const { currentUser, setCurrentUser, logout, token } = useAuth();
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const date = new Date();
@@ -59,6 +61,7 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   const handleGetToken = async () => {
+    queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     console.log("token", token);
   };
 
@@ -71,9 +74,41 @@ const HomeScreen = ({ navigation }: any) => {
     isLoading: loadingPlaylists,
     refetch: refetchPlaylists,
   } = useQuery({
-    queryKey: ["playlists"],
+    queryKey: ["playlists-popular"],
     queryFn: async () => {
-      const res = await playlistApi.getAll(1, 10);
+      const res = await searchApi.getPlaylists(token, 1, 10, undefined, "count");
+      return res.data;
+    },
+  });
+
+  const { data: playlistsNew, refetch: refetchPlaylistNew } = useQuery({
+    queryKey: ["playlists-new"],
+    queryFn: async () => {
+      const res = await searchApi.getPlaylists(token, 1, 10, undefined, "new");
+      return res.data;
+    },
+  });
+
+  const {
+    data: songsNew,
+    isLoading: loadingSongsNew,
+    refetch: refetchSongsNew,
+  } = useQuery({
+    queryKey: ["songs-new"],
+    queryFn: async () => {
+      const res = await searchApi.getSongs(token, 1, 10, undefined, "new");
+      return res.data;
+    },
+  });
+
+  const {
+    data: songs,
+    isLoading: loadingSongs,
+    refetch: refetchSongs,
+  } = useQuery({
+    queryKey: ["songs-popular"],
+    queryFn: async () => {
+      const res = await searchApi.getSongs(token, 1, 10, undefined, "count");
       return res.data;
     },
   });
@@ -88,19 +123,6 @@ const HomeScreen = ({ navigation }: any) => {
       const res = await userApi.getAll(1, 10);
       console.log(res.data);
 
-      return res.data;
-    },
-  });
-
-  const {
-    data: songs,
-    isLoading: loadingSongs,
-    refetch: refetchSongs,
-  } = useQuery({
-    queryKey: ["songs"],
-    queryFn: async () => {
-      const res = await songApi.getAll(1, 10);
-      console.log("Reload");
       return res.data;
     },
   });
@@ -124,30 +146,21 @@ const HomeScreen = ({ navigation }: any) => {
         refetchArtist(),
         refetchPlaylists(),
         refetchSongs(),
+        refetchPlaylistNew(),
         setRefreshing(false);
     }, 2000);
   }, []);
 
-  const LoadingView = [];
-
-  for (let i = 0; i < 3; i++) {
-    LoadingView.push(
-      <View style={{ paddingHorizontal: SPACING.space_10 }}>
-        <CategoryHeader title={"test"} loading={true} />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
-            <SongCard song={null} loading={true} />
-          </View>
-          <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
-            <SongCard song={null} loading={true} />
-          </View>
-          <View style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}>
-            <SongCard song={null} loading={true} />
-          </View>
-        </ScrollView>
-      </View>
+  const LoadingView = () => {
+    return (
+      <>
+        <SectionCard title="" loading={true} data={null} />
+        <SectionCard title="" loading={true} data={null} />
+        <SectionCard title="" loading={true} data={null} />
+        <SectionCard title="" loading={true} data={null} />
+      </>
     );
-  }
+  };
 
   return (
     <>
@@ -168,7 +181,6 @@ const HomeScreen = ({ navigation }: any) => {
         <ScrollView
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
-          // style={{ paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 40 }}
           onScroll={(e) => {
             const offsetY = e.nativeEvent.contentOffset.y;
             animatedValue.setValue(offsetY);
@@ -183,85 +195,97 @@ const HomeScreen = ({ navigation }: any) => {
           scrollEventThrottle={16}
         >
           <View style={styles.scroll}>
-            <Slider data={songs} loading={loadingSongs} />
+            <Slider data={undefined} loading={loadingSongs} />
 
             <HomeTop data={playlistFavourite} loading={loadingPlaylistFavourite} />
 
-            {(loadingSongs || loadingPlaylists || loadingArtists) && LoadingView}
-
-            {songs && (
-              <View style={{ paddingHorizontal: SPACING.space_10 }}>
-                <CategoryHeader title={"Song popular"} loading={loadingSongs} />
-                <FlatList
-                  data={songs}
-                  keyExtractor={(item: any) => item.id}
-                  bounces={false}
-                  snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  decelerationRate={0}
-                  style={{ gap: SPACING.space_12 }}
-                  renderItem={({ item, index }) => (
-                    <View
-                      key={index}
-                      style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
-                    >
-                      <SongCard song={item} loading={loadingSongs} />
-                    </View>
-                  )}
-                />
-              </View>
-            )}
-
-            {playlists && (
-              <View style={{ paddingHorizontal: SPACING.space_10 }}>
-                <CategoryHeader title={"Playlist popular"} loading={loadingPlaylists} />
-                <FlatList
-                  data={playlists}
-                  keyExtractor={(item: any) => item.id}
-                  bounces={false}
-                  snapToInterval={WINDOW_WIDTH / 2.4 + SPACING.space_12}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  decelerationRate={0}
-                  style={{ gap: SPACING.space_12 }}
-                  renderItem={({ item, index }) => (
-                    <View
-                      key={index}
-                      style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
-                    >
-                      <PlaylistCard playlist={item} />
-                    </View>
-                  )}
-                />
-              </View>
-            )}
-
-            {artists && (
-              <View style={{ paddingHorizontal: SPACING.space_10 }}>
-                <CategoryHeader title={"Artist song"} loading={loadingArtists} />
-                <FlatList
-                  data={artists}
-                  keyExtractor={(item: any) => item.id}
-                  bounces={false}
-                  snapToInterval={WINDOW_WIDTH / 3 + SPACING.space_12}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  decelerationRate={0}
-                  style={{ gap: SPACING.space_12 }}
-                  renderItem={({ item, index }) => {
-                    if (item.id === currentUser.id) return;
-                    return (
+            {loadingSongs || loadingPlaylists || loadingArtists ? (
+              <LoadingView />
+            ) : (
+              <>
+                {songsNew && (
+                  <SectionCard
+                    title="Song new"
+                    loading={loadingSongsNew}
+                    data={songsNew}
+                    renderItem={({ item, index }) => (
                       <View
                         key={index}
-                        style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}
+                        style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
                       >
-                        <ArtistCard artist={item} />
+                        <SongCard song={item} loading={false} />
                       </View>
-                    );
-                  }}
-                />
-              </View>
+                    )}
+                  />
+                )}
+
+                {songs && (
+                  <SectionCard
+                    title="Song popular"
+                    loading={loadingSongs}
+                    data={songs}
+                    renderItem={({ item, index }) => (
+                      <View
+                        key={index}
+                        style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                      >
+                        <SongCard song={item} loading={false} />
+                      </View>
+                    )}
+                  />
+                )}
+
+                {playlistsNew && (
+                  <SectionCard
+                    title="Playlist new"
+                    data={playlistsNew}
+                    renderItem={({ item, index }) => (
+                      <View
+                        key={index}
+                        style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                      >
+                        <PlaylistCard playlist={item} />
+                      </View>
+                    )}
+                  />
+                )}
+
+                {playlists && (
+                  <SectionCard
+                    title="Playlist popular"
+                    loading={loadingPlaylists}
+                    data={playlists}
+                    renderItem={({ item, index }) => (
+                      <View
+                        key={index}
+                        style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                      >
+                        <PlaylistCard playlist={item} />
+                      </View>
+                    )}
+                  />
+                )}
+
+                {artists && (
+                  <SectionCard
+                    title="Artist song"
+                    loading={loadingArtists}
+                    data={artists}
+                    numItem={3}
+                    renderItem={({ item, index }) => {
+                      if (item.id === currentUser.id) return;
+                      return (
+                        <View
+                          key={index}
+                          style={{ width: WINDOW_WIDTH / 3, marginRight: SPACING.space_12 }}
+                        >
+                          <ArtistCard artist={item} />
+                        </View>
+                      );
+                    }}
+                  />
+                )}
+              </>
             )}
           </View>
         </ScrollView>

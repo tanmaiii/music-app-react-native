@@ -26,12 +26,12 @@ import CustomModal from "../CustomModal";
 
 interface ModalSongProps {
   playlist?: TPlaylist;
-  setOpenModal: (boolean) => void;
+  setIsOpen: (boolean) => void;
   setIsOpenAddSong: (boolean) => void;
   setIsOpenEdit: (boolean) => void;
 }
 
-const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: ModalSongProps) => {
+const ModalSong = ({ playlist, setIsOpen, setIsOpenEdit, setIsOpenAddSong }: ModalSongProps) => {
   const queryClient = useQueryClient();
   const { token, currentUser } = useAuth();
   const navigation = useNavigation<NavigationProp>();
@@ -82,7 +82,7 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: 
       }
     },
     onSuccess: () => {
-      setOpenModal(false);
+      setIsOpen(false);
       queryClient.invalidateQueries({
         queryKey: ["playlist", playlist.id],
       });
@@ -102,7 +102,7 @@ const ModalSong = ({ playlist, setOpenModal, setIsOpenEdit, setIsOpenAddSong }: 
   });
 
   const handleGoArtist = () => {
-    setOpenModal(false);
+    setIsOpen(false);
     navigation.navigate("Artist", { userId: playlist?.user_id });
   };
 

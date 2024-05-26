@@ -1,45 +1,39 @@
-import * as React from "react";
-import { useRef, useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableHighlight,
-  TouchableOpacity,
-  StatusBar,
-  Animated,
-  Platform,
-  FlatList,
-  Keyboard,
-  ActivityIndicator,
-} from "react-native";
-import IMAGES from "../../constants/images";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { TSong } from "../../types";
-import SongItem from "../../components/SongItem";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faChevronLeft,
-  faHeart as faHeartSolid,
   faMagnifyingGlass,
-  faPlay,
+  faPlay
 } from "@fortawesome/free-solid-svg-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query";
 import Constants from "expo-constants";
+import { LinearGradient } from "expo-linear-gradient";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Animated,
+  FlatList,
+  Keyboard,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { RefreshControl } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { favouriteApi, songApi } from "@/apis";
+import ModalSearchSong from "@/components/ModalSearchSong";
+import SongItem from "@/components/SongItem";
+import { useAuth } from "@/context/AuthContext";
+import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
+import { TSong } from "@/types";
 const statusBarHeight = Constants.statusBarHeight;
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
-import ModalSearchSong from "../../components/ModalSearchSong";
-import { favouriteApi, songApi } from "../../apis";
-import { useAuth } from "../../context/AuthContext";
-import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
-import { useQuery } from "@tanstack/react-query";
-import { RefreshControl } from "react-native-gesture-handler";
-import { Skeleton } from "moti/skeleton";
 
 interface ListSongScreenProps {}
 

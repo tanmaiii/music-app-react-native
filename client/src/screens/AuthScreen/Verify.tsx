@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import styles from "./style";
-import { IMAGES } from "../../constants";
-import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { OTPInput } from "../../components/OTPInput/OTPInput";
-import { authApi } from "../../apis";
+import { IMAGES } from "@/constants";
+import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import { OTPInput } from "@/components/OTPInput";
+import { authApi } from "@/apis";
 import { useNavigation } from "@react-navigation/native";
 
 interface VeridyScreenProps {
@@ -17,7 +17,7 @@ const VerifyScreen = ({ email, err, onSubmit }: VeridyScreenProps) => {
   const [loadingResend, setLoadingResend] = React.useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = React.useState<boolean>(false);
   const [errVerify, setErrVerify] = React.useState<string>(err);
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const [code, setCode] = React.useState<Array<string>>(["", "", "", ""]);
 
   React.useEffect(() => {
@@ -29,7 +29,6 @@ const VerifyScreen = ({ email, err, onSubmit }: VeridyScreenProps) => {
       gestureEnabled: false, // Vô hiệu hóa các cử chỉ vuốt
     });
   }, [navigation]);
-
 
   const resendCode = async () => {
     setLoadingResend(true);

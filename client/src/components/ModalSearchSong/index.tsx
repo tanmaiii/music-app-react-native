@@ -83,6 +83,8 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
           <View style={styles.headerSearch}>
             <View style={styles.headerSearchInput}>
               <CustomInput
+              value={keyword}
+                textInputRef={textInputRef}
                 clearValue={keyword ? false : true}
                 onSubmit={(text) => setKeyword(text)}
                 focus={focus}

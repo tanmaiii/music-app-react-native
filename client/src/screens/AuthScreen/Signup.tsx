@@ -1,27 +1,12 @@
 import * as React from "react";
-import {
-  Text,
-  View,
-  Image,
-  TextInput,
-  ScrollView,
-  Pressable,
-  KeyboardAvoidingView,
-  Keyboard,
-  ActivityIndicator,
-  ImageBackground,
-  Platform,
-} from "react-native";
-import { usePlaying } from "../../context/PlayingContext";
-import IMAGES from "../../constants/images";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { REGEX, WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { TouchableHighlight } from "@gorhom/bottom-sheet";
-import { useNavigation } from "@react-navigation/native";
-import styles from "./style";
-import { authApi } from "../../apis";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { authApi } from "@/apis";
+import IMAGES from "@/constants/images";
+import { usePlaying } from "@/context/PlayingContext";
+import { useToast } from "@/context/ToastContext";
+import { NavigationProp } from "@/navigators/TStack";
+import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import { TStateAuth } from "@/types";
+import { REGEX, WINDOW_HEIGHT } from "@/utils";
 import {
   faChevronLeft,
   faCircleExclamation,
@@ -31,13 +16,27 @@ import {
   faLock,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import { text } from "@fortawesome/fontawesome-svg-core";
-import { NavigationProp } from "../../navigators/TStack";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { TouchableHighlight } from "@gorhom/bottom-sheet";
+import { useNavigation } from "@react-navigation/native";
 import Constants from "expo-constants";
-const statusBarHeight = Constants.statusBarHeight;
+import {
+  ActivityIndicator,
+  Image,
+  ImageBackground,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import VerifyScreen from "./Verify";
-import { useToast } from "../../context/ToastContext";
-import { TStateAuth } from "../../types";
+import styles from "./style";
+const statusBarHeight = Constants.statusBarHeight;
 
 interface SignupScreenProps {}
 

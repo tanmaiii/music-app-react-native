@@ -102,7 +102,7 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["songs", playlistId],
+        queryKey: ["playlist-songs", playlistId],
       });
       setOpenModal(false);
     },

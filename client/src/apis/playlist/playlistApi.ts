@@ -25,6 +25,14 @@ const playlistApi = {
       }
     );
   },
+  updatePlaylist(token: string, playlistId: string, body: TPlaylist) {
+    const url = "playlist/";
+    return axiosClient.put(url + playlistId, body, {
+      headers: {
+        authorization: token,
+      },
+    });
+  },
   deletePlaylist(token: string, playlistId: string) {
     const url = "playlist/delete/";
     return axiosClient.patch(
@@ -180,13 +188,19 @@ const playlistApi = {
       },
     });
   },
-  updatePlaylist(token: string, playlistId: string, body: TPlaylist) {
-    const url = "playlist/";
-    return axiosClient.put(url + playlistId, body, {
-      headers: {
-        authorization: token,
+  updateSong(token: string, playlistId: string, songs: { id: string; num_song: number }[]) {
+    const url = "playlist/song/";
+    return axiosClient.put(
+      url + playlistId,
+      {
+        songs: songs,
       },
-    });
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
   },
 };
 

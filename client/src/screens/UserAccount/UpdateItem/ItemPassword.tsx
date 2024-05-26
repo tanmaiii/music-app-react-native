@@ -1,32 +1,28 @@
-import { useNavigation } from "@react-navigation/native";
-import * as React from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  TextInput,
-  StyleProp,
-  Keyboard,
-  ActivityIndicator,
-} from "react-native";
-import { NavigationProp } from "../../../navigators/TStack";
-import { Platform } from "react-native";
-import styles from "./style";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { authApi } from "@/apis";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import { NavigationProp } from "@/navigators/TStack";
+import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
 import {
   faChevronLeft,
   faEye,
-  faEyeSlash,
-  faSlash,
-  faXmark,
+  faEyeSlash
 } from "@fortawesome/free-solid-svg-icons";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../../theme/theme";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
 import Constants from "expo-constants";
-import { authApi } from "../../../apis";
-import { useAuth } from "../../../context/AuthContext";
-import { useToast } from "../../../context/ToastContext";
+import * as React from "react";
+import {
+  ActivityIndicator,
+  Keyboard,
+  Platform,
+  SafeAreaView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
+import styles from "./style";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface ItemNameProps {}

@@ -1,17 +1,17 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as React from "react";
 import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from "react-native";
-import { NavigationProp, RootRouteProps } from "../../../navigators/TStack";
+import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
 import { Platform } from "react-native";
 import styles from "./style";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faChevronLeft, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { COLORS, FONTSIZE, HEIGHT, SPACING } from "../../../theme/theme";
+import { COLORS, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
 import Constants from "expo-constants";
-import { userApi } from "../../../apis";
-import { useAuth } from "../../../context/AuthContext";
-import CustomModal from "../../../components/CustomModal";
-import { useToast } from "../../../context/ToastContext";
+import { userApi } from "@/apis";
+import { useAuth } from "@/context/AuthContext";
+import CustomModal from "@/components/CustomModal";
+import { useToast } from "@/context/ToastContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 const statusBarHeight = Constants.statusBarHeight;
 

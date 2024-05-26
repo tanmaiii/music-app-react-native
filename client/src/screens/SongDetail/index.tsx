@@ -1,55 +1,52 @@
-import * as React from "react";
-import styles from "./style";
-import {
-  Text,
-  View,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  StatusBar,
-  Animated,
-  Platform,
-  ImageBackground,
-  Share,
-  Pressable,
-} from "react-native";
-import IMAGES from "../../constants/images";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { TSong, TUser } from "../../types";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import {
   faArrowUpFromBracket,
   faChevronLeft,
   faEllipsis,
-  faHeart as faHeartSolid,
+  faHeart,
   faLock,
   faPause,
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Constants from "expo-constants";
+import { LinearGradient } from "expo-linear-gradient";
+import * as React from "react";
+import {
+  Animated,
+  Image,
+  ImageBackground,
+  Platform,
+  Pressable,
+  ScrollView,
+  Share,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import CustomBottomSheet from "@/components/CustomBottomSheet";
+import IMAGES from "@/constants/images";
+import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import styles from "./style";
 const statusBarHeight = Constants.statusBarHeight;
-import CustomBottomSheet from "../../components/CustomBottomSheet";
 
-import { AddSongToPlaylist, ModalSong } from "../../components/ItemModal";
-import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
-import apiConfig from "../../configs/axios/apiConfig";
-import { songApi, userApi } from "../../apis";
-import { useAuth } from "../../context/AuthContext";
-import { usePlaying } from "../../context/PlayingContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import ArtistItem from "../../components/ArtistItem";
 import moment from "moment";
+import { songApi } from "@/apis";
+import ArtistItem from "@/components/ArtistItem";
+import { ModalSong } from "@/components/ItemModal";
+import apiConfig from "@/configs/axios/apiConfig";
+import { useAudio } from "@/context/AudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { usePlaying } from "@/context/PlayingContext";
+import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
 import SongDetailSkeleton from "./SongDetailSkeleton";
-import { useAudio } from "../../context/AudioContext";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
-const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 
 interface SongDetailProps {}
 

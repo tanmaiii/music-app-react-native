@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import ToastMessage from "../components/ToastMessage";
+import ToastMessage from "@/components/ToastMessage";
 
 interface IToastContext {
   toastMessage: string;
-  setToastMessage: (string) => void;
+  setToastMessage: (value: string) => void;
 }
 
 export const ToastContext = createContext<IToastContext | null>(null);

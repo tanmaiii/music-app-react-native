@@ -43,6 +43,7 @@ export const getMe = async (req, res) => {
     User.findById(userInfo.id, (err, user) => {
       if (!user) {
         const conflictError = err;
+        console.log("GET ME: ", conflictError);
         return res.status(401).json({ conflictError });
       } else {
         const { password, ...others } = user;
@@ -85,8 +86,6 @@ export const findByEmail = (req, res) => {
     res.status(400).json(error);
   }
 };
-
-
 
 export default {
   getUser,

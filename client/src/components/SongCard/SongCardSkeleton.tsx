@@ -16,7 +16,7 @@ const SongCardSkeleton = () => {
     <TouchableOpacity>
       <View style={[styles.container]}>
         <View style={styles.wrapperImage}>
-          <Skeleton {...SkeletonCommonProps} height={170} width={"100%"} />
+          <Skeleton {...SkeletonCommonProps} height={170} width={"100%"} radius={8} />
         </View>
 
         <View style={{ gap: SPACING.space_4 }}>

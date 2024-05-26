@@ -9,7 +9,6 @@ const styles = StyleSheet.create({
     position: "relative",
     height: "100%",
     padding: SPACING.space_16,
-    backgroundColor: COLORS.Primary,
     borderRadius: BORDERRADIUS.radius_4,
     overflow: "hidden",
   },

@@ -8,12 +8,12 @@ import {
   Platform,
   Pressable,
 } from "react-native";
-import IMAGES from "../../constants/images";
+import IMAGES from "@/constants/images";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "../../theme/theme";
+import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
 import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import SongItem from "../../components/SongItem";
+import SongItem from "@/components/SongItem";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
@@ -28,20 +28,20 @@ import {
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
-import CustomBottomSheet from "../../components/CustomBottomSheet";
-import { AddSongFromPlaylist, ModalPlaylist, EditPlaylist } from "../../components/ItemModal";
-import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
-import { playlistApi, songApi, userApi } from "../../apis";
-import { useAuth } from "../../context/AuthContext";
-import apiConfig from "../../configs/axios/apiConfig";
+import CustomBottomSheet from "@/components/CustomBottomSheet";
+import { AddSongFromPlaylist, ModalPlaylist, EditPlaylist } from "@/components/ItemModal";
+import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
+import { playlistApi, songApi, userApi } from "@/apis";
+import { useAuth } from "@/context/AuthContext";
+import apiConfig from "@/configs/axios/apiConfig";
 import { FlatList, RefreshControl } from "react-native-gesture-handler";
-import CategoryHeader from "../../components/CategoryHeader";
-import PlaylistCard from "../../components/PlaylistCard";
+import CategoryHeader from "@/components/CategoryHeader";
+import PlaylistCard from "@/components/PlaylistCard";
 const statusBarHeight = Constants.statusBarHeight;
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import styles from "./style";
 import PlaylistDetailSkeleton from "./PlaylistDetailSkeleton";
-import ArtistItem from "../../components/ArtistItem";
+import ArtistItem from "@/components/ArtistItem";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -161,7 +161,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     refetch: refetchSongs,
     isLoading: loadingSongs,
   } = useQuery({
-    queryKey: ["songs", playlistId],
+    queryKey: ["playlist-songs", playlistId],
     queryFn: async () => {
       const res = await songApi.getAllByPlaylistId(token, playlistId, 1, 50);
       setTotalCount(res.pagination.totalCount);
@@ -217,7 +217,10 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
             <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
               <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
             </TouchableOpacity>
-            <Animated.Text numberOfLines={1} style={[styles.titleHeader, headerAnimation]}>
+            <Animated.Text
+              numberOfLines={1}
+              style={[styles.titleHeader, headerAnimation, { maxWidth: 200 }]}
+            >
               {playlist?.title || ""}
             </Animated.Text>
             <TouchableOpacity
@@ -261,7 +264,10 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                   </Animated.View>
                   <Text
                     numberOfLines={2}
-                    style={[styles.textMain, { fontSize: FONTSIZE.size_24, maxWidth: "80%" }]}
+                    style={[
+                      styles.textMain,
+                      { fontSize: FONTSIZE.size_24, maxWidth: "80%", textAlign: "center" },
+                    ]}
                   >
                     {playlist?.title || "Unknown"}
                   </Text>
@@ -368,16 +374,8 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
               )}
               ListFooterComponent={
                 <View style={styles.wrapperFooter}>
-                  <View
-                    style={{
-                      width: "100%",
-                      paddingHorizontal: SPACING.space_12,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: SPACING.space_8,
-                    }}
-                  >
-                    <Text style={[styles.textMain]}>About artist</Text>
+                  <View style={{ paddingHorizontal: SPACING.space_10 }}>
+                    <CategoryHeader title="About artist" />
                     <ArtistItem userId={playlist?.user_id} />
                   </View>
                   <CategoryHeader
@@ -393,8 +391,6 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                   >
                     {playlists &&
                       playlists?.map((playlist, index) => {
-                        // if (playlist.id === playlistId) return <View key={index}></View>;
-
                         return (
                           <View
                             key={index}
@@ -423,7 +419,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
         >
           <View onLayout={(e) => setHeightModal(e.nativeEvent.layout.height)}>
             <ModalPlaylist
-              setOpenModal={setIsOpenModal}
+              setIsOpen={setIsOpenModal}
               playlist={playlist}
               setIsOpenAddSong={setIsOpenModalAddSong}
               setIsOpenEdit={setIsOpenModalEdit}

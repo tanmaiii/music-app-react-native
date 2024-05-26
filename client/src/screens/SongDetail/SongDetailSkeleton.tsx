@@ -1,10 +1,8 @@
-import * as React from "react";
-import styles from "./style";
-import { Text, View, TouchableOpacity } from "react-native";
+import { COLORS, SPACING } from "@/theme/theme";
 import { Skeleton } from "moti/skeleton";
-import { COLORS, SPACING } from "../../theme/theme";
-import { WINDOW_WIDTH } from "../../utils";
-import { duration } from "moment";
+import * as React from "react";
+import { View } from "react-native";
+import styles from "./style";
 
 const SkeletonCommonProps = {
   colorMode: "dark",

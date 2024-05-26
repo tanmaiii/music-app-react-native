@@ -18,11 +18,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.Black1,
   },
+  header: {
+    width: "100%",
+    padding: SPACING.space_12,
+    flexDirection: "column",
+    backgroundColor: COLORS.Black2,
+    gap: SPACING.space_8,
+  },
   headerSearch: {
     width: "100%",
     flexDirection: "row",
-    paddingHorizontal: SPACING.space_12,
-    paddingVertical: SPACING.space_12,
     alignItems: "center",
   },
   buttonClear: {
@@ -41,8 +46,33 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  wrapper: {
+    flexDirection: "row",
+    gap: SPACING.space_4,
+  },
+  item: {
+    width: "auto",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  titleItem: {
+    paddingHorizontal: SPACING.space_12,
+    paddingVertical: SPACING.space_4,
+    fontSize: FONTSIZE.size_14,
+    color: COLORS.White2,
+    textAlign: "center",
+    fontFamily: FONTFAMILY.medium,
+  },
+  indicator: {
+    // backgroundColor: COLORS.Primary,
+    width: "60%",
+    height: 3,
+    borderRadius: 8,
+  },
   scroll: {
     height: "100%",
+    // paddingVertical: SPACING.space_12,
     // paddingHorizontal: SPACING.space_12,
   },
   titleHeaderScroll: {

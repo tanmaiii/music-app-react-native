@@ -450,7 +450,7 @@ Playlist.unlike = (playlistId, userId, result) => {
 
 Playlist.findSongInPlaylist = (playlistId, result) => {
   db.query(
-    `SELECT song_id FROM music.playlist_songs as ps WHERE ps.playlist_id = ?`,
+    `SELECT song_id FROM playlist_songs as ps WHERE ps.playlist_id = ?`,
     [playlistId],
     (err, data) => {
       if (err) {
@@ -469,6 +469,46 @@ Playlist.findSongInPlaylist = (playlistId, result) => {
       result(null, null);
     }
   );
+};
+
+Playlist.updateSong = (playlistId, userId, songs, result) => {
+  Playlist.findById(playlistId, userId, (err, playlist) => {
+    if (err) {
+      console.log("ERROR:", err);
+      result(err, null);
+      return;
+    }
+    if (playlist.user_id !== userId) {
+      result("Không có quyền sửa", null);
+      return;
+    }
+
+    const songIds = songs.map((song) => `'${song?.id}'`);
+    const deleteQuery = `DELETE FROM playlist_songs WHERE playlist_id = '${playlistId}' AND song_id NOT IN (${songIds.join(
+      ","
+    )})`;
+
+    db.query(deleteQuery, (deleteErr, deleteRes) => {
+      if (deleteErr) {
+        console.log("ERROR:", deleteErr);
+        result(deleteErr, null);
+        return;
+      }
+      songs?.forEach((song) => {
+        db.query(
+          `UPDATE playlist_songs as ps SET num_song = ${song?.num_song} ` +
+            `WHERE ps.playlist_id = '${playlistId}' AND ps.song_id = '${song?.id}'`,
+          (err, data) => {
+            if (err) {
+              result(err, null);
+              return;
+            }
+          }
+        );
+      });
+      result(null, "Update successful");
+    });
+  });
 };
 
 Playlist.addSong = async (playlistId, songId, userId, result) => {
