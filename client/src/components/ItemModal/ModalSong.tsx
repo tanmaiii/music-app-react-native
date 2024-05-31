@@ -8,21 +8,13 @@ import {
   faPenToSquare,
   faPlusCircle,
   faShare,
-  faUser
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
-import {
-  Image,
-  Pressable,
-  Share,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Image, Pressable, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { playlistApi, songApi } from "../../apis";
 import apiConfig from "../../configs/axios/apiConfig";
@@ -193,9 +185,15 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
             itemFunc={() => mutationRemoveSongFromPlaylist.mutate()}
           />
         )}
+        <Item
+          icon={faPlusCircle}
+          title="Add to waiting"
+          itemFunc={() => console.log("Add to plalist")}
+        />
         <Item icon={faMusic} title="View detail" itemFunc={() => handleGoDetail()} />
         <Item icon={faUser} title="View artist" itemFunc={() => handleGoArtist()} />
         <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
+  
       </View>
 
       {isOpenModal && (

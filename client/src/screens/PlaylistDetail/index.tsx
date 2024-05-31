@@ -273,7 +273,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                   </Text>
 
                   <Pressable
-                    onPress={() => navigation.navigate("Artist", { userId: playlist.user_id })}
+                    onPress={() => navigation.navigate("Artist", { userId: playlist?.user_id })}
                   >
                     <Text numberOfLines={1} style={[styles.textMain, { color: COLORS.Primary }]}>
                       {playlist?.author || "Unknown"}
@@ -368,7 +368,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                   <SongItem
                     song={item}
                     loading={loadingSongs}
-                    playlistId={currentUser.id === playlist.user_id ? playlist.id : null}
+                    playlistId={currentUser?.id === playlist?.user_id ? playlist.id : null}
                   />
                 </View>
               )}

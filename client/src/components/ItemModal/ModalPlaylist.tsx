@@ -119,8 +119,8 @@ const ModalSong = ({ playlist, setIsOpen, setIsOpenEdit, setIsOpenAddSong }: Mod
             style={styles.headerImage}
           />
           <View style={styles.headerDesc}>
-            <Text style={styles.textMain}>{playlist.title}</Text>
-            <Text style={styles.textEtra}>{playlist.author}</Text>
+            <Text numberOfLines={1} style={styles.textMain}>{playlist.title}</Text>
+            <Text numberOfLines={1} style={styles.textEtra}>{playlist.author}</Text>
           </View>
         </View>
 
@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
   },
   headerDesc: {
     justifyContent: "center",
+    maxWidth: "70%"
   },
   btnShare: {
     padding: SPACING.space_12,

@@ -21,7 +21,14 @@ import { apiConfig } from "@/configs";
 import { IMAGES } from "@/constants";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
 import { TPlaylist, TSong } from "@/types";
-import ButtonSwitch from "../ButtonSwitch/ButtonSwitch";
+import ButtonSwitch from "../ButtonSwitch";
+
+import DraggableFlatList, {
+  OpacityDecorator,
+  RenderItemParams,
+  ScaleDecorator,
+  ShadowDecorator,
+} from "react-native-draggable-flatlist";
 
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
@@ -168,6 +175,30 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
     updatePlaylist({ public: isPrivate ? 0 : 1 });
   }, [isPrivate]);
 
+  const renderItem = ({
+    item,
+    drag,
+    isActive,
+  }: RenderItemParams<{ id: string; num_song: number }>) => {
+    return (
+      <ScaleDecorator>
+        <OpacityDecorator>
+          <ShadowDecorator>
+            <Animated.View>
+              <TouchableOpacity
+                onLongPress={drag}
+                activeOpacity={1}
+                style={[{ elevation: isActive ? 30 : 0 }]}
+              >
+                <SongItem setSongsNew={setSongsNew} songsNew={songsNew} songId={item?.id} />
+              </TouchableOpacity>
+            </Animated.View>
+          </ShadowDecorator>
+        </OpacityDecorator>
+      </ScaleDecorator>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ zIndex: 999 }}>
@@ -183,13 +214,71 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+      <View style={{ flex: 1 }}>
+        <DraggableFlatList
+          data={songsNew}
+          contentContainerStyle={{
+            paddingVertical: SPACING.space_20,
+          }}
+          ListHeaderComponent={
+            <View style={styles.headerBody}>
+              <View style={styles.imageBox}>
+                <TouchableOpacity style={styles.imageBoxWrapper}>
+                  <Image
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    source={
+                      file
+                        ? { uri: file.uri }
+                        : playlist?.image_path
+                        ? { uri: apiConfig.imageURL(playlist.image_path) }
+                        : IMAGES.PLAYLIST
+                    }
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonChange} onPress={showOptions}>
+                  <Text style={[styles.textExtra, { color: COLORS.Primary }]}>Change image</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.inputBox}>
+                <Text style={styles.textExtra}>Name playlist</Text>
+                <BottomSheetTextInput
+                  defaultValue={playlist.title}
+                  value={newPlaylist.title}
+                  style={styles.textInput}
+                  onChangeText={(text) => updatePlaylist({ title: text })}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textMain}>Private</Text>
+                </View>
+                <ButtonSwitch isOn={isPrivate} setIsOn={setIsPrivate} />
+              </View>
+            </View>
+          }
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          onDragEnd={({ data }) => {
+            data.forEach((item, index) => {
+              item.num_song = index + 1;
+            });
 
-      <FlatList
+            console.log(data);
+            setSongsNew(data);
+          }}
+        />
+      </View>
+
+      {/* <FlatList
         data={songs}
         style={styles.body}
-        contentContainerStyle={{
-          paddingBottom: SPACING.space_20,
-        }}
+     
         ListHeaderComponent={
           <View style={styles.headerBody}>
             <View style={styles.imageBox}>
@@ -235,20 +324,22 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
         renderItem={({ item, index }) => (
           <SongItem setSongsNew={setSongsNew} songsNew={songsNew} song={item} />
         )}
-      />
+      /> */}
     </View>
   );
 };
 
 type TSongItem = {
-  song: TSong;
+  songId: string;
   setSongsNew?: (value: { id: string; num_song: number }[]) => void;
   songsNew?: { id: string; num_song: number }[];
 };
 
 const SongItem = (props: TSongItem) => {
-  const { song, setSongsNew, songsNew } = props;
+  const { songId, setSongsNew, songsNew } = props;
   const [isDeleted, setIsDeleted] = React.useState(false);
+  const { token } = useAuth();
+  const [song, setSong] = React.useState<TSong>();
   const fadeAnim = new Animated.Value(1);
   const slideAnim = new Animated.Value(1);
 
@@ -278,46 +369,56 @@ const SongItem = (props: TSongItem) => {
     }
   }, [isDeleted]);
 
+  React.useEffect(() => {
+    const getSong = async () => {
+      const res = await songApi.getDetail(songId, token);
+      setSong(res);
+    };
+    getSong();
+  }, [songId]);
+
   return (
-    <Animated.View
-      style={{ opacity: isDeleted ? 0 : fadeAnim, transform: [{ translateX: slideAnim }] }}
-    >
-      {!isDeleted && (
-        <View style={[styles.card, styles.cardDelete]} onTouchStart={Keyboard.dismiss}>
-          <View style={styles.cardLeft}>
-            <TouchableOpacity style={styles.cardIcon} onPress={() => handleDelete()}>
-              <FontAwesomeIcon icon={faMinusCircle} size={24} color={COLORS.WhiteRGBA32} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.cardCenter}>
-            <TouchableOpacity style={styles.cardImage}>
-              <Image
-                source={
-                  song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
-                }
-                style={styles.image}
-              />
-            </TouchableOpacity>
-            <View style={styles.cardBody}>
-              <View>
-                <Text numberOfLines={1} style={styles.textMain}>
-                  {song.title}
-                </Text>
-                <Text numberOfLines={1} style={styles.textExtra}>
-                  {song.author}
-                </Text>
+    song && (
+      <Animated.View
+        style={{ opacity: isDeleted ? 0 : fadeAnim, transform: [{ translateX: slideAnim }] }}
+      >
+        {!isDeleted && (
+          <View style={[styles.card, styles.cardDelete]} onTouchStart={Keyboard.dismiss}>
+            <View style={styles.cardLeft}>
+              <TouchableOpacity style={styles.cardIcon} onPress={() => handleDelete()}>
+                <FontAwesomeIcon icon={faMinusCircle} size={24} color={COLORS.WhiteRGBA32} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.cardCenter}>
+              <TouchableOpacity style={styles.cardImage}>
+                <Image
+                  source={
+                    song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
+                  }
+                  style={styles.image}
+                />
+              </TouchableOpacity>
+              <View style={styles.cardBody}>
+                <View>
+                  <Text numberOfLines={1} style={styles.textMain}>
+                    {song.title}
+                  </Text>
+                  <Text numberOfLines={1} style={styles.textExtra}>
+                    {song.author}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.cardRight}>
+              <View style={styles.cardIcon}>
+                <FontAwesomeIcon icon={faBars} size={24} color={COLORS.WhiteRGBA32} />
               </View>
             </View>
           </View>
-
-          <View style={styles.cardRight}>
-            <TouchableOpacity style={styles.cardIcon}>
-              <FontAwesomeIcon icon={faBars} size={24} color={COLORS.WhiteRGBA32} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    </Animated.View>
+        )}
+      </Animated.View>
+    )
   );
 };
 

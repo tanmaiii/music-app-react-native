@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
-import { COLORS } from "../../theme/theme";
+import { COLORS } from "@/theme/theme";
 
 interface ButtonSwitchProps {
   isOn: boolean;

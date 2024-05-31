@@ -85,17 +85,6 @@ const ModalPlaying = (props: TSongPlaying) => {
         ></LinearGradient>
 
         <View style={styles.wrapper}>
-          {/* <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={data}
-            ref={flatListRef} // Sử dụng useRef đã khai báo ở trên
-            horizontal
-            decelerationRate={0.5}
-            scrollEventThrottle={100} // Đặt độ nhạy của sự kiện cuộn
-            snapToInterval={WINDOW_WIDTH}
-            renderItem={({ item, index }) => <View key={index}>{item.item}</View>}
-          /> */}
-
           <View style={{ flex: 1 }}>
             <View style={[!isOpenQueue ? { display: "none" } : { display: "flex" }]}>
               <SongQueue setIsOpen={setIsOpenQueue} />

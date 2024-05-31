@@ -15,7 +15,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { FlatList, ScrollView, TextInput, TouchableHighlight } from "react-native-gesture-handler";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { TSong } from "../../types";
-import ButtonSwitch from "../ButtonSwitch/ButtonSwitch";
+import ButtonSwitch from "../ButtonSwitch";
 import Constants from "expo-constants";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { playlistApi } from "../../apis";
