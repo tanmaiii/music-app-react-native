@@ -274,57 +274,6 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
           }}
         />
       </View>
-
-      {/* <FlatList
-        data={songs}
-        style={styles.body}
-     
-        ListHeaderComponent={
-          <View style={styles.headerBody}>
-            <View style={styles.imageBox}>
-              <TouchableOpacity style={styles.imageBoxWrapper}>
-                <Image
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  source={
-                    file
-                      ? { uri: file.uri }
-                      : playlist?.image_path
-                      ? { uri: apiConfig.imageURL(playlist.image_path) }
-                      : IMAGES.PLAYLIST
-                  }
-                />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonChange} onPress={showOptions}>
-                <Text style={[styles.textExtra, { color: COLORS.Primary }]}>Change image</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.inputBox}>
-              <Text style={styles.textExtra}>Name playlist</Text>
-              <BottomSheetTextInput
-                defaultValue={playlist.title}
-                value={newPlaylist.title}
-                style={styles.textInput}
-                onChangeText={(text) => updatePlaylist({ title: text })}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <View style={{ flex: 1 }}>
-                <Text style={styles.textMain}>Private</Text>
-              </View>
-              <ButtonSwitch isOn={isPrivate} setIsOn={setIsPrivate} />
-            </View>
-          </View>
-        }
-        renderItem={({ item, index }) => (
-          <SongItem setSongsNew={setSongsNew} songsNew={songsNew} song={item} />
-        )}
-      /> */}
     </View>
   );
 };

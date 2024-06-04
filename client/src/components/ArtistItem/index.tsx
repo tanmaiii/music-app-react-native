@@ -11,11 +11,13 @@ import { NavigationProp } from "../../navigators/TStack";
 import { COLORS } from "../../theme/theme";
 import { TUser } from "../../types";
 import styles from "./style";
+import ArtistItemSkeleton from "./ArtistItemSkeleton";
 
 interface ArtistItemProps {}
 
 const ArtistItem = ({ userId }: { userId: string }) => {
   const [artist, setArtist] = React.useState<TUser>();
+  const [loading, setLoading] = React.useState<boolean>(false);
   const navigate = useNavigation<NavigationProp>();
   const { token, currentUser } = useAuth();
   const queryClient = useQueryClient();
@@ -50,17 +52,22 @@ const ArtistItem = ({ userId }: { userId: string }) => {
   });
 
   const getArtist = async () => {
+    setLoading(true);
     try {
       const res = await userApi.getDetail(userId);
       setArtist(res);
+      setLoading(false);
     } catch (err) {
       console.log(err.response.data);
     }
+    setLoading(false);
   };
 
   React.useEffect(() => {
     userId && getArtist();
   }, [userId]);
+
+  if (loading) return <ArtistItemSkeleton />;
 
   return (
     artist && (

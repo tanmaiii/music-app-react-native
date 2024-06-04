@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
+    backgroundColor: COLORS.Black3,
   },
   boxDesc: {
     gap: SPACING.space_4,

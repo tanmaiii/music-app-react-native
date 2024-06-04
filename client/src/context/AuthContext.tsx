@@ -34,6 +34,12 @@ export const AuthContextProvider = ({ children }: Props) => {
   const logout = async () => {
     setCurrentUser(null);
     setToken(null);
+
+    AsyncStorage.setItem("token", null);
+    AsyncStorage.setItem("user", null);
+
+    console.log("Logout");
+
     await authApi.signout();
   };
 
@@ -51,9 +57,10 @@ export const AuthContextProvider = ({ children }: Props) => {
   };
 
   const getInfo = async () => {
+    if (!token) return null;
     setLoadingAuth(true);
     try {
-      const res = token && (await userApi.getMe(token));
+      const res = await userApi.getMe(token);
       res && setCurrentUser(res);
       console.log("Get Me", res);
       setLoadingAuth(false);

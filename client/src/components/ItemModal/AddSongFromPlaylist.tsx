@@ -89,8 +89,8 @@ const AddSongFromPlaylist = ({ setIsOpen, id }: AddSongFromPlaylistProps) => {
   return (
     <>
       <View style={styles.container}>
-        <SafeAreaView style={[styles.header]}>
-          <View>
+        <SafeAreaView style={[{ zIndex: 999 }]}>
+          <View style={[styles.header]}>
             <View style={styles.groupTitle}>
               <TouchableOpacity style={styles.buttonClose} onPress={() => setIsOpen(false)}>
                 <FontAwesomeIcon icon={faXmark} size={24} color={COLORS.White2} />
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: SPACING.space_12,
     paddingVertical: SPACING.space_16,
-    gap: SPACING.space_12,
+    // gap: SPACING.space_12,
   },
   buttonClose: {
     width: 28,
