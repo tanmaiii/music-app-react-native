@@ -5,18 +5,22 @@ const styles = StyleSheet.create({
   container: {
     height: HEIGHT.playingCard,
     width: "100%",
-
     position: "absolute",
     left: 0,
     bottom: HEIGHT.navigator,
     zIndex: 1,
-
     borderBottomWidth: 0.8,
     borderBottomColor: COLORS.Black1,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    overflow: "hidden",
   },
   wrapper: {
-    backgroundColor: COLORS.Black3,
-    padding: SPACING.space_8,
+    borderRadius: BORDERRADIUS.radius_8,
+    overflow: "hidden",
+    // backgroundColor: COLORS.Black3,
+    paddingHorizontal: SPACING.space_8,
+    paddingVertical: SPACING.space_8,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -30,6 +34,27 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: "center",
     alignItems: "center",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    zIndex: -1,
+  },
+  sliderBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    width: "100%",
+    height: 3,
+    backgroundColor: COLORS.WhiteRGBA32,
+    marginHorizontal: SPACING.space_8,
+    borderRadius: 2,
+  },
+  slider: {
+    height: "100%",
+    backgroundColor: COLORS.Primary,
+    borderRadius: 2,
   },
   left: {
     display: "flex",
@@ -53,7 +78,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDERRADIUS.radius_4,
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    objectFit: "contain",
   },
   title: {
     fontSize: FONTSIZE.size_14,

@@ -25,7 +25,8 @@ SongPlay.create = (userId, songId, result) => {
 
 SongPlay.countSongPlays = (songId, result) => {
   db.query(
-    `SELECT COUNT(*) AS totalCount FROM song_plays WHERE song_id = ${songId}`,
+    `SELECT COUNT(*) AS totalCount FROM song_plays WHERE song_id = ?`,
+    [songId],
     (err, song) => {
       if (err) {
         result(err, null);

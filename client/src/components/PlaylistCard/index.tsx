@@ -1,21 +1,17 @@
-import * as React from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Image, Animated } from "react-native";
-import { TSong } from "../../types/song.type";
-import IMAGES from "../../constants/images";
 import { Skeleton } from "moti/skeleton";
+import * as React from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import IMAGES from "../../constants/images";
 
-import styles from "./style";
-import { COLORS, SPACING } from "../../theme/theme";
-import { useNavigation, useLinkTo } from "@react-navigation/native";
-import { usePlaying } from "../../context/BarSongContext";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../navigators/TStack";
-import { TPlaylist } from "../../types";
-import { NavigationProp } from "../../navigators/TStack";
-import apiConfig from "../../configs/axios/apiConfig";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useLinkTo, useNavigation } from "@react-navigation/native";
 import moment from "moment";
+import apiConfig from "../../configs/axios/apiConfig";
+import { NavigationProp } from "../../navigators/TStack";
+import { COLORS, SPACING } from "../../theme/theme";
+import { TPlaylist } from "../../types";
+import styles from "./style";
 
 const SkeletonCommonProps = {
   colorMode: "dark",
@@ -31,8 +27,6 @@ interface PlaylistCardProps {
 
 const PlaylistCard = (props: PlaylistCardProps) => {
   const { playlist, loading = false } = props;
-
-  const linkTo = useLinkTo();
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {

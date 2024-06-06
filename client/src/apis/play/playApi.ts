@@ -10,6 +10,10 @@ const playApi = {
       },
     });
   },
+  getCountPlay(songId: string): Promise<number> {
+    const url = "songPlay/";
+    return axiosClient.get(url + songId + "/count");
+  },
 };
 
 export default playApi;

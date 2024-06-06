@@ -1,6 +1,5 @@
 import Joi from "joi";
 
-
 const querySchema = {
   query: Joi.object().keys({
     q: Joi.string().allow(null, "").optional(),

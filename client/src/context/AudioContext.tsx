@@ -16,9 +16,11 @@ type AudioContextType = {
   isPlaying: boolean;
   songDuration: number;
   currentPosition: number;
+  volume: number;
   playSound: (songId: string) => Promise<void>;
   stopSound: () => Promise<void>;
-  setVolume: (volume: number) => Promise<void>;
+  changeSongDuration: (duration: number) => Promise<void>;
+  changeSoundVolume: (volume: number) => Promise<void>;
   addToQueue: (songUri: string) => void;
   removeToQueue: (songUri: string) => void;
   nextSong: () => void;
@@ -44,14 +46,7 @@ export const AudioContextProvider = ({ children }: Props) => {
   const { setToastMessage } = useToast();
   const [songDuration, setSongDuration] = useState<number | null>(null);
   const [currentPosition, setCurrentPosition] = useState<number | null>(null);
-
-  // useEffect(() => {
-  //   return sound
-  //     ? () => {
-  //         sound.unloadAsync(); // Unload sound khi component bị hủy
-  //       }
-  //     : undefined;
-  // }, [sound]);
+  const [volume, setVolume] = useState<number>(0.5);
 
   const getPathSong = async (songId: string) => {
     setSongIdPlaying(songId);
@@ -80,7 +75,7 @@ export const AudioContextProvider = ({ children }: Props) => {
       if (isPlaying) {
         await sound?.setPositionAsync(0);
       } else {
-        if (formatDuration(songDuration) === formatDuration(currentPosition)) {
+        if (formatDuration(songDuration) == formatDuration(currentPosition)) {
           await sound?.setPositionAsync(0);
         }
         await sound?.playAsync();
@@ -93,8 +88,6 @@ export const AudioContextProvider = ({ children }: Props) => {
 
     try {
       // Dừng các bài hát đang được phát
-      console.log("Load bài mới");
-
       if (sound) {
         await sound.stopAsync();
         setSound(null);
@@ -117,6 +110,13 @@ export const AudioContextProvider = ({ children }: Props) => {
     setLoading(false);
   };
 
+  const stopSound = async () => {
+    if (sound) {
+      await sound.pauseAsync();
+      setIsPlaying(false);
+    }
+  };
+
   useEffect(() => {
     const getDuration = async () => {
       // Lấy độ dài của bài hát
@@ -133,6 +133,7 @@ export const AudioContextProvider = ({ children }: Props) => {
       if (isPlaying) {
         const status: AVPlaybackStatus = sound && (await sound.getStatusAsync());
         if (status?.isLoaded) {
+          // Cập nhật thời gian hiện tại của bài hát
           setCurrentPosition(status.positionMillis ?? null);
         }
       }
@@ -146,25 +147,36 @@ export const AudioContextProvider = ({ children }: Props) => {
   }, [isPlaying, sound]);
 
   useEffect(() => {
-    console.log(formatDuration(songDuration));
-    console.log(formatDuration(currentPosition));
+    console.log(formatDuration(songDuration), formatDuration(currentPosition));
 
-    if (formatDuration(songDuration) == formatDuration(currentPosition)) {
+    if (formatDuration(songDuration) === formatDuration(currentPosition)) {
       stopSound();
       setIsPlaying(false);
     }
   }, [songDuration, currentPosition]);
 
-  const stopSound = async () => {
+  useEffect(() => {
     if (sound) {
-      await sound.pauseAsync();
-      setIsPlaying(false);
+      sound.setVolumeAsync(volume);
     }
+  }, [volume]);
+
+  const changeSongDuration = async (duration: number) => {
+    if (loading || !sound) return;
+    setLoading(true);
+
+    await sound.setPositionAsync(duration);
+
+    await sound.playAsync();
+
+    setIsPlaying(true);
+    setLoading(false);
   };
 
-  const setVolume = async (volume: number) => {
+  const changeSoundVolume = async (newVolume: number) => {
     if (sound) {
-      await sound.setVolumeAsync(volume);
+      await sound.setVolumeAsync(newVolume);
+      setVolume(newVolume);
     }
   };
 
@@ -200,9 +212,11 @@ export const AudioContextProvider = ({ children }: Props) => {
     isPlaying,
     songDuration,
     currentPosition,
+    volume,
     playSound,
     stopSound,
-    setVolume,
+    changeSongDuration,
+    changeSoundVolume,
     addToQueue,
     removeToQueue,
     nextSong,

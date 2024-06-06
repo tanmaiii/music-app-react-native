@@ -2,6 +2,11 @@ import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 export type RootStackParamList = {
+  HomeNavigator: undefined;
+  SearchNavigator: undefined;
+  LibaryNavigator: undefined;
+  UserNavigator: undefined;
+
   Main: undefined;
 
   Auth: undefined;

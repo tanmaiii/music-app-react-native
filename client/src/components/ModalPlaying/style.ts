@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   playerControlsBar: {
     paddingHorizontal: SPACING.space_18,
     width: WINDOW_WIDTH,
-    gap: SPACING.space_8,
+    gap: SPACING.space_12,
   },
   scrollBar: {
     width: "100%",
@@ -82,14 +82,6 @@ const styles = StyleSheet.create({
   },
   sliderBar: {
     width: "100%",
-  },
-  sliderBarDot: {
-    position: "absolute",
-    top: -4,
-    width: 12,
-    height: 12,
-    borderRadius: 12 / 2,
-    backgroundColor: COLORS.White1,
   },
   action: {
     flexDirection: "row",
@@ -134,6 +126,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: SPACING.space_10,
     borderRadius: BORDERRADIUS.radius_8,
+  },
+  actionVolume: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: SPACING.space_8,
   },
 });
 

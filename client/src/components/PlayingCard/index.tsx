@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Modal,
+  Animated,
 } from "react-native";
 import styles from "./style";
 import IMAGES from "../../constants/images";
@@ -26,6 +27,7 @@ import { useAuth } from "../../context/AuthContext";
 import ModalPlaying from "../ModalPlaying";
 import apiConfig from "../../configs/axios/apiConfig";
 import { useAudio } from "../../context/AudioContext";
+import { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 interface PlayingCardProps {}
 
@@ -34,8 +36,10 @@ const PlayingCard = (props: PlayingCardProps) => {
   const { token } = useAuth();
   const [song, setSong] = React.useState<TSong | null>(null);
   const [loading, setLoading] = React.useState(false);
-  const { playSound, stopSound, isPlaying, songIdPlaying } = useAudio();
+  const { playSound, stopSound, isPlaying, songIdPlaying, songDuration, currentPosition } =
+    useAudio();
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const progress = currentPosition ? (currentPosition / songDuration) * 100 : 0;
 
   const getSongs = async () => {
     setLoading(true);
@@ -65,11 +69,12 @@ const PlayingCard = (props: PlayingCardProps) => {
         onPress={() => setIsOpenModal(!isOpenModal)}
       >
         <ImageBackground
-          // source={IMAGES.AI}
+          source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
           style={{
             width: "100%",
             height: "100%",
             overflow: "hidden",
+            borderRadius: BORDERRADIUS.radius_10,
           }}
           blurRadius={60}
         >
@@ -105,6 +110,10 @@ const PlayingCard = (props: PlayingCardProps) => {
               >
                 <FontAwesomeIcon icon={faForwardStep} size={26} color={COLORS.White1} />
               </TouchableOpacity>
+            </View>
+            <View style={styles.overlay} />
+            <View style={styles.sliderBar}>
+              <Animated.View style={[styles.slider, { width: `${progress}%` }, {}]} />
             </View>
           </View>
         </ImageBackground>

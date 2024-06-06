@@ -14,7 +14,6 @@ import EditProfile from "../screens/UserAccount/EditProfile";
 import UpdateItem from "../screens/UserAccount/UpdateItem";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-
 interface HomeNavigatorProps {}
 
 const HomeNavigator = (props: HomeNavigatorProps) => {
@@ -25,7 +24,6 @@ const HomeNavigator = (props: HomeNavigatorProps) => {
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
-      
       <Stack.Screen name="Artist" component={ArtistDetail} />
       <Stack.Screen name="Song" component={SongDetail} />
       <Stack.Screen name="Playlist" component={PlaylistDetail} />

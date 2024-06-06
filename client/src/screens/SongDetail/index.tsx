@@ -45,6 +45,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useBarSong } from "@/context/BarSongContext";
 import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
 import SongDetailSkeleton from "./SongDetailSkeleton";
+import playApi from "@/apis/play/playApi";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -111,6 +112,14 @@ const SongDetail = (props: SongDetailProps) => {
     queryFn: async () => {
       const res = await songApi.checkLikedSong(songId, token);
       return res.isLiked;
+    },
+  });
+
+  const { data: playCount } = useQuery({
+    queryKey: ["play-count", songId],
+    queryFn: async () => {
+      const res = await playApi.getCountPlay(songId);
+      return res;
     },
   });
 
@@ -310,7 +319,7 @@ const SongDetail = (props: SongDetailProps) => {
                   <Text style={styles.textExtra}>
                     Released: {moment(song?.created_at).format("YYYY")}
                   </Text>
-                  <Text style={styles.textExtra}>Duration: 4 minutes</Text>
+                  <Text style={styles.textExtra}>{`Listens: ${playCount}`}</Text>
                 </View>
 
                 <ScrollView style={styles.listArtist}>

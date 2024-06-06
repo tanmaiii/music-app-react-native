@@ -37,7 +37,7 @@ const TabNavigator = (props: TabNavigatorProps) => {
       }}
     >
       <Tab.Screen
-        name={"Home"}
+        name={"HomeNavigator"}
         component={HomeNavigator}
         options={{
           tabBarShowLabel: false,
@@ -61,7 +61,7 @@ const TabNavigator = (props: TabNavigatorProps) => {
         }}
       />
       <Tab.Screen
-        name={"Search"}
+        name={"SearchNavigator"}
         component={SearchNavigator}
         options={{
           tabBarShowLabel: false,
@@ -85,7 +85,7 @@ const TabNavigator = (props: TabNavigatorProps) => {
         }}
       />
       <Tab.Screen
-        name={"Library"}
+        name={"LibaryNavigator"}
         component={LibraryNavigator}
         options={{
           tabBarShowLabel: false,
@@ -109,7 +109,7 @@ const TabNavigator = (props: TabNavigatorProps) => {
         }}
       />
       <Tab.Screen
-        name={"User"}
+        name={"UserNavigator"}
         component={UserNavigator}
         options={{
           tabBarShowLabel: false,

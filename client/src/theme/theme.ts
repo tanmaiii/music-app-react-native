@@ -32,8 +32,9 @@ export const SPACING: Spacing = {
 
 interface Color {
   Black: string;
-  BlackRGB10: string;
   BlackRGB06: string;
+  BlackRGB10: string;
+  BlackRGB32: string;
   Orange: string;
   OrangeRGBA0: string;
   Grey: string;
@@ -64,6 +65,7 @@ export const COLORS: Color = {
   Black: "#000000",
   BlackRGB10: "rgba(0,0,0,0.1)",
   BlackRGB06: "rgba(0,0,0,0.06)",
+  BlackRGB32: "rgba(0,0,0,0.32)",
   Orange: "#FF5524",
   OrangeRGBA0: "rgba(255,85,36,0)",
   Grey: "#151515",
@@ -167,7 +169,7 @@ interface Height {
 
 export const HEIGHT: Height = {
   navigator: 54,
-  playingCard: 54,
+  playingCard: 60,
   UPPER_HEADER_SEARCH_HEIGHT: 60,
   LOWER_HEADER_SEARCH_HEIGHT: 70,
 };

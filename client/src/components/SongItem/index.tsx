@@ -18,6 +18,7 @@ import SongItemSkeleton from "./SongItemSkeleton";
 
 import styles from "./style";
 import { useAudio } from "@/context/AudioContext";
+import LottieView from "lottie-react-native";
 
 interface SongItemProps {
   loading?: boolean;
@@ -27,14 +28,14 @@ interface SongItemProps {
 
 const SongItem = (props: SongItemProps) => {
   const { setOpenBarSong } = useBarSong();
-  const { playSound, songIdPlaying } = useAudio();
+  const { playSound, songIdPlaying, isPlaying } = useAudio();
   const { song, loading = false } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState(100);
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {
-      song && playSound(song?.id);
+    song && playSound(song?.id);
   };
 
   if (loading || !song) return <SongItemSkeleton />;
@@ -49,6 +50,32 @@ const SongItem = (props: SongItemProps) => {
         >
           <View style={styles.swapper}>
             <View style={styles.swapperImage}>
+              {songIdPlaying == song?.id && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: COLORS.BlackRGB32,
+                    zIndex: 2,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <LottieView
+                    source={require("@/assets/images/music.json")}
+                    style={{
+                      width: 24,
+                      height: 24,
+                    }}
+                    speed={isPlaying ? 1 : 0}
+                    autoPlay
+                    loop
+                  />
+                </View>
+              )}
               <Image
                 style={styles.image}
                 source={
@@ -58,7 +85,10 @@ const SongItem = (props: SongItemProps) => {
             </View>
             <View style={styles.body}>
               <View style={{ gap: SPACING.space_4, flex: 1 }}>
-                <Text numberOfLines={1} style={[styles.textMain]}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.textMain, songIdPlaying == song?.id && { color: COLORS.Primary }]}
+                >
                   {song?.public === 0 && (
                     <>
                       <FontAwesomeIcon icon={faLock} size={12} color={COLORS.White1} />{" "}

@@ -28,28 +28,40 @@ export const uploadImage = async (req, res, next) => {
   }
 };
 
-export const deleteImage = (req, res) => {
-  const fileName = req.body.fileName;
-  const filePath = `src/data/images/${fileName}`;
-  
-  console.log(fileName);
+export const deleteImage = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+    User.findById(userInfo.id, (err, user) => {
+      if (!user || err) {
+        const conflictError = "Error user not found!";
+        return res.status(401).json({ conflictError });
+      } else {
+        const fileName = req.body.fileName;
+        const filePath = `src/data/images/${fileName}`;
 
-  fs.access(filePath, fs.constants.F_OK, (err) => {
-    if (err) {
-      const notFoundError = "File not found";
-      return res.status(404).json({ notFoundError });
-    }
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+          if (err) {
+            const conflictError = "File not found";
+            return res.status(404).json({ conflictError });
+          }
 
-    fs.unlink(filePath, (unlinkErr) => {
-      if (unlinkErr) {
-        const conflictError = "Error deleting file";
-        return res.status(500).json({ conflictError });
+          fs.unlink(filePath, (unlinkErr) => {
+            if (unlinkErr) {
+              const conflictError = "Error deleting file";
+              return res.status(500).json({ conflictError });
+            }
+
+            return res.json({ message: "File deleted successfully" });
+          });
+        });
       }
-
-      return res.json({ message: "File deleted successfully" });
     });
-  });
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
+
 
 export default {
   uploadImage,

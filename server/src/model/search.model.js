@@ -43,26 +43,27 @@ Search.findAll = async (userId, query, result) => {
   );
 
   const [totalCount] = await promiseDb.query(
-    ` SELECT COUNT(*) AS totalCount FROM ( ` +
-      `   SELECT 'playlist' AS type, p.id , p.title, u.name as author, NULL AS name ,p.image_path , p.public, p.created_at as created_at ` +
-      `   FROM playlists AS p ` +
-      `   LEFT JOIN users as u on u.id = p.user_id ` +
-      `   WHERE ((p.public = 1 ) OR (p.user_id = '${userId}')) AND p.is_deleted = 0 ` +
-      `   ${q ? ` AND p.title LIKE "%${q}%" ` : ""} ` +
-      ` UNION ` +
-      `   SELECT 'song' AS type, s.id, s.title as title, u.name as author, null as name, s.image_path, s.public as public, s.created_at as created_at ` +
-      `   FROM songs AS s ` +
-      `   LEFT JOIN users as u on u.id = s.user_id ` +
-      `   WHERE ((s.public = 1 ) OR (s.user_id = '${userId}')) AND s.is_deleted = 0 ` +
-      `   ${q ? ` AND s.title LIKE "%${q}%" ` : ""} ` +
-      ` UNION ` +
-      `   SELECT 'artist' AS type, u.id, NUll as title, NUll as author, u.name, u.image_path, NULL as public, Null as created_at ` +
-      `   FROM users AS u ` +
-      `   WHERE u.email_verified_at IS NOT NULL ` +
-      `  ) AS combined_result `
+    `SELECT COUNT(*) AS totalCount FROM (
+      SELECT 'playlist' AS type, p.id
+      FROM playlists AS p
+      LEFT JOIN users as u on u.id = p.user_id
+      WHERE ((p.public = 1 ) OR (p.user_id = '${userId}')) AND p.is_deleted = 0
+      ${q ? ` AND p.title LIKE "%${q}%" ` : ""}
+      UNION
+      SELECT 'song' AS type, s.id
+      FROM songs AS s
+      LEFT JOIN users as u on u.id = s.user_id
+      WHERE ((s.public = 1 ) OR (s.user_id = '${userId}')) AND s.is_deleted = 0
+      ${q ? ` AND s.title LIKE "%${q}%" ` : ""}
+      UNION
+      SELECT 'artist' AS type, u.id
+      FROM users AS u
+      WHERE u.email_verified_at IS NOT NULL
+      ${q ? ` AND u.name LIKE "%${q}%"` : ""}
+    ) AS combined_result`
   );
 
-  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+  if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
@@ -70,7 +71,7 @@ Search.findAll = async (userId, query, result) => {
       pagination: {
         page: +page,
         limit: +limit,
-        totalCount: totalCount[0].totalCount,
+        totalCount: totalCount[0].totalCount || 0,
         totalPages,
         sort,
         q,
@@ -79,6 +80,7 @@ Search.findAll = async (userId, query, result) => {
 
     return;
   }
+
   result(null, null);
 };
 
@@ -103,6 +105,14 @@ Search.findPlaylists = async (userId, query, result) => {
       ` LIMIT ${+limit} OFFSET ${+offset}`
   );
 
+  console.log(
+    `  SELECT  COUNT(*) AS totalCount ` +
+      ` FROM playlists AS p` +
+      ` LEFT JOIN users as u on u.id = p.user_id ` +
+      ` WHERE ((p.public = 1 ) OR (p.user_id = '${userId}' AND p.user_id = p.user_id)) AND p.is_deleted = 0 ` +
+      ` ${q ? ` AND p.title LIKE "%${q}%" ` : ""} `
+  );
+
   const [totalCount] = await promiseDb.query(
     `  SELECT  COUNT(*) AS totalCount ` +
       ` FROM playlists AS p` +
@@ -111,7 +121,7 @@ Search.findPlaylists = async (userId, query, result) => {
       ` ${q ? ` AND p.title LIKE "%${q}%" ` : ""} `
   );
 
-  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+  if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
@@ -119,7 +129,7 @@ Search.findPlaylists = async (userId, query, result) => {
       pagination: {
         page: +page,
         limit: +limit,
-        totalCount: totalCount[0].totalCount,
+        totalCount: totalCount[0].totalCount || 0,
         totalPages,
         sort,
         q,
@@ -160,7 +170,7 @@ Search.findSongs = async (userId, query, result) => {
       ` ${q ? ` AND s.title LIKE "%${q}%" ` : ""} `
   );
 
-  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+  if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
@@ -168,7 +178,7 @@ Search.findSongs = async (userId, query, result) => {
       pagination: {
         page: +page,
         limit: +limit,
-        totalCount: totalCount[0].totalCount,
+        totalCount: totalCount[0].totalCount || 0,
         totalPages,
         sort,
         q,
@@ -205,7 +215,7 @@ Search.findArtists = async (userId, query, result) => {
       ` ${q ? ` WHERE u.name LIKE "%${q}%" ` : ""} `
   );
 
-  if (data && totalCount && totalCount[0] && totalCount[0].totalCount) {
+  if (data && totalCount) {
     const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
 
     result(null, {
@@ -213,7 +223,7 @@ Search.findArtists = async (userId, query, result) => {
       pagination: {
         page: +page,
         limit: +limit,
-        totalCount: totalCount[0].totalCount,
+        totalCount: totalCount[0].totalCount || 0,
         totalPages,
         sort,
         q,
@@ -224,6 +234,5 @@ Search.findArtists = async (userId, query, result) => {
   }
   result(null, null);
 };
-
 
 export default Search;
