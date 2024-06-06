@@ -1,6 +1,6 @@
 import { IMAGES } from "@/constants";
 import { useAuth } from "@/context/AuthContext";
-import { usePlaying } from "@/context/PlayingContext";
+import { useBarSong } from "@/context/BarSongContext";
 import { NavigationProp } from "@/navigators/TStack";
 import { COLORS, FONTFAMILY, FONTSIZE } from "@/theme/theme";
 import { WINDOW_HEIGHT } from "@/utils";
@@ -14,7 +14,7 @@ import styles from "./style";
 interface WelcomeScreenProps {}
 
 const WelcomeScreen = (props: WelcomeScreenProps) => {
-  const { setOpenBarSong } = usePlaying();
+  const { setOpenBarSong } = useBarSong();
   const { token } = useAuth();
   const queryClient = useQueryClient();
 

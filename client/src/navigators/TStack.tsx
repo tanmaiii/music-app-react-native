@@ -22,7 +22,7 @@ export type RootStackParamList = {
 
   ListSong: { userId: string };
   ListPlaylist: { userId: string };
-  ListSongLike: { userId: string };
+  ListSongLike: null;
 
   Login: undefined;
   Signup: undefined;

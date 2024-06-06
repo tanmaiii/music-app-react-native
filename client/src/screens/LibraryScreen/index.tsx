@@ -126,7 +126,7 @@ const AllFavorites = () => {
 
   const [state, setState] = React.useState({
     page: 1,
-    limit: 10,
+    limit: 7,
     loading: false,
     totalPages: 1,
     totalCount: 0,
@@ -234,7 +234,7 @@ const AllFavorites = () => {
 
           <TouchableHighlight
             underlayColor={COLORS.Black}
-            onPress={() => navigation.navigate("ListSongLike", { userId: currentUser.id })}
+            onPress={() => navigation.navigate("ListSongLike")}
           >
             <View style={styles.likeSong}>
               <View style={styles.boxImage}>
@@ -264,7 +264,7 @@ const PlaylistFavourites = () => {
 
   const [state, setState] = React.useState({
     page: 1,
-    limit: 10,
+    limit: 7,
     loading: false,
     totalPages: 1,
     totalCount: 0,
@@ -309,7 +309,7 @@ const PlaylistFavourites = () => {
   };
 
   const loadMore = () => {
-    page < totalPages && updateState({ page: true });
+    page < totalPages && updateState({ page: page + 1 });
   };
 
   React.useEffect(() => {

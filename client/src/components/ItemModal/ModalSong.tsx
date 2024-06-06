@@ -25,6 +25,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { TSong } from "../../types";
 import CustomBottomSheet from "../CustomBottomSheet";
 import AddSongToPlaylist from "./AddSongToPlaylist";
+import { useToast } from "@/context/ToastContext";
 
 interface ModalSongProps {
   song: TSong;
@@ -35,10 +36,10 @@ interface ModalSongProps {
 
 const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
-  const [loading, setLoding] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
   const [heightModal, setHeightModal] = React.useState(200);
   const { token, currentUser } = useAuth();
+  const { setToastMessage } = useToast();
   const queryClient = useQueryClient();
 
   const handleShare = async () => {
@@ -66,6 +67,8 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
       return songApi.likeSong(song.id, token);
     },
     onSuccess: () => {
+      setOpenModal(false);
+      setToastMessage(isLike ? "Remove from favorites success" : "Add to favorites success");
       queryClient.invalidateQueries({
         queryKey: ["like-song", song.id],
       });
@@ -193,7 +196,6 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
         <Item icon={faMusic} title="View detail" itemFunc={() => handleGoDetail()} />
         <Item icon={faUser} title="View artist" itemFunc={() => handleGoArtist()} />
         <Item icon={faFlag} title="Repport" itemFunc={() => console.log("PRESS")} />
-  
       </View>
 
       {isOpenModal && (

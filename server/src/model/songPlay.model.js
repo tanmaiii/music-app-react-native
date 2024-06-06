@@ -23,23 +23,6 @@ SongPlay.create = (userId, songId, result) => {
   );
 };
 
-SongPlay.update = (userId, songId, result) => {
-  db.query(
-    `update song_plays set created_at = '${moment(Date.now()).format(
-      "YYYY-MM-DD HH:mm:ss"
-    )}' where song_id = ${songId} and user_id = ${userId}`,
-    (err, res) => {
-      if (err) {
-        console.log("ERROR", err);
-        result(err, null);
-        return;
-      }
-      console.log("UPDATE : ", { res });
-      result(null, { song_id: songId, user_id: userId });
-    }
-  );
-};
-
 SongPlay.countSongPlays = (songId, result) => {
   db.query(
     `SELECT COUNT(*) AS totalCount FROM song_plays WHERE song_id = ${songId}`,

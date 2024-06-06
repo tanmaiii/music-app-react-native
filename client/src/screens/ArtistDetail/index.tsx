@@ -178,7 +178,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   });
 
   const { data: playlistsSuggest } = useQuery({
-    queryKey: ["playlistsSuggest"],
+    queryKey: ["playlists-suggest"],
     queryFn: async () => {
       const res = await playlistApi.getAll(1, 10);
       return res.data;
@@ -212,7 +212,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["playlists"] });
+      queryClient.invalidateQueries({ queryKey: ["playlists", userId] });
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       queryClient.invalidateQueries({ queryKey: ["artist"] });
       queryClient.invalidateQueries({ queryKey: ["songs"] });
@@ -464,6 +464,7 @@ export const SongTop = ({ song }: TSongTop) => {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const navigation = useNavigation<NavigationProp>();
+  const { currentUser } = useAuth();
 
   const { data: isLike } = useQuery({
     queryKey: ["like-song", song.id],
@@ -484,7 +485,7 @@ export const SongTop = ({ song }: TSongTop) => {
         queryKey: ["like-song", song.id],
       });
       queryClient.invalidateQueries({
-        queryKey: ["songs-favorites"],
+        queryKey: ["songs-favorites", currentUser.id],
       });
       queryClient.invalidateQueries({
         queryKey: ["count-songs-favorites"],

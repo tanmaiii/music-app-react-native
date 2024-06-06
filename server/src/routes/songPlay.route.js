@@ -5,12 +5,8 @@ import songPlayController from "../controllers/songPlay.controller.js";
 import songPlayValidation from "../validations/songPlay.validation.js";
 import validate from "../middlewares/validate.js";
 
-router.post(
-  "/:songId",
-  validate(songPlayValidation.createSongPlay),
-  songPlayController.createSongPlay
-);
+router.post("/:songId", validate(songPlayValidation.createSongPlay), songPlayController.playSong);
 
-router.get("/:songId", songPlayController.getCountSongPlay);
+router.get("/:songId", validate(songPlayValidation.countListened), songPlayController.getCount);
 
 export default router;

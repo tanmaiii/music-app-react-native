@@ -62,7 +62,10 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
   };
 
   const {} = useQuery({
-    queryKey: route.name === "ListSongLike" ? ["songs-favorites"] : ["songs"],
+    queryKey:
+      route.name === "ListSongLike"
+        ? ["search-songs-favorites"]
+        : ["search-songs", route.params.userId],
     queryFn: () => {
       return route.name === "ListSongLike" ? getLikeSongs() : getSongs();
     },
@@ -83,7 +86,7 @@ const ModalSearchSong = ({ isOpen, setIsOpen }: ModalSearchSongProps) => {
           <View style={styles.headerSearch}>
             <View style={styles.headerSearchInput}>
               <CustomInput
-              value={keyword}
+                value={keyword}
                 textInputRef={textInputRef}
                 clearValue={keyword ? false : true}
                 onSubmit={(text) => setKeyword(text)}

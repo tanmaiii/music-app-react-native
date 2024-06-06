@@ -5,7 +5,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import { Skeleton } from "moti/skeleton";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { usePlaying } from "../../context/PlayingContext";
+import { useBarSong } from "../../context/BarSongContext";
 import { TSong } from "../../types";
 import { ModalSong } from "../ItemModal";
 import CustomBottomSheet from "../CustomBottomSheet";
@@ -17,6 +17,7 @@ import { NavigationProp } from "../../navigators/TStack";
 import SongItemSkeleton from "./SongItemSkeleton";
 
 import styles from "./style";
+import { useAudio } from "@/context/AudioContext";
 
 interface SongItemProps {
   loading?: boolean;
@@ -25,15 +26,15 @@ interface SongItemProps {
 }
 
 const SongItem = (props: SongItemProps) => {
-  const { setOpenBarSong, changeSongPlaying, songIdPlaying } = usePlaying();
+  const { setOpenBarSong } = useBarSong();
+  const { playSound, songIdPlaying } = useAudio();
   const { song, loading = false } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState(100);
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {
-    changeSongPlaying(song.id);
-    setOpenBarSong(true);
+      song && playSound(song?.id);
   };
 
   if (loading || !song) return <SongItemSkeleton />;

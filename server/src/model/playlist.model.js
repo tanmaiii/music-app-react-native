@@ -484,9 +484,11 @@ Playlist.updateSong = (playlistId, userId, songs, result) => {
     }
 
     const songIds = songs.map((song) => `'${song?.id}'`);
-    const deleteQuery = `DELETE FROM playlist_songs WHERE playlist_id = '${playlistId}' AND song_id NOT IN (${songIds.join(
-      ","
-    )})`;
+
+    let deleteQuery = `DELETE FROM playlist_songs WHERE playlist_id = '${playlistId}'`;
+    if (songIds.length > 0) {
+      deleteQuery += ` AND song_id NOT IN (${songIds.join(",")})`;
+    }
 
     db.query(deleteQuery, (deleteErr, deleteRes) => {
       if (deleteErr) {

@@ -29,10 +29,12 @@ const styles = StyleSheet.create({
     gap: SPACING.space_12,
   },
   boxImage: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     borderRadius: 40,
     backgroundColor: COLORS.Black3,
+    borderWidth: 1.4,
+    borderColor: COLORS.Primary,
   },
   boxDesc: {
     gap: SPACING.space_4,

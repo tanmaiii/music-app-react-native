@@ -1,59 +1,40 @@
-import * as React from "react";
-import { useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  TouchableOpacity,
-  StatusBar,
-  Modal,
-  Animated,
-  Share,
-  FlatListProps,
-} from "react-native";
-import IMAGES from "../../constants/images";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../../utils/index";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { songApi } from "../../apis";
-import { TSong } from "../../types";
-import { useAuth } from "../../context/AuthContext";
-import apiConfig from "../../configs/axios/apiConfig";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowUpFromBracket,
   faBars,
   faHeart,
   faShuffle,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import * as React from "react";
+import { useState } from "react";
+import { ImageBackground, Share, TouchableOpacity, View } from "react-native";
+import { songApi } from "../../apis";
+import apiConfig from "../../configs/axios/apiConfig";
+import { useAuth } from "../../context/AuthContext";
+import { COLORS } from "../../theme/theme";
+import { WINDOW_HEIGHT } from "../../utils/index";
 
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { usePlaying } from "../../context/PlayingContext";
-import CustomModal from "../CustomModal";
-import { ModalSong } from "../ItemModal";
-import CustomBottomSheet from "../CustomBottomSheet";
-import { BlurView } from "expo-blur";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAudio } from "../../context/AudioContext";
-import styles from "./style";
-import SongQueue from "./SongQueue";
+import { NavigationProp } from "../../navigators/TStack";
+import CustomBottomSheet from "../CustomBottomSheet";
+import { ModalSong } from "../ItemModal";
 import SongPlaying from "./SongPlaying";
+import SongQueue from "./SongQueue";
+import styles from "./style";
 
 interface TSongPlaying {}
 
 const ModalPlaying = (props: TSongPlaying) => {
-  const { songIdPlaying } = usePlaying();
+  const { songIdPlaying } = useAudio();
   const { token } = useAuth();
-  const [like, setLike] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const flatListRef = React.useRef<FlatList<any>>(null); // Sử dụng any nếu không biết kiểu dữ liệu của mục trong danh sách
-  const navigation = useNavigation<NavigationProp>();
   const [isOpenQueue, setIsOpenQueue] = useState<boolean>(false);
+  const { currentUser } = useAuth();
+  const queryClient = useQueryClient();
 
   const handleShare = async () => {
     try {
@@ -73,10 +54,37 @@ const ModalPlaying = (props: TSongPlaying) => {
     },
   });
 
+  const { data: isLike } = useQuery({
+    queryKey: ["like-song", song?.id],
+
+    queryFn: async () => {
+      const res = song && (await songApi.checkLikedSong(song?.id, token));
+      return res.isLiked;
+    },
+  });
+
+  const mutationLike = useMutation({
+    mutationFn: (like: boolean) => {
+      if (like) return songApi.unLikeSong(song?.id, token);
+      return songApi.likeSong(song?.id, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["like-song", song?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs-favorites", currentUser.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["count-songs-favorites"],
+      });
+    },
+  });
+
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : null}
+        source={song?.image_path ? { uri: apiConfig.imageURL(song?.image_path) } : null}
         blurRadius={80}
       >
         <LinearGradient
@@ -90,13 +98,16 @@ const ModalPlaying = (props: TSongPlaying) => {
               <SongQueue setIsOpen={setIsOpenQueue} />
             </View>
             <View style={[isOpenQueue ? { display: "none" } : { display: "flex" }]}>
-              <SongPlaying  />
+              <SongPlaying />
             </View>
           </View>
 
           <View style={[styles.playerControlsBottom]}>
-            <TouchableOpacity style={styles.BottomButton}>
-              {like ? (
+            <TouchableOpacity
+              style={styles.BottomButton}
+              onPress={() => mutationLike.mutate(isLike)}
+            >
+              {isLike ? (
                 <FontAwesomeIcon icon={faHeart} size={20} color={COLORS.Red} />
               ) : (
                 <FontAwesomeIcon icon={faHeartRegular} size={20} color={COLORS.WhiteRGBA50} />
@@ -127,49 +138,6 @@ const ModalPlaying = (props: TSongPlaying) => {
           <ModalSong song={song} setOpenModal={setIsOpenModal} />
         </CustomBottomSheet>
       )}
-    </View>
-  );
-};
-
-const MoreSong = ({
-  setIsOpenModal,
-  song,
-}: {
-  setIsOpenModal: (isOpen: boolean) => void;
-  song: TSong;
-}) => {
-  const animatedValue = React.useRef(new Animated.Value(0)).current;
-  const [scrollViewRef, setScrollViewRef] = React.useState(null);
-
-  return (
-    <View style={{ flex: 1, height: WINDOW_HEIGHT }}>
-      <BlurView
-        tint="dark"
-        intensity={100}
-        style={{ flex: 1, paddingVertical: SPACING.space_12 }}
-        blurReductionFactor={100}
-      >
-        <Animated.View
-          style={[
-            {
-              flex: 1,
-              height: WINDOW_HEIGHT,
-              justifyContent: "space-between",
-              flexDirection: "column",
-            },
-          ]}
-        >
-          <ScrollView style={{ flex: 1 }} ref={setScrollViewRef}>
-            <ModalSong song={song} size={2} setOpenModal={setIsOpenModal} />
-          </ScrollView>
-        </Animated.View>
-        <TouchableOpacity
-          onPress={() => setIsOpenModal(false)}
-          style={{ alignItems: "center", padding: SPACING.space_12 }}
-        >
-          <Text style={styles.textExtra}>Close</Text>
-        </TouchableOpacity>
-      </BlurView>
     </View>
   );
 };

@@ -13,6 +13,7 @@ import ListPlaylistScreen from "../screens/ListPlaylistScreen";
 import UserAccount from "../screens/UserAccount";
 import EditProfile from "../screens/UserAccount/EditProfile";
 import UpdateItem from "../screens/UserAccount/UpdateItem";
+import ListSongLikeScreen from "@/screens/ListSongLikeScreen";
 interface LibraryNavigatorProps {}
 
 const LibraryNavigator = (props: LibraryNavigatorProps) => {
@@ -30,7 +31,7 @@ const LibraryNavigator = (props: LibraryNavigatorProps) => {
       <Stack.Screen name="Song" component={SongDetail} />
       <Stack.Screen name="Playlist" component={PlaylistDetail} />
       <Stack.Screen name="ListSong" component={ListSongScreen} />
-      <Stack.Screen name="ListSongLike" component={ListSongScreen} />
+      <Stack.Screen name="ListSongLike" component={ListSongLikeScreen} />
       <Stack.Screen name="ListPlaylist" component={ListPlaylistScreen} />
       <Stack.Screen name="User" component={UserAccount} />
       <Stack.Screen name="UserEditProfile" component={EditProfile} />

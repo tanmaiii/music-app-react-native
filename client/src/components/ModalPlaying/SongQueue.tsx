@@ -3,7 +3,7 @@ import { apiConfig } from "@/configs";
 import { IMAGES } from "@/constants";
 import { useAudio } from "@/context/AudioContext";
 import { useAuth } from "@/context/AuthContext";
-import { usePlaying } from "@/context/PlayingContext";
+import { useBarSong } from "@/context/BarSongContext";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
 import { TSong } from "@/types";
 import { WINDOW_WIDTH } from "@/utils";
@@ -28,7 +28,7 @@ interface SongQueueProps {
 }
 
 const SongQueue = ({ setIsOpen }: SongQueueProps) => {
-  const { songIdPlaying } = usePlaying();
+  const { songIdPlaying } = useAudio();
   const { token } = useAuth();
   const [songs, setSongs] = React.useState<TSong[]>([]);
 
@@ -121,16 +121,14 @@ type SongProps = {
 
 const Song = ({ play = false, songId, songsNew, setSongsNew }: SongProps) => {
   const { token } = useAuth();
-  const { songIdPlaying, changeSongPlaying, setOpenBarSong } = usePlaying();
-  const { stopSound, playSound, isPlaying } = useAudio();
+  const { stopSound, playSound, isPlaying, songIdPlaying } = useAudio();
   const [swipingRight, setSwipingRight] = React.useState(false);
 
   const handlePlay = () => {
     if (songId === songIdPlaying && isPlaying) {
       stopSound();
     } else {
-      changeSongPlaying(songId);
-      playSound();
+      playSound(songId);
     }
   };
 

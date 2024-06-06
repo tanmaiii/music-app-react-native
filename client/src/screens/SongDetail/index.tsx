@@ -42,7 +42,7 @@ import { ModalSong } from "@/components/ItemModal";
 import apiConfig from "@/configs/axios/apiConfig";
 import { useAudio } from "@/context/AudioContext";
 import { useAuth } from "@/context/AuthContext";
-import { usePlaying } from "@/context/PlayingContext";
+import { useBarSong } from "@/context/BarSongContext";
 import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
 import SongDetailSkeleton from "./SongDetailSkeleton";
 
@@ -59,8 +59,9 @@ const SongDetail = (props: SongDetailProps) => {
   const { currentUser } = useAuth();
   const songId = route.params.songId;
   const { token } = useAuth();
-  const { setOpenBarSong, changeSongPlaying, songIdPlaying } = usePlaying();
+  const { setOpenBarSong } = useBarSong();
   const { isPlaying, playSound, stopSound } = useAudio();
+  const { songIdPlaying } = useAudio();
   const queryClient = useQueryClient();
 
   const headerAnimation = {
@@ -153,8 +154,7 @@ const SongDetail = (props: SongDetailProps) => {
     if (songId === songIdPlaying && isPlaying) {
       stopSound();
     } else {
-      song && changeSongPlaying(song?.id);
-      playSound();
+      song && playSound(song?.id);
       setOpenBarSong(true);
     }
   };

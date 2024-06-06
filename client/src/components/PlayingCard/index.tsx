@@ -17,7 +17,7 @@ const { width, height } = Dimensions.get("window");
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
-import { usePlaying } from "../../context/PlayingContext";
+import { useBarSong } from "../../context/BarSongContext";
 import { faForwardStep, faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 import CustomBottomSheet from "../CustomBottomSheet";
 import { TSong } from "../../types";
@@ -30,11 +30,11 @@ import { useAudio } from "../../context/AudioContext";
 interface PlayingCardProps {}
 
 const PlayingCard = (props: PlayingCardProps) => {
-  const { openBarSong, songIdPlaying } = usePlaying();
+  const { openBarSong } = useBarSong();
   const { token } = useAuth();
   const [song, setSong] = React.useState<TSong | null>(null);
   const [loading, setLoading] = React.useState(false);
-  const { playSound, stopSound, isPlaying } = useAudio();
+  const { playSound, stopSound, isPlaying, songIdPlaying } = useAudio();
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
 
   const getSongs = async () => {
@@ -51,7 +51,7 @@ const PlayingCard = (props: PlayingCardProps) => {
   };
 
   const handlePlay = () => {
-    isPlaying ? stopSound() : playSound();
+    isPlaying ? stopSound() : playSound(songIdPlaying);
   };
 
   React.useEffect(() => {
@@ -65,7 +65,7 @@ const PlayingCard = (props: PlayingCardProps) => {
         onPress={() => setIsOpenModal(!isOpenModal)}
       >
         <ImageBackground
-          source={IMAGES.AI}
+          // source={IMAGES.AI}
           style={{
             width: "100%",
             height: "100%",

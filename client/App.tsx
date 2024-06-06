@@ -12,7 +12,7 @@ import { COLORS, FONTFAMILY } from "@/theme/theme";
 
 import { AudioContextProvider } from "@/context/AudioContext";
 import { AuthContextProvider } from "@/context/AuthContext";
-import { PlayingContextProvider } from "@/context/PlayingContext";
+import { BarSongContextProvider } from "@/context/BarSongContext";
 import { ToastContextProvider } from "@/context/ToastContext";
 import AppRouter from "@/navigators/AppRouter";
 import SplashScreen from "@/screens/SplashScreen";
@@ -50,7 +50,7 @@ export default function App() {
       <NavigationContainer>
         <ToastContextProvider>
           <AuthContextProvider>
-            <PlayingContextProvider>
+            <BarSongContextProvider>
               <AudioContextProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                   <BottomSheetModalProvider>
@@ -61,7 +61,7 @@ export default function App() {
                   </BottomSheetModalProvider>
                 </GestureHandlerRootView>
               </AudioContextProvider>
-            </PlayingContextProvider>
+            </BarSongContextProvider>
           </AuthContextProvider>
         </ToastContextProvider>
       </NavigationContainer>

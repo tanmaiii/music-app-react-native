@@ -48,6 +48,7 @@ const ModalSearch = ({ isOpen, setIsOpen }: ModalSearchProps) => {
     "Sau tat ca",
     "Thằng điên",
   ]);
+  
   const [state, setState] = React.useState<TStateParams>({
     page: 1,
     limit: 10,
@@ -117,7 +118,6 @@ const ModalSearch = ({ isOpen, setIsOpen }: ModalSearchProps) => {
       textInputRef.current.isFocused() && setViewAll(false);
     }
   }, [textInputRef?.current?.isFocused()]);
-
 
   return (
     <View style={[styles.modal, isOpen && { display: "flex" }]}>
@@ -266,7 +266,7 @@ const ModalSearch = ({ isOpen, setIsOpen }: ModalSearchProps) => {
 export default ModalSearch;
 
 const ListAll = ({ keyword: keywordDefault, type }: { keyword: string; type?: string }) => {
-  const [data, setData] = React.useState<ResSoPaAr[]>();
+  const [data, setData] = React.useState<ResSoPaAr[]>([]);
   const { token } = useAuth();
 
   const [state, setState] = React.useState<TStateParams>({
@@ -295,11 +295,11 @@ const ListAll = ({ keyword: keywordDefault, type }: { keyword: string; type?: st
     if (type === "All") res = await searchApi.getAll(token, page, limit, keyword, sort);
 
     if (res.pagination.page === 1) {
-      setData(null);
+      setData([]);
       updateState({ totalPages: res.pagination.totalPages });
       setData(res.data);
     } else {
-      setData((pres) => [...pres, ...res.data]);
+      setData((prevData) => [...prevData, ...res.data]);
     }
 
     return res;
@@ -318,9 +318,10 @@ const ListAll = ({ keyword: keywordDefault, type }: { keyword: string; type?: st
     page < totalPages && updateState({ page: page + 1 });
   };
 
-  return data?.length > 0 ? (
+  return data.length > 0 ? (
     <FlatList
       data={data}
+      keyExtractor={(item) => item.id.toString()}
       onEndReached={loadMore}
       style={{
         width: WINDOW_WIDTH,
@@ -331,7 +332,7 @@ const ListAll = ({ keyword: keywordDefault, type }: { keyword: string; type?: st
         paddingBottom: HEIGHT.navigator + HEIGHT.playingCard + 20,
       }}
       renderItem={({ item, index }) => {
-        return <ItemHorizontal type={item.type} data={item} key={index} />;
+        return <ItemHorizontal type={item.type} data={item} key={item.id} />;
       }}
     />
   ) : (
@@ -398,6 +399,7 @@ const ModalViewAll = ({ keyword, active, setActive }: TModalViewAllProps) => {
   return (
     <FlatList
       data={SearchScreens}
+      keyExtractor={(item) => item.id.toString()} // Add keyExtractor to ensure unique keys
       scrollEnabled={Platform.OS === "ios" ? true : false}
       onScrollToIndexFailed={(error) => {
         flatListRef.current.scrollToOffset({
@@ -418,7 +420,7 @@ const ModalViewAll = ({ keyword, active, setActive }: TModalViewAllProps) => {
       showsHorizontalScrollIndicator={false}
       // scrollEventThrottle={500} // Đặt độ nhạy của sự kiện cuộn
       snapToInterval={WINDOW_WIDTH}
-      renderItem={({ item, index }) => <View key={index}>{item.item}</View>}
+      renderItem={({ item, index }) => <View key={item.id}>{item.item}</View>} // Use item.id as the key
     />
   );
 };

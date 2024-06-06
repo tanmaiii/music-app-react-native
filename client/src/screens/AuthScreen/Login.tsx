@@ -13,7 +13,7 @@ import {
   ImageBackground,
   Platform,
 } from "react-native";
-import { usePlaying } from "@/context/PlayingContext";
+import { useBarSong } from "@/context/BarSongContext";
 import IMAGES from "@/constants/images";
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
@@ -40,7 +40,7 @@ interface LoginScreenProps {}
 const LoginScreen = (props: LoginScreenProps) => {
   const navigation = useNavigation<NavigationProp>();
   const { currentUser, login } = useAuth();
-  const { setOpenBarSong } = usePlaying();
+  const { setOpenBarSong } = useBarSong();
   const inputEmailRef = React.useRef<TextInput>(null);
   const inputPasswordRef = React.useRef<TextInput>(null);
 

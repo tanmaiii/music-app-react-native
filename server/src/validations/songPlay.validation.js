@@ -9,17 +9,16 @@ const querySchema = {
   }),
 };
 
-const cookieSchema = {
-  cookies: Joi.object().keys({
-    accessToken: Joi.string().required(),
-  }),
-};
-
 export default class songValidation {
   static createSongPlay = {
     params: Joi.object().keys({
-      songId: Joi.number().integer().required(),
+      songId: Joi.string().min(0).max(36).required(),
     }),
-    ...cookieSchema,
   };
+
+  static countListened = {
+    params: Joi.object().keys({
+      songId: Joi.string().min(0).max(36).required(),
+    }),
+  }
 }

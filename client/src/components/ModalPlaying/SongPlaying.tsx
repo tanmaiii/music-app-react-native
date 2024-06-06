@@ -16,18 +16,18 @@ import {
   faPlay,
   faStepBackward,
 } from "@fortawesome/free-solid-svg-icons";
-import { usePlaying } from "../../context/PlayingContext";
+// import { usePlaying } from "../../context/BarSongContext";
 
 interface SongPlayingProps {}
 
 const SongPlaying = ({}: SongPlayingProps) => {
-  const { playSound, stopSound, isPlaying } = useAudio();
+  const { playSound, stopSound, isPlaying, songIdPlaying, songDuration, currentPosition } =
+    useAudio();
   const { token } = useAuth();
-  const { songIdPlaying } = usePlaying();
   const [durationMillis, setDurationMillis] = React.useState(null);
 
   const handlePlay = () => {
-    isPlaying ? stopSound() : playSound();
+    isPlaying ? stopSound() : playSound(songIdPlaying);
   };
 
   const { data: song } = useQuery({
@@ -37,6 +37,16 @@ const SongPlaying = ({}: SongPlayingProps) => {
       return res;
     },
   });
+
+  // Chuyển đổi millis sang phút:giây
+  const formatDuration = (millis: number | null): string => {
+    if (millis === null) return "0:00";
+    const minutes = Math.floor(millis / 1000 / 60);
+    const seconds = Math.floor((millis / 1000) % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const sliderWidth = currentPosition ? (currentPosition / songDuration) * 100 : 0;
 
   return (
     <View style={styles.wrapperSong}>
@@ -83,7 +93,7 @@ const SongPlaying = ({}: SongPlayingProps) => {
                 <View
                   style={[
                     {
-                      width: `${0.1 * 100}%`,
+                      width: `${sliderWidth}%`,
                       height: "100%",
                       backgroundColor: COLORS.White1,
                       borderRadius: 5,
@@ -94,7 +104,7 @@ const SongPlaying = ({}: SongPlayingProps) => {
                   style={[
                     styles.sliderBarDot,
                     {
-                      left: `${0.1 * 100}%`,
+                      left: `${sliderWidth}%`,
                       marginLeft: -16 / 2,
                     },
                   ]}
@@ -102,8 +112,10 @@ const SongPlaying = ({}: SongPlayingProps) => {
               </View>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <Text style={styles.textExtra}>0:38 </Text>
-              <Text style={styles.textExtra}>{durationMillis || "0:00"}</Text>
+              <Text style={styles.textExtra}>
+                {currentPosition && formatDuration(currentPosition)}{" "}
+              </Text>
+              <Text style={styles.textExtra}>{songDuration && formatDuration(songDuration)}</Text>
             </View>
           </View>
 

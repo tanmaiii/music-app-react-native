@@ -7,7 +7,7 @@ import { Skeleton } from "moti/skeleton";
 import styles from "./style";
 import { COLORS, SPACING } from "../../theme/theme";
 import { useNavigation, useLinkTo } from "@react-navigation/native";
-import { usePlaying } from "../../context/PlayingContext";
+import { usePlaying } from "../../context/BarSongContext";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigators/TStack";
 import { TPlaylist } from "../../types";

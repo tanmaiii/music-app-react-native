@@ -174,7 +174,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     refetch: refetchPlaylists,
     isLoading: loadingPlaylists,
   } = useQuery({
-    queryKey: ["playlists"],
+    queryKey: ["playlists-suggest"],
     queryFn: async () => {
       const res = await playlistApi.getAll(1, 7);
       const filteredPlaylists = res.data?.filter((playlist) => playlist.id !== playlistId) || [];

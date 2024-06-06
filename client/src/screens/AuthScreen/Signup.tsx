@@ -1,7 +1,7 @@
 import * as React from "react";
 import { authApi } from "@/apis";
 import IMAGES from "@/constants/images";
-import { usePlaying } from "@/context/PlayingContext";
+import { useBarSong } from "@/context/BarSongContext";
 import { useToast } from "@/context/ToastContext";
 import { NavigationProp } from "@/navigators/TStack";
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
@@ -42,7 +42,7 @@ interface SignupScreenProps {}
 
 const SignupScreen = (props: SignupScreenProps) => {
   const navigation = useNavigation<NavigationProp>();
-  const { setOpenBarSong } = usePlaying();
+  const { setOpenBarSong } = useBarSong();
   const { setToastMessage } = useToast();
   const inputNameRef = React.useRef<TextInput>(null);
   const inputEmailRef = React.useRef<TextInput>(null);

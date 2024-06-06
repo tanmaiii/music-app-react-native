@@ -1,22 +1,23 @@
-import { faArrowUpFromBracket, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Constants from "expo-constants";
-import { LinearGradient } from "expo-linear-gradient";
-import * as React from "react";
-import { Animated, Platform, SafeAreaView, Share, StyleSheet, Text, View } from "react-native";
-import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
+import { Animated, Platform, SafeAreaView, Share, Text, View } from "react-native";
 import { genreApi } from "@/apis";
+import CategoryHeader from "@/components/CategoryHeader";
 import GenreCard from "@/components/GenreCard";
 import PlaylistCard from "@/components/PlaylistCard";
 import SectionCard from "@/components/SectionCard";
 import SongCard from "@/components/SongCard";
 import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
-import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
-import CategoryHeader from "@/components/CategoryHeader";
+import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
 import { TGenre } from "@/types/genre.type";
+import { faArrowUpFromBracket, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Constants from "expo-constants";
+import { LinearGradient } from "expo-linear-gradient";
+import * as React from "react";
+import { ScrollView, TouchableHighlight } from "react-native-gesture-handler";
+import styles from "./style";
+import { WINDOW_WIDTH } from "@/utils";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface GenreScreenProps {}
@@ -157,126 +158,128 @@ const GenreScreen = (props: GenreScreenProps) => {
           animatedValue.setValue(offsetY);
         }}
       >
-        <View style={[styles.headerBottom]}>
-          <Text style={styles.titleHeaderBottom}>{genre?.title}</Text>
-        </View>
-
-        {loadingPlaylistsNew || loadingPlaylistsPopular || loadingSongs ? (
-          <>
-            <SectionCard title="" loading={true} data={null} />
-            <SectionCard title="" loading={true} data={null} />
-            <SectionCard title="" loading={true} data={null} />
-            <SectionCard title="" loading={true} data={null} />
-          </>
-        ) : (
-          <>
-            <SectionCard
-              title="Song popular"
-              loading={loadingSongs}
-              data={songsPopular}
-              renderItem={({ item, index }) => (
-                <View
-                  key={index}
-                  style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
-                >
-                  <SongCard song={item} loading={false} />
-                </View>
-              )}
-            />
-            <SectionCard
-              title="Song new"
-              loading={loadingSongs}
-              data={songsNew}
-              renderItem={({ item, index }) => (
-                <View
-                  key={index}
-                  style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
-                >
-                  <SongCard song={item} loading={false} />
-                </View>
-              )}
-            />
-            <SectionCard
-              title="Song popular"
-              loading={loadingSongs}
-              data={playlistsPopular}
-              renderItem={({ item, index }) => (
-                <View
-                  key={index}
-                  style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
-                >
-                  <PlaylistCard playlist={item} loading={false} />
-                </View>
-              )}
-            />
-            <SectionCard
-              title="Song popular"
-              loading={loadingSongs}
-              data={playlistsNew}
-              renderItem={({ item, index }) => (
-                <View
-                  key={index}
-                  style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
-                >
-                  <PlaylistCard playlist={item} loading={false} />
-                </View>
-              )}
-            />
-          </>
-        )}
-
-        <View>
-          {songsPopular?.length <= 0 &&
-            songsNew?.length <= 0 &&
-            playlistsNew?.length <= 0 &&
-            playlistsPopular?.length <= 0 && (
-              <View
-                style={{
-                  paddingVertical: SPACING.space_12,
-                  width: WINDOW_WIDTH,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={[
-                    {
-                      color: COLORS.White2,
-                      fontSize: FONTSIZE.size_14,
-                      fontFamily: FONTFAMILY.regular,
-                    },
-                  ]}
-                >
-                  Sorry, there are no matching results
-                </Text>
-              </View>
-            )}
-        </View>
-
-        <View>
-          <View style={{ paddingHorizontal: SPACING.space_10, marginTop: SPACING.space_24 }}>
-            <CategoryHeader title={"Genre other"} loading={false} />
+        <View style={{ paddingBottom: HEIGHT.navigator + HEIGHT.playingCard }}>
+          <View style={[styles.headerBottom]}>
+            <Text style={styles.titleHeaderBottom}>{genre?.title}</Text>
           </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-            }}
-          >
-            {genres?.map((item) => {
-              return (
+
+          {loadingPlaylistsNew || loadingPlaylistsPopular || loadingSongs ? (
+            <>
+              <SectionCard title="" loading={true} data={null} />
+              <SectionCard title="" loading={true} data={null} />
+              <SectionCard title="" loading={true} data={null} />
+              <SectionCard title="" loading={true} data={null} />
+            </>
+          ) : (
+            <>
+              <SectionCard
+                title="Song popular"
+                loading={loadingSongs}
+                data={songsPopular}
+                renderItem={({ item, index }) => (
+                  <View
+                    key={index}
+                    style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                  >
+                    <SongCard song={item} loading={false} />
+                  </View>
+                )}
+              />
+              <SectionCard
+                title="Song new"
+                loading={loadingSongs}
+                data={songsNew}
+                renderItem={({ item, index }) => (
+                  <View
+                    key={index}
+                    style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                  >
+                    <SongCard song={item} loading={false} />
+                  </View>
+                )}
+              />
+              <SectionCard
+                title="Song popular"
+                loading={loadingSongs}
+                data={playlistsPopular}
+                renderItem={({ item, index }) => (
+                  <View
+                    key={index}
+                    style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                  >
+                    <PlaylistCard playlist={item} loading={false} />
+                  </View>
+                )}
+              />
+              <SectionCard
+                title="Song popular"
+                loading={loadingSongs}
+                data={playlistsNew}
+                renderItem={({ item, index }) => (
+                  <View
+                    key={index}
+                    style={{ marginRight: SPACING.space_12, maxWidth: WINDOW_WIDTH / 2.4 }}
+                  >
+                    <PlaylistCard playlist={item} loading={false} />
+                  </View>
+                )}
+              />
+            </>
+          )}
+
+          <View>
+            {songsPopular?.length <= 0 &&
+              songsNew?.length <= 0 &&
+              playlistsNew?.length <= 0 &&
+              playlistsPopular?.length <= 0 && (
                 <View
-                  key={item.id}
                   style={{
-                    width: WINDOW_WIDTH / 2,
-                    padding: SPACING.space_10,
+                    paddingVertical: SPACING.space_12,
+                    width: WINDOW_WIDTH,
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
-                  <GenreCard genre={item} />
+                  <Text
+                    style={[
+                      {
+                        color: COLORS.White2,
+                        fontSize: FONTSIZE.size_14,
+                        fontFamily: FONTFAMILY.regular,
+                      },
+                    ]}
+                  >
+                    Sorry, there are no matching results
+                  </Text>
                 </View>
-              );
-            })}
+              )}
+          </View>
+
+          <View>
+            <View style={{ paddingHorizontal: SPACING.space_10, marginTop: SPACING.space_24 }}>
+              <CategoryHeader title={"Genre other"} loading={false} />
+            </View>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+              }}
+            >
+              {genres?.map((item) => {
+                return (
+                  <View
+                    key={item.id}
+                    style={{
+                      width: WINDOW_WIDTH / 2,
+                      padding: SPACING.space_10,
+                    }}
+                  >
+                    <GenreCard genre={item} />
+                  </View>
+                );
+              })}
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -285,45 +288,3 @@ const GenreScreen = (props: GenreScreenProps) => {
 };
 
 export default GenreScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.Black1,
-  },
-  title: {
-    color: COLORS.White1,
-    fontSize: FONTSIZE.size_16,
-    fontFamily: FONTFAMILY.medium,
-  },
-  header: {
-    width: "100%",
-    padding: SPACING.space_12,
-    flexDirection: "column",
-    gap: SPACING.space_16,
-  },
-  headerTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerBottom: {
-    paddingHorizontal: SPACING.space_12,
-  },
-  titleHeaderBottom: {
-    fontSize: FONTSIZE.size_30,
-    fontFamily: FONTFAMILY.bold,
-    color: COLORS.White1,
-    marginBottom: SPACING.space_18,
-  },
-  buttonHeader: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: 32,
-    height: 32,
-    borderRadius: 25,
-  },
-  icon: {
-    color: COLORS.White1,
-  },
-});

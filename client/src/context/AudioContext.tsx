@@ -1,5 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
-import { Audio } from "expo-av";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { AVPlaybackStatus, Audio } from "expo-av";
+import { useBarSong } from "./BarSongContext";
+import playApi from "@/apis/play/playApi";
+import { useAuth } from "./AuthContext";
+import { apiConfig } from "@/configs";
+import { useToast } from "./ToastContext";
 
 export function useAudio() {
   return useContext(AudioContex)!;
@@ -7,8 +12,11 @@ export function useAudio() {
 
 type AudioContextType = {
   sound: Audio.Sound | null;
+  songIdPlaying: string | null;
   isPlaying: boolean;
-  playSound: () => Promise<void>;
+  songDuration: number;
+  currentPosition: number;
+  playSound: (songId: string) => Promise<void>;
   stopSound: () => Promise<void>;
   setVolume: (volume: number) => Promise<void>;
   addToQueue: (songUri: string) => void;
@@ -25,23 +33,131 @@ type Props = {
 const AudioContex = createContext<AudioContextType | null>(null);
 
 export const AudioContextProvider = ({ children }: Props) => {
+  const [songIdPlaying, setSongIdPlaying] = useState<string | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [queue, setQueue] = useState<string[]>([]);
   const [currentSongIndex, setCurrentSongIndex] = useState<number>(0);
+  const { setOpenBarSong } = useBarSong();
+  const { token } = useAuth();
+  const { setToastMessage } = useToast();
+  const [songDuration, setSongDuration] = useState<number | null>(null);
+  const [currentPosition, setCurrentPosition] = useState<number | null>(null);
 
-  const playSound = async () => {
-    if (!sound) {
-      const { sound } = await Audio.Sound.createAsync(require("../assets/mp3/song2.mp3"));
-      setSound(sound);
-    }
-    await sound.playAsync();
-    setIsPlaying(true);
+  // useEffect(() => {
+  //   return sound
+  //     ? () => {
+  //         sound.unloadAsync(); // Unload sound khi component bị hủy
+  //       }
+  //     : undefined;
+  // }, [sound]);
+
+  const getPathSong = async (songId: string) => {
+    setSongIdPlaying(songId);
+    try {
+      const res = playApi.playSong(songId, token);
+      console.log((await res).title, (await res).song_path);
+
+      return res && (await res).song_path;
+    } catch (error) {}
   };
+
+  // Chuyển đổi millis sang phút:giây
+  const formatDuration = (millis: number | null): string => {
+    if (millis === null) return "0:00";
+    const minutes = Math.floor(millis / 1000 / 60);
+    const seconds = Math.floor((millis / 1000) % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const playSound = async (songId: string) => {
+    console.log(loading);
+
+    if (loading) return;
+
+    if (songIdPlaying === songId) {
+      if (isPlaying) {
+        await sound?.setPositionAsync(0);
+      } else {
+        if (formatDuration(songDuration) === formatDuration(currentPosition)) {
+          await sound?.setPositionAsync(0);
+        }
+        await sound?.playAsync();
+        setIsPlaying(true);
+      }
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Dừng các bài hát đang được phát
+      console.log("Load bài mới");
+
+      if (sound) {
+        await sound.stopAsync();
+        setSound(null);
+      }
+
+      const song_path = (await getPathSong(songId)) || "";
+
+      const { sound: newSound } = await Audio.Sound.createAsync({
+        uri: apiConfig.mp3Url(song_path),
+      });
+
+      setSound(newSound);
+      await newSound.playAsync();
+      setOpenBarSong(true);
+      setLoading(false);
+      setIsPlaying(true);
+    } catch (error) {
+      setToastMessage("Unable to play the song, try again!");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const getDuration = async () => {
+      // Lấy độ dài của bài hát
+      const status: AVPlaybackStatus = sound && (await sound.getStatusAsync());
+      if (status?.isLoaded) {
+        setSongDuration(status.durationMillis ?? null);
+      }
+    };
+    getDuration();
+  }, [sound]);
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      if (isPlaying) {
+        const status: AVPlaybackStatus = sound && (await sound.getStatusAsync());
+        if (status?.isLoaded) {
+          setCurrentPosition(status.positionMillis ?? null);
+        }
+      }
+    }, 1000);
+
+    if (!isPlaying) {
+      clearInterval(intervalId);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [isPlaying, sound]);
+
+  useEffect(() => {
+    console.log(formatDuration(songDuration));
+    console.log(formatDuration(currentPosition));
+
+    if (formatDuration(songDuration) == formatDuration(currentPosition)) {
+      stopSound();
+      setIsPlaying(false);
+    }
+  }, [songDuration, currentPosition]);
 
   const stopSound = async () => {
     if (sound) {
-      await sound.stopAsync();
+      await sound.pauseAsync();
       setIsPlaying(false);
     }
   };
@@ -74,9 +190,16 @@ export const AudioContextProvider = ({ children }: Props) => {
     }
   };
 
+  useEffect(() => {
+    console.log(queue);
+  }, [queue]);
+
   const audioContextValue: AudioContextType = {
     sound,
+    songIdPlaying,
     isPlaying,
+    songDuration,
+    currentPosition,
     playSound,
     stopSound,
     setVolume,

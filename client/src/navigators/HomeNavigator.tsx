@@ -7,6 +7,7 @@ import PlaylistDetail from "../screens/PlaylistDetail";
 import SongDetail from "../screens/SongDetail";
 import ArtistDetail from "../screens/ArtistDetail";
 import ListSongScreen from "../screens/ListSongScreen";
+import ListSongLikeScreen from "../screens/ListSongLikeScreen";
 import ListPlaylistScreen from "../screens/ListPlaylistScreen";
 import UserAccount from "../screens/UserAccount";
 import EditProfile from "../screens/UserAccount/EditProfile";
@@ -29,7 +30,7 @@ const HomeNavigator = (props: HomeNavigatorProps) => {
       <Stack.Screen name="Song" component={SongDetail} />
       <Stack.Screen name="Playlist" component={PlaylistDetail} />
       <Stack.Screen name="ListSong" component={ListSongScreen} />
-      <Stack.Screen name="ListSongLike" component={ListSongScreen} />
+      <Stack.Screen name="ListSongLike" component={ListSongLikeScreen} />
       <Stack.Screen name="ListPlaylist" component={ListPlaylistScreen} />
       <Stack.Screen name="User" component={UserAccount} />
       <Stack.Screen name="UserEditProfile" component={EditProfile} />

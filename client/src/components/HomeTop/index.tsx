@@ -56,10 +56,7 @@ const HomeTop = ({ data, loading }: HomeTopProps) => {
 
   return (
     <View style={styles.container}>
-      <TouchableScale
-        style={styles.card}
-        onPress={() => navigation.navigate("ListSongLike", { userId: currentUser.id })}
-      >
+      <TouchableScale style={styles.card} onPress={() => navigation.navigate("ListSongLike")}>
         <View style={[styles.wrapper]}>
           <View
             style={[

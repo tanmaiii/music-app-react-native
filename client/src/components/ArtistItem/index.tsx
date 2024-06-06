@@ -77,7 +77,7 @@ const ArtistItem = ({ userId }: { userId: string }) => {
       >
         <View style={styles.leftBox}>
           <Image
-            style={styles.boxImage}
+            style={[styles.boxImage]}
             source={
               artist?.image_path ? { uri: apiConfig.imageURL(artist.image_path) } : IMAGES.AVATAR
             }

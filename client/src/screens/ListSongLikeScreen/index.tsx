@@ -31,9 +31,9 @@ import { TSong, TStateParams } from "@/types";
 const statusBarHeight = Constants.statusBarHeight;
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
-interface ListSongScreenProps {}
+interface ListSongLikeScreenProps {}
 
-const ListSongScreen = (props: ListSongScreenProps) => {
+const ListSongLikeScreen = (props: ListSongLikeScreenProps) => {
   const [songs, setSongs] = useState<TSong[]>(null);
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RootRouteProps<"ListSong" | "ListSongLike">>();
@@ -41,8 +41,6 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const { currentUser, token } = useAuth();
   const queryClient = useQueryClient();
-
-  const items = Array.from({ length: 10 }, (_, index) => index);
 
   const [state, setState] = React.useState<TStateParams>({
     page: 1,
@@ -60,6 +58,8 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const updateState = (newValue: Partial<TStateParams>) => {
     setState((prevState) => ({ ...prevState, ...newValue }));
   };
+
+  const items = Array.from({ length: 10 }, (_, index) => index);
 
   const headerAnimation = {
     opacity: animatedValue.interpolate({
@@ -101,21 +101,20 @@ const ListSongScreen = (props: ListSongScreenProps) => {
 
   const getData = async (newPage?: number) => {
     newPage && updateState({ page: newPage });
-    const res = await songApi.getAllByUserId(token, route.params.userId, newPage || page, limit);
+    const res = await favouriteApi.getSongs(token, newPage || page, limit, sort);
     if (res.pagination.page === 1) {
       setSongs(null);
       updateState({ totalPages: res.pagination.totalPages });
       updateState({ totalCount: res.pagination.totalCount });
       setSongs(res.data);
     } else {
-      setSongs((pres) => [...pres, ...res.data]);
+      setSongs((prevSongs) => [...prevSongs, ...res.data]);
     }
-
     return res;
   };
 
   const {} = useQuery({
-    queryKey: ["songs", route.params.userId],
+    queryKey: ["songs-favorites", currentUser.id],
     queryFn: async () => {
       return await getData(1);
     },
@@ -142,7 +141,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
     setTimeout(() => {
       updateState({ page: 1 });
       queryClient.invalidateQueries({
-        queryKey: ["songs", route.params.userId],
+        queryKey: ["songs-favorites", currentUser.id],
       });
       updateState({ refreshing: false });
     }, 2000);
@@ -168,7 +167,9 @@ const ListSongScreen = (props: ListSongScreenProps) => {
           <TouchableOpacity style={styles.buttonHeader} onPress={() => navigation.goBack()}>
             <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
           </TouchableOpacity>
-          <Animated.Text style={[styles.titleHeader, headerAnimation]}>Songs</Animated.Text>
+          <Animated.Text style={[styles.titleHeader, headerAnimation]}>
+            {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
+          </Animated.Text>
           <TouchableOpacity style={[styles.buttonHeader]} onPress={() => setIsOpenModal(true)}>
             <FontAwesomeIcon icon={faMagnifyingGlass} size={20} style={{ color: COLORS.White1 }} />
           </TouchableOpacity>
@@ -178,8 +179,8 @@ const ListSongScreen = (props: ListSongScreenProps) => {
       {!songs ? (
         <View style={styles.wrapper}>
           <View style={[styles.wrapperTop]}>
-            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>Songs</Text>
-            <Text style={styles.textExtra}>{totalCount} Songs</Text>
+            <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>Favorite song</Text>
+            <Text style={styles.textExtra}>0 Songs</Text>
             <View style={styles.button}>
               <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
               <Text style={styles.textButton}>Play</Text>
@@ -217,7 +218,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
             ListHeaderComponent={
               <View style={[styles.wrapperTop]}>
                 <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
-                  {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
+                  Favorite song
                 </Text>
                 <Text style={styles.textExtra}>{totalCount} Songs</Text>
                 <TouchableOpacity style={styles.button}>
@@ -227,7 +228,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
               </View>
             }
             renderItem={({ item, index }) => (
-              <View key={index}>
+              <View key={item.id}>
                 <SongItem song={item} loading={loading} />
               </View>
             )}
@@ -240,7 +241,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   );
 };
 
-export default ListSongScreen;
+export default ListSongLikeScreen;
 
 const styles = StyleSheet.create({
   container: {
