@@ -61,8 +61,7 @@ const SongDetail = (props: SongDetailProps) => {
   const songId = route.params.songId;
   const { token } = useAuth();
   const { setOpenBarSong } = useBarSong();
-  const { isPlaying, playSound, stopSound } = useAudio();
-  const { songIdPlaying } = useAudio();
+  const { isPlaying, playSound, stopSound, songIdPlaying, addToQueue } = useAudio();
   const queryClient = useQueryClient();
 
   const headerAnimation = {
@@ -163,7 +162,8 @@ const SongDetail = (props: SongDetailProps) => {
     if (songId === songIdPlaying && isPlaying) {
       stopSound();
     } else {
-      song && playSound(song?.id);
+      // song && playSound(song?.id);
+      addToQueue(song)
       setOpenBarSong(true);
     }
   };

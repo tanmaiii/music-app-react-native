@@ -31,3 +31,9 @@ export type ResSoPaAr = {
   public?: number;
   created_at: string;
 };
+
+
+export type TSongPlay = {
+  id: string;
+  num_song: number;
+};

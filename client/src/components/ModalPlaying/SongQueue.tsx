@@ -28,30 +28,21 @@ interface SongQueueProps {
 }
 
 const SongQueue = ({ setIsOpen }: SongQueueProps) => {
-  const { songIdPlaying } = useAudio();
+  const { songIdPlaying, queue, changeToQueue, updateToQueue } = useAudio();
   const { token } = useAuth();
   const [songs, setSongs] = React.useState<TSong[]>([]);
 
-  const {
-    data,
-    refetch: refetchSongs,
-    isLoading: loadingSongs,
-  } = useQuery({
-    queryKey: ["songs", "03ef6e3f-5c08-4bcd-b516-580aae618854"],
-    queryFn: async () => {
-      const res = await songApi.getAllByPlaylistId(
-        token,
-        "03ef6e3f-5c08-4bcd-b516-580aae618854",
-        1,
-        50
-      );
-      setSongs(res.data);
-      return res.data;
-    },
-  });
+  React.useEffect(() => {
+    if (songs !== queue) setSongs(queue);
+  }, [queue]);
+
+  const handleChangeSongs = (newSongs: TSong[]) => {
+    setSongs(newSongs);
+    updateToQueue(newSongs);
+  };
 
   const renderItem = ({ item, drag, isActive }: RenderItemParams<TSong>) => {
-    if (item.id === songIdPlaying) return;
+    if (item?.id === songIdPlaying) return;
     return (
       <ScaleDecorator>
         <OpacityDecorator>
@@ -82,7 +73,7 @@ const SongQueue = ({ setIsOpen }: SongQueueProps) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setIsOpen(false)}>
-          <FontAwesomeIcon icon={faXmark} size={28} color={COLORS.White2} />
+          <FontAwesomeIcon icon={faXmark} size={28} color={COLORS.White} />
         </TouchableOpacity>
         <Text style={styles.textMain}>{`Danh sách phát (${songs.length})`}</Text>
       </View>
@@ -96,11 +87,12 @@ const SongQueue = ({ setIsOpen }: SongQueueProps) => {
       </View>
 
       <View style={{ flex: 1 }}>
-        {songs && (
+        {queue && (
           <DraggableFlatList
+            containerStyle={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
             data={songs}
-            onDragEnd={({ data }) => setSongs(data)}
+            onDragEnd={({ data }) => handleChangeSongs(data)}
             keyExtractor={(item) => item.id}
             renderItem={renderItem}
           />
@@ -121,7 +113,7 @@ type SongProps = {
 
 const Song = ({ play = false, songId, songsNew, setSongsNew }: SongProps) => {
   const { token } = useAuth();
-  const { stopSound, playSound, isPlaying, songIdPlaying } = useAudio();
+  const { stopSound, playSound, isPlaying, songIdPlaying, updateToQueue } = useAudio();
   const [swipingRight, setSwipingRight] = React.useState(false);
 
   const handlePlay = () => {
@@ -134,6 +126,8 @@ const Song = ({ play = false, songId, songsNew, setSongsNew }: SongProps) => {
 
   const handleDelete = () => {
     const updatedSongs = songsNew.filter((song) => song.id !== songId);
+    updateToQueue(updatedSongs);
+
     setSongsNew(updatedSongs);
   };
 
@@ -196,7 +190,7 @@ const Song = ({ play = false, songId, songsNew, setSongsNew }: SongProps) => {
                 </View>
               </TouchableOpacity>
               {!swipingRight && (
-                <View style={styles.cardRight}>
+                <View style={[styles.cardRight]}>
                   <View style={[styles.cardIcon]}>
                     {songIdPlaying === songId ? (
                       <LottieView
@@ -282,6 +276,7 @@ const styles = StyleSheet.create({
   },
   cardRight: {
     // backgroundColor: "red",
+    paddingLeft: SPACING.space_32,
     justifyContent: "center",
     alignItems: "center",
   },

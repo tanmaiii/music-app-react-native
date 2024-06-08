@@ -6,8 +6,6 @@ import { useAuth } from "./AuthContext";
 import { apiConfig } from "@/configs";
 import { useToast } from "./ToastContext";
 import { TSong } from "@/types";
-import { isLoading } from "expo-font";
-import { faL } from "@fortawesome/free-solid-svg-icons";
 
 export function useAudio() {
   return useContext(AudioContex)!;
@@ -26,9 +24,7 @@ type AudioContextType = {
   stopSound: () => Promise<void>;
   changeSongDuration: (duration: number) => Promise<void>;
   changeSoundVolume: (volume: number) => Promise<void>;
-  clearQueue: () => void;
   changeToQueue: (songs: TSong[]) => void;
-  updateToQueue: (songs: TSong[]) => void;
   addToQueue: (song: TSong) => void;
   removeToQueue: (song: TSong) => void;
   nextSong: () => void;
@@ -50,12 +46,12 @@ export const AudioContextProvider = ({ children }: Props) => {
   const { token } = useAuth();
 
   const [songIdPlaying, setSongIdPlaying] = useState<string | null>(null); // ID của bài hát đang được phát
-  const [currentSongIndex, setCurrentSongIndex] = useState<number | null>(null); // Vị trí của bài hát trong queue
+  const [currentSongIndex, setCurrentSongIndex] = useState<number>(null); // Vị trí của bài hát trong queue
   const [isPlaying, setIsPlaying] = useState<boolean>(false); // Trạng thái phát nhạc
   const [songDuration, setSongDuration] = useState<number | null>(null); // Độ dài của bài hát
   const [currentPosition, setCurrentPosition] = useState<number | null>(null); // Thời gian hiện tại của bài hát
   const [volume, setVolume] = useState<number>(0.5); // Âm lượng của bài hát
-  const [queue, setQueue] = useState<TSong[] | null>([]); // Danh sách chờ
+  const [queue, setQueue] = useState<TSong[]>([]); // Danh sách chờ
 
   const getPathSong = async (songId: string) => {
     setSongIdPlaying(songId);
@@ -75,51 +71,77 @@ export const AudioContextProvider = ({ children }: Props) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  const playSound = async (songId?: string) => {
+  const playSound = async (songId: string) => {
     if (loading) return;
-    try {
-      setLoading(true);
-      if (sound) {
-        await sound.pauseAsync();
-      }
-      await sound.playAsync();
-      setIsPlaying(true);
-      setLoading(false);
-    } catch (error) {}
-    setLoading(false);
-  };
 
-  const startSound = async (index: number) => {
-    console.log("index", index, loading);
-    if (!queue[index]) return setToastMessage("Song not found");
-    if (loading) return;
+    if (songIdPlaying === songId) {
+      if (isPlaying) {
+        await sound?.setPositionAsync(0);
+      } else {
+        if (formatDuration(songDuration) == formatDuration(currentPosition)) {
+          await sound?.setPositionAsync(0);
+        }
+        await sound?.playAsync();
+        setIsPlaying(true);
+      }
+      return;
+    }
+
+    setLoading(true);
+
     try {
+      // Dừng các bài hát đang được phát
       if (sound) {
         await sound.stopAsync();
-        setIsPlaying(false);
+        setSound(null);
       }
 
-      setLoading(true);
-
-      console.log("START SONG", queue[index]?.title);
+      const song_path = getPathSong(songId);
 
       const { sound: newSound } = await Audio.Sound.createAsync({
-        uri: apiConfig.mp3Url(queue[index]?.song_path),
+        uri: apiConfig.mp3Url(queue[currentSongIndex]?.song_path),
       });
 
       setSound(newSound);
       await newSound.playAsync();
-
       setOpenBarSong(true);
-      // setOpenModalSong(true);
-      setIsPlaying(true);
-
       setLoading(false);
+      setIsPlaying(true);
     } catch (error) {
-      setToastMessage("Start queue song fall, try again!");
+      setToastMessage("Unable to play the song, try again!");
     }
     setLoading(false);
   };
+
+  // const playSound = async (songId: string) => {
+  //   if (loading) return;
+  //   setLoading(true);
+
+  //   if(songId !== songIdPlaying){
+  //     setCurrentSongIndex(queue.findIndex((song) => song.id === songId));
+  //   }
+
+  //   try {
+  //     // Dừng các bài hát đang được phát
+  //     if (sound) {
+  //       await sound.stopAsync();
+  //       setSound(null);
+  //     }
+
+  //     const { sound: newSound } = await Audio.Sound.createAsync({
+  //       uri: apiConfig.mp3Url(queue[currentSongIndex]?.song_path),
+  //     });
+
+  //     setSound(newSound);
+  //     await newSound.playAsync();
+  //     setOpenBarSong(true);
+  //     setLoading(false);
+  //     setIsPlaying(true);
+  //   } catch (error) {
+  //     setToastMessage("Unable to play the song, try again!");
+  //   }
+  //   setLoading(false);
+  // };
 
   const stopSound = async () => {
     if (sound) {
@@ -154,68 +176,58 @@ export const AudioContextProvider = ({ children }: Props) => {
     }
   };
 
-  const clearQueue = async () => {
-    setQueue([]);
-    setCurrentSongIndex(null);
-    setSongIdPlaying(null);
-    stopSound();
-    setOpenBarSong(false);
-    setOpenModalSong(false);
-    await sound.stopAsync();
-  };
-
-  const changeToQueue = async (songs: TSong[]) => {
+  const changeToQueue = (songs: TSong[]) => {
     setQueue(songs);
+    setOpenBarSong(true);
     setCurrentSongIndex(0);
-  };
-
-  const updateToQueue = async (songs: TSong[]) => {
-    setQueue(songs);
+    setOpenModalSong(true);
   };
 
   const addToQueue = (songNew: TSong) => {
-    console.log("Add to queue");
     setQueue([songNew, ...queue]);
   };
 
   const removeToQueue = (songNew: TSong) => {
-    setQueue(queue.filter((song) => song.id !== songNew.id));
+    // setQueue([...queue, songUri]);
   };
 
-  // Phát bài hát tiếp theo từ queue
-  const nextSong = async () => {
+  const nextSong = () => {
     if (currentSongIndex < queue.length - 1) {
-      await sound.stopAsync();
       setCurrentSongIndex(currentSongIndex + 1);
-    } else {
-      setCurrentSongIndex(0);
+      // Phát bài hát tiếp theo từ queue
+      playSound(queue[currentSongIndex + 1]?.id);
     }
+
     console.log("Next Song", currentSongIndex + 1);
   };
 
-  const previousSong = async () => {
-    if (queue.length > 1) {
-      await sound.stopAsync();
-      if (currentSongIndex - 1 < 0) {
-        setCurrentSongIndex(queue.length - 1);
-      } else {
-        setCurrentSongIndex(currentSongIndex - 1);
-      }
+  const previousSong = () => {
+    if (currentSongIndex > 0) {
+      setCurrentSongIndex(currentSongIndex - 1);
+      // Phát bài hát trước đó từ queue
+      playSound(queue[currentSongIndex - 1]?.id);
     }
     console.log("prev Song");
   };
 
-  // Phát bài hát trong queue khi thay đổi vị trí bài hát
   useEffect(() => {
-    const started = async () => {
-      await startSound(currentSongIndex);
+    if (currentSongIndex >= 0 && currentSongIndex < queue.length) {
       setSongIdPlaying(queue[currentSongIndex]?.id);
-      console.log("ID SONG PLAYING", queue[currentSongIndex]?.title);
-    };
-    queue.length > 0 && started();
-  }, [currentSongIndex]);
+    }
+    playSound(queue[currentSongIndex]?.id);
+  }, [currentSongIndex, queue]);
 
-  useEffect(() => {}, [queue]);
+  useEffect(() => {
+    console.log("Danh sach queue thay doi");
+  }, [queue]);
+
+  useEffect(() => {
+    if (songIdPlaying == "" || undefined || null) {
+      setOpenBarSong(false);
+    } else {
+      setOpenBarSong(true);
+    }
+  }, [queue, songIdPlaying]);
 
   // Lấy độ dài của bài hát
   useEffect(() => {
@@ -246,19 +258,18 @@ export const AudioContextProvider = ({ children }: Props) => {
     return () => clearInterval(intervalId);
   }, [queue, isPlaying, sound, songIdPlaying]);
 
-  // Khi hết thời gian bai hát
+  // Khi hết thời gian bafi hát
   useEffect(() => {
-    if (
-      currentPosition !== null &&
-      songDuration !== null &&
-      formatDuration(songDuration) === formatDuration(currentPosition)
-    ) {
+    if (formatDuration(songDuration) === formatDuration(currentPosition)) {
       stopSound();
       setIsPlaying(false);
-      //Phát bài mới khi kết thúc
-      nextSong();
     }
-  }, [currentPosition, songDuration]);
+  }, [queue, currentPosition, songDuration, songIdPlaying]);
+
+  useEffect(() => {
+    setSongIdPlaying(queue[currentSongIndex]?.id);
+    console.log("doi id bai dang phat");
+  }, [currentSongIndex]);
 
   // Cập nhật âm lượng của bài hát
   useEffect(() => {
@@ -280,9 +291,7 @@ export const AudioContextProvider = ({ children }: Props) => {
     pauseSound,
     changeSongDuration,
     changeSoundVolume,
-    clearQueue,
     changeToQueue,
-    updateToQueue,
     addToQueue,
     removeToQueue,
     nextSong,

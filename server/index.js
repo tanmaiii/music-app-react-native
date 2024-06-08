@@ -6,7 +6,6 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { db } from "./src/config/connect.js";
 import routes from "./src/routes/index.js";
-import nodemailer from "nodemailer";
 
 const app = express();
 
@@ -33,18 +32,6 @@ app.use(
 app.use(cookieParser());
 
 app.use(express.json());
-
-//
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  port: 587,
-  secure: false, // Use `true` for port 465, `false` for all other ports
-  auth: {
-    user: process.env.MAIL_NAME,
-    pass: process.env.MAIL_PASSWORD,
-  },
-});
 
 app.use("/api/", routes);
 

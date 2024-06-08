@@ -7,15 +7,13 @@ import { useSharedValue } from "react-native-reanimated";
 
 const PlayerProgressBar = ({ style }: ViewProps) => {
   const {
-    playSound,
     stopSound,
+    pauseSound,
     isPlaying,
-    songIdPlaying,
     songDuration,
     currentPosition,
     changeSongDuration,
-    volume,
-    changeSoundVolume,
+    songIdPlaying,
   } = useAudio();
 
   const [focus, setFocus] = React.useState(false);
@@ -36,7 +34,6 @@ const PlayerProgressBar = ({ style }: ViewProps) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-
     timeoutRef.current = setTimeout(() => {
       changeSongDuration(value);
     }, 300);
@@ -45,6 +42,16 @@ const PlayerProgressBar = ({ style }: ViewProps) => {
   useEffect(() => {
     progress.value = currentPosition;
   }, [currentPosition]);
+
+  const handleSlidingStart = () => {
+    setFocus(true);
+    if (!isPlaying) return;
+    stopSound();
+  };
+
+  const handleSlidingComplete = () => {
+    setFocus(false);
+  };
 
   return (
     <View style={[style, styles.container]}>
@@ -63,22 +70,18 @@ const PlayerProgressBar = ({ style }: ViewProps) => {
             height: focus ? 8 : 6,
             borderRadius: 10,
           }}
-          onSlidingStart={() => {
-            setFocus(true);
-            if (!isPlaying) return;
-            stopSound();
-          }}
-          onSlidingComplete={() => {
-            setFocus(false);
-          }}
-          onValueChange={async (value) => {
-            handleChangeValue(value);
-          }}
+          onSlidingStart={handleSlidingStart}
+          onSlidingComplete={handleSlidingComplete}
+          onValueChange={(value) => handleChangeValue(value)}
         />
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={styles.textExtra}>{currentPosition && formatDuration(currentPosition)} </Text>
-        <Text style={styles.textExtra}>{songDuration && formatDuration(songDuration)}</Text>
+        <Text style={styles.textExtra}>
+          {currentPosition ? formatDuration(currentPosition) : "00:00"}{" "}
+        </Text>
+        <Text style={styles.textExtra}>
+          {songDuration ? formatDuration(songDuration) : "00:00"}
+        </Text>
       </View>
     </View>
   );

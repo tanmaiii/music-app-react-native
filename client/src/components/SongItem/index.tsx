@@ -28,14 +28,15 @@ interface SongItemProps {
 
 const SongItem = (props: SongItemProps) => {
   const { setOpenBarSong } = useBarSong();
-  const { playSound, songIdPlaying, isPlaying } = useAudio();
+  const { playSound, songIdPlaying, isPlaying, changeToQueue } = useAudio();
   const { song, loading = false } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState(100);
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {
-    song && playSound(song?.id);
+    const songsToPlay = song ? [song] : [];
+    changeToQueue(songsToPlay);
   };
 
   if (loading || !song) return <SongItemSkeleton />;

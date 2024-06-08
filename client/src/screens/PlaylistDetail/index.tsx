@@ -42,6 +42,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import styles from "./style";
 import PlaylistDetailSkeleton from "./PlaylistDetailSkeleton";
 import ArtistItem from "@/components/ArtistItem";
+import { useAudio } from "@/context/AudioContext";
+import { TSong, TSongPlay } from "@/types";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -56,6 +58,8 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(400);
+  const { changeToQueue } = useAudio();
+
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
 
@@ -196,6 +200,12 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     flatListRef.current && flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
   }, [playlistId]);
 
+  const handlePlay = () => {
+    console.log("Play songs from playlist");
+    const songsToPlay = songs ? songs : []; // Replace [] with the actual array of songs to play
+    changeToQueue(songsToPlay);
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -311,7 +321,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
                       </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={() => handlePlay()}>
                       <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
                       <Text style={styles.textButton}>Play</Text>
                     </TouchableOpacity>

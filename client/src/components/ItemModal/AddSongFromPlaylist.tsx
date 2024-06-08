@@ -156,7 +156,7 @@ const SongItem = ({ song, playlistId, loading = false }: TSongItem) => {
   const mutationAdd = useMutation({
     mutationFn: async (isAdd: boolean) => {
       if (isAdd) return await playlistApi.removeSong(playlistId, song.id, token);
-      if (countSongs < 10) return await playlistApi.addSong(playlistId, song.id, token);
+      if (countSongs < 20) return await playlistApi.addSong(playlistId, song.id, token);
       setOpenModal(true);
     },
     onSuccess: () => {

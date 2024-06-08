@@ -18,24 +18,21 @@ import { Image, Text, TouchableOpacity, View } from "react-native";
 import styles from "./style";
 import PlayerProgressBar from "../PlayerProgressBar";
 import PlayerVolumeBar from "../PlayerVolumeBar";
+import PlayerControls from "../PlayerControls";
 
 interface SongPlayingProps {}
 
 const SongPlaying = ({}: SongPlayingProps) => {
-  const { playSound, stopSound, isPlaying, songIdPlaying } = useAudio();
+  const { playSound, stopSound, isPlaying, songIdPlaying, queue, currentSongIndex } = useAudio();
   const { token } = useAuth();
 
-  const handlePlay = () => {
-    isPlaying ? stopSound() : playSound(songIdPlaying);
-  };
-
-  const { data: song } = useQuery({
-    queryKey: ["song", songIdPlaying],
-    queryFn: async () => {
-      const res = await songApi.getDetail(songIdPlaying, token);
-      return res;
-    },
-  });
+  // const { data: song } = useQuery({
+  //   queryKey: ["song", songIdPlaying],
+  //   queryFn: async () => {
+  //     const res = await songApi.getDetail(songIdPlaying, token);
+  //     return res;
+  //   },
+  // });
 
   return (
     <View style={styles.wrapperSong}>
@@ -43,7 +40,11 @@ const SongPlaying = ({}: SongPlayingProps) => {
         <View style={[styles.wrapperImage]}>
           <Image
             style={[styles.image]}
-            source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
+            source={
+              queue[currentSongIndex]?.image_path
+                ? { uri: apiConfig.imageURL(queue[currentSongIndex]?.image_path) }
+                : IMAGES.SONG
+            }
           />
         </View>
       </View>
@@ -51,7 +52,7 @@ const SongPlaying = ({}: SongPlayingProps) => {
       <View>
         <View style={[styles.playerControlsTop]}>
           <Text numberOfLines={1} style={styles.textMain}>
-            {song?.title}
+            {queue[currentSongIndex]?.title}
           </Text>
 
           <View style={{ flexDirection: "row", gap: SPACING.space_4, alignItems: "center" }}>
@@ -63,7 +64,7 @@ const SongPlaying = ({}: SongPlayingProps) => {
               />
             )}
             <Text numberOfLines={1} style={styles.textExtra}>
-              {song?.author}
+              {queue[currentSongIndex]?.author}
             </Text>
           </View>
         </View>
@@ -73,21 +74,7 @@ const SongPlaying = ({}: SongPlayingProps) => {
             <PlayerProgressBar />
           </View>
 
-          <View style={styles.action}>
-            <TouchableOpacity style={styles.actionButton}>
-              <FontAwesomeIcon icon={faStepBackward} size={34} color={COLORS.White1} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButtonStart} onPress={() => handlePlay()}>
-              {isPlaying ? (
-                <FontAwesomeIcon icon={faPause} size={28} color={COLORS.White1} />
-              ) : (
-                <FontAwesomeIcon icon={faPlay} size={28} color={COLORS.White1} />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <FontAwesomeIcon icon={faForwardStep} size={34} color={COLORS.White1} />
-            </TouchableOpacity>
-          </View>
+          <PlayerControls />
 
           <View style={styles.actionVolume}>
             <PlayerVolumeBar />

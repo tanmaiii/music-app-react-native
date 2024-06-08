@@ -1,0 +1,41 @@
+version: '1.0'
+
+services:
+  # Database
+  mysql-database-app:
+    build:
+      context: ./database
+      dockerfile: ./Dockerfile
+    container_name: mysql-database-music  
+    volumes:
+      - mysql-database-volume-app:/var/lib/mysql
+    networks:
+      - music-app-network  
+
+  # Backend
+  server-app:
+    build: 
+      context: ./server
+      dockerfile: ./Dockerfile
+    container_name: server-app-music
+    ports:
+    - "8000:8000"
+    environment:
+    - APP_NAME=SOUND HUB
+    - PORT=8000
+    - DB_HOST=db
+    - DB_USER=root
+    - DB_PASS=123456789
+    - DB_NAME=music
+    - FRONTEND_URL=http://localhost:8081
+    - MAIL_NAME=jobquestofficial@gmail.com
+    - MAIL_PASSWORD=kbaw fiei rpom hrfu
+    - MY_SECRET=tanmai
+    networks:
+    - music-app-network
+
+volumes:
+  mysql-database-volume-app:
+
+networks:
+  music-app-network:

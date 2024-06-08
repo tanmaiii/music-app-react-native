@@ -14,7 +14,7 @@ const AppRouter = (props: AppRouterProps) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 4000);
+    }, 0);
   }, []);
 
   if (loading) return <SplashScreen />;
