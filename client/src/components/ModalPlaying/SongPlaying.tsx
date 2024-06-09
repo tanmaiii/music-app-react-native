@@ -1,38 +1,26 @@
-import { songApi } from "@/apis";
 import { apiConfig } from "@/configs";
 import { IMAGES } from "@/constants";
 import { useAudio } from "@/context/AudioContext";
 import { useAuth } from "@/context/AuthContext";
-import { COLORS, FONTSIZE, SPACING } from "@/theme/theme";
-import {
-  faCircleCheck,
-  faForwardStep,
-  faPause,
-  faPlay,
-  faStepBackward,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useQuery } from "@tanstack/react-query";
+import { SPACING } from "@/theme/theme";
+import { TSong } from "@/types";
 import * as React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
-import styles from "./style";
+import { Image, Text, View } from "react-native";
+import PlayerControls from "../PlayerControls";
 import PlayerProgressBar from "../PlayerProgressBar";
 import PlayerVolumeBar from "../PlayerVolumeBar";
-import PlayerControls from "../PlayerControls";
+import styles from "./style";
 
 interface SongPlayingProps {}
 
 const SongPlaying = ({}: SongPlayingProps) => {
   const { playSound, stopSound, isPlaying, songIdPlaying, queue, currentSongIndex } = useAudio();
   const { token } = useAuth();
+  const [song, setSong] = React.useState<TSong>(null);
 
-  // const { data: song } = useQuery({
-  //   queryKey: ["song", songIdPlaying],
-  //   queryFn: async () => {
-  //     const res = await songApi.getDetail(songIdPlaying, token);
-  //     return res;
-  //   },
-  // });
+  React.useEffect(() => {
+    setSong(queue[currentSongIndex]);
+  }, [queue, currentSongIndex, songIdPlaying]);
 
   return (
     <View style={styles.wrapperSong}>
@@ -40,11 +28,7 @@ const SongPlaying = ({}: SongPlayingProps) => {
         <View style={[styles.wrapperImage]}>
           <Image
             style={[styles.image]}
-            source={
-              queue[currentSongIndex]?.image_path
-                ? { uri: apiConfig.imageURL(queue[currentSongIndex]?.image_path) }
-                : IMAGES.SONG
-            }
+            source={song?.image_path ? { uri: apiConfig.imageURL(song?.image_path) } : IMAGES.SONG}
           />
         </View>
       </View>
@@ -52,19 +36,13 @@ const SongPlaying = ({}: SongPlayingProps) => {
       <View>
         <View style={[styles.playerControlsTop]}>
           <Text numberOfLines={1} style={styles.textMain}>
-            {queue[currentSongIndex]?.title}
+            {song?.title || "        "}
           </Text>
 
           <View style={{ flexDirection: "row", gap: SPACING.space_4, alignItems: "center" }}>
-            {false && (
-              <FontAwesomeIcon
-                icon={faCircleCheck}
-                color={COLORS.Primary}
-                size={FONTSIZE.size_16}
-              />
-            )}
+            {/* <FontAwesomeIcon icon={faCircleCheck} color={COLORS.Primary} size={FONTSIZE.size_16} /> */}
             <Text numberOfLines={1} style={styles.textExtra}>
-              {queue[currentSongIndex]?.author}
+              {song?.author || "          "}
             </Text>
           </View>
         </View>

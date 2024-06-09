@@ -28,6 +28,8 @@ import { useAuth } from "@/context/AuthContext";
 import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
 import { TSong, TStateParams } from "@/types";
+import { useAudio } from "@/context/AudioContext";
+import { useToast } from "@/context/ToastContext";
 const statusBarHeight = Constants.statusBarHeight;
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -41,6 +43,8 @@ const ListSongLikeScreen = (props: ListSongLikeScreenProps) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const { currentUser, token } = useAuth();
   const queryClient = useQueryClient();
+  const { changeToQueue } = useAudio();
+  const { setToastMessage } = useToast();
 
   const [state, setState] = React.useState<TStateParams>({
     page: 1,
@@ -147,6 +151,18 @@ const ListSongLikeScreen = (props: ListSongLikeScreenProps) => {
     }, 2000);
   };
 
+  const handlePlay = async () => {
+    try {
+      const res = await favouriteApi.getSongs(token, 1, 0, sort);
+      const songsToPlay = res?.data ? res?.data : [];
+      console.log({ songsToPlay });
+
+      changeToQueue(songsToPlay);
+    } catch (error) {
+      setToastMessage("Error when play all songs");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <AnimatedLinearGradient
@@ -217,11 +233,9 @@ const ListSongLikeScreen = (props: ListSongLikeScreenProps) => {
             }}
             ListHeaderComponent={
               <View style={[styles.wrapperTop]}>
-                <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>
-                  Favorite song
-                </Text>
+                <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>Favorite song</Text>
                 <Text style={styles.textExtra}>{totalCount} Songs</Text>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => handlePlay()}>
                   <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
                   <Text style={styles.textButton}>Play</Text>
                 </TouchableOpacity>

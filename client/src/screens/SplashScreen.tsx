@@ -1,8 +1,8 @@
+import { IMAGES } from "@/constants";
+import { COLORS } from "@/theme/theme";
 import LottieView from "lottie-react-native";
 import * as React from "react";
-import { Text, View, StyleSheet, Modal } from "react-native";
-import { COLORS } from "@/theme/theme";
-import { IMAGES } from "@/constants";
+import { Modal, StyleSheet, View } from "react-native";
 
 interface SplashScreenProps {}
 

@@ -1,24 +1,22 @@
+import { faChevronLeft, faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
+import Constants from "expo-constants";
+import { Skeleton } from "moti/skeleton";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
   Platform,
-  TouchableHighlight,
   SafeAreaView,
-  Image,
+  Text,
+  TouchableHighlight,
+  View
 } from "react-native";
-import styles from "./style";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { COLORS, SPACING } from "../../theme/theme";
-import Constants from "expo-constants";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
-import { faChevronLeft, faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { Skeleton } from "moti/skeleton";
-import CategoryHeader from "../../components/CategoryHeader";
-import SongItem from "../../components/SongItem";
 import { ScrollView } from "react-native-gesture-handler";
+import CategoryHeader from "@/components/CategoryHeader";
+import SongItem from "@/components/SongItem";
+import { NavigationProp } from "@/navigators/TStack";
+import { COLORS, SPACING } from "@/theme/theme";
+import styles from "./style";
 const statusBarHeight = Constants.statusBarHeight;
 
 const SkeletonCommonProps = {
@@ -68,7 +66,6 @@ const ArtistDetailSkeleton = (props: ArtistDetailSkeletonProps) => {
           </View>
         </View>
         <View style={styles.body}>
-          {/* <View style={[{ height: HEIGHT_AVATAR }]}></View> */}
           <View style={{ paddingHorizontal: SPACING.space_10 }}>
             <Skeleton {...SkeletonCommonProps} width={100} height={18} radius={4} />
           </View>

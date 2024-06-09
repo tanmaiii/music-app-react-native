@@ -1,24 +1,23 @@
-import * as React from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity, TouchableHighlight } from "react-native";
-import IMAGES from "../../constants/images";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
-import { Skeleton } from "moti/skeleton";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useBarSong } from "../../context/BarSongContext";
-import { TSong } from "../../types";
-import { ModalSong } from "../ItemModal";
-import CustomBottomSheet from "../CustomBottomSheet";
-import apiConfig from "../../configs/axios/apiConfig";
-import moment from "moment";
+import { ModalSong } from "@/components/ModalSong";
+import apiConfig from "@/configs/axios/apiConfig";
+import IMAGES from "@/constants/images";
+import { useBarSong } from "@/context/BarSongContext";
+import { NavigationProp } from "@/navigators/TStack";
+import { COLORS, SPACING } from "@/theme/theme";
+import { TSong } from "@/types";
+import { Feather } from "@expo/vector-icons";
+import { faCircle, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCircle, faDotCircle, faLock } from "@fortawesome/free-solid-svg-icons";
-import { NavigationProp } from "../../navigators/TStack";
+import { useNavigation } from "@react-navigation/native";
+import moment from "moment";
+import * as React from "react";
+import { Image, Text, TouchableHighlight, View } from "react-native";
+import CustomBottomSheet from "../CustomBottomSheet";
 import SongItemSkeleton from "./SongItemSkeleton";
 
-import styles from "./style";
 import { useAudio } from "@/context/AudioContext";
 import LottieView from "lottie-react-native";
+import styles from "./style";
 
 interface SongItemProps {
   loading?: boolean;
@@ -28,15 +27,26 @@ interface SongItemProps {
 
 const SongItem = (props: SongItemProps) => {
   const { setOpenBarSong } = useBarSong();
-  const { playSound, songIdPlaying, isPlaying, changeToQueue } = useAudio();
+  const { playSound, songIdPlaying, isPlaying, changeToQueue, playSong, stopSound } = useAudio();
   const { song, loading = false } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState(100);
   const navigation = useNavigation<NavigationProp>();
 
-  const handlePress = () => {
-    const songsToPlay = song ? [song] : [];
-    changeToQueue(songsToPlay);
+  const handlePlay = () => {
+    if (loading) return;
+    if (song?.id === songIdPlaying && isPlaying) {
+      stopSound();
+    } else {
+      if (song?.id === songIdPlaying) {
+        playSound(song?.id);
+      } else {
+        console.log("song", song);
+        
+        playSong(song);
+      }
+      setOpenBarSong(true);
+    }
   };
 
   if (loading || !song) return <SongItemSkeleton />;
@@ -46,7 +56,7 @@ const SongItem = (props: SongItemProps) => {
       <>
         <TouchableHighlight
           underlayColor={COLORS.Black2}
-          onPress={() => handlePress()}
+          onPress={() => handlePlay()}
           style={styles.container}
         >
           <View style={styles.swapper}>

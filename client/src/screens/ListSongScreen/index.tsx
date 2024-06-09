@@ -28,6 +28,8 @@ import { useAuth } from "@/context/AuthContext";
 import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
 import { TSong, TStateParams } from "@/types";
+import { useAudio } from "@/context/AudioContext";
+import { useToast } from "@/context/ToastContext";
 const statusBarHeight = Constants.statusBarHeight;
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -40,7 +42,9 @@ const ListSongScreen = (props: ListSongScreenProps) => {
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const { currentUser, token } = useAuth();
+  const { changeToQueue } = useAudio();
   const queryClient = useQueryClient();
+  const { setToastMessage } = useToast();
 
   const items = Array.from({ length: 10 }, (_, index) => index);
 
@@ -148,6 +152,17 @@ const ListSongScreen = (props: ListSongScreenProps) => {
     }, 2000);
   };
 
+  const handlePlay = async () => {
+    try {
+      const res = await songApi.getAllByUserId(token, route.params.userId, 1, 0);
+      console.log(res && res.data);
+
+      res && changeToQueue(res.data);
+    } catch (error) {
+      setToastMessage("Error when play all songs");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <AnimatedLinearGradient
@@ -180,7 +195,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
           <View style={[styles.wrapperTop]}>
             <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>Songs</Text>
             <Text style={styles.textExtra}>{totalCount} Songs</Text>
-            <View style={styles.button}>
+            <View>
               <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
               <Text style={styles.textButton}>Play</Text>
             </View>
@@ -220,7 +235,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
                   {route.name === "ListSongLike" ? "Favorite song" : "Songs"}
                 </Text>
                 <Text style={styles.textExtra}>{totalCount} Songs</Text>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => handlePlay()}>
                   <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
                   <Text style={styles.textButton}>Play</Text>
                 </TouchableOpacity>

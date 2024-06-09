@@ -27,20 +27,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { playlistApi, songApi, userApi } from "../../apis";
-import ArtistCard from "../../components/ArtistCard";
-import CategoryHeader from "../../components/CategoryHeader";
-import CustomBottomSheet from "../../components/CustomBottomSheet";
-import { ModalArtist } from "../../components/ItemModal";
-import PlaylistCard from "../../components/PlaylistCard";
-import SongItem from "../../components/SongItem";
-import apiConfig from "../../configs/axios/apiConfig";
-import IMAGES from "../../constants/images";
-import { useAuth } from "../../context/AuthContext";
-import { NavigationProp, RootRouteProps } from "../../navigators/TStack";
-import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { TSong } from "../../types";
-import { WINDOW_WIDTH } from "../../utils";
+import { playlistApi, songApi, userApi } from "@/apis";
+import ArtistCard from "@/components/ArtistCard";
+import CategoryHeader from "@/components/CategoryHeader";
+import CustomBottomSheet from "@/components/CustomBottomSheet";
+import { ModalArtist } from "@/components/ModalArtist";
+import PlaylistCard from "@/components/PlaylistCard";
+import SongItem from "@/components/SongItem";
+import apiConfig from "@/configs/axios/apiConfig";
+import IMAGES from "@/constants/images";
+import { useAuth } from "@/context/AuthContext";
+import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
+import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import { TSong } from "@/types";
+import { WINDOW_WIDTH } from "@/utils";
 import styles from "./style";
 import ArtistDetailSkeleton from "./ArtistDetailSkeleton";
 import SectionCard from "@/components/SectionCard";

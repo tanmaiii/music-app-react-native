@@ -141,7 +141,7 @@ export const restoreSong = async (req, res) => {
 export const getAllSong = (req, res) => {
   try {
     Song.findAll(req.query, (err, data) => {
-      if (!data) {
+      if (!data || err) {
         return res.status(401).json("Không tìm thấy");
       } else {
         return res.json(data);
@@ -158,7 +158,7 @@ export const getAllSongByMe = async (req, res) => {
     const userInfo = await jwtService.verifyToken(token);
 
     Song.findMe(userInfo.id, req.query, (err, data) => {
-      if (!data) {
+      if (!data || err) {
         return res.status(401).json("Không tìm thấy");
       } else {
         return res.json(data);
@@ -175,7 +175,7 @@ export const getAllSongByPlaylist = async (req, res) => {
 
   try {
     Song.findByPlaylistId(userReqInfo.id, req.params.playlistId, req.query, (err, data) => {
-      if (!data) {
+      if (!data || err) {
         return res.status(401).json("Không tìm thấy");
       } else {
         return res.json(data);
@@ -184,7 +184,6 @@ export const getAllSongByPlaylist = async (req, res) => {
   } catch (error) {
     res.status(400).json(error);
   }
-  
 };
 
 export const getAllSongByUser = async (req, res) => {

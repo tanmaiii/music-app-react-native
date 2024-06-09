@@ -14,9 +14,7 @@ const SkeletonCommonProps = {
 const GenreCardSkeleton = () => {
   return (
     <View style={[styles.container]}>
-      {/* <View style={[styles.wrapper]}> */}
       <Skeleton {...SkeletonCommonProps} height={"100%"} width={"100%"} />
-      {/* </View> */}
     </View>
   );
 };

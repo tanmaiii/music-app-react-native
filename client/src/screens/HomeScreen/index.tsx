@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import CategoryHeader from "@/components/CategoryHeader";
 import HomeTop from "@/components/HomeTop";
 import SongCard from "@/components/SongCard";
 import IMAGES from "@/constants/images";

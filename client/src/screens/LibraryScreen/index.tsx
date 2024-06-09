@@ -18,13 +18,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { favouriteApi } from "@/apis";
 import CustomBottomSheet from "@/components/CustomBottomSheet";
 import ItemHorizontal from "@/components/ItemHorizontal";
-import { CreatePlaylist, CreateSongPlaylist } from "@/components/ItemModal";
+import { CreateSongPlaylist } from "@/components/ItemModal";
+import { CreatePlaylist } from "@/components/ModalPlaylist";
 import IMAGES from "@/constants/images";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import { NavigationProp } from "@/navigators/TStack";
 import { COLORS, HEIGHT } from "@/theme/theme";
-import { ResFavourite, ResSoPaAr } from "@/types";
+import { ResFavourite, ResSoPaAr, TStateParams } from "@/types";
 import styles from "./style";
 
 interface LibraryScreenProps {}
@@ -123,6 +124,8 @@ const AllFavorites = () => {
   const { token, currentUser } = useAuth();
   const queryClient = useQueryClient();
   const [data, setData] = useState<ResFavourite[]>(null);
+  const items = Array.from({ length: 10 }, (_, index) => index);
+  const [showLoading, setShowLoading] = React.useState(false);
 
   const [state, setState] = React.useState({
     page: 1,
@@ -137,7 +140,7 @@ const AllFavorites = () => {
 
   const { limit, page, loading, sort, totalPages, keyword, refreshing } = state;
 
-  const updateState = (newState) => {
+  const updateState = (newState: Partial<TStateParams>) => {
     setState((prevState) => ({ ...prevState, ...newState }));
   };
 
@@ -150,6 +153,7 @@ const AllFavorites = () => {
   });
 
   const getAllData = async () => {
+    updateState({ loading: true });
     const res = await favouriteApi.getAll(token, page, limit, sort);
 
     if (res.pagination.page === 1) {
@@ -160,6 +164,7 @@ const AllFavorites = () => {
       setData((pres) => [...pres, ...res.data]);
     }
 
+    updateState({ loading: false });
     return res;
   };
 
@@ -192,9 +197,20 @@ const AllFavorites = () => {
     queryClient.invalidateQueries({ queryKey: ["all-favorites"] });
   }, [sort]);
 
+  React.useEffect(() => {
+    setShowLoading(true);
+    console.log("showLoading", showLoading);
+
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <FlatList
-      data={data}
+      data={showLoading ? items : data}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -251,7 +267,13 @@ const AllFavorites = () => {
           </TouchableHighlight>
         </>
       }
-      renderItem={({ item, index }) => <ItemHorizontal type={item?.type} data={item} key={index} />}
+      renderItem={({ item, index }) => {
+        if (showLoading) {
+          return <ItemHorizontal type={item?.type} loading={true} data={item} key={index} />;
+        } else {
+          return <ItemHorizontal type={item?.type} data={item} key={index} />;
+        }
+      }}
     />
   );
 };
@@ -261,6 +283,8 @@ const PlaylistFavourites = () => {
   const { token, currentUser } = useAuth();
   const [data, setData] = useState<ResSoPaAr[]>(null);
   const queryClient = useQueryClient();
+  const items = Array.from({ length: 10 }, (_, index) => index);
+  const [showLoading, setShowLoading] = React.useState(false);
 
   const [state, setState] = React.useState({
     page: 1,
@@ -275,11 +299,12 @@ const PlaylistFavourites = () => {
 
   const { limit, page, loading, sort, totalPages, keyword, refreshing } = state;
 
-  const updateState = (newState) => {
+  const updateState = (newState: Partial<TStateParams>) => {
     setState((prevState) => ({ ...prevState, ...newState }));
   };
 
   const getAllData = async () => {
+    updateState({ loading: true });
     const res = await favouriteApi.getPlaylists(token, page, limit, sort);
     if (res.pagination.page === 1) {
       setData(null);
@@ -289,6 +314,7 @@ const PlaylistFavourites = () => {
       setData((pres) => [...pres, ...res.data]);
     }
 
+    updateState({ loading: false });
     return res;
   };
 
@@ -321,9 +347,19 @@ const PlaylistFavourites = () => {
     queryClient.invalidateQueries({ queryKey: ["playlists-favorites"] });
   }, [sort]);
 
+  React.useEffect(() => {
+    setShowLoading(true);
+
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <FlatList
-      data={data}
+      data={showLoading ? items : data}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -362,7 +398,15 @@ const PlaylistFavourites = () => {
           </View>
         </>
       }
-      renderItem={({ item, index }) => <ItemHorizontal type={"playlist"} data={item} key={index} />}
+      renderItem={({ item, index }) => (
+        <>
+          {showLoading ? (
+            <ItemHorizontal type={"playlist"} loading={true} data={null} key={index} />
+          ) : (
+            <ItemHorizontal type={"playlist"} data={item} key={index} />
+          )}
+        </>
+      )}
     />
   );
 };
@@ -372,6 +416,8 @@ const ArtistFavourites = () => {
   const { token, currentUser } = useAuth();
   const queryClient = useQueryClient();
   const [data, setData] = useState<ResFavourite[]>(null);
+  const items = Array.from({ length: 10 }, (_, index) => index);
+  const [showLoading, setShowLoading] = React.useState(false);
 
   const [state, setState] = React.useState({
     page: 1,
@@ -386,11 +432,12 @@ const ArtistFavourites = () => {
 
   const { limit, page, loading, sort, totalPages, keyword, refreshing } = state;
 
-  const updateState = (newState) => {
+  const updateState = (newState: Partial<TStateParams>) => {
     setState((prevState) => ({ ...prevState, ...newState }));
   };
 
   const getAllData = async () => {
+    updateState({ loading: true });
     const res = await favouriteApi.getArtists(token, page, limit, sort);
     if (res.pagination.page === 1) {
       setData(null);
@@ -400,6 +447,7 @@ const ArtistFavourites = () => {
       setData((pres) => [...pres, ...res.data]);
     }
 
+    updateState({ loading: false });
     return res;
   };
 
@@ -432,9 +480,19 @@ const ArtistFavourites = () => {
     queryClient.invalidateQueries({ queryKey: ["artists-follow"] });
   }, [sort]);
 
+  React.useEffect(() => {
+    setShowLoading(true);
+
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <FlatList
-      data={data}
+      data={showLoading ? items : data}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -473,7 +531,13 @@ const ArtistFavourites = () => {
           </View>
         </>
       }
-      renderItem={({ item, index }) => <ItemHorizontal type={"artist"} data={item} key={index} />}
+      renderItem={({ item, index }) => {
+        if (showLoading) {
+          return <ItemHorizontal type={"artist"} loading={true} />;
+        } else {
+          return <ItemHorizontal type={"artist"} data={item} key={index} />;
+        }
+      }}
     />
   );
 };

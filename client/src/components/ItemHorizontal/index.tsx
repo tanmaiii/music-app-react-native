@@ -1,27 +1,16 @@
 import * as React from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
-import styles from "./style";
-import IMAGES from "../../constants/images";
-import { BORDERRADIUS, COLORS, FONTSIZE, SPACING } from "../../theme/theme";
-import { AntDesign } from "@expo/vector-icons";
-import { Skeleton } from "moti/skeleton";
-import TouchableScale from "../TouchableScale";
-import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
-import { ResFavourite, ResSoPaAr, TPlaylist, TUser } from "../../types";
-import apiConfig from "../../configs/axios/apiConfig";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
-
-const SkeletonCommonProps = {
-  colorMode: "dark",
-  transition: {
-    type: "timing",
-    duration: 1500,
-  },
-  backgroundColor: COLORS.Black2,
-} as const;
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useLinkTo, useNavigation } from "@react-navigation/native";
+import apiConfig from "../../configs/axios/apiConfig";
+import IMAGES from "../../constants/images";
+import { NavigationProp } from "../../navigators/TStack";
+import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
+import { ResSoPaAr } from "../../types";
+import styles from "./style";
+import ItemHorizontalSkeleton from "./ItemHorizontalSkeleton";
 
 interface ItemHorizontalProps {
   data?: ResSoPaAr;
@@ -33,7 +22,7 @@ const ItemHorizontal = (props: ItemHorizontalProps) => {
   const { data, loading = false, type } = props;
   const navigation = useNavigation<NavigationProp>();
 
-  const linkTo = useLinkTo();
+  if (loading) return <ItemHorizontalSkeleton type={type} />;
 
   return (
     <View>

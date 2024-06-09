@@ -1,19 +1,20 @@
 import { playlistApi } from "@/apis";
 import PlaylistCard from "@/components/PlaylistCard";
+import { useAuth } from "@/context/AuthContext";
 import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
+import { COLORS, HEIGHT, SPACING } from "@/theme/theme";
 import { TPlaylist, TStateParams } from "@/types";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "@gorhom/bottom-sheet";
+import { WINDOW_WIDTH } from "@gorhom/bottom-sheet";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Constants from "expo-constants";
 import * as React from "react";
 import {
   ActivityIndicator,
   Animated,
   Platform,
-  StyleSheet,
   Text,
   TouchableHighlight,
   View,
@@ -21,8 +22,6 @@ import {
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./style";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/context/AuthContext";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface ListPlaylistScreenProps {}
@@ -36,12 +35,6 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
   const { token, currentUser } = useAuth();
   const queryClient = useQueryClient();
   const items = Array.from({ length: 10 }, (_, index) => index);
-  
-  // const [loading, setLoading] = React.useState<boolean>(false);
-  // const [limit, setLimit] = React.useState(6);
-  // const [page, setPage] = React.useState(1);
-  // const [refreshing, setRefreshing] = React.useState<boolean>(false);
-  // const [totalPages, setTotalPages] = React.useState<number>(1);
 
   const [state, setState] = React.useState<TStateParams>({
     page: 1,
@@ -70,7 +63,7 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
 
   const getData = async (newPage?: number) => {
     newPage && updateState({ page: newPage });
-    const res = await playlistApi.getAllByUserId(userId,newPage || page, limit);
+    const res = await playlistApi.getAllByUserId(userId, newPage || page, limit);
     if (res.pagination.page === 1) {
       setPlaylists(null);
       updateState({ totalPages: res.pagination.totalPages });
@@ -198,5 +191,3 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
 };
 
 export default ListPlaylistScreen;
-
-

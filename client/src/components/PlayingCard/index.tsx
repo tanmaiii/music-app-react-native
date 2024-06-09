@@ -1,35 +1,30 @@
+import { NextButton, PlayPauseButton } from "@/components/PlayerControls";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  Dimensions,
-  Pressable,
-  TouchableHighlight,
-  TouchableOpacity,
-  ImageBackground,
-  Modal,
   Animated,
+  Dimensions,
+  Image,
+  ImageBackground,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
-import styles from "./style";
-import IMAGES from "../../constants/images";
-const { width, height } = Dimensions.get("window");
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { BORDERRADIUS, COLORS, SPACING } from "../../theme/theme";
-import { useBarSong } from "../../context/BarSongContext";
-import { faForwardStep, faPause, faPlay, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import CustomBottomSheet from "../CustomBottomSheet";
-import { TSong } from "../../types";
-import { songApi } from "../../apis";
-import { useAuth } from "../../context/AuthContext";
-import ModalPlaying from "../ModalPlaying";
-import apiConfig from "../../configs/axios/apiConfig";
-import { useAudio } from "../../context/AudioContext";
-import { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { PlayPauseButton, NextButton } from "@/components/PlayerControls";
 import { Swipeable } from "react-native-gesture-handler";
+import { songApi } from "@/apis";
+import apiConfig from "@/configs/axios/apiConfig";
+import IMAGES from "@/constants/images";
+import { useAudio } from "@/context/AudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { useBarSong } from "@/context/BarSongContext";
+import { BORDERRADIUS, COLORS, SPACING } from "@/theme/theme";
+import { TSong } from "@/types";
+import CustomBottomSheet from "../CustomBottomSheet";
+import ModalPlaying from "../ModalPlaying";
+import styles from "./style";
+const { width, height } = Dimensions.get("window");
 
 interface PlayingCardProps {}
 

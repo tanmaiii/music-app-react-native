@@ -1,17 +1,12 @@
-import * as React from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Keyboard,
-  Modal,
-  Platform,
-  SafeAreaView,
-} from "react-native";
-import { IMAGES } from "../../constants";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { playlistApi, songApi } from "@/apis";
+import CustomInput from "@/components/CustomInput";
+import CustomModal from "@/components/CustomModal";
+import { CreatePlaylist } from "@/components/ModalPlaylist";
+import { apiConfig } from "@/configs";
+import { IMAGES } from "@/constants";
+import { useAuth } from "@/context/AuthContext";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import { TPlaylist } from "@/types";
 import {
   faCheckCircle,
   faGlobe,
@@ -19,22 +14,21 @@ import {
   faPlus,
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { FlatList, TextInput, TouchableHighlight } from "react-native-gesture-handler";
-import { TPlaylist, TSong } from "../../types";
-import CustomBottomSheet from "../CustomBottomSheet";
-import CreatePlaylist from "./CreatePlaylist";
-import Constants from "expo-constants";
-import { playlistApi, songApi } from "../../apis";
-import { useAuth } from "../../context/AuthContext";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiConfig } from "../../configs";
-import CustomInput from "../CustomInput";
-import ItemHorizontal from "../ItemHorizontal";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "moti/skeleton";
-import CustomModal from "../CustomModal";
-import { faCircle } from "@fortawesome/free-regular-svg-icons";
-const statusBarHeight = Constants.statusBarHeight;
+import * as React from "react";
+import {
+  Image,
+  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { FlatList, TextInput, TouchableHighlight } from "react-native-gesture-handler";
+import CustomBottomSheet from "../CustomBottomSheet";
 
 const SkeletonCommonProps = {
   colorMode: "dark",

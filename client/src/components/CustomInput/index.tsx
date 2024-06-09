@@ -4,7 +4,6 @@ import * as React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface CustomInputProps {
   onSubmit: (string) => void;
@@ -19,8 +18,6 @@ const CustomInput = (props: CustomInputProps) => {
   const { onSubmit, focus = false, clearValue, value, onSubmitEditing, textInputRef } = props;
   const [keyword, setKeyword] = React.useState<string>("");
   const typingTimeoutRef = React.useRef(null);
-
-  // const textInputRef = React.useRef<TextInput>(null);
 
   function handleSearchInput(text) {
     setKeyword(text);

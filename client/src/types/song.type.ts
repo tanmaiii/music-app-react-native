@@ -5,7 +5,7 @@ export type TSong = {
   author: string;
   user_id: string;
   genre_id?: string;
-  song_path?: string;
+  song_path: string;
   public?: number;
   created_at?: string;
   num_song?: number;

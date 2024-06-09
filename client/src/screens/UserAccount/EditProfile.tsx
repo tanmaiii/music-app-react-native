@@ -1,36 +1,34 @@
+import { imageApi, userApi } from "@/apis";
+import { apiConfig } from "@/configs";
+import IMAGES from "@/constants/images";
+import { useAuth } from "@/context/AuthContext";
+import { NavigationProp } from "@/navigators/TStack";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Constants from "expo-constants";
+import * as ImagePicker from "expo-image-picker";
 import * as React from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  StatusBar,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  Alert,
   ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
-import IMAGES from "@/constants/images";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faAngleRight, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "@/context/AuthContext";
-import Constants from "expo-constants";
-import { apiConfig } from "@/configs";
 const statusBarHeight = Constants.statusBarHeight;
-import * as ImagePicker from "expo-image-picker";
-import { imageApi, userApi } from "@/apis";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { NavigationProp } from "@/navigators/TStack";
 
 interface AccountProps {}
 
 const EditProfile = (props: AccountProps) => {
   const { currentUser, token, loadingAuth } = useAuth();
-  // const [user, setUser] = React.useState();
   const navigation = useNavigation<NavigationProp>();
   const [file, setFile] = React.useState<any>("");
   const queryClient = useQueryClient();

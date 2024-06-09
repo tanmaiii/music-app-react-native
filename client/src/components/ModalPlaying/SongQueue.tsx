@@ -113,14 +113,18 @@ type SongProps = {
 
 const Song = ({ play = false, songId, songsNew, setSongsNew }: SongProps) => {
   const { token } = useAuth();
-  const { stopSound, playSound, isPlaying, songIdPlaying, updateToQueue } = useAudio();
+  const { stopSound, playSound, isPlaying, songIdPlaying, updateToQueue, playSong } = useAudio();
   const [swipingRight, setSwipingRight] = React.useState(false);
 
   const handlePlay = () => {
     if (songId === songIdPlaying && isPlaying) {
       stopSound();
     } else {
-      playSound(songId);
+      if (songId === songIdPlaying) {
+        playSound(songId);
+      } else {
+        playSong(song);
+      }
     }
   };
 
@@ -165,7 +169,7 @@ const Song = ({ play = false, songId, songsNew, setSongsNew }: SongProps) => {
 
   return (
     song && (
-      <Swipeable renderRightActions={RightSwipe}>
+      <Swipeable renderRightActions={songIdPlaying !== song.id && RightSwipe}>
         <View style={[styles.card]}>
           <View style={{ borderRadius: BORDERRADIUS.radius_8 }}>
             <View style={[styles.cardSwapper, play && styles.play]}>

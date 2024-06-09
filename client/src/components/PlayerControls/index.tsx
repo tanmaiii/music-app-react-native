@@ -63,9 +63,10 @@ export const PlayPauseButton = ({ style, iconSize = 34 }: PlayerButtonProps) => 
 export const NextButton = ({ style, iconSize = 34 }: PlayerButtonProps) => {
   const { isPlaying, queue, nextSong } = useAudio();
   const [disabled, setDisabled] = React.useState(true);
+  const timeoutRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (queue.length <= 0) {
+    if (queue.length <= 1) {
       setDisabled(true);
     } else {
       setDisabled(false);
@@ -73,17 +74,18 @@ export const NextButton = ({ style, iconSize = 34 }: PlayerButtonProps) => {
   }, [queue]);
 
   const handlePress = async () => {
-    await nextSong();
+    console.log("next");
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(async () => {
+      await nextSong();
+    }, 300);
   };
 
   return (
     <View style={[style]}>
-      <TouchableOpacity
-        disabled={disabled}
-        activeOpacity={0.85}
-        style={styles.button}
-        onPress={handlePress}
-      >
+      <TouchableOpacity disabled={disabled} style={styles.button} onPress={() => handlePress()}>
         <FontAwesomeIcon
           icon={faForwardStep}
           size={iconSize}
@@ -97,22 +99,30 @@ export const NextButton = ({ style, iconSize = 34 }: PlayerButtonProps) => {
 export const PrevButton = ({ style, iconSize = 34 }: PlayerButtonProps) => {
   const { isPlaying, queue, previousSong } = useAudio();
   const [disabled, setDisabled] = React.useState(true);
+  const timeoutRef = React.useRef(null);
 
-  React.useEffect(()=> {
-    if (queue.length <= 1 ) {
+  React.useEffect(() => {
+    if (queue.length <= 1) {
       setDisabled(true);
     } else {
       setDisabled(false);
     }
-  }, [queue])
+  }, [queue]);
 
-  const handlePress = () => {
-    previousSong();
+  const handlePress = async () => {
+    console.log("prev");
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(async () => {
+      await previousSong();
+    }, 300);
   };
 
   return (
     <View style={[style]}>
-      <TouchableOpacity disabled={disabled} style={styles.button} onPress={handlePress}>
+      <TouchableOpacity disabled={disabled} style={styles.button} onPress={() => handlePress()}>
         <FontAwesomeIcon
           icon={faStepBackward}
           size={iconSize}

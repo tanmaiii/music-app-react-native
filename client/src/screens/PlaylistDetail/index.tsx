@@ -29,7 +29,7 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Constants from "expo-constants";
 import CustomBottomSheet from "@/components/CustomBottomSheet";
-import { AddSongFromPlaylist, ModalPlaylist, EditPlaylist } from "@/components/ItemModal";
+import { AddSongFromPlaylist, ModalPlaylist, EditPlaylist } from "@/components/ModalPlaylist";
 import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
 import { playlistApi, songApi, userApi } from "@/apis";
 import { useAuth } from "@/context/AuthContext";
@@ -43,7 +43,6 @@ import styles from "./style";
 import PlaylistDetailSkeleton from "./PlaylistDetailSkeleton";
 import ArtistItem from "@/components/ArtistItem";
 import { useAudio } from "@/context/AudioContext";
-import { TSong, TSongPlay } from "@/types";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -204,7 +203,7 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
     console.log("Play songs from playlist");
     const songsToPlay = songs ? songs : []; // Replace [] with the actual array of songs to play
     changeToQueue(songsToPlay);
-  }
+  };
 
   return (
     <View style={styles.container}>

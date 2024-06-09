@@ -23,13 +23,11 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   textMain: {
-    // paddingHorizontal: SPACING.space_12,
     fontSize: FONTSIZE.size_14,
     fontFamily: FONTFAMILY.medium,
     color: COLORS.White2,
   },
   textEtra: {
-    // paddingHorizontal: SPACING.space_12,
     fontSize: FONTSIZE.size_14,
     fontFamily: FONTFAMILY.regular,
     color: COLORS.White2,
@@ -71,7 +69,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.6,
   },
   textInput: {
-    // paddingHorizontal: SPACING.space_12,
     paddingVertical: SPACING.space_12,
     fontSize: FONTSIZE.size_16,
     fontFamily: FONTFAMILY.regular,
@@ -94,7 +91,6 @@ const styles = StyleSheet.create({
   boxOption: {
     flexDirection: "row",
     justifyContent: "space-between",
-    // paddingHorizontal: SPACING.space_12,
     paddingVertical: SPACING.space_12,
     alignItems: "center",
   },

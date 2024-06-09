@@ -214,8 +214,6 @@ Song.findByFavorite = async (userId, query, result) => {
   const limit = query?.limit;
   const sort = query?.sort || "new";
 
-  const offset = (page - 1) * limit;
-
   const [data] = await promiseDb.query(
     `SELECT s.*, u.name as author ` +
       ` FROM favourite_songs AS fs` +
@@ -223,7 +221,7 @@ Song.findByFavorite = async (userId, query, result) => {
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` s.title LIKE "%${q}%" AND` : ""} fs.user_id = '${userId}' AND s.public = 1` +
       ` ORDER BY fs.created_at ${sort === "new" ? "DESC" : "ASC"}` +
-      ` LIMIT ${+limit} OFFSET ${+offset};`
+      ` ${!+limit == 0 ? ` limit ${+limit} offset ${+(page - 1) * limit}` : ""} `
   );
 
   const [totalCount] = await promiseDb.query(
@@ -261,15 +259,14 @@ Song.findByUserId = async (userId, userReqInfo, query, result) => {
 
   const userReqId = userReqInfo.id;
 
-  const offset = (page - 1) * limit;
-
   const [data] = await promiseDb.query(
     ` SELECT s.*, u.name as author FROM songs as s ` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""} ` +
       ` ((s.public = 1 AND s.user_id = '${userId}' ) OR ('${userId}' = '${userReqId}' AND s.user_id = '${userId}')) ` +
       ` AND is_deleted = 0 ` +
-      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} ` +
+      ` ${!+limit == 0 ? ` limit ${+limit} offset ${+(page - 1) * limit}` : ""} `
   );
 
   const [totalCount] = await promiseDb.query(
@@ -327,14 +324,13 @@ Song.findAll = async (query, result) => {
   const limit = query?.limit;
   const sort = query?.sortBy || "new";
 
-  const offset = (page - 1) * limit;
-
   const [data] = await promiseDb.query(
     ` SELECT s.*, u.name as author FROM songs as s ` +
       ` LEFT JOIN users AS u ON s.user_id = u.id` +
       ` WHERE ${q ? ` title LIKE "%${q}%" AND` : ""} ` +
       ` is_deleted = 0 and public = 1 ` +
-      `ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} ` +
+      ` ${!+limit == 0 ? ` limit ${+limit} offset ${+(page - 1) * limit}` : ""} `
   );
 
   const [totalCount] = await promiseDb.query(
@@ -367,12 +363,11 @@ Song.findMe = async (userId, query, result) => {
   const limit = query?.limit;
   const sort = query?.sort || "new";
 
-  const offset = (page - 1) * limit;
-
   const [data] = await promiseDb.query(
     `SELECT * FROM songs WHERE ` +
       ` ${q ? ` title LIKE "%${q}%" AND` : ""} user_id = '${userId}' AND is_deleted = 0 ` +
-      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} limit ${+limit} offset ${+offset}`
+      ` ORDER BY created_at ${sort === "new" ? "DESC" : "ASC"} ` +
+      ` ${!+limit == 0 ? ` limit ${+limit} offset ${+(page - 1) * limit}` : ""} `
   );
 
   const [totalCount] = await promiseDb.query(

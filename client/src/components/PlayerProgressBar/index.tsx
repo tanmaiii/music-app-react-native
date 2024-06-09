@@ -12,6 +12,7 @@ const PlayerProgressBar = ({ style }: ViewProps) => {
     isPlaying,
     songDuration,
     currentPosition,
+    currentSongIndex,
     changeSongDuration,
     songIdPlaying,
   } = useAudio();
@@ -22,6 +23,8 @@ const PlayerProgressBar = ({ style }: ViewProps) => {
   const min = useSharedValue(0);
   const max = useSharedValue(songDuration);
   const timeoutRef = React.useRef(null);
+  const [timeFocus, setTimeFocus] = React.useState("00:00");
+  const [left, setLeft] = React.useState(0);
 
   const formatDuration = (millis: number | null): string => {
     if (millis === null) return "0:00";
@@ -40,8 +43,12 @@ const PlayerProgressBar = ({ style }: ViewProps) => {
   };
 
   useEffect(() => {
-    progress.value = currentPosition;
-  }, [currentPosition]);
+    progress.value = currentPosition || 0;
+  }, [currentPosition, currentSongIndex]);
+
+  useEffect(() => {
+    max.value = songDuration || 0;
+  }, [songDuration]);
 
   const handleSlidingStart = () => {
     setFocus(true);
@@ -55,7 +62,7 @@ const PlayerProgressBar = ({ style }: ViewProps) => {
 
   return (
     <View style={[style, styles.container]}>
-      <View>
+      <View style={{}}>
         <Slider
           progress={progress}
           minimumValue={min}

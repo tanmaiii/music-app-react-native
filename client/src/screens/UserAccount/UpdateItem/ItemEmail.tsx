@@ -34,15 +34,6 @@ const ItemEmail = (props: ItemNameProps) => {
   const [verify, setVerify] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  // React.useEffect(() => {
-  //   const getName = async () => {
-  //     const res = await userApi.getMe(token);
-  //     setEmail(res.email);
-  //     // setValue(res.email);
-  //   };
-  //   getName();
-  // }, []);
-
   const handleNext = async () => {
     setLoading(true);
     serErr("");

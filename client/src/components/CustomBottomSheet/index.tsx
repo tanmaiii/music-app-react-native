@@ -1,16 +1,11 @@
-import BottomSheet, {
+import {
   BottomSheetBackdrop,
   BottomSheetModal as BottomSheetModalGorhom,
-  BottomSheetScrollView,
-  BottomSheetView,
-  useBottomSheetDynamicSnapPoints,
+  BottomSheetView
 } from "@gorhom/bottom-sheet";
 import * as React from "react";
-import { Text, View, StyleSheet, Platform } from "react-native";
-import { COLORS, SPACING } from "../../theme/theme";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { Platform, View } from "react-native";
+import { COLORS } from "../../theme/theme";
 
 interface CustomBottomSheetProps {
   isOpen: boolean;

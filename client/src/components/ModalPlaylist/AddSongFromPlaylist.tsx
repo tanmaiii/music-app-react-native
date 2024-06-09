@@ -13,14 +13,14 @@ import {
   View,
 } from "react-native";
 import { FlatList, TextInput } from "react-native-gesture-handler";
-import { playlistApi, songApi } from "../../apis";
-import { apiConfig } from "../../configs";
-import { IMAGES } from "../../constants";
-import { useAuth } from "../../context/AuthContext";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { TSong } from "../../types";
-import CustomInput from "../CustomInput";
-import CustomModal from "../CustomModal";
+import { playlistApi, songApi } from "@/apis";
+import { apiConfig } from "@/configs";
+import { IMAGES } from "@/constants";
+import { useAuth } from "@/context/AuthContext";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import { TSong } from "@/types";
+import CustomInput from "@/components/CustomInput";
+import CustomModal from "@/components/CustomModal";
 
 const SkeletonCommonProps = {
   colorMode: "dark",

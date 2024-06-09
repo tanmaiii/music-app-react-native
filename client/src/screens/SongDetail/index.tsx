@@ -38,7 +38,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { songApi } from "@/apis";
 import ArtistItem from "@/components/ArtistItem";
-import { ModalSong } from "@/components/ItemModal";
+import { ModalSong } from "@/components/ModalSong";
 import apiConfig from "@/configs/axios/apiConfig";
 import { useAudio } from "@/context/AudioContext";
 import { useAuth } from "@/context/AuthContext";
@@ -61,7 +61,7 @@ const SongDetail = (props: SongDetailProps) => {
   const songId = route.params.songId;
   const { token } = useAuth();
   const { setOpenBarSong } = useBarSong();
-  const { isPlaying, playSound, stopSound, songIdPlaying, addToQueue } = useAudio();
+  const { isPlaying, playSound, stopSound, songIdPlaying, addToQueue, playSong } = useAudio();
   const queryClient = useQueryClient();
 
   const headerAnimation = {
@@ -162,8 +162,11 @@ const SongDetail = (props: SongDetailProps) => {
     if (songId === songIdPlaying && isPlaying) {
       stopSound();
     } else {
-      // song && playSound(song?.id);
-      addToQueue(song)
+      if (songId === songIdPlaying) {
+        playSound(songId);
+      } else {
+        playSong(song);
+      }
       setOpenBarSong(true);
     }
   };

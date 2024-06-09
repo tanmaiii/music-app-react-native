@@ -8,33 +8,33 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import * as React from "react";
 import { useState } from "react";
 import { ImageBackground, Share, TouchableOpacity, View } from "react-native";
-import { songApi } from "../../apis";
-import apiConfig from "../../configs/axios/apiConfig";
-import { useAuth } from "../../context/AuthContext";
-import { COLORS } from "../../theme/theme";
-import { WINDOW_HEIGHT } from "../../utils/index";
+import { songApi } from "@/apis";
+import apiConfig from "@/configs/axios/apiConfig";
+import { useAuth } from "@/context/AuthContext";
+import { COLORS } from "@/theme/theme";
+import { WINDOW_HEIGHT } from "@/utils/index";
 
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
-import { useNavigation } from "@react-navigation/native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
-import { useAudio } from "../../context/AudioContext";
-import { NavigationProp } from "../../navigators/TStack";
-import CustomBottomSheet from "../CustomBottomSheet";
-import { ModalSong } from "../ItemModal";
+import { useAudio } from "@/context/AudioContext";
+import CustomBottomSheet from "@/components/CustomBottomSheet";
+import { ModalSong } from "@/components/ModalSong";
 import SongPlaying from "./SongPlaying";
 import SongQueue from "./SongQueue";
 import styles from "./style";
+import { TSong } from "@/types";
 
 interface TSongPlaying {}
 
 const ModalPlaying = (props: TSongPlaying) => {
-  const { songIdPlaying } = useAudio();
+  const { songIdPlaying, random, changeRandomQueue, queue, currentSongIndex } = useAudio();
   const { token } = useAuth();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenQueue, setIsOpenQueue] = useState<boolean>(false);
   const { currentUser } = useAuth();
   const queryClient = useQueryClient();
+  const [song, setSong] = useState<TSong>(null);
 
   const handleShare = async () => {
     try {
@@ -46,13 +46,18 @@ const ModalPlaying = (props: TSongPlaying) => {
     }
   };
 
-  const { data: song } = useQuery({
+  const {} = useQuery({
     queryKey: ["song", songIdPlaying],
     queryFn: async () => {
       const res = await songApi.getDetail(songIdPlaying, token);
       return res;
     },
   });
+
+  React.useEffect(() => {
+    if (queue.length === 0) return;
+    setSong(queue[currentSongIndex]);
+  }, [queue, currentSongIndex]);
 
   const { data: isLike } = useQuery({
     queryKey: ["like-song", song?.id],
@@ -113,8 +118,12 @@ const ModalPlaying = (props: TSongPlaying) => {
                 <FontAwesomeIcon icon={faHeartRegular} size={20} color={COLORS.WhiteRGBA50} />
               )}
             </TouchableOpacity>
-            <TouchableOpacity style={styles.BottomButton}>
-              <FontAwesomeIcon icon={faShuffle} size={20} color={COLORS.WhiteRGBA50} />
+            <TouchableOpacity style={styles.BottomButton} onPress={() => changeRandomQueue()}>
+              <FontAwesomeIcon
+                icon={faShuffle}
+                size={20}
+                color={random ? COLORS.Primary : COLORS.WhiteRGBA50}
+              />
             </TouchableOpacity>
             <TouchableOpacity style={styles.BottomButton} onPress={handleShare}>
               <FontAwesomeIcon icon={faArrowUpFromBracket} size={20} color={COLORS.WhiteRGBA50} />
