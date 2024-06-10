@@ -269,9 +269,9 @@ const AllFavorites = () => {
       }
       renderItem={({ item, index }) => {
         if (showLoading) {
-          return <ItemHorizontal type={item?.type} loading={true} data={item} key={index} />;
+          return <ItemHorizontal key={item?.id} type={item?.type} loading={true} data={item} />;
         } else {
-          return <ItemHorizontal type={item?.type} data={item} key={index} />;
+          return <ItemHorizontal key={item?.id} type={item?.type} data={item} />;
         }
       }}
     />
@@ -401,9 +401,9 @@ const PlaylistFavourites = () => {
       renderItem={({ item, index }) => (
         <>
           {showLoading ? (
-            <ItemHorizontal type={"playlist"} loading={true} data={null} key={index} />
+            <ItemHorizontal key={item?.id} type={"playlist"} loading={true} data={null} />
           ) : (
-            <ItemHorizontal type={"playlist"} data={item} key={index} />
+            <ItemHorizontal key={item?.id} type={"playlist"} data={item} />
           )}
         </>
       )}
@@ -533,9 +533,9 @@ const ArtistFavourites = () => {
       }
       renderItem={({ item, index }) => {
         if (showLoading) {
-          return <ItemHorizontal type={"artist"} loading={true} />;
+          return <ItemHorizontal key={item?.id} type={"artist"} loading={true} />;
         } else {
-          return <ItemHorizontal type={"artist"} data={item} key={index} />;
+          return <ItemHorizontal key={item?.id} type={"artist"} data={item} />;
         }
       }}
     />

@@ -10,7 +10,7 @@ import {
   Pressable,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { songApi } from "@/apis";
@@ -37,11 +37,14 @@ const PlayingCard = (props: PlayingCardProps) => {
     playSound,
     stopSound,
     isPlaying,
+    loading: loadingAudio,
     songIdPlaying,
+    currentSongIndex,
+    queue,
     songDuration,
     currentPosition,
     clearQueue,
-    nextSong
+    nextSong,
   } = useAudio();
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const progress = currentPosition ? (currentPosition / songDuration) * 100 : 0;
@@ -51,7 +54,6 @@ const PlayingCard = (props: PlayingCardProps) => {
     try {
       const res = await songApi.getDetail(songIdPlaying, token);
       setSong(res);
-      console.log(res);
       setLoading(false);
     } catch (err) {
       console.log(err.response.data.conflictError);
@@ -60,8 +62,12 @@ const PlayingCard = (props: PlayingCardProps) => {
   };
 
   React.useEffect(() => {
-    songIdPlaying && getSongs();
-  }, [songIdPlaying]);
+    if (songIdPlaying) getSongs();
+  }, [songIdPlaying, currentSongIndex, queue]);
+
+  // React.useEffect(() => {
+  //   setSong(queue[currentSongIndex]);
+  // }, [queue, currentSongIndex, songIdPlaying]);
 
   React.useEffect(() => {
     openModalSong && setIsOpenModal(true);

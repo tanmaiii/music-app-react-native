@@ -55,27 +55,27 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
   };
 
   const { data: isLike } = useQuery({
-    queryKey: ["like-song", song.id],
+    queryKey: ["like-song", song?.id],
 
     queryFn: async () => {
-      const res = await songApi.checkLikedSong(song.id, token);
+      const res = await songApi.checkLikedSong(song?.id, token);
       return res.isLiked;
     },
   });
 
   const mutationLike = useMutation({
     mutationFn: (like: boolean) => {
-      if (like) return songApi.unLikeSong(song.id, token);
-      return songApi.likeSong(song.id, token);
+      if (like) return songApi.unLikeSong(song?.id, token);
+      return songApi.likeSong(song?.id, token);
     },
     onSuccess: () => {
       setOpenModal(false);
       setToastMessage(isLike ? "Remove from favorites success" : "Add to favorites success");
       queryClient.invalidateQueries({
-        queryKey: ["like-song", song.id],
+        queryKey: ["like-song", song?.id],
       });
       queryClient.invalidateQueries({
-        queryKey: ["songs-favorites", currentUser.id],
+        queryKey: ["songs-favorites", currentUser?.id],
       });
       queryClient.invalidateQueries({
         queryKey: ["count-songs-favorites"],
@@ -95,7 +95,7 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
 
   const mutationRemoveSongFromPlaylist = useMutation({
     mutationFn: async () => {
-      await playlistApi.removeSong(playlistId, song.id, token);
+      await playlistApi.removeSong(playlistId, song?.id, token);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -185,7 +185,7 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
           itemFunc={() => mutationLike.mutate(isLike)}
         />
         <Item icon={faPlusCircle} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
-        {song?.user_id === currentUser.id && (
+        {song?.user_id === currentUser?.id && (
           <Item icon={faPenToSquare} title="Edit song" itemFunc={() => console.log("edit song")} />
         )}
         {playlistId && (
@@ -203,7 +203,7 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
 
       {isOpenModal && (
         <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={"90%"}>
-          <AddSongToPlaylist songId={song.id} />
+          <AddSongToPlaylist songId={song?.id} />
         </CustomBottomSheet>
       )}
     </View>

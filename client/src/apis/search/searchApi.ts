@@ -1,5 +1,5 @@
 import { axiosClient } from "../../configs";
-import { ListResponse, ResFavourite, ResSoPaAr } from "../../types";
+import { ListResponse, ResFavourite, ResSoPaAr, TSong } from "../../types";
 
 const searchApi = {
   getAll(
@@ -82,6 +82,27 @@ const searchApi = {
         limit: limit,
         q: q,
         sortBy: sort,
+      },
+    });
+  },
+
+  getPopular(
+    token: string,
+    page: number,
+    limit: number,
+    q?: string,
+    sort?: string
+  ): Promise<ListResponse<TSong>> {
+    const url = "search/popular";
+    return axiosClient.get(url, {
+      headers: {
+        authorization: token,
+      },
+      params: {
+        page: page,
+        limit: limit,
+        q: q,
+        sortBy: sort || "new",
       },
     });
   },

@@ -23,12 +23,13 @@ interface SongItemProps {
   loading?: boolean;
   song?: TSong;
   playlistId?: string;
+  rankNumber?: number;
 }
 
 const SongItem = (props: SongItemProps) => {
   const { setOpenBarSong } = useBarSong();
   const { playSound, songIdPlaying, isPlaying, changeToQueue, playSong, stopSound } = useAudio();
-  const { song, loading = false } = props;
+  const { song, loading = false, rankNumber } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState(100);
   const navigation = useNavigation<NavigationProp>();
@@ -42,7 +43,7 @@ const SongItem = (props: SongItemProps) => {
         playSound(song?.id);
       } else {
         console.log("song", song);
-        
+
         playSong(song);
       }
       setOpenBarSong(true);
@@ -60,6 +61,12 @@ const SongItem = (props: SongItemProps) => {
           style={styles.container}
         >
           <View style={styles.swapper}>
+            {rankNumber && (
+              <View style={styles.ranking}>
+                <Text numberOfLines={1} style={[styles.numRanking]}>{`#${rankNumber}`}</Text>
+              </View>
+            )}
+
             <View style={styles.swapperImage}>
               {songIdPlaying == song?.id && (
                 <View

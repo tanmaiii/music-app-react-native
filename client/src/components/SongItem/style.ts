@@ -36,6 +36,21 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 1,
     objectFit: "cover",
   },
+  ranking: {
+    marginRight: SPACING.space_8,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    borderRadius: 25,
+    // backgroundColor: COLORS.Primary,
+  },
+  numRanking: {
+    fontSize: FONTSIZE.size_20,
+    fontFamily: FONTFAMILY.medium,
+    color: COLORS.White1,
+  },
   body: {
     flex: 1,
     marginLeft: SPACING.space_8,

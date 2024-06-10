@@ -77,7 +77,7 @@ Favourite.findSongs = async (userId, query, result) => {
   const sort = query?.sortBy || "new";
 
   const [data] = await promiseDb.query(
-    `SELECT s.id, s.title, s.image_path, s.song_path, u.name as author, s.public, fs.created_at ` +
+    `SELECT s.*, u.name as author ` +
       ` FROM favourite_songs AS fs ` +
       ` INNER JOIN songs AS s ON fs.song_id = s.id ` +
       ` LEFT JOIN users AS u ON s.user_id = u.id ` +

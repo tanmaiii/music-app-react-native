@@ -200,7 +200,6 @@ const PlaylistDetail = (props: PlaylistDetailProps) => {
   }, [playlistId]);
 
   const handlePlay = () => {
-    console.log("Play songs from playlist");
     const songsToPlay = songs ? songs : []; // Replace [] with the actual array of songs to play
     changeToQueue(songsToPlay);
   };

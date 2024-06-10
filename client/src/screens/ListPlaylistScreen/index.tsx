@@ -34,6 +34,7 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
   const userId = route.params.userId;
   const { token, currentUser } = useAuth();
   const queryClient = useQueryClient();
+  const [showLoading, setShowLoading] = React.useState(false);
   const items = Array.from({ length: 10 }, (_, index) => index);
 
   const [state, setState] = React.useState<TStateParams>({
@@ -109,6 +110,17 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
     }, 2000);
   };
 
+  React.useEffect(() => {
+    setShowLoading(true);
+
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+      console.log("showLoading", showLoading);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ zIndex: 99 }}>
@@ -132,47 +144,39 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
           <View style={styles.buttonBack}></View>
         </Animated.View>
       </SafeAreaView>
-      {!playlists || loading ? (
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+      <View style={styles.scroll}>
+        <FlatList
+          data={showLoading ? items : playlists}
+          onScroll={(e) => {
+            const offsetY = e.nativeEvent.contentOffset.y;
+            animatedValue.setValue(offsetY);
           }}
-        >
-          {items?.map((item, index) => (
-            <View
-              style={{
-                width: WINDOW_WIDTH / 2,
-                padding: SPACING.space_10,
-                height: 240,
-              }}
-            >
-              <PlaylistCard loading={true} />
-            </View>
-          ))}
-        </View>
-      ) : (
-        <View style={styles.scroll}>
-          <FlatList
-            data={playlists}
-            onScroll={(e) => {
-              const offsetY = e.nativeEvent.contentOffset.y;
-              animatedValue.setValue(offsetY);
-            }}
-            ListFooterComponent={renderLoader}
-            onEndReached={loadMore}
-            scrollEventThrottle={16}
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            keyExtractor={(item: any) => item.id}
-            style={styles.flatlist}
-            numColumns={2}
-            contentContainerStyle={{
-              paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
-              paddingBottom: HEIGHT.playingCard + 20,
-            }}
-            renderItem={({ item, index }) => (
+          ListFooterComponent={renderLoader}
+          onEndReached={loadMore}
+          scrollEventThrottle={16}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          keyExtractor={(item: any) => item.id}
+          style={styles.flatlist}
+          numColumns={2}
+          contentContainerStyle={{
+            paddingTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT,
+            paddingBottom: HEIGHT.playingCard + 20,
+          }}
+          renderItem={({ item, index }) => {
+            if (showLoading) {
+              return (
+                <View
+                  key={index}
+                  style={{
+                    width: WINDOW_WIDTH / 2,
+                    padding: SPACING.space_10,
+                  }}
+                >
+                  <PlaylistCard playlist={item} loading={true} />
+                </View>
+              );
+            } else {
               <View
                 key={item?.id}
                 style={{
@@ -180,12 +184,12 @@ const ListPlaylistScreen = (props: ListPlaylistScreenProps) => {
                   padding: SPACING.space_10,
                 }}
               >
-                <PlaylistCard playlist={item} loading={loading} />
-              </View>
-            )}
-          />
-        </View>
-      )}
+                <PlaylistCard playlist={item} />
+              </View>;
+            }
+          }}
+        />
+      </View>
     </View>
   );
 };

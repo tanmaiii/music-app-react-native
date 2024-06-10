@@ -20,6 +20,7 @@ type AudioContextType = {
   volume: number;
   currentSongIndex: number;
   random: boolean;
+  loading: boolean;
   playSound: (songId: string) => Promise<void>;
   pauseSound: () => Promise<void>;
   stopSound: () => Promise<void>;
@@ -60,15 +61,6 @@ export const AudioContextProvider = ({ children }: Props) => {
   const [random, setRandom] = useState<boolean>(false); // Trạng thái phát ngẫu nhiên
   const [queueRandom, setQueueRandom] = useState<number[]>([]); //Danh sách bài hát random đã được phát
 
-  const getPathSong = async (songId: string) => {
-    setSongIdPlaying(songId);
-    try {
-      const res = playApi.playSong(songId, token);
-      console.log((await res).title, (await res).song_path);
-
-      return res && (await res).song_path;
-    } catch (error) {}
-  };
 
   // Chuyển đổi millis sang phút:giây
   const formatDuration = (millis: number | null): string => {
@@ -81,7 +73,7 @@ export const AudioContextProvider = ({ children }: Props) => {
   const startSound = async (index: number) => {
     console.log("index", index, loading);
     if (index == null) return;
-    if (!queue[index]) return setToastMessage("Song not found");
+    // if (!queue[index]) return setToastMessage("Song not found");
     if (loading) return;
     try {
       if (sound) {
@@ -89,8 +81,12 @@ export const AudioContextProvider = ({ children }: Props) => {
         setIsPlaying(false);
       }
 
+      setOpenBarSong(true);
+      setCurrentSongIndex(index);
+      setSongIdPlaying(queue[index]?.id);
       setLoading(true);
 
+      playApi.playSong(queue[index]?.id, token);
       console.log("START SONG", queue[index]?.title);
 
       const { sound: newSound } = await Audio.Sound.createAsync({
@@ -141,10 +137,11 @@ export const AudioContextProvider = ({ children }: Props) => {
   const playSong = async (songNew: TSong) => {
     console.log("Play success");
     if (!queue.some((song) => song.id === songNew.id)) {
-      setQueue([...queue, songNew]);
-      setCurrentSongIndex(queue.length);
+      setCurrentSongIndex(null);
+      setQueue([songNew, ...queue]);
     } else {
-      setCurrentSongIndex(queue.findIndex((song) => song.id === songNew.id));
+      const index = queue.findIndex((song) => song.id === songNew.id);
+      startSound(index);
     }
   };
 
@@ -185,14 +182,16 @@ export const AudioContextProvider = ({ children }: Props) => {
   };
 
   const changeToQueue = async (songs: TSong[]) => {
+    setQueue([]);
+    setCurrentSongIndex(null);
+
     if (songs.length <= 0) {
-      setQueue([]);
       setToastMessage("Queue is empty");
       return;
     }
+
     setCurrentSongIndex(null);
     setQueue(songs);
-    setCurrentSongIndex(0);
     setToastMessage("Change to queue success");
   };
 
@@ -241,64 +240,53 @@ export const AudioContextProvider = ({ children }: Props) => {
 
   // Phát bài hát tiếp theo từ queue
   const nextSong = async () => {
-    setCurrentSongIndex(null);
     if (loading) return;
     if (currentSongIndex !== null && currentSongIndex < queue.length - 1) {
       await sound.stopAsync();
       if (random) {
         const index = getRandomIndexSong();
-        setCurrentSongIndex(index);
-        console.log("Next Song (Random): ", index, queueRandom);
+        startSound(index);
+        console.log("Next Song (Random): trên", index, queueRandom);
       } else {
-        setCurrentSongIndex(currentSongIndex + 1);
+        startSound(currentSongIndex + 1);
         console.log("Next Song", currentSongIndex + 1);
       }
     } else {
       await sound.stopAsync();
       if (random) {
-        setCurrentSongIndex(getRandomIndexSong());
+        const index = getRandomIndexSong();
+        startSound(index);
+        console.log("Next Song (Random): ", index, queueRandom);
       } else {
-        setCurrentSongIndex(0);
+        startSound(0);
+        console.log("Next Song", 0);
       }
     }
   };
 
   // Phát bài hát trước đó từ queue
   const previousSong = async () => {
-    setCurrentSongIndex(null);
     if (loading) return;
     if (currentSongIndex > 0) {
       await sound.stopAsync();
       if (random) {
-        setCurrentSongIndex(getRandomIndexSong());
+        startSound(getRandomIndexSong());
       } else {
-        setCurrentSongIndex(currentSongIndex - 1);
+        startSound(currentSongIndex - 1);
         console.log("Previous Song", currentSongIndex - 1);
       }
     } else {
       await sound.stopAsync();
-      setCurrentSongIndex(queue.length - 1);
+      startSound(queue.length - 1);
       console.log("Previous Song", queue.length - 1);
     }
   };
 
   useEffect(() => {
-    if (isPlaying) return;
-    if (queue.length > 0) {
-      setCurrentSongIndex(null);
-      if (queue.length === 1) setCurrentSongIndex(0);
+    if (queue.length > 0 && currentSongIndex === null) {
+      startSound(0);
     }
-  }, [queue]);
-
-  // Phát bài hát trong queue khi thay đổi vị trí bài hát
-  useEffect(() => {
-    const started = async () => {
-      await startSound(currentSongIndex);
-      setSongIdPlaying(queue[currentSongIndex]?.id);
-      console.log("ID SONG PLAYING", queue[currentSongIndex]?.title);
-    };
-    queue.length > 0 && currentSongIndex !== null && started();
-  }, [currentSongIndex]);
+  }, [queue, currentSongIndex]);
 
   // Lấy độ dài của bài hát
   useEffect(() => {
@@ -359,6 +347,7 @@ export const AudioContextProvider = ({ children }: Props) => {
     volume,
     currentSongIndex,
     random,
+    loading,
     playSound,
     stopSound,
     pauseSound,

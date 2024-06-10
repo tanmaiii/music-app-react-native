@@ -7,12 +7,12 @@ import { Skeleton } from "moti/skeleton";
 import { useLinkTo, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../navigators/TStack";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { TUser } from "../../types";
+import { ResSoPaAr, TUser } from "../../types";
 import apiConfig from "../../configs/axios/apiConfig";
 import ArtistCardSkeleton from "./ArtistCardSkeleton";
 
 type TArtistCard = {
-  artist: TUser;
+  artist: ResSoPaAr;
   loading?: boolean;
 };
 
@@ -29,24 +29,26 @@ const ArtistCard = (prop: TArtistCard) => {
   }
 
   return (
-    <TouchableOpacity onPress={handlePress}>
-      <View style={[styles.container]}>
-        <View style={styles.wrapperImage}>
-          <Image
-            style={[styles.image]}
-            source={
-              artist?.image_path ? { uri: apiConfig.imageURL(artist.image_path) } : IMAGES.AVATAR
-            }
-          />
-        </View>
+    artist && (
+      <TouchableOpacity onPress={handlePress}>
+        <View style={[styles.container]}>
+          <View style={styles.wrapperImage}>
+            <Image
+              style={[styles.image]}
+              source={
+                artist?.image_path ? { uri: apiConfig.imageURL(artist?.image_path) } : IMAGES.AVATAR
+              }
+            />
+          </View>
 
-        <View style={{ gap: SPACING.space_4 }}>
-          <Text numberOfLines={1} style={styles.textTitle}>
-            {artist.name}
-          </Text>
+          <View style={{ gap: SPACING.space_4 }}>
+            <Text numberOfLines={1} style={styles.textTitle}>
+              {artist?.name || artist?.author}
+            </Text>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    )
   );
 };
 

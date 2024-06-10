@@ -195,7 +195,7 @@ const ListSongScreen = (props: ListSongScreenProps) => {
           <View style={[styles.wrapperTop]}>
             <Text style={[styles.textMain, { fontSize: FONTSIZE.size_24 }]}>Songs</Text>
             <Text style={styles.textExtra}>{totalCount} Songs</Text>
-            <View>
+            <View style={styles.button}>
               <FontAwesomeIcon icon={faPlay} size={26} style={{ color: COLORS.White1 }} />
               <Text style={styles.textButton}>Play</Text>
             </View>

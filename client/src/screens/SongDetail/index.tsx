@@ -46,6 +46,7 @@ import { useBarSong } from "@/context/BarSongContext";
 import { NavigationProp, RootRouteProps } from "@/navigators/TStack";
 import SongDetailSkeleton from "./SongDetailSkeleton";
 import playApi from "@/apis/play/playApi";
+import numeral from "numeral";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -159,11 +160,11 @@ const SongDetail = (props: SongDetailProps) => {
   };
 
   const handlePlay = () => {
-    if (songId === songIdPlaying && isPlaying) {
+    if (song?.id === songIdPlaying && isPlaying) {
       stopSound();
     } else {
-      if (songId === songIdPlaying) {
-        playSound(songId);
+      if (song?.id === songIdPlaying) {
+        playSound(song?.id);
       } else {
         playSong(song);
       }
@@ -279,7 +280,7 @@ const SongDetail = (props: SongDetailProps) => {
                     </Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.button} onPress={() => handlePlay()}>
+                  <TouchableOpacity style={styles.button} onPress={() => song && handlePlay()}>
                     {isPlaying && songId === songIdPlaying ? (
                       <>
                         <FontAwesomeIcon
@@ -322,7 +323,9 @@ const SongDetail = (props: SongDetailProps) => {
                   <Text style={styles.textExtra}>
                     Released: {moment(song?.created_at).format("YYYY")}
                   </Text>
-                  <Text style={styles.textExtra}>{`Listens: ${playCount}`}</Text>
+                  <Text style={styles.textExtra}>{`Listens: ${numeral(playCount)
+                    .format("0a")
+                    .toUpperCase()}`}</Text>
                 </View>
 
                 <ScrollView style={styles.listArtist}>
@@ -337,7 +340,7 @@ const SongDetail = (props: SongDetailProps) => {
         </ImageBackground>
       </View>
 
-      {isOpenModal && (
+      {isOpenModal && song && (
         <CustomBottomSheet
           isOpen={true}
           closeModal={() => setIsOpenModal(false)}

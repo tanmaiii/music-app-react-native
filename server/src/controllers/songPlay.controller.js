@@ -16,6 +16,7 @@ export const playSong = async (req, res) => {
           if (err || !songPlay) {
             return res.status(401).json({ conflictError: err });
           }
+          console.log("PLAY SONG: ", song?.title);
           return res.json(song);
         });
       }

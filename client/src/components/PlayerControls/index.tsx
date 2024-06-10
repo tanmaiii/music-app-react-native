@@ -41,15 +41,22 @@ type PlayerButtonProps = {
 };
 
 export const PlayPauseButton = ({ style, iconSize = 34 }: PlayerButtonProps) => {
-  const { isPlaying, songIdPlaying, playSound, stopSound } = useAudio();
+  const { isPlaying, songIdPlaying, playSound, stopSound, loading: loadingAudio } = useAudio();
+  const timeoutRef = React.useRef(null);
 
   const handlePlay = () => {
-    isPlaying ? stopSound() : playSound(songIdPlaying);
+    console.log("next");
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(async () => {
+      isPlaying ? stopSound() : playSound(songIdPlaying);
+    }, 200);
   };
 
   return (
     <View>
-      <TouchableOpacity style={[style]} onPress={() => handlePlay()}>
+      <TouchableOpacity style={[style]} onPress={() => !loadingAudio && handlePlay()}>
         <FontAwesomeIcon
           icon={isPlaying ? faPause : faPlay}
           size={iconSize}

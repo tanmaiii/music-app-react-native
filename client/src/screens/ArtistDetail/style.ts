@@ -111,12 +111,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  buttonSort: {
+  buttonRadom: {
     width: 45,
     height: 45,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
+  },
+  dotRandom:{
+    position: "absolute",
+    bottom: 8,
+    width: 4,
+    height: 4,
+    borderRadius: 50,
+    backgroundColor: COLORS.Primary,
   },
   SongTop: {
     flexDirection: "row",

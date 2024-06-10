@@ -44,6 +44,9 @@ import { WINDOW_WIDTH } from "@/utils";
 import styles from "./style";
 import ArtistDetailSkeleton from "./ArtistDetailSkeleton";
 import SectionCard from "@/components/SectionCard";
+import { useAudio } from "@/context/AudioContext";
+import { useToast } from "@/context/ToastContext";
+import LottieView from "lottie-react-native";
 const statusBarHeight = Constants.statusBarHeight;
 
 const HEIGHT_AVATAR = 400;
@@ -68,12 +71,13 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   const userId = route.params.userId;
   const { currentUser, token } = useAuth();
   const animatedValue = React.useRef(new Animated.Value(0)).current;
-  const [random, setRandom] = React.useState(false);
   const [isOpenModal, setIsOpenMoal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(100);
 
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const queryClient = useQueryClient();
+  const { changeToQueue, queue, random, changeRandomQueue } = useAudio();
+  const { setToastMessage } = useToast();
 
   const opacityAnimation = {
     opacity: animatedValue.interpolate({
@@ -170,7 +174,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   });
 
   const { data: playlists, isLoading: loadingPlaylists } = useQuery({
-    queryKey: ["playlists", userId],
+    queryKey: ["playlists-artist", userId],
     queryFn: async () => {
       const res = await playlistApi.getAllByUserId(userId, 1, 10);
       return res.data;
@@ -186,7 +190,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
   });
 
   const { data: songs, isLoading: loadingSongs } = useQuery({
-    queryKey: ["songs", userId],
+    queryKey: ["songs-artist", userId],
     queryFn: async () => {
       const res = await songApi.getAllByUserId(token, userId, 1, 11);
       return res.data;
@@ -219,6 +223,17 @@ const ArtistDetail = (props: ArtistDetailProps) => {
       queryClient.invalidateQueries({ queryKey: ["followers", userId] });
       setRefreshing(false);
     }, 2000);
+  };
+
+  const handlePlay = async () => {
+    try {
+      const res = await songApi.getAllByUserId(token, route.params.userId, 1, 0);
+      console.log(res && res.data);
+
+      res && changeToQueue(res.data);
+    } catch (error) {
+      setToastMessage("Error when play all songs");
+    }
   };
 
   if (isLoading || loadingPlaylists || loadingArtists || loadingArtists)
@@ -329,36 +344,23 @@ const ArtistDetail = (props: ArtistDetailProps) => {
 
                   <View style={styles.bodyTopRight}>
                     <TouchableOpacity
-                      style={styles.buttonSort}
-                      onPress={() => setRandom((random) => !random)}
+                      style={styles.buttonRadom}
+                      onPress={() => changeRandomQueue()}
                     >
                       <FontAwesomeIcon
                         icon={faRandom}
                         size={24}
                         color={random ? COLORS.Primary : COLORS.White1}
                       />
-                      {random && (
-                        <View
-                          style={[
-                            {
-                              position: "absolute",
-                              bottom: 8,
-                              width: 4,
-                              height: 4,
-                              borderRadius: 50,
-                              backgroundColor: COLORS.Primary,
-                            },
-                          ]}
-                        ></View>
-                      )}
+                      {random && <View style={[styles.dotRandom]}></View>}
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.buttonPlay]}>
+                    <TouchableOpacity style={[styles.buttonPlay]} onPress={() => handlePlay()}>
                       <FontAwesomeIcon icon={faPlay} size={24} color={COLORS.White1} />
                     </TouchableOpacity>
                   </View>
                 </View>
 
-                <SongTop song={songs?.length > 1 && songs[0]} />
+                {songs?.length > 1 && <SongTop song={songs[0]} />}
 
                 {songs?.length > 1 && (
                   <View style={styles.SlideSong}>
@@ -465,6 +467,7 @@ export const SongTop = ({ song }: TSongTop) => {
   const queryClient = useQueryClient();
   const navigation = useNavigation<NavigationProp>();
   const { currentUser } = useAuth();
+  const { songIdPlaying, isPlaying } = useAudio();
 
   const { data: isLike } = useQuery({
     queryKey: ["like-song", song.id],
@@ -502,6 +505,32 @@ export const SongTop = ({ song }: TSongTop) => {
       <TouchableHighlight underlayColor={COLORS.Black2} onPress={() => handlePress()}>
         <View style={styles.SongTop}>
           <View style={styles.SongTopLeft}>
+            {songIdPlaying == song?.id && (
+              <View
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: COLORS.BlackRGB32,
+                  zIndex: 2,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <LottieView
+                  source={IMAGES.MUSICICON}
+                  style={{
+                    width: 40,
+                    height: 40,
+                  }}
+                  speed={isPlaying ? 1 : 0}
+                  autoPlay
+                  loop
+                />
+              </View>
+            )}
             <Image
               style={styles.SongTopImage}
               source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
@@ -512,7 +541,7 @@ export const SongTop = ({ song }: TSongTop) => {
               <Text numberOfLines={1} style={styles.textExtra}>
                 {moment(song?.created_at).format("LL")}
               </Text>
-              <Text numberOfLines={1} style={styles.textMain}>
+              <Text numberOfLines={1} style={[styles.textMain]}>
                 {song?.title}
               </Text>
               <Text numberOfLines={1} style={styles.textExtra}>

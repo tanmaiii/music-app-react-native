@@ -71,7 +71,7 @@ Search.findAll = async (userId, query, result) => {
       pagination: {
         page: +page,
         limit: +limit,
-        totalCount: totalCount[0].totalCount || 0,
+        totalCount: totalCount[0]?.totalCount || 0,
         totalPages,
         sort,
         q,
@@ -129,7 +129,7 @@ Search.findPlaylists = async (userId, query, result) => {
       pagination: {
         page: +page,
         limit: +limit,
-        totalCount: totalCount[0].totalCount || 0,
+        totalCount: totalCount[0]?.totalCount || 0,
         totalPages,
         sort,
         q,
@@ -178,7 +178,7 @@ Search.findSongs = async (userId, query, result) => {
       pagination: {
         page: +page,
         limit: +limit,
-        totalCount: totalCount[0].totalCount || 0,
+        totalCount: totalCount[0]?.totalCount || 0,
         totalPages,
         sort,
         q,
@@ -223,7 +223,58 @@ Search.findArtists = async (userId, query, result) => {
       pagination: {
         page: +page,
         limit: +limit,
-        totalCount: totalCount[0].totalCount || 0,
+        totalCount: totalCount[0]?.totalCount || 0,
+        totalPages,
+        sort,
+        q,
+      },
+    });
+
+    return;
+  }
+  result(null, null);
+};
+
+Search.findSongPopular = async (userId, query, result) => {
+  const q = query?.q;
+  const page = query?.page || 1;
+  const limit = query?.limit || 100;
+  const sort = query?.sortBy || "new";
+
+  const offset = (page - 1) * limit;
+
+  const [data] = await promiseDb.query(
+    ` SELECT s.*, u.name as author, count(sp.song_id) as count ` +
+      ` FROM  song_plays sp ` +
+      ` LEFT JOIN  songs s ON sp.song_id = s.id ` +
+      ` LEFT JOIN users as u on u.id = s.user_id  ` +
+      ` WHERE  sp.created_at >= NOW() - INTERVAL 30 DAY ` +
+      ` AND ((s.public = 1 ) OR (s.user_id = '${userId}')) AND s.is_deleted = 0 ` +
+      ` ${q ? ` AND s.title LIKE "%${q}%" ` : ""} ` +
+      ` GROUP BY  sp.song_id ` +
+      `  ${sort === "new" ? " ORDER BY count DESC " : "ORDER BY count ASC"}` +
+      ` LIMIT ${+limit} OFFSET ${+offset} `
+  );
+
+  const [totalCount] = await promiseDb.query(
+    ` SELECT count(DISTINCT sp.song_id) as totalCount ` +
+      ` FROM  song_plays sp ` +
+      ` LEFT JOIN  songs s ON sp.song_id = s.id ` +
+      ` LEFT JOIN users as u on u.id = s.user_id  ` +
+      ` WHERE  sp.created_at >= NOW() - INTERVAL 30 DAY ` +
+      ` AND ((s.public = 1 ) OR (s.user_id = '${userId}')) AND s.is_deleted = 0 ` +
+      ` ${q ? ` AND s.title LIKE "%${q}%" ` : ""} `
+  );
+
+  if (data && totalCount) {
+    const totalPages = Math.ceil(totalCount[0]?.totalCount / limit);
+
+    result(null, {
+      data,
+      pagination: {
+        page: +page,
+        limit: +limit,
+        totalCount: totalCount[0]?.totalCount || 0,
         totalPages,
         sort,
         q,

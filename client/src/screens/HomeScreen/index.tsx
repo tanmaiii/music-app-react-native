@@ -27,6 +27,9 @@ import PlaylistCard from "@/components/PlaylistCard";
 import SectionCard from "@/components/SectionCard";
 import Slider from "@/components/Slider";
 import { useAuth } from "@/context/AuthContext";
+import CategoryHeader from "@/components/CategoryHeader";
+import playApi from "@/apis/play/playApi";
+import SlideSong from "@/components/SlideSong";
 
 interface HomeScreenProps {}
 
@@ -61,7 +64,6 @@ const HomeScreen = ({ navigation }: any) => {
 
   const handleGetToken = async () => {
     queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-    console.log("token", token);
   };
 
   useEffect(() => {
@@ -105,9 +107,23 @@ const HomeScreen = ({ navigation }: any) => {
     isLoading: loadingSongs,
     refetch: refetchSongs,
   } = useQuery({
-    queryKey: ["songs-popular"],
+    queryKey: ["favorite-songs"],
     queryFn: async () => {
       const res = await searchApi.getSongs(token, 1, 10, undefined, "count");
+      return res.data;
+    },
+  });
+
+  const {
+    data: songPopular,
+    isLoading: loadingSongPopular,
+    refetch: refetchSongPopular,
+  } = useQuery({
+    queryKey: ["songs-popular"],
+    queryFn: async () => {
+      const res = await searchApi.getPopular(token, 1, 10, null, "new");
+      console.log("popular", res.data);
+
       return res.data;
     },
   });
@@ -119,8 +135,7 @@ const HomeScreen = ({ navigation }: any) => {
   } = useQuery({
     queryKey: ["artists"],
     queryFn: async () => {
-      const res = await userApi.getAll(1, 10);
-      console.log(res.data);
+      const res = await searchApi.getArtists(token, 1, 10, undefined, "count");
 
       return res.data;
     },
@@ -146,6 +161,7 @@ const HomeScreen = ({ navigation }: any) => {
         refetchPlaylists(),
         refetchSongs(),
         refetchPlaylistNew(),
+        refetchSongPopular(),
         setRefreshing(false);
     }, 2000);
   }, []);
@@ -194,7 +210,7 @@ const HomeScreen = ({ navigation }: any) => {
           scrollEventThrottle={16}
         >
           <View style={styles.scroll}>
-            <Slider data={undefined} loading={loadingSongs} />
+            <Slider loading={loadingSongs} refetch={refreshing} />
 
             <HomeTop data={playlistFavourite} loading={loadingPlaylistFavourite} />
 
@@ -202,9 +218,11 @@ const HomeScreen = ({ navigation }: any) => {
               <LoadingView />
             ) : (
               <>
+                {songPopular && <SlideSong title={"Ranked in the last 30 days"} songs={songPopular} />}
+
                 {songsNew && (
                   <SectionCard
-                    title="Song new"
+                    title="New songs released"
                     loading={loadingSongsNew}
                     data={songsNew}
                     renderItem={({ item, index }) => (
@@ -220,7 +238,7 @@ const HomeScreen = ({ navigation }: any) => {
 
                 {songs && (
                   <SectionCard
-                    title="Song popular"
+                    title="Favorite songs"
                     loading={loadingSongs}
                     data={songs}
                     renderItem={({ item, index }) => (
@@ -236,7 +254,7 @@ const HomeScreen = ({ navigation }: any) => {
 
                 {playlistsNew && (
                   <SectionCard
-                    title="Playlist new"
+                    title="New playlist released"
                     data={playlistsNew}
                     renderItem={({ item, index }) => (
                       <View
@@ -267,7 +285,7 @@ const HomeScreen = ({ navigation }: any) => {
 
                 {artists && (
                   <SectionCard
-                    title="Artist song"
+                    title="Famous artists"
                     loading={loadingArtists}
                     data={artists}
                     numItem={3}

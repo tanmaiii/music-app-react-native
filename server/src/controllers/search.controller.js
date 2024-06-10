@@ -6,7 +6,7 @@ export const getAll = async (req, res) => {
     const token = req.headers["authorization"];
     const userInfo = await jwtService.verifyToken(token);
     Search.findAll(userInfo.id, req.query, (err, data) => {
-      if (err|| !data) {
+      if (err || !data) {
         return res.status(401).json({ conflictError: "Not found" });
       } else {
         console.log("GET ALL", data.data);
@@ -72,9 +72,28 @@ export const getAllArtists = async (req, res) => {
   }
 };
 
+export const getSongPopular = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    const userInfo = await jwtService.verifyToken(token);
+
+    Search.findSongPopular(userInfo.id, req.query, (err, data) => {
+      if (err || !data) {
+        return res.status(401).json({ conflictError: "Not found" });
+      } else {
+        console.log("GET POPULAR", data.data);
+        return res.json(data);
+      }
+    });
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
 export default {
   getAll,
   getAllPlaylists,
   getAllSongs,
   getAllArtists,
+  getSongPopular,
 };
