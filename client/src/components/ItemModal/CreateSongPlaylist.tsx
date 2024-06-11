@@ -6,10 +6,11 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme
 import { faCompactDisc, faMusic } from "@fortawesome/free-solid-svg-icons";
 
 interface CreateSongPlaylistProps {
-  setAddPlaylist: (boolean) => void;
+  setAddPlaylist: (value: boolean) => void;
+  setAddSong: (value: boolean) => void;
 }
 
-const CreateSongPlaylist = ({ setAddPlaylist }: CreateSongPlaylistProps) => {
+const CreateSongPlaylist = ({ setAddPlaylist, setAddSong }: CreateSongPlaylistProps) => {
   return (
     <>
       <View style={styles.container}>
@@ -33,7 +34,7 @@ const CreateSongPlaylist = ({ setAddPlaylist }: CreateSongPlaylistProps) => {
             </View>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setAddSong(true)}>
           <View style={styles.buttonItem}>
             <FontAwesomeIcon icon={faMusic} size={30} color={COLORS.White2} />
             <View>

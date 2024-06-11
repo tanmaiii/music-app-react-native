@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDERRADIUS.radius_8,
     backgroundColor: COLORS.Black2,
     overflow: "hidden",
-    objectFit: "contain",
+    objectFit: "cover",
     shadowColor: COLORS.Primary,
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,

@@ -7,6 +7,29 @@ interface CheckLikedResponse {
 }
 
 const songApi = {
+  createSong(
+    token: string,
+    title: string,
+    isPublic: number,
+    image_path: string,
+    song_path: string
+  ) {
+    const url = "song";
+    return axiosClient.post(
+      url,
+      {
+        title: title,
+        public: isPublic,
+        image_path: image_path,
+        song_path: song_path,
+      },
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+  },
   getAll(page: number, limit: number, q?: string, sort?: string): Promise<ListResponse<TSong>> {
     const url = "song";
     return axiosClient.get(url, {

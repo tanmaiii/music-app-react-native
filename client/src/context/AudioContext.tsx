@@ -80,13 +80,13 @@ export const AudioContextProvider = ({ children }: Props) => {
         await sound.stopAsync();
         setIsPlaying(false);
       }
+      if(songIdPlaying !== queue[index]?.id) playApi.playSong(queue[index]?.id, token);
 
       setOpenBarSong(true);
       setCurrentSongIndex(index);
       setSongIdPlaying(queue[index]?.id);
       setLoading(true);
 
-      playApi.playSong(queue[index]?.id, token);
       console.log("START SONG", queue[index]?.title);
 
       const { sound: newSound } = await Audio.Sound.createAsync({

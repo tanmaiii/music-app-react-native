@@ -1,35 +1,21 @@
-import * as React from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Keyboard,
-  Platform,
-  Switch,
-} from "react-native";
-import { IMAGES } from "../../constants";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "../../theme/theme";
-import { FlatList, ScrollView, TextInput, TouchableHighlight } from "react-native-gesture-handler";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { TSong } from "../../types";
-import ButtonSwitch from "../ButtonSwitch";
-import Constants from "expo-constants";
-import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { playlistApi } from "../../apis";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../navigators/TStack";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import ToastMessage from "../ToastMessage";
-import { useToast } from "../../context/ToastContext";
+import Constants from "expo-constants";
+import * as React from "react";
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { playlistApi } from "@/apis";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import ButtonSwitch from "@/components/ButtonSwitch";
 const statusBarHeight = Constants.statusBarHeight;
 
 interface CreatePlaylistProps {
   closeModal?: () => void;
-  setCreatePlaylist: (boolean) => void;
+  setCreatePlaylist: (value: boolean) => void;
 }
 
 const CreatePlaylist = ({ setCreatePlaylist, closeModal }: CreatePlaylistProps) => {
@@ -40,7 +26,7 @@ const CreatePlaylist = ({ setCreatePlaylist, closeModal }: CreatePlaylistProps) 
   const { setToastMessage } = useToast();
   const queryClient = useQueryClient();
 
-  const handleFunc = () => {
+  const handlePressClose = () => {
     setCreatePlaylist(false);
     textInputRef.current?.blur();
   };
@@ -78,7 +64,7 @@ const CreatePlaylist = ({ setCreatePlaylist, closeModal }: CreatePlaylistProps) 
           Platform.OS === "ios" && { paddingTop: SPACING.space_12 + statusBarHeight },
         ]}
       >
-        <TouchableOpacity onPress={() => handleFunc()}>
+        <TouchableOpacity onPress={() => handlePressClose()}>
           <FontAwesomeIcon icon={faXmark} size={24} color={COLORS.White2} />
         </TouchableOpacity>
       </View>

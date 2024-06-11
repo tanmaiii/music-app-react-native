@@ -27,6 +27,7 @@ import { NavigationProp } from "@/navigators/TStack";
 import { COLORS, HEIGHT } from "@/theme/theme";
 import { ResFavourite, ResSoPaAr, TStateParams } from "@/types";
 import styles from "./style";
+import { CreateSong } from "@/components/ModalSong";
 
 interface LibraryScreenProps {}
 
@@ -36,6 +37,7 @@ const LibraryScreen = (props: LibraryScreenProps) => {
   const [heightModal, setHeightModal] = useState<number>(50);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [isOpenModalAddPlaylist, setIsOpenModalAddPlaylist] = React.useState<boolean>(false);
+  const [isOpenModalAddSong, setIsOpenModalAddSong] = React.useState<boolean>(false);
 
   const { setToastMessage } = useToast();
 
@@ -97,7 +99,10 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           height1={heightModal}
         >
           <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
-            <CreateSongPlaylist setAddPlaylist={setIsOpenModalAddPlaylist} />
+            <CreateSongPlaylist
+              setAddPlaylist={setIsOpenModalAddPlaylist}
+              setAddSong={setIsOpenModalAddSong}
+            />
           </View>
         </CustomBottomSheet>
       )}
@@ -111,6 +116,18 @@ const LibraryScreen = (props: LibraryScreenProps) => {
           border={false}
         >
           <CreatePlaylist setCreatePlaylist={setIsOpenModalAddPlaylist} />
+        </CustomBottomSheet>
+      )}
+
+      {isOpenModalAddSong && (
+        <CustomBottomSheet
+          isOpen={true}
+          closeModal={() => setIsOpenModalAddSong(false)}
+          height1={"100%"}
+          enableClose={false}
+          border={false}
+        >
+          <CreateSong setCreateSong={setIsOpenModalAddSong} />
         </CustomBottomSheet>
       )}
     </>

@@ -20,8 +20,8 @@ const upload = multer({
   },
   fileFilter: (req, file, cb) => {
     var ext = path.extname(file.originalname);
-    if (ext !== ".mp3") {
-      return cb("File mp3 unsupported");
+    if (ext !== ".mp3" && ext !== ".wav" && ext !== ".ogg") {
+      return cb("Unsupported audio file format");
     }
     cb(null, true);
   },
