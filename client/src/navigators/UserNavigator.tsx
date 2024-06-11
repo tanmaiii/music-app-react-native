@@ -10,6 +10,8 @@ import ListSongScreen from "../screens/ListSongScreen";
 import ListPlaylistScreen from "../screens/ListPlaylistScreen";
 import EditProfile from "../screens/UserAccount/EditProfile";
 import UpdateItem from "../screens/UserAccount/UpdateItem";
+import Settings from "../screens/UserAccount/Settings";
+import Support from "../screens/UserAccount/Support";
 interface UserNavigatorProps {}
 
 const UserNavigator = (props: UserNavigatorProps) => {
@@ -31,6 +33,8 @@ const UserNavigator = (props: UserNavigatorProps) => {
       <Stack.Screen name="ListPlaylist" component={ListPlaylistScreen} />
       <Stack.Screen name="UserEditProfile" component={EditProfile} />
       <Stack.Screen name="UpdateItem" component={UpdateItem} />
+      <Stack.Screen name={"Settings"} component={Settings} />
+      <Stack.Screen name={"Support"} component={Support} />
     </Stack.Navigator>
   );
 };

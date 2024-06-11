@@ -28,9 +28,9 @@ Song.create = (userId, newSong, result) => {
 
 Song.update = (songId, newSong, result) => {
   db.query(
-    `update songs set ? ,update_at = '${moment(Date.now()).format(
+    `update songs set ? , update_at = '${moment(Date.now()).format(
       "YYYY-MM-DD HH:mm:ss"
-    )}' where id = ${songId}`,
+    )}' where id = '${songId}'`,
     newSong,
     (err, res) => {
       if (err) {
@@ -49,7 +49,7 @@ Song.delete = (songId, result) => {
   db.query(
     `UPDATE songs SET is_deleted = 1 ,update_at = '${moment(Date.now()).format(
       "YYYY-MM-DD HH:mm:ss"
-    )}' where id = ${songId}`,
+    )}' where id = '${songId}'`,
     (err, res) => {
       if (err) {
         console.log("ERROR", err);

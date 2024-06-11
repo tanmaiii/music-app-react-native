@@ -94,7 +94,9 @@ const ItemName = (props: ItemNameProps) => {
               <FontAwesomeIcon icon={faXmark} size={14} color={COLORS.Black2} />
             </TouchableOpacity>
           </View>
-          <Text style={[styles.textEtra, { marginTop: SPACING.space_12 }]}>asdasd</Text>
+          <Text style={[styles.textEtra, { marginTop: SPACING.space_12 }]}>
+            Names around 2 words will display best
+          </Text>
         </View>
       </View>
       <CustomModal

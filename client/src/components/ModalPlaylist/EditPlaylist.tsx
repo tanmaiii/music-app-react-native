@@ -34,7 +34,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 
 interface EditPlaylistProps {
-  setIsOpen: (boolean) => void;
+  setIsOpen: (value: boolean) => void;
   playlist: TPlaylist;
 }
 
@@ -181,7 +181,7 @@ const EditPlaylist = ({ setIsOpen, playlist }: EditPlaylistProps) => {
     isActive,
   }: RenderItemParams<{ id: string; num_song: number }>) => {
     return (
-      <ScaleDecorator>
+      <ScaleDecorator key={item?.id}>
         <OpacityDecorator>
           <ShadowDecorator>
             <Animated.View>

@@ -18,7 +18,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import styles from "./style";
 const statusBarHeight = Constants.statusBarHeight;
@@ -99,7 +99,9 @@ const ItemEmail = (props: ItemNameProps) => {
               {err && (
                 <Text style={[styles.textError, { marginTop: SPACING.space_12 }]}>{err}</Text>
               )}
-              <Text style={[styles.textEtra, { marginTop: SPACING.space_12 }]}>asdasd</Text>
+              <Text style={[styles.textEtra, { marginTop: SPACING.space_12 }]}>
+                Email used to log in
+              </Text>
             </>
           ) : (
             <VerifyEmail email={value} />

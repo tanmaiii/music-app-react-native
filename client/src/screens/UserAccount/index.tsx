@@ -29,7 +29,7 @@ import {
   TextInput,
   TouchableHighlight,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import styles from "./style";
 
@@ -134,12 +134,12 @@ const UserAccount = (props: UserAccountProps) => {
           func={() => navigation.navigate("UserEditProfile")}
         />
 
-        <Item icon={faGear} title="Settings" func={() => navigation.navigate("UserEditProfile")} />
+        <Item icon={faGear} title="Settings" func={() => navigation.navigate("Settings")} />
 
         <Item
           icon={faCircleQuestion}
           title="Help & Support"
-          func={() => navigation.navigate("UserEditProfile")}
+          func={() => navigation.navigate("Support")}
         />
 
         <View style={styles.line} />

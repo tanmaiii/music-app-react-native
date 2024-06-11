@@ -8,6 +8,7 @@ import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import Constants from "expo-constants";
 import * as React from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Keyboard,
@@ -26,6 +27,8 @@ import * as FileSystem from "expo-file-system";
 import moment from "moment";
 import { useToast } from "@/context/ToastContext";
 import * as DocumentPicker from "expo-document-picker";
+import { NavigationProp } from "@/navigators/TStack";
+import { useNavigation } from "@react-navigation/native";
 
 interface CreateSongProps {
   setCreateSong: (value: boolean) => void;
@@ -40,7 +43,9 @@ const CreateSong = ({ setCreateSong }: CreateSongProps) => {
   const [fileImage, setFileImage] = React.useState<any>("");
   const [fileMp3, setFileMp3] = React.useState<any>("");
   const [disabled, setDisabled] = React.useState<boolean>(true);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [uploadStatus, setUploadStatus] = React.useState("");
+  const navgation = useNavigation<NavigationProp>();
 
   const { setToastMessage } = useToast();
   const { token } = useAuth();
@@ -50,7 +55,7 @@ const CreateSong = ({ setCreateSong }: CreateSongProps) => {
   };
 
   React.useEffect(() => {
-    // textInputRef.current?.focus();
+    textInputRef.current?.focus();
   }, []);
 
   React.useEffect(() => {
@@ -160,8 +165,8 @@ const CreateSong = ({ setCreateSong }: CreateSongProps) => {
 
         const info: any = await FileSystem.getInfoAsync(result.assets[0].uri);
 
-        if (info.size > 4 * 1024 * 1024) {
-          setToastMessage("The selected file is too large. Please select a file smaller than 4MB.");
+        if (info.size > 5 * 1024 * 1024) {
+          setToastMessage("The selected file is too large. Please select a file smaller than 5MB.");
           return;
         }
 
@@ -185,6 +190,9 @@ const CreateSong = ({ setCreateSong }: CreateSongProps) => {
     try {
       if (!fileImage) return;
       if (!fileMp3) return;
+      if (loading) return;
+
+      setLoading(true);
 
       const formDataImg = new FormData();
       formDataImg.append("image", fileImage);
@@ -211,11 +219,13 @@ const CreateSong = ({ setCreateSong }: CreateSongProps) => {
         setFileImage(null);
         setFileMp3(null);
         setIsPrivate(false);
+        setLoading(false);
       }
     } catch (error) {
       setToastMessage("Error while uploading file"); // Thông báo lỗi
       console.error("Lỗi khi tải ảnh lên server:", error.response.data);
     }
+    setLoading(false);
   };
 
   return (
@@ -299,7 +309,7 @@ const CreateSong = ({ setCreateSong }: CreateSongProps) => {
           disabled={disabled}
           onPress={handleSave}
         >
-          <Text style={styles.buttonText}>Add Song</Text>
+          <Text style={styles.buttonText}>{loading ? <ActivityIndicator /> : "Add Song"}</Text>
         </TouchableOpacity>
       </View>
     </View>

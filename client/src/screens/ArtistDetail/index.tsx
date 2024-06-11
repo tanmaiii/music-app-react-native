@@ -189,7 +189,11 @@ const ArtistDetail = (props: ArtistDetailProps) => {
     },
   });
 
-  const { data: songs, isLoading: loadingSongs } = useQuery({
+  const {
+    data: songs,
+    isLoading: loadingSongs,
+    refetch: refechSongs,
+  } = useQuery({
     queryKey: ["songs-artist", userId],
     queryFn: async () => {
       const res = await songApi.getAllByUserId(token, userId, 1, 11);
@@ -221,6 +225,7 @@ const ArtistDetail = (props: ArtistDetailProps) => {
       queryClient.invalidateQueries({ queryKey: ["artist"] });
       queryClient.invalidateQueries({ queryKey: ["songs"] });
       queryClient.invalidateQueries({ queryKey: ["followers", userId] });
+      queryClient.invalidateQueries({ queryKey: ["songs-artist"] });
       setRefreshing(false);
     }, 2000);
   };

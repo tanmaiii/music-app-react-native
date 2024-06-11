@@ -82,7 +82,7 @@ const ItemGender = () => {
               <Checkbox isChecked={item === selected} onFunc={() => setSelected(item)} />
             </TouchableOpacity>
           ))}
-          <Text style={[styles.textEtra, { marginTop: SPACING.space_12 }]}>Gender</Text>
+          {/* <Text style={[styles.textEtra, { marginTop: SPACING.space_12 }]}>Gender</Text> */}
         </View>
       </View>
       <CustomModal

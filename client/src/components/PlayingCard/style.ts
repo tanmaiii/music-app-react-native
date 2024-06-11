@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDERRADIUS.radius_4,
     width: "100%",
     height: "100%",
-    objectFit: "contain",
+    objectFit: "cover",
   },
   title: {
     fontSize: FONTSIZE.size_14,

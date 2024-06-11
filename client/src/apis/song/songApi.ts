@@ -30,6 +30,27 @@ const songApi = {
       }
     );
   },
+  updateSong(token: string, songId: string, body: any) {
+    // Update song
+    const url = "song/";
+    return axiosClient.put(url + songId, body, {
+      headers: {
+        authorization: token,
+      },
+    });
+  },
+  deleteSong(token: string, songId: string) {
+    const url = "song/delete/";
+    return axiosClient.patch(
+      url + songId,
+      {},
+      {
+        headers: {
+          authorization: token,
+        },
+      }
+    );
+  },
   getAll(page: number, limit: number, q?: string, sort?: string): Promise<ListResponse<TSong>> {
     const url = "song";
     return axiosClient.get(url, {

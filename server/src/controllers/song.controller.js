@@ -94,6 +94,7 @@ export const deleteSong = async (req, res) => {
         if (err) {
           return res.status(401).json({ conflictError: err });
         } else {
+          console.log("DELETE SONG: ", data);
           return res.json(data);
         }
       });

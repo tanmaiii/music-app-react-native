@@ -162,6 +162,7 @@ const HomeScreen = ({ navigation }: any) => {
         refetchSongs(),
         refetchPlaylistNew(),
         refetchSongPopular(),
+        refetchSongsNew(),
         setRefreshing(false);
     }, 2000);
   }, []);
@@ -214,11 +215,13 @@ const HomeScreen = ({ navigation }: any) => {
 
             <HomeTop data={playlistFavourite} loading={loadingPlaylistFavourite} />
 
-            {loadingSongs || loadingPlaylists || loadingArtists ? (
+            {loadingSongs || loadingPlaylists || loadingArtists || loadingSongPopular ? (
               <LoadingView />
             ) : (
               <>
-                {songPopular && <SlideSong title={"Ranked in the last 30 days"} songs={songPopular} />}
+                {songPopular && (
+                  <SlideSong title={"Ranked in the last 30 days"} songs={songPopular} />
+                )}
 
                 {songsNew && (
                   <SectionCard

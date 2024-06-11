@@ -26,9 +26,9 @@ import CustomModal from "../CustomModal";
 
 interface ModalSongProps {
   playlist?: TPlaylist;
-  setIsOpen: (boolean) => void;
-  setIsOpenAddSong: (boolean) => void;
-  setIsOpenEdit: (boolean) => void;
+  setIsOpen: (value: boolean) => void;
+  setIsOpenAddSong: (value: boolean) => void;
+  setIsOpenEdit: (value: boolean) => void;
 }
 
 const ModalSong = ({ playlist, setIsOpen, setIsOpenEdit, setIsOpenAddSong }: ModalSongProps) => {

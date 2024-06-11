@@ -1,5 +1,5 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { faHeart as faHeartRegular, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import {
   faFlag,
   faHeart,
@@ -27,17 +27,21 @@ import CustomBottomSheet from "@/components/CustomBottomSheet";
 import AddSongToPlaylist from "./AddSongToPlaylist";
 import { useToast } from "@/context/ToastContext";
 import { useAudio } from "@/context/AudioContext";
+import EditSong from "./EditSong";
+import CustomModal from "../CustomModal";
 
 interface ModalSongProps {
   song: TSong;
   setOpenModal: (boolean) => void;
-  size?: number;
   playlistId?: string;
 }
 
-const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSongProps) => {
+const ModalSong = ({ song, setOpenModal, playlistId = null }: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const [isOpenEdit, setIsOpenEdit] = React.useState<boolean>(false);
+  const [isModalDeleted, setIsModalDeleted] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
+  const { clearQueue, songIdPlaying } = useAudio();
   const [heightModal, setHeightModal] = React.useState(200);
   const { token, currentUser } = useAuth();
   const { addToQueue } = useAudio();
@@ -93,6 +97,11 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
     navigation.navigate("Artist", { userId: song?.user_id });
   };
 
+  const handleOpenEditSong = () => {
+    setOpenModal(false);
+    setIsOpenEdit(!isOpenEdit);
+  };
+
   const mutationRemoveSongFromPlaylist = useMutation({
     mutationFn: async () => {
       await playlistApi.removeSong(playlistId, song?.id, token);
@@ -110,73 +119,74 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
     setOpenModal(false);
   };
 
+  const mutationDelete = useMutation({
+    mutationFn: async () => {
+      await songApi.deleteSong(token, song?.id);
+    },
+    onSuccess: () => {
+      setOpenModal(false);
+      queryClient.invalidateQueries({
+        queryKey: ["song", song?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs", currentUser?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs-artist", currentUser?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs-favorites", currentUser?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["favorites-songs"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["count-songs-favorites"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs-new"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["songs-popular"],
+      });
+      songIdPlaying === song?.id && clearQueue();
+      setToastMessage("Delete song success");
+    },
+  });
+
   return (
     <View style={styles.container}>
-      {size === 1 && (
-        <>
-          <View style={[styles.header]}>
-            <Pressable style={[styles.headerLeft]} onPress={() => handleGoDetail()}>
-              <Image
-                style={{
-                  height: 50,
-                  width: 50,
-                  aspectRatio: 1,
-                  objectFit: "cover",
-                  overflow: "hidden",
-                  borderRadius: BORDERRADIUS.radius_4,
-                  borderWidth: 0.6,
-                  borderColor: COLORS.WhiteRGBA15,
-                }}
-                source={
-                  song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG
-                }
-              />
-              <View style={styles.headerDesc}>
-                <Text style={styles.textMain}>{song?.title}</Text>
-                <Text style={styles.textEtra}>{song?.author}</Text>
-              </View>
-            </Pressable>
-
-            <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
-              <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
-            </TouchableOpacity>
-          </View>
-          <View
+      <View style={[styles.header]}>
+        <Pressable style={[styles.headerLeft]} onPress={() => handleGoDetail()}>
+          <Image
             style={{
-              height: 0.6,
-              backgroundColor: COLORS.WhiteRGBA15,
+              height: 50,
+              width: 50,
+              aspectRatio: 1,
+              objectFit: "cover",
+              overflow: "hidden",
+              borderRadius: BORDERRADIUS.radius_4,
+              borderWidth: 0.6,
+              borderColor: COLORS.WhiteRGBA15,
             }}
+            source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
           />
-        </>
-      )}
+          <View style={styles.headerDesc}>
+            <Text style={styles.textMain}>{song?.title}</Text>
+            <Text style={styles.textEtra}>{song?.author}</Text>
+          </View>
+        </Pressable>
 
-      {size === 2 && (
-        <View style={styles.header2}>
-          <Pressable
-            onPress={() => handleGoDetail()}
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              style={{
-                height: 160,
-                width: 160,
-                aspectRatio: 1,
-                objectFit: "cover",
-                overflow: "hidden",
-                borderRadius: BORDERRADIUS.radius_4,
-              }}
-              source={song?.image_path ? { uri: apiConfig.imageURL(song.image_path) } : IMAGES.SONG}
-            />
-            <View style={styles.header2Desc}>
-              <Text style={styles.textMain}>{song?.title}</Text>
-              <Text style={styles.textEtra}>{song?.author}</Text>
-            </View>
-          </Pressable>
-        </View>
-      )}
+        <TouchableOpacity style={styles.btnShare} onPress={() => handleShare()}>
+          <FontAwesomeIcon icon={faShare} size={18} color={COLORS.White1} />
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          height: 0.6,
+          backgroundColor: COLORS.WhiteRGBA15,
+        }}
+      />
 
       <View style={styles.body}>
         <Item
@@ -186,7 +196,10 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
         />
         <Item icon={faPlusCircle} title="Add to playlist" itemFunc={() => setIsOpenModal(true)} />
         {song?.user_id === currentUser?.id && (
-          <Item icon={faPenToSquare} title="Edit song" itemFunc={() => console.log("edit song")} />
+          <Item icon={faPenToSquare} title="Edit song" itemFunc={handleOpenEditSong} />
+        )}
+        {song?.user_id === currentUser.id && (
+          <Item icon={faTrashCan} title="Delete song" itemFunc={() => setIsModalDeleted(true)} />
         )}
         {playlistId && (
           <Item
@@ -205,6 +218,29 @@ const ModalSong = ({ song, setOpenModal, size = 1, playlistId = null }: ModalSon
         <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={"90%"}>
           <AddSongToPlaylist songId={song?.id} />
         </CustomBottomSheet>
+      )}
+
+      {isOpenEdit && (
+        <CustomBottomSheet
+          isOpen={isOpenEdit}
+          closeModal={() => setIsOpenEdit(false)}
+          height1={"90%"}
+        >
+          <EditSong song={song} setIsOpen={setIsOpenEdit} />
+        </CustomBottomSheet>
+      )}
+
+      {isModalDeleted && (
+        <CustomModal
+          isOpen={isModalDeleted}
+          setIsOpen={() => setIsModalDeleted(false)}
+          modalFunction={() => mutationDelete.mutate()}
+          header="Delete playlist"
+        >
+          <Text
+            style={styles.textMain}
+          >{`Are you sure you want to delete this playlist ${song?.title}?`}</Text>
+        </CustomModal>
       )}
     </View>
   );

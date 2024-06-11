@@ -3,11 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import { NavigationProp } from "@/navigators/TStack";
 import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
-import {
-  faChevronLeft,
-  faEye,
-  faEyeSlash
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import Constants from "expo-constants";
@@ -20,7 +16,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import styles from "./style";
 const statusBarHeight = Constants.statusBarHeight;
@@ -294,8 +290,8 @@ const ItemPassowrd = (props: ItemNameProps) => {
           onPress={handleSubmit}
           style={{
             marginTop: SPACING.space_12,
-            paddingHorizontal: SPACING.space_16,
-            paddingVertical: SPACING.space_20,
+            paddingHorizontal: SPACING.space_12,
+            paddingVertical: SPACING.space_16,
             backgroundColor: COLORS.Primary,
             borderRadius: 28,
             justifyContent: "center",

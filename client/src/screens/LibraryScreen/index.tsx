@@ -100,8 +100,8 @@ const LibraryScreen = (props: LibraryScreenProps) => {
         >
           <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
             <CreateSongPlaylist
-              setAddPlaylist={setIsOpenModalAddPlaylist}
-              setAddSong={setIsOpenModalAddSong}
+              setAddPlaylist={() => setIsOpenModalAddPlaylist(!isOpenModalAddPlaylist)}
+              setAddSong={() => setIsOpenModalAddSong(!isOpenModalAddSong)}
             />
           </View>
         </CustomBottomSheet>
