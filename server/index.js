@@ -23,11 +23,11 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(
-  cors({
-    origin: [process.env.FRONTEND_URL],
-  })
-);
+// app.use(
+//   cors({
+//     origin: [process.env.FRONTEND_URL],
+//   })
+// );
 
 app.use(cookieParser());
 
@@ -53,13 +53,29 @@ app.get("/api/mysql", (req, res) => {
   });
 });
 
-db.connect(function (err) {
-  if (err) {
-    console.log("❌ Error connecting SQL " + err.stack);
-  } else {
-    console.log("✅ Connect Mysql success");
-  }
-});
+function connectToDatabase() {
+  db.connect(function (err, result) {
+    if (err) {
+      console.log(
+        `❌ Error connecting SQL with port ${process.env.DB_HOST + ":" + process.env.DB_PORT} ` +
+          err.stack
+      );
+      console.log({
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT || 3306,
+        user: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE,
+      });
+      // Retry connecting to the database
+      setTimeout(connectToDatabase, 5000);
+    } else {
+      console.log("✅ Connect Mysql success", result && result);
+    }
+  });
+}
+
+connectToDatabase();
 
 const PORT = process.env.PORT || 8000;
 
