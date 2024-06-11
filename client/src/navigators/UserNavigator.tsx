@@ -12,6 +12,7 @@ import EditProfile from "../screens/UserAccount/EditProfile";
 import UpdateItem from "../screens/UserAccount/UpdateItem";
 import Settings from "../screens/UserAccount/Settings";
 import Support from "../screens/UserAccount/Support";
+import Information from "../screens/UserAccount/Information";
 interface UserNavigatorProps {}
 
 const UserNavigator = (props: UserNavigatorProps) => {
@@ -35,6 +36,7 @@ const UserNavigator = (props: UserNavigatorProps) => {
       <Stack.Screen name="UpdateItem" component={UpdateItem} />
       <Stack.Screen name={"Settings"} component={Settings} />
       <Stack.Screen name={"Support"} component={Support} />
+      <Stack.Screen name={"Information"} component={Information} />
     </Stack.Navigator>
   );
 };

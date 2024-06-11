@@ -1,4 +1,4 @@
-import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from "@/theme/theme";
+import { COLORS, FONTFAMILY, FONTSIZE, HEIGHT, SPACING } from "@/theme/theme";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
 import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Platform } from "react-native";
@@ -37,7 +37,11 @@ const Settings = (props: SettingsProps) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-      <ScrollView></ScrollView>
+      <ScrollView
+        style={[{ marginTop: HEIGHT.UPPER_HEADER_SEARCH_HEIGHT, padding: SPACING.space_12 }]}
+      >
+        <Text style={styles.textMain}>The feature will be available in an upcoming update</Text>
+      </ScrollView>
     </View>
   );
 };

@@ -9,9 +9,9 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@/navigators/TStack";
 const statusBarHeight = Constants.statusBarHeight;
 
-interface SupportProps {}
+interface InformationProps {}
 
-const Support = (props: SupportProps) => {
+const Information = (props: InformationProps) => {
   const navigation = useNavigation<NavigationProp>();
 
   return (
@@ -27,7 +27,7 @@ const Support = (props: SupportProps) => {
             <FontAwesomeIcon icon={faChevronLeft} size={20} style={{ color: COLORS.White1 }} />
           </TouchableOpacity>
 
-          <Text style={[styles.titleHeader]}>Help & Support</Text>
+          <Text style={[styles.titleHeader]}>Edit Information</Text>
 
           <TouchableOpacity
             style={[styles.buttonHeader, { opacity: 0 }]}
@@ -46,7 +46,7 @@ const Support = (props: SupportProps) => {
   );
 };
 
-export default Support;
+export default Information;
 
 const styles = StyleSheet.create({
   container: {

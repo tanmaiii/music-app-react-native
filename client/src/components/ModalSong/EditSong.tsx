@@ -292,7 +292,7 @@ const EditSong = ({ song, setIsOpen }: EditSongProps) => {
               icon={faXmark}
               size={20}
               color={COLORS.White1}
-              style={{ opacity: 0 }}
+              // style={{ opacity: 0 }}
             />
           </TouchableOpacity>
           <View style={{ flex: 1, alignItems: "center" }}>

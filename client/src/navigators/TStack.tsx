@@ -22,6 +22,7 @@ export type RootStackParamList = {
   UpdateItem: { type: string };
   Settings: undefined;
   Support: undefined;
+  Information: undefined;
 
   Song: { songId: string };
   Playlist: { playlistId: string };

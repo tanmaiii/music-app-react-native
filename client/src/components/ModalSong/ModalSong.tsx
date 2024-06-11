@@ -32,13 +32,18 @@ import CustomModal from "../CustomModal";
 
 interface ModalSongProps {
   song: TSong;
-  setOpenModal: (boolean) => void;
   playlistId?: string;
+  setOpenModal: (value: boolean) => void;
+  setIsOpenEditSong?: (value: boolean) => void;
 }
 
-const ModalSong = ({ song, setOpenModal, playlistId = null }: ModalSongProps) => {
+const ModalSong = ({
+  song,
+  setOpenModal,
+  playlistId = null,
+  setIsOpenEditSong,
+}: ModalSongProps) => {
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
-  const [isOpenEdit, setIsOpenEdit] = React.useState<boolean>(false);
   const [isModalDeleted, setIsModalDeleted] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
   const { clearQueue, songIdPlaying } = useAudio();
@@ -99,7 +104,7 @@ const ModalSong = ({ song, setOpenModal, playlistId = null }: ModalSongProps) =>
 
   const handleOpenEditSong = () => {
     setOpenModal(false);
-    setIsOpenEdit(!isOpenEdit);
+    setIsOpenEditSong(true);
   };
 
   const mutationRemoveSongFromPlaylist = useMutation({
@@ -217,16 +222,6 @@ const ModalSong = ({ song, setOpenModal, playlistId = null }: ModalSongProps) =>
       {isOpenModal && (
         <CustomBottomSheet isOpen={true} closeModal={() => setIsOpenModal(false)} height1={"90%"}>
           <AddSongToPlaylist songId={song?.id} />
-        </CustomBottomSheet>
-      )}
-
-      {isOpenEdit && (
-        <CustomBottomSheet
-          isOpen={isOpenEdit}
-          closeModal={() => setIsOpenEdit(false)}
-          height1={"90%"}
-        >
-          <EditSong song={song} setIsOpen={setIsOpenEdit} />
         </CustomBottomSheet>
       )}
 

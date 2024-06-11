@@ -1,4 +1,4 @@
-import { ModalSong } from "@/components/ModalSong";
+import { EditSong, ModalSong } from "@/components/ModalSong";
 import apiConfig from "@/configs/axios/apiConfig";
 import IMAGES from "@/constants/images";
 import { useBarSong } from "@/context/BarSongContext";
@@ -32,6 +32,7 @@ const SongItem = (props: SongItemProps) => {
   const { song, loading = false, rankNumber } = props;
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState(100);
+  const [isOpenEditSong, setIsOpenEditSong] = React.useState<boolean>(false);
   const navigation = useNavigation<NavigationProp>();
 
   const handlePlay = () => {
@@ -139,8 +140,23 @@ const SongItem = (props: SongItemProps) => {
             height1={heightModal}
           >
             <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
-              <ModalSong song={song} setOpenModal={setIsOpenModal} playlistId={props.playlistId} />
+              <ModalSong
+                song={song}
+                setOpenModal={setIsOpenModal}
+                playlistId={props.playlistId}
+                setIsOpenEditSong={setIsOpenEditSong}
+              />
             </View>
+          </CustomBottomSheet>
+        )}
+
+        {isOpenEditSong && (
+          <CustomBottomSheet
+            isOpen={isOpenEditSong}
+            closeModal={() => setIsOpenEditSong(false)}
+            height1={"90%"}
+          >
+            <EditSong song={song} setIsOpen={setIsOpenEditSong} />
           </CustomBottomSheet>
         )}
       </>

@@ -39,7 +39,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { songApi } from "@/apis";
 import ArtistItem from "@/components/ArtistItem";
-import { ModalSong } from "@/components/ModalSong";
+import { EditSong, ModalSong } from "@/components/ModalSong";
 import apiConfig from "@/configs/axios/apiConfig";
 import { useAudio } from "@/context/AudioContext";
 import { useAuth } from "@/context/AuthContext";
@@ -60,6 +60,7 @@ const SongDetail = (props: SongDetailProps) => {
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const [heightModal, setHeightModal] = React.useState<number>(50);
   const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
+  const [isOpenEditSong, setIsOpenEditSong] = React.useState<boolean>(false);
   const { currentUser } = useAuth();
   const songId = route.params.songId;
   const { token } = useAuth();
@@ -388,8 +389,22 @@ const SongDetail = (props: SongDetailProps) => {
             height1={heightModal}
           >
             <View onLayout={(event) => setHeightModal(event.nativeEvent.layout.height)}>
-              <ModalSong song={song} setOpenModal={setIsOpenModal} />
+              <ModalSong
+                song={song}
+                setOpenModal={setIsOpenModal}
+                setIsOpenEditSong={setIsOpenEditSong}
+              />
             </View>
+          </CustomBottomSheet>
+        )}
+
+        {isOpenEditSong && (
+          <CustomBottomSheet
+            isOpen={isOpenEditSong}
+            closeModal={() => setIsOpenEditSong(false)}
+            height1={"90%"}
+          >
+            <EditSong song={song} setIsOpen={setIsOpenEditSong} />
           </CustomBottomSheet>
         )}
       </>

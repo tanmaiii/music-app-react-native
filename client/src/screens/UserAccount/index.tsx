@@ -131,7 +131,7 @@ const UserAccount = (props: UserAccountProps) => {
         <Item
           icon={faPenToSquare}
           title="Edit Information"
-          func={() => navigation.navigate("UserEditProfile")}
+          func={() => navigation.navigate("Information")}
         />
 
         <Item icon={faGear} title="Settings" func={() => navigation.navigate("Settings")} />
