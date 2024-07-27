@@ -1,6 +1,12 @@
+# Tên đề tài: Ứng dụng nghe nhạc SoundHub bằng React Native
+
+* Người thực hiện: Đinh Tấn Mãi       
+* Thời gian thực hiện: 03/2024 đến 06/2024
+* Email: dinhtanmaivn@gmail.com
+
 # Mô tả dự án Music App
 
-Dự án Music App là một ứng dụng di động được phát triển bằng React Native. Ứng dụng này cho phép người dùng nghe nhạc trực tuyến, tìm kiếm và quản lý danh sách phát cá nhân.
+Dự án SoundHub là một ứng dụng di động được phát triển bằng React Native. Ứng dụng này cho phép người dùng nghe nhạc trực tuyến, tìm kiếm và quản lý danh sách phát cá nhân.
 
 ## Tính năng chính
 
