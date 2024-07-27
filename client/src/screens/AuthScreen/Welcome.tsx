@@ -68,10 +68,10 @@ const WelcomeScreen = (props: WelcomeScreenProps) => {
               <Text style={styles.titleLogin}>Login</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonGoogle} onPress={() => handleGetToken()}>
+            {/* <TouchableOpacity style={styles.buttonGoogle} onPress={() => handleGetToken()}>
               <Image source={IMAGES.GOOGLE} style={{ width: 30, height: 30 }} />
               <Text style={styles.titleGoogle}>Google</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={[styles.buttonLine, { alignItems: "center" }]}

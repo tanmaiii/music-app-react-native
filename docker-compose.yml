@@ -40,7 +40,7 @@ services:
     networks:
       - auth-networks
     ports:
-      - 8888:80
+      - 8000:80
 
 networks:
   auth-networks:
